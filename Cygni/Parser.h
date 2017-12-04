@@ -46,8 +46,11 @@ private:
 	Expression* Factor();
 
 	Type* ParseType();
+	bool IsBasicType(wstring name);
 
+	Expression* Var();
 	Expression* Define();
+	ParameterExpression* Parameter();
 	Expression* If();
 	Expression* While();
 	Expression* Return();

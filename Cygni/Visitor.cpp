@@ -104,7 +104,7 @@ void TreeViewer::Visit(DefaultExpression* node)
 	wcout << L"default(" << node->type->ToString() << L")" << endl;
 }
 
-void TreeViewer::Visit(DefineExpresion* node)
+void TreeViewer::Visit(DefineExpression* node)
 {
 	Indent();
 	wcout << L"def" << endl;

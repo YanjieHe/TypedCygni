@@ -36,9 +36,9 @@ void TestType()
 	wcout << Type::Int()->ToString() << endl;
 	wcout << Type::Boolean()->ToString() << endl;
 
-	vector<Type*>* params = new vector<Type*>(2);
-	params->at(0) = Type::Int();
-	params->at(1) = Type::Int();
+	vector<Type*> params(2);
+	params.at(0) = Type::Int();
+	params.at(1) = Type::Int();
 	FunctionType ft(params, Type::Int());
 	wcout << ft.ToString() << endl;
 

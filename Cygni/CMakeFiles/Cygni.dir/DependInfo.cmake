@@ -16,6 +16,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/jasonhe/Documents/MyCode/CPP/Cygni/TokenKind.cpp" "/home/jasonhe/Documents/MyCode/CPP/Cygni/CMakeFiles/Cygni.dir/TokenKind.cpp.o"
   "/home/jasonhe/Documents/MyCode/CPP/Cygni/Type.cpp" "/home/jasonhe/Documents/MyCode/CPP/Cygni/CMakeFiles/Cygni.dir/Type.cpp.o"
   "/home/jasonhe/Documents/MyCode/CPP/Cygni/TypeTag.cpp" "/home/jasonhe/Documents/MyCode/CPP/Cygni/CMakeFiles/Cygni.dir/TypeTag.cpp.o"
+  "/home/jasonhe/Documents/MyCode/CPP/Cygni/Visitor.cpp" "/home/jasonhe/Documents/MyCode/CPP/Cygni/CMakeFiles/Cygni.dir/Visitor.cpp.o"
   "/home/jasonhe/Documents/MyCode/CPP/Cygni/main.cpp" "/home/jasonhe/Documents/MyCode/CPP/Cygni/CMakeFiles/Cygni.dir/main.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")

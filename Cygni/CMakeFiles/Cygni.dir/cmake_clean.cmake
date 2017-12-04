@@ -12,6 +12,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/Cygni.dir/TypeTag.cpp.o"
   "CMakeFiles/Cygni.dir/DebugInfo.cpp.o"
   "CMakeFiles/Cygni.dir/Parser.cpp.o"
+  "CMakeFiles/Cygni.dir/Visitor.cpp.o"
   "Cygni.pdb"
   "Cygni"
 )

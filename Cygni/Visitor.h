@@ -17,7 +17,7 @@ public:
 	virtual void Visit(WhileExpression* node) = 0;
 	virtual void Visit(VarExpression* node) = 0;
 	virtual void Visit(DefaultExpression* node) = 0;
-	virtual void Visit(DefineExpresion* node) = 0;
+	virtual void Visit(DefineExpression* node) = 0;
 	virtual void Visit(NewExpression* node) = 0;
 };
 
@@ -37,7 +37,7 @@ public:
 	void Visit(WhileExpression* node) override;
 	void Visit(VarExpression* node) override;
 	void Visit(DefaultExpression* node) override;
-	void Visit(DefineExpresion* node) override;
+	void Visit(DefineExpression* node) override;
 	void Visit(NewExpression* node) override;
 
 private:

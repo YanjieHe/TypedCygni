@@ -81,6 +81,12 @@ ParameterExpression::ParameterExpression(wstring name)
 {
 }
 
+ParameterExpression::ParameterExpression(wstring name, Type* type)
+	:Expression(ExpressionKind::Parameter), name{name}
+{
+	this->type = type;
+}
+
 void ParameterExpression::Accept(Visitor* visitor)
 {
 	visitor->Visit(this);
@@ -127,13 +133,14 @@ void DefaultExpression::Accept(Visitor* visitor)
 	visitor->Visit(this);
 }
 
-DefineExpresion::DefineExpresion(wstring name, vector<ParameterExpression*> parameters,
-		Expression* body)
+DefineExpression::DefineExpression(wstring name, vector<ParameterExpression*> parameters,
+		Expression* body, Type* type)
 	:Expression(ExpressionKind::Define), name{name}, parameters{parameters}, body{body}
 {
+	this->type = type;
 }
 
-void DefineExpresion::Accept(Visitor* visitor)
+void DefineExpression::Accept(Visitor* visitor)
 {
 	visitor->Visit(this);
 }

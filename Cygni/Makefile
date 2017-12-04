@@ -447,6 +447,33 @@ TypeTag.cpp.s:
 	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/TypeTag.cpp.s
 .PHONY : TypeTag.cpp.s
 
+Visitor.o: Visitor.cpp.o
+
+.PHONY : Visitor.o
+
+# target to build an object file
+Visitor.cpp.o:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/Visitor.cpp.o
+.PHONY : Visitor.cpp.o
+
+Visitor.i: Visitor.cpp.i
+
+.PHONY : Visitor.i
+
+# target to preprocess a source file
+Visitor.cpp.i:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/Visitor.cpp.i
+.PHONY : Visitor.cpp.i
+
+Visitor.s: Visitor.cpp.s
+
+.PHONY : Visitor.s
+
+# target to generate assembly for a file
+Visitor.cpp.s:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/Visitor.cpp.s
+.PHONY : Visitor.cpp.s
+
 main.o: main.cpp.o
 
 .PHONY : main.o
@@ -519,6 +546,9 @@ help:
 	@echo "... TypeTag.o"
 	@echo "... TypeTag.i"
 	@echo "... TypeTag.s"
+	@echo "... Visitor.o"
+	@echo "... Visitor.i"
+	@echo "... Visitor.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

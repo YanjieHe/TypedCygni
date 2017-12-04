@@ -17,6 +17,7 @@ class Type
 	virtual bool Matches(Type* other) = 0;
 	virtual bool IsSubtypeOf(Type* other) = 0;
 	virtual wstring ToString() = 0;
+	virtual Type* Clone() = 0;
 
 	static Type* Unknown();
 	static Type* Int();
@@ -26,6 +27,7 @@ class Type
 	static Type* Boolean();
 	static Type* Char();
 	static Type* String();
+	static Type* Unit();
 };
 
 class BasicType: public Type
@@ -36,6 +38,9 @@ class BasicType: public Type
 	bool Matches(Type* other) override;
 	bool IsSubtypeOf(Type* other) override;
 	wstring ToString() override;
+	Type* Clone() override;
+
+	static Type* FromString(wstring name);
 };
 
 class ArrayType: public Type
@@ -47,18 +52,20 @@ class ArrayType: public Type
 	bool Matches(Type* other) override;
 	bool IsSubtypeOf(Type* other) override;
 	wstring ToString() override;
+	Type* Clone() override;
 };
 
 class FunctionType: public Type
 {
   public:
-	vector<Type*>* parameters;
+	vector<Type*> parameters;
 	Type* returnType;
-	FunctionType(vector<Type*>* parameters, Type* returnType);
+	FunctionType(vector<Type*> parameters, Type* returnType);
 	~FunctionType() override;
 	bool Matches(Type* other) override;
 	bool IsSubtypeOf(Type* other) override;
 	wstring ToString() override;
+	Type* Clone() override;
 
   private:
 	bool ParametersMatch(FunctionType* other);
@@ -73,6 +80,7 @@ class BaseType: public Type
 	bool Matches(Type* other) override;
 	bool IsSubtypeOf(Type* other) override;
 	wstring ToString() override;
+	Type* Clone() override;
 };
 
 class InheritedType: public Type
@@ -85,6 +93,7 @@ class InheritedType: public Type
 	bool Matches(Type* other) override;
 	bool IsSubtypeOf(Type* other) override;
 	wstring ToString() override;
+	Type* Clone() override;
 };
 
 #endif // TYPE_H 

@@ -83,6 +83,7 @@ class ParameterExpression: public Expression
   public:
 	wstring name;
 	ParameterExpression(wstring name);
+	ParameterExpression(wstring name, Type* type);
 	void Accept(Visitor* visitor) override;
 };
 
@@ -120,13 +121,13 @@ class DefaultExpression: public Expression
 	void Accept(Visitor* visitor) override;
 };
 
-class DefineExpresion: public Expression
+class DefineExpression: public Expression
 {
   public:
 	wstring name;
 	vector<ParameterExpression*> parameters;
 	Expression* body;
-	DefineExpresion(wstring name, vector<ParameterExpression*> parameters, Expression* body);
+	DefineExpression(wstring name, vector<ParameterExpression*> parameters, Expression* body, Type* type);
 	void Accept(Visitor* visitor) override;
 };
 

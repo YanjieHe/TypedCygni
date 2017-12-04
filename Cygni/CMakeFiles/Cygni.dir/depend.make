@@ -70,6 +70,13 @@ CMakeFiles/Cygni.dir/Type.cpp.o: TypeTag.h
 CMakeFiles/Cygni.dir/TypeTag.cpp.o: TypeTag.cpp
 CMakeFiles/Cygni.dir/TypeTag.cpp.o: TypeTag.h
 
+CMakeFiles/Cygni.dir/Visitor.cpp.o: Expression.h
+CMakeFiles/Cygni.dir/Visitor.cpp.o: ExpressionKind.h
+CMakeFiles/Cygni.dir/Visitor.cpp.o: Type.h
+CMakeFiles/Cygni.dir/Visitor.cpp.o: TypeTag.h
+CMakeFiles/Cygni.dir/Visitor.cpp.o: Visitor.cpp
+CMakeFiles/Cygni.dir/Visitor.cpp.o: Visitor.h
+
 CMakeFiles/Cygni.dir/main.cpp.o: StringBuilder.h
 CMakeFiles/Cygni.dir/main.cpp.o: Test.h
 CMakeFiles/Cygni.dir/main.cpp.o: main.cpp

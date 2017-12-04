@@ -7,18 +7,13 @@ Parser::Parser(vector<Token>& tokens, DebugInfo& debugInfo)
 
 Expression* Parser::Program()
 {
-	int currentLine = Line();
-	int currentColumn = Column();
-
-	Match(TokenKind::LeftBrace);
 	vector<Expression*> expressions;
-	while (Current().kind != TokenKind::RightBrace)
+	while (!IsEof())
 	{
 		expressions.push_back(Statement());
 	}
-	Match(TokenKind::RightBrace);
 	Expression* result = new BlockExpression(expressions);
-	Record(currentLine, currentColumn, result);
+	Record(0, 1, result);
 	return result;
 }
 
@@ -364,4 +359,147 @@ Expression* Parser::Factor()
 				L"syntax error: " +
 				token_kind_to_wstring(Current().kind));
 	}
+}
+
+Type* Parser::ParseType()
+{
+	wstring name = Current().text;
+	Match(TokenKind::Name);
+	if (IsBasicType(name))
+	{
+		return BasicType::FromString(name);
+	}
+	else if (name == L"Array")
+	{
+		Match(TokenKind::LeftBracket);
+		Type* element = ParseType();
+		try
+		{
+			Match(TokenKind::RightBracket);
+		}
+		catch (SyntaxException& ex)
+		{
+			delete element;
+			throw ex;
+		}
+		return new ArrayType(element);
+	}
+	else
+	{
+		throw L"not supported type name";
+	}
+}
+
+bool Parser::IsBasicType(wstring name)
+{
+	return name == L"Int" || 
+		name == L"Long" ||
+		name == L"Float" ||
+		name == L"Double" ||
+		name == L"Boolean" ||
+		name == L"Char" ||
+		name == L"String" ||
+		name == L"Unit";
+}
+
+Expression* Parser::Var()
+{
+	Match(TokenKind::Var);
+	wstring name = Current().text;
+	Match(TokenKind::Name);
+
+	if (Current().kind == TokenKind::Colon)
+	{
+		Match(TokenKind::Colon);
+		Type* type = ParseType();
+		try
+		{
+			Match(TokenKind::Assign);
+			Expression* value = Or();
+			Expression* result = new VarExpression(name, value);
+			result->type = type;
+			return result;
+		}
+		catch (SyntaxException& ex)
+		{
+			delete type;
+			throw ex;
+		}
+	}
+	else
+	{
+		Match(TokenKind::Assign);	
+		Expression* value = Or();
+		Expression* result = new VarExpression(name, value);
+		return result;
+	}
+}
+
+Expression* Parser::Define()
+{
+	int currentLine = Line();
+	int currentColumn = Column();
+	Match(TokenKind::Define);
+	wstring name = Current().text;
+	Match(TokenKind::Name);
+	Match(TokenKind::LeftParenthesis);
+
+	vector<ParameterExpression*> parameters;
+
+	if (Current().kind == TokenKind::LeftParenthesis)
+	{
+		Match(TokenKind::RightParenthesis);
+		Type* returnType = ParseType();
+		Expression* body = Block();
+
+		vector<Type*> parametersType;
+
+		FunctionType* ft = new FunctionType(parametersType, returnType);
+
+		Expression* result = new DefineExpression(name, parameters, body, ft);
+		Record(currentLine, currentColumn, result);
+		return result;
+	}
+	else
+	{
+		parameters.push_back(Parameter());
+		while (Current().kind != TokenKind::RightParenthesis)
+		{
+			Match(TokenKind::Comma);
+			parameters.push_back(Parameter());
+		}
+		Match(TokenKind::Colon);
+		Type* returnType = ParseType();
+		Expression* body = Block();
+
+		vector<Type*> parametersType;
+		for (ParameterExpression* item: parameters)
+		{
+			parametersType.push_back(item->type->Clone());
+		}
+		FunctionType* ft = new FunctionType(parametersType, returnType);
+		Expression* result = new DefineExpression(name, parameters, body, ft);
+		Record(currentLine, currentColumn, result);
+		return result;
+	}
+}
+
+
+ParameterExpression* Parser::Parameter()
+{
+	int currentLine = Line();
+	int currentColumn = Column();
+	wstring name = Current().text;
+	Match(TokenKind::Name);
+	Match(TokenKind::Colon);
+	Type* type = ParseType();
+	ParameterExpression* result = new ParameterExpression(name, type);
+	Record(currentLine, currentColumn, result);
+	return result;
+}
+
+Expression* If()
+{
+	Match(TokenKind::If);
+	// TO DO
 }

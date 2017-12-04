@@ -70,6 +70,13 @@ CMakeFiles/Cygni.dir/Type.cpp.o
 CMakeFiles/Cygni.dir/TypeTag.cpp.o
  /home/jasonhe/Documents/MyCode/CPP/Cygni/TypeTag.cpp
  /home/jasonhe/Documents/MyCode/CPP/Cygni/TypeTag.h
+CMakeFiles/Cygni.dir/Visitor.cpp.o
+ /home/jasonhe/Documents/MyCode/CPP/Cygni/Expression.h
+ /home/jasonhe/Documents/MyCode/CPP/Cygni/ExpressionKind.h
+ /home/jasonhe/Documents/MyCode/CPP/Cygni/Type.h
+ /home/jasonhe/Documents/MyCode/CPP/Cygni/TypeTag.h
+ /home/jasonhe/Documents/MyCode/CPP/Cygni/Visitor.cpp
+ /home/jasonhe/Documents/MyCode/CPP/Cygni/Visitor.h
 CMakeFiles/Cygni.dir/main.cpp.o
  /home/jasonhe/Documents/MyCode/CPP/Cygni/StringBuilder.h
  /home/jasonhe/Documents/MyCode/CPP/Cygni/Test.h

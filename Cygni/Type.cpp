@@ -45,6 +45,11 @@ Type* Type::String()
 	return new BasicType(TypeTag::String);
 }
 
+Type* Type::Unit()
+{
+	return new BasicType(TypeTag::Unit);
+}
+
 BasicType::BasicType(TypeTag tag)
 	:Type(tag)
 {
@@ -70,6 +75,51 @@ bool BasicType::IsSubtypeOf(Type* other)
 wstring BasicType::ToString()
 {
 	return type_tag_to_wstring(tag);
+}
+
+Type* BasicType::Clone()
+{
+	return new BasicType(tag);
+}
+
+Type* BasicType::FromString(wstring name)
+{
+	if (name == L"Int")
+	{
+		return Type::Int();
+	}
+	else if (name == L"Long")
+	{
+		return Type::Long();
+	}
+	else if (name == L"Float")
+	{
+		return Type::Float();
+	}
+	else if (name == L"Double")
+	{
+		return Type::Double();
+	}
+	else if (name == L"Boolean")
+	{
+		return Type::Boolean();
+	}
+	else if (name == L"Char")
+	{
+		return Type::Char();
+	}
+	else if (name == L"String")
+	{
+		return Type::String();
+	}
+	else if (name == L"Unit")
+	{
+		return Type::Unit();
+	}
+	else
+	{
+		throw L"basic type parsing error";
+	}
 }
 
 ArrayType::ArrayType(Type* element)
@@ -105,7 +155,12 @@ wstring ArrayType::ToString()
 	return L"Array[" + element->ToString() + L"]";
 }
 
-FunctionType::FunctionType(vector<Type*>* parameters, Type* returnType)
+Type* ArrayType::Clone()
+{
+	return new ArrayType(element->Clone());
+}
+
+FunctionType::FunctionType(vector<Type*> parameters, Type* returnType)
 	:Type(TypeTag::Function)
 {
 	this->parameters = parameters;
@@ -114,11 +169,10 @@ FunctionType::FunctionType(vector<Type*>* parameters, Type* returnType)
 
 FunctionType::~FunctionType()
 {
-	for (Type* item: *parameters)
+	for (Type* item: parameters)
 	{
 		delete item;
 	}
-	delete parameters;
 	delete returnType;
 }
 
@@ -127,7 +181,7 @@ bool FunctionType::Matches(Type* other)
 	if (other->tag == TypeTag::Function)
 	{
 		FunctionType* ft = (FunctionType*) other;
-		if (parameters->size() == ft->parameters->size())
+		if (parameters.size() == ft->parameters.size())
 		{
 			return ParametersMatch(ft) && returnType->Matches(ft);
 		}
@@ -145,7 +199,7 @@ bool FunctionType::Matches(Type* other)
 wstring FunctionType::ToString()
 {
 	wstring result = L"Func[";
-	if (parameters->size() == 0)
+	if (parameters.size() == 0)
 	{
 		result += returnType->ToString();
 		result += L"]";
@@ -153,11 +207,11 @@ wstring FunctionType::ToString()
 	}
 	else
 	{
-		result += parameters->at(0)->ToString();
-		for (unsigned int i = 1; i < parameters->size(); i++)
+		result += parameters.at(0)->ToString();
+		for (unsigned int i = 1; i < parameters.size(); i++)
 		{
 			result += L", ";
-			result += parameters->at(1)->ToString();
+			result += parameters.at(1)->ToString();
 		}
 		result += L", ";
 		result += returnType->ToString();
@@ -171,13 +225,23 @@ bool FunctionType::IsSubtypeOf(Type*)
 	return false;
 }
 
+Type* FunctionType::Clone()
+{
+	vector<Type*> types;
+	for (Type* item: parameters)
+	{
+		types.push_back(item->Clone());
+	}
+	return new FunctionType(types, returnType->Clone());
+}
+
 bool FunctionType::ParametersMatch(FunctionType* other)
 {
 	unsigned int i = 0;
 	bool match = true;
-	while (match && i < parameters->size())
+	while (match && i < parameters.size())
 	{
-		match = parameters->at(i)->Matches(other->parameters->at(i));
+		match = parameters.at(i)->Matches(other->parameters.at(i));
 		i++;
 	}
 	return match;
@@ -208,6 +272,11 @@ bool BaseType::IsSubtypeOf(Type*)
 wstring BaseType::ToString()
 {
 	return name;
+}
+
+Type* BaseType::Clone()
+{
+	return new BaseType(name);
 }
 
 InheritedType::InheritedType(wstring name, Type* base)
@@ -251,4 +320,9 @@ bool InheritedType::IsSubtypeOf(Type* other)
 wstring InheritedType::ToString()
 {
 	return name;
+}
+
+Type* InheritedType::Clone()
+{
+	return new InheritedType(name, base->Clone());
 }
