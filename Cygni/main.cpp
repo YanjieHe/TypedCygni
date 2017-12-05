@@ -14,6 +14,7 @@ int main(int argc, char *argv[])
 	// TestLexer();
 	// TestType();
 	TestParser();
+	TestScope();
 	cin.get();
 	return 0;
 }

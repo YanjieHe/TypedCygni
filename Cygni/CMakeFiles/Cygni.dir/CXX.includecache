@@ -85,12 +85,16 @@ vector
 /home/jasonhe/Documents/MyCode/CPP/Cygni/Scope.cpp
 Scope.h
 /home/jasonhe/Documents/MyCode/CPP/Cygni/Scope.h
+sstream
+-
 
 /home/jasonhe/Documents/MyCode/CPP/Cygni/Scope.h
 map
 -
 string
 -
+Expression.h
+/home/jasonhe/Documents/MyCode/CPP/Cygni/Expression.h
 
 /home/jasonhe/Documents/MyCode/CPP/Cygni/StringBuilder.cpp
 StringBuilder.h
@@ -119,6 +123,8 @@ DebugInfo.h
 /home/jasonhe/Documents/MyCode/CPP/Cygni/DebugInfo.h
 Visitor.h
 /home/jasonhe/Documents/MyCode/CPP/Cygni/Visitor.h
+Scope.h
+/home/jasonhe/Documents/MyCode/CPP/Cygni/Scope.h
 vector
 -
 iostream

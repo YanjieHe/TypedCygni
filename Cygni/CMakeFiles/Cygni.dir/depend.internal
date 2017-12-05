@@ -40,8 +40,12 @@ CMakeFiles/Cygni.dir/Parser.cpp.o
  /home/jasonhe/Documents/MyCode/CPP/Cygni/Type.h
  /home/jasonhe/Documents/MyCode/CPP/Cygni/TypeTag.h
 CMakeFiles/Cygni.dir/Scope.cpp.o
+ /home/jasonhe/Documents/MyCode/CPP/Cygni/Expression.h
+ /home/jasonhe/Documents/MyCode/CPP/Cygni/ExpressionKind.h
  /home/jasonhe/Documents/MyCode/CPP/Cygni/Scope.cpp
  /home/jasonhe/Documents/MyCode/CPP/Cygni/Scope.h
+ /home/jasonhe/Documents/MyCode/CPP/Cygni/Type.h
+ /home/jasonhe/Documents/MyCode/CPP/Cygni/TypeTag.h
 CMakeFiles/Cygni.dir/StringBuilder.cpp.o
  /home/jasonhe/Documents/MyCode/CPP/Cygni/StringBuilder.cpp
  /home/jasonhe/Documents/MyCode/CPP/Cygni/StringBuilder.h
@@ -52,6 +56,7 @@ CMakeFiles/Cygni.dir/Test.cpp.o
  /home/jasonhe/Documents/MyCode/CPP/Cygni/ExpressionKind.h
  /home/jasonhe/Documents/MyCode/CPP/Cygni/Lexer.h
  /home/jasonhe/Documents/MyCode/CPP/Cygni/Parser.h
+ /home/jasonhe/Documents/MyCode/CPP/Cygni/Scope.h
  /home/jasonhe/Documents/MyCode/CPP/Cygni/StringBuilder.h
  /home/jasonhe/Documents/MyCode/CPP/Cygni/Test.cpp
  /home/jasonhe/Documents/MyCode/CPP/Cygni/Test.h

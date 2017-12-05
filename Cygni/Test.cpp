@@ -6,6 +6,7 @@
 #include "Parser.h"
 #include "DebugInfo.h"
 #include "Visitor.h"
+#include "Scope.h"
 #include <vector>
 #include <iostream>
 
@@ -64,4 +65,17 @@ void TestParser()
 
 	TreeViewer viewer;
 	program->Accept(&viewer);
+}
+
+void TestScope()
+{
+	Scope* global = new GlobalScope();
+	global->Define(L"a");
+	global->Define(L"b");
+
+	Scope* local = global->CreateLocal();
+	local->Define(L"a");
+
+	wcout << global->Find(L"a").ToString() << endl;
+	wcout << local->Find(L"a").ToString() << endl;
 }

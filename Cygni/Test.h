@@ -8,4 +8,6 @@ void TestLexer();
 void TestType();
 
 void TestParser();
+
+void TestScope();
 #endif // TEST_H 
