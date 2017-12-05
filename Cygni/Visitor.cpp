@@ -4,6 +4,12 @@
 
 using namespace std;
 
+TreeViewer::TreeViewer()
+	:depth{0}
+{
+
+}
+
 void TreeViewer::Visit(UnaryExpression* node)
 {
 	Indent();
@@ -71,6 +77,7 @@ void TreeViewer::Visit(ParameterExpression* node)
 void TreeViewer::Visit(CallExpression* node)
 {
 	Indent();
+	wcout << "call" << endl;
 	depth++;
 	node->procedure->Accept(this);
 	for (unsigned int i = 0; i < node->arguments.size(); i++)
@@ -83,6 +90,7 @@ void TreeViewer::Visit(CallExpression* node)
 void TreeViewer::Visit(WhileExpression* node)
 {
 	Indent();
+	wcout << "while" << endl;
 	depth++;
 	node->condition->Accept(this);
 	node->body->Accept(this);
@@ -92,7 +100,7 @@ void TreeViewer::Visit(WhileExpression* node)
 void TreeViewer::Visit(VarExpression* node)
 {
 	Indent();
-	wcout << node->name << endl;
+	wcout << "var " << node->name << endl;
 	depth++;
 	node->value->Accept(this);
 	depth--;
@@ -101,7 +109,7 @@ void TreeViewer::Visit(VarExpression* node)
 void TreeViewer::Visit(DefaultExpression* node)
 {
 	Indent();
-	wcout << L"default(" << node->type->ToString() << L")" << endl;
+	wcout << L"default(" << ((Expression*)node)->GetType()->ToString() << L")" << endl;
 }
 
 void TreeViewer::Visit(DefineExpression* node)

@@ -5,6 +5,7 @@
 #include "Type.h"
 #include "Parser.h"
 #include "DebugInfo.h"
+#include "Visitor.h"
 #include <vector>
 #include <iostream>
 
@@ -48,5 +49,19 @@ void TestType()
 
 void TestParser()
 {
-	// TO DO
+	string path = "./TestCases/example1.txt";
+	Lexer lexer(path);
+	vector<Token> tokens = lexer.ReadAll();
+	wcout << "tokens: " << endl;
+	for (Token& t: tokens)
+	{
+		t.Display();
+	}
+	
+	DebugInfo debugInfo;
+	Parser parser(tokens, debugInfo);
+	Expression* program = parser.Program();
+
+	TreeViewer viewer;
+	program->Accept(&viewer);
 }

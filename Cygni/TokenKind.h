@@ -17,6 +17,13 @@ enum class TokenKind
     Modulo,
     Power,
 
+    Equal,
+    NotEqual,
+    GreaterThan,
+    GreaterThanOrEqual,
+    LessThan,
+    LessThanOrEqual,
+
     And,
     Or,
     Not,
@@ -24,13 +31,7 @@ enum class TokenKind
 	Var,
     Define,
     Assign,
-
-    Equal,
-    NotEqual,
-    GreaterThan,
-    GreaterThanOrEqual,
-    LessThan,
-    LessThanOrEqual,
+	GoesTo,
 
     LeftBrace,
     RightBrace,
@@ -48,12 +49,15 @@ enum class TokenKind
     False,
 
     If,
+	Then,
     Else,
     While,
-    For,
+	Do,
+	End,
+
+	For,
     Break,
     Return,
-    Function,
 
     Eof
 };

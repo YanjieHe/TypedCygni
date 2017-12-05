@@ -18,6 +18,7 @@ class Token
 	Token(TokenKind kind, wstring text);
 
 	void Display();
+	void CheckKeywords();
 };
 
 #endif // TOKEN_H 

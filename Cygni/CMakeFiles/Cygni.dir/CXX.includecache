@@ -82,6 +82,16 @@ DebugInfo.h
 vector
 -
 
+/home/jasonhe/Documents/MyCode/CPP/Cygni/Scope.cpp
+Scope.h
+/home/jasonhe/Documents/MyCode/CPP/Cygni/Scope.h
+
+/home/jasonhe/Documents/MyCode/CPP/Cygni/Scope.h
+map
+-
+string
+-
+
 /home/jasonhe/Documents/MyCode/CPP/Cygni/StringBuilder.cpp
 StringBuilder.h
 /home/jasonhe/Documents/MyCode/CPP/Cygni/StringBuilder.h
@@ -107,6 +117,8 @@ Parser.h
 /home/jasonhe/Documents/MyCode/CPP/Cygni/Parser.h
 DebugInfo.h
 /home/jasonhe/Documents/MyCode/CPP/Cygni/DebugInfo.h
+Visitor.h
+/home/jasonhe/Documents/MyCode/CPP/Cygni/Visitor.h
 vector
 -
 iostream

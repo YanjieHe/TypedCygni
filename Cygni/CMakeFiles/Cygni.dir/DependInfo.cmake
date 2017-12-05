@@ -10,6 +10,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/jasonhe/Documents/MyCode/CPP/Cygni/ExpressionKind.cpp" "/home/jasonhe/Documents/MyCode/CPP/Cygni/CMakeFiles/Cygni.dir/ExpressionKind.cpp.o"
   "/home/jasonhe/Documents/MyCode/CPP/Cygni/Lexer.cpp" "/home/jasonhe/Documents/MyCode/CPP/Cygni/CMakeFiles/Cygni.dir/Lexer.cpp.o"
   "/home/jasonhe/Documents/MyCode/CPP/Cygni/Parser.cpp" "/home/jasonhe/Documents/MyCode/CPP/Cygni/CMakeFiles/Cygni.dir/Parser.cpp.o"
+  "/home/jasonhe/Documents/MyCode/CPP/Cygni/Scope.cpp" "/home/jasonhe/Documents/MyCode/CPP/Cygni/CMakeFiles/Cygni.dir/Scope.cpp.o"
   "/home/jasonhe/Documents/MyCode/CPP/Cygni/StringBuilder.cpp" "/home/jasonhe/Documents/MyCode/CPP/Cygni/CMakeFiles/Cygni.dir/StringBuilder.cpp.o"
   "/home/jasonhe/Documents/MyCode/CPP/Cygni/Test.cpp" "/home/jasonhe/Documents/MyCode/CPP/Cygni/CMakeFiles/Cygni.dir/Test.cpp.o"
   "/home/jasonhe/Documents/MyCode/CPP/Cygni/Token.cpp" "/home/jasonhe/Documents/MyCode/CPP/Cygni/CMakeFiles/Cygni.dir/Token.cpp.o"

@@ -84,8 +84,6 @@ std::wstring token_kind_to_wstring(TokenKind kind)
         return L"Break";
     case TokenKind::Return:
         return L"Return";
-    case TokenKind::Function:
-        return L"Function";
     default:
     case TokenKind::Eof:
         return L"Eof";

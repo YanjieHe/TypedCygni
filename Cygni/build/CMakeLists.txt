@@ -14,4 +14,5 @@ ADD_EXECUTABLE(Cygni main.cpp
 	TypeTag.h TypeTag.cpp
 	DebugInfo.h DebugInfo.cpp
 	Parser.h Parser.cpp
-	Visitor.h Visitor.cpp)
+	Visitor.h Visitor.cpp
+	Scope.h Scope.cpp)

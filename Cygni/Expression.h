@@ -14,10 +14,13 @@ class Expression
 {
   public:
 	ExpressionKind kind;
-	Type* type;
 	int ID;
     Expression(ExpressionKind kind);
 	virtual void Accept(Visitor* visitor) = 0;
+	Type* GetType();
+	void SetType(Type* type);
+  protected:
+	Type* type;
 };
 
 class UnaryExpression: public Expression

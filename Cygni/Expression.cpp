@@ -8,6 +8,17 @@ Expression::Expression(ExpressionKind kind)
 	this->ID = -1;
 }
 
+Type* Expression::GetType()
+{
+	return this->type;
+}
+
+void Expression::SetType(Type* type)
+{
+	delete this->type;
+	this->type = type;
+}
+
 UnaryExpression::UnaryExpression(ExpressionKind kind, Expression* operand)
 	:Expression(kind), operand{operand}
 {
@@ -84,7 +95,7 @@ ParameterExpression::ParameterExpression(wstring name)
 ParameterExpression::ParameterExpression(wstring name, Type* type)
 	:Expression(ExpressionKind::Parameter), name{name}
 {
-	this->type = type;
+	SetType(type);
 }
 
 void ParameterExpression::Accept(Visitor* visitor)
@@ -125,7 +136,7 @@ void VarExpression::Accept(Visitor* visitor)
 DefaultExpression::DefaultExpression(Type* type)
 	:Expression(ExpressionKind::Default)
 {
-	this->type = type;
+	SetType(type);
 }
 
 void DefaultExpression::Accept(Visitor* visitor)
@@ -137,7 +148,7 @@ DefineExpression::DefineExpression(wstring name, vector<ParameterExpression*> pa
 		Expression* body, Type* type)
 	:Expression(ExpressionKind::Define), name{name}, parameters{parameters}, body{body}
 {
-	this->type = type;
+	SetType(type);
 }
 
 void DefineExpression::Accept(Visitor* visitor)

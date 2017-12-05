@@ -285,6 +285,33 @@ Parser.cpp.s:
 	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/Parser.cpp.s
 .PHONY : Parser.cpp.s
 
+Scope.o: Scope.cpp.o
+
+.PHONY : Scope.o
+
+# target to build an object file
+Scope.cpp.o:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/Scope.cpp.o
+.PHONY : Scope.cpp.o
+
+Scope.i: Scope.cpp.i
+
+.PHONY : Scope.i
+
+# target to preprocess a source file
+Scope.cpp.i:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/Scope.cpp.i
+.PHONY : Scope.cpp.i
+
+Scope.s: Scope.cpp.s
+
+.PHONY : Scope.s
+
+# target to generate assembly for a file
+Scope.cpp.s:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/Scope.cpp.s
+.PHONY : Scope.cpp.s
+
 StringBuilder.o: StringBuilder.cpp.o
 
 .PHONY : StringBuilder.o
@@ -528,6 +555,9 @@ help:
 	@echo "... Parser.o"
 	@echo "... Parser.i"
 	@echo "... Parser.s"
+	@echo "... Scope.o"
+	@echo "... Scope.i"
+	@echo "... Scope.s"
 	@echo "... StringBuilder.o"
 	@echo "... StringBuilder.i"
 	@echo "... StringBuilder.s"

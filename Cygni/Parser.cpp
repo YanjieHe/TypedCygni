@@ -81,11 +81,24 @@ Expression* Parser::Block()
 	Match(TokenKind::RightBrace);
 	Expression* result = new BlockExpression(expressions);
 	Record(currentLine, currentColumn, result);
+	return result;
 }
 
 Expression* Parser::Statement()
 {
-	return Assign();
+	switch (Current().kind)
+	{
+		case TokenKind::Var:
+			return Var();
+		case TokenKind::Define:
+			return Define();
+		case TokenKind::If:
+			return If();
+		case TokenKind::While:
+			return While();
+		default:
+			return Assign();
+	}
 }
 
 Expression* Parser::Assign()
@@ -417,7 +430,7 @@ Expression* Parser::Var()
 			Match(TokenKind::Assign);
 			Expression* value = Or();
 			Expression* result = new VarExpression(name, value);
-			result->type = type;
+			result->SetType(type);
 			return result;
 		}
 		catch (SyntaxException& ex)
@@ -475,7 +488,7 @@ Expression* Parser::Define()
 		vector<Type*> parametersType;
 		for (ParameterExpression* item: parameters)
 		{
-			parametersType.push_back(item->type->Clone());
+			parametersType.push_back(((Expression*)item)->GetType()->Clone());
 		}
 		FunctionType* ft = new FunctionType(parametersType, returnType);
 		Expression* result = new DefineExpression(name, parameters, body, ft);
@@ -498,8 +511,49 @@ ParameterExpression* Parser::Parameter()
 	return result;
 }
 
-Expression* If()
+Expression* Parser::If()
 {
+	int currentLine = Line();
+	int currentColumn = Column();
+
 	Match(TokenKind::If);
-	// TO DO
+	Expression* test = Or();
+	Expression* ifTrue = Block();
+	if (Current().kind == TokenKind::Else)
+	{
+		Advance();
+		if (Current().kind == TokenKind::If)
+		{
+			Expression* ifFalse = If();
+			Expression* result = new FullConditionalExpression(test, ifTrue, ifFalse);
+			Record(currentLine, currentColumn, result);
+			return result;
+		}
+		else
+		{
+			Expression* ifFalse = Block();
+			Expression* result = new FullConditionalExpression(test, ifTrue, ifFalse);
+			Record(currentLine, currentColumn, result);
+			return result;
+		}
+	}
+	else
+	{
+		Expression* result = new ConditionalExpression(test, ifTrue);
+		Record(currentLine, currentColumn, result);
+		return result;
+	}
+}
+
+Expression* Parser::While()
+{
+	int currentLine = Line();
+	int currentColumn = Column();
+
+	Match(TokenKind::While);
+	Expression* condition = Or();
+	Expression* body = Block();
+	Expression* result = new WhileExpression(condition, body);
+	Record(currentLine, currentColumn, result);
+	return result;
 }

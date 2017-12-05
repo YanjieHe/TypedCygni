@@ -39,6 +39,9 @@ CMakeFiles/Cygni.dir/Parser.cpp.o
  /home/jasonhe/Documents/MyCode/CPP/Cygni/TokenKind.h
  /home/jasonhe/Documents/MyCode/CPP/Cygni/Type.h
  /home/jasonhe/Documents/MyCode/CPP/Cygni/TypeTag.h
+CMakeFiles/Cygni.dir/Scope.cpp.o
+ /home/jasonhe/Documents/MyCode/CPP/Cygni/Scope.cpp
+ /home/jasonhe/Documents/MyCode/CPP/Cygni/Scope.h
 CMakeFiles/Cygni.dir/StringBuilder.cpp.o
  /home/jasonhe/Documents/MyCode/CPP/Cygni/StringBuilder.cpp
  /home/jasonhe/Documents/MyCode/CPP/Cygni/StringBuilder.h
@@ -56,6 +59,7 @@ CMakeFiles/Cygni.dir/Test.cpp.o
  /home/jasonhe/Documents/MyCode/CPP/Cygni/TokenKind.h
  /home/jasonhe/Documents/MyCode/CPP/Cygni/Type.h
  /home/jasonhe/Documents/MyCode/CPP/Cygni/TypeTag.h
+ /home/jasonhe/Documents/MyCode/CPP/Cygni/Visitor.h
 CMakeFiles/Cygni.dir/Token.cpp.o
  /home/jasonhe/Documents/MyCode/CPP/Cygni/Token.cpp
  /home/jasonhe/Documents/MyCode/CPP/Cygni/Token.h
