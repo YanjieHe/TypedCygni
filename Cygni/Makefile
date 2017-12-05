@@ -258,6 +258,33 @@ Lexer.cpp.s:
 	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/Lexer.cpp.s
 .PHONY : Lexer.cpp.s
 
+Location.o: Location.cpp.o
+
+.PHONY : Location.o
+
+# target to build an object file
+Location.cpp.o:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/Location.cpp.o
+.PHONY : Location.cpp.o
+
+Location.i: Location.cpp.i
+
+.PHONY : Location.i
+
+# target to preprocess a source file
+Location.cpp.i:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/Location.cpp.i
+.PHONY : Location.cpp.i
+
+Location.s: Location.cpp.s
+
+.PHONY : Location.s
+
+# target to generate assembly for a file
+Location.cpp.s:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/Location.cpp.s
+.PHONY : Location.cpp.s
+
 Parser.o: Parser.cpp.o
 
 .PHONY : Parser.o
@@ -447,6 +474,60 @@ Type.cpp.s:
 	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/Type.cpp.s
 .PHONY : Type.cpp.s
 
+TypeChecker.o: TypeChecker.cpp.o
+
+.PHONY : TypeChecker.o
+
+# target to build an object file
+TypeChecker.cpp.o:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/TypeChecker.cpp.o
+.PHONY : TypeChecker.cpp.o
+
+TypeChecker.i: TypeChecker.cpp.i
+
+.PHONY : TypeChecker.i
+
+# target to preprocess a source file
+TypeChecker.cpp.i:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/TypeChecker.cpp.i
+.PHONY : TypeChecker.cpp.i
+
+TypeChecker.s: TypeChecker.cpp.s
+
+.PHONY : TypeChecker.s
+
+# target to generate assembly for a file
+TypeChecker.cpp.s:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/TypeChecker.cpp.s
+.PHONY : TypeChecker.cpp.s
+
+TypeEnv.o: TypeEnv.cpp.o
+
+.PHONY : TypeEnv.o
+
+# target to build an object file
+TypeEnv.cpp.o:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/TypeEnv.cpp.o
+.PHONY : TypeEnv.cpp.o
+
+TypeEnv.i: TypeEnv.cpp.i
+
+.PHONY : TypeEnv.i
+
+# target to preprocess a source file
+TypeEnv.cpp.i:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/TypeEnv.cpp.i
+.PHONY : TypeEnv.cpp.i
+
+TypeEnv.s: TypeEnv.cpp.s
+
+.PHONY : TypeEnv.s
+
+# target to generate assembly for a file
+TypeEnv.cpp.s:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/TypeEnv.cpp.s
+.PHONY : TypeEnv.cpp.s
+
 TypeTag.o: TypeTag.cpp.o
 
 .PHONY : TypeTag.o
@@ -552,6 +633,9 @@ help:
 	@echo "... Lexer.o"
 	@echo "... Lexer.i"
 	@echo "... Lexer.s"
+	@echo "... Location.o"
+	@echo "... Location.i"
+	@echo "... Location.s"
 	@echo "... Parser.o"
 	@echo "... Parser.i"
 	@echo "... Parser.s"
@@ -573,6 +657,12 @@ help:
 	@echo "... Type.o"
 	@echo "... Type.i"
 	@echo "... Type.s"
+	@echo "... TypeChecker.o"
+	@echo "... TypeChecker.i"
+	@echo "... TypeChecker.s"
+	@echo "... TypeEnv.o"
+	@echo "... TypeEnv.i"
+	@echo "... TypeEnv.s"
 	@echo "... TypeTag.o"
 	@echo "... TypeTag.i"
 	@echo "... TypeTag.s"

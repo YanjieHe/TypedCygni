@@ -1,6 +1,7 @@
 #ifndef EXCEPTION_H
 #define EXCEPTION_H
 
+#include "DebugInfo.h"
 #include <string>
 
 using std::wstring;
@@ -36,6 +37,7 @@ class SemanticException
 	int column;
 	wstring message;
 	SemanticException(int line, int column, wstring message);
+	SemanticException(Position position, wstring message);
 };
 
 #endif // EXCEPTION_H 

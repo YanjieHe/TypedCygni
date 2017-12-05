@@ -7,6 +7,7 @@
 #include "DebugInfo.h"
 #include "Visitor.h"
 #include "Scope.h"
+#include "TypeChecker.h"
 #include <vector>
 #include <iostream>
 
@@ -73,9 +74,45 @@ void TestScope()
 	global->Define(L"a");
 	global->Define(L"b");
 
-	Scope* local = global->CreateLocal();
-	local->Define(L"a");
+	Scope* function = new FunctionScope(global);
+	function->Define(L"a");
+	function->Define(L"b");
+	function->Define(L"c");
 
 	wcout << global->Find(L"a").ToString() << endl;
-	wcout << local->Find(L"a").ToString() << endl;
+	wcout << function->Find(L"a").ToString() << endl;
+	wcout << global->Find(L"b").ToString() << endl;
+	wcout << function->Find(L"c").ToString() << endl;
+}
+
+void TestTypeChecker()
+{
+	string path = "./TestCases/example2.txt";
+	Lexer lexer(path);
+	vector<Token> tokens = lexer.ReadAll();
+	wcout << "tokens: " << endl;
+	for (Token& t: tokens)
+	{
+		t.Display();
+	}
+	
+	DebugInfo debugInfo;
+	Parser parser(tokens, debugInfo);
+	Expression* program = parser.Program();
+
+	TreeViewer viewer;
+	program->Accept(&viewer);
+
+	LocationRecord record;
+
+	try
+	{
+		TypeChecker checker(debugInfo, record);
+		program->Accept(&checker);
+	}
+	catch (SemanticException& ex)
+	{
+		wcout << ex.message << endl;
+		throw ex;
+	}
 }

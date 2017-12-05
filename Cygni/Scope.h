@@ -4,37 +4,18 @@
 #include <map>
 #include <string>
 #include "Expression.h"
+#include "Location.h"
 
 using std::map;
 using std::wstring;
-
-enum class LocationKind
-{
-	Unknown, Global, Function, Class
-};
-
-class Location
-{
-public:
-	LocationKind kind;
-	int index;
-	Location(LocationKind kind, int index);
-	Location(const Location& location);
-	Location();
-	wstring ToString();
-};
-
-class LocalScope;
 
 class Scope
 {
 public:
 	map<wstring, int> table;
     Scope();
-	virtual bool Define(wstring name) = 0;
+	bool Define(wstring name);
 	virtual Location Find(wstring name) = 0;
-	virtual LocalScope* CreateLocal() = 0;
-	virtual Assign() = 0;
 
 protected:
 	bool HasKey(wstring name);
@@ -43,36 +24,16 @@ protected:
 class GlobalScope: public Scope
 {
 public:
-	int number;
 	GlobalScope();
-	bool Define(wstring name) override;
 	Location Find(wstring name) override;
-	LocalScope* CreateLocal() override;
-	void Assign() override;
 };
 
 class FunctionScope: public Scope
 {
 public:
 	Scope* parent;
-	int number;
 	FunctionScope(Scope* parent);
-	bool Define(wstring name) override;
 	Location Find(wstring name) override;
-	LocalScope* CreateLocal() override;
-	void Assign() override;
-};
-
-class LocalScope: public Scope
-{
-public:
-	Scope* parent;
-	LocationKind kind;
-	LocalScope(Scope* parent, LocationKind kind);
-	bool Define(wstring name) override;
-	Location Find(wstring name) override;
-	LocalScope* CreateLocal() override;
-	void Assign() override;
 };
 
 class LocationRecord
@@ -84,4 +45,5 @@ public:
 private:
 	map<int, Location> record;
 };
+
 #endif // SCOPE_H 

@@ -13,8 +13,9 @@ int main(int argc, char *argv[])
 	// TestStringBuilder();
 	// TestLexer();
 	// TestType();
-	TestParser();
-	TestScope();
+	// TestParser();
+	// TestScope();
+	TestTypeChecker();
 	cin.get();
 	return 0;
 }

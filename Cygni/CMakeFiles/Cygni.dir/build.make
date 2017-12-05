@@ -417,6 +417,78 @@ CMakeFiles/Cygni.dir/Scope.cpp.o.provides: CMakeFiles/Cygni.dir/Scope.cpp.o.requ
 CMakeFiles/Cygni.dir/Scope.cpp.o.provides.build: CMakeFiles/Cygni.dir/Scope.cpp.o
 
 
+CMakeFiles/Cygni.dir/Location.cpp.o: CMakeFiles/Cygni.dir/flags.make
+CMakeFiles/Cygni.dir/Location.cpp.o: Location.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/jasonhe/Documents/MyCode/CPP/Cygni/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/Cygni.dir/Location.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cygni.dir/Location.cpp.o -c /home/jasonhe/Documents/MyCode/CPP/Cygni/Location.cpp
+
+CMakeFiles/Cygni.dir/Location.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Cygni.dir/Location.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jasonhe/Documents/MyCode/CPP/Cygni/Location.cpp > CMakeFiles/Cygni.dir/Location.cpp.i
+
+CMakeFiles/Cygni.dir/Location.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Cygni.dir/Location.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jasonhe/Documents/MyCode/CPP/Cygni/Location.cpp -o CMakeFiles/Cygni.dir/Location.cpp.s
+
+CMakeFiles/Cygni.dir/Location.cpp.o.requires:
+
+.PHONY : CMakeFiles/Cygni.dir/Location.cpp.o.requires
+
+CMakeFiles/Cygni.dir/Location.cpp.o.provides: CMakeFiles/Cygni.dir/Location.cpp.o.requires
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/Location.cpp.o.provides.build
+.PHONY : CMakeFiles/Cygni.dir/Location.cpp.o.provides
+
+CMakeFiles/Cygni.dir/Location.cpp.o.provides.build: CMakeFiles/Cygni.dir/Location.cpp.o
+
+
+CMakeFiles/Cygni.dir/TypeEnv.cpp.o: CMakeFiles/Cygni.dir/flags.make
+CMakeFiles/Cygni.dir/TypeEnv.cpp.o: TypeEnv.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/jasonhe/Documents/MyCode/CPP/Cygni/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/Cygni.dir/TypeEnv.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cygni.dir/TypeEnv.cpp.o -c /home/jasonhe/Documents/MyCode/CPP/Cygni/TypeEnv.cpp
+
+CMakeFiles/Cygni.dir/TypeEnv.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Cygni.dir/TypeEnv.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jasonhe/Documents/MyCode/CPP/Cygni/TypeEnv.cpp > CMakeFiles/Cygni.dir/TypeEnv.cpp.i
+
+CMakeFiles/Cygni.dir/TypeEnv.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Cygni.dir/TypeEnv.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jasonhe/Documents/MyCode/CPP/Cygni/TypeEnv.cpp -o CMakeFiles/Cygni.dir/TypeEnv.cpp.s
+
+CMakeFiles/Cygni.dir/TypeEnv.cpp.o.requires:
+
+.PHONY : CMakeFiles/Cygni.dir/TypeEnv.cpp.o.requires
+
+CMakeFiles/Cygni.dir/TypeEnv.cpp.o.provides: CMakeFiles/Cygni.dir/TypeEnv.cpp.o.requires
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/TypeEnv.cpp.o.provides.build
+.PHONY : CMakeFiles/Cygni.dir/TypeEnv.cpp.o.provides
+
+CMakeFiles/Cygni.dir/TypeEnv.cpp.o.provides.build: CMakeFiles/Cygni.dir/TypeEnv.cpp.o
+
+
+CMakeFiles/Cygni.dir/TypeChecker.cpp.o: CMakeFiles/Cygni.dir/flags.make
+CMakeFiles/Cygni.dir/TypeChecker.cpp.o: TypeChecker.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/jasonhe/Documents/MyCode/CPP/Cygni/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/Cygni.dir/TypeChecker.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cygni.dir/TypeChecker.cpp.o -c /home/jasonhe/Documents/MyCode/CPP/Cygni/TypeChecker.cpp
+
+CMakeFiles/Cygni.dir/TypeChecker.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Cygni.dir/TypeChecker.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jasonhe/Documents/MyCode/CPP/Cygni/TypeChecker.cpp > CMakeFiles/Cygni.dir/TypeChecker.cpp.i
+
+CMakeFiles/Cygni.dir/TypeChecker.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Cygni.dir/TypeChecker.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jasonhe/Documents/MyCode/CPP/Cygni/TypeChecker.cpp -o CMakeFiles/Cygni.dir/TypeChecker.cpp.s
+
+CMakeFiles/Cygni.dir/TypeChecker.cpp.o.requires:
+
+.PHONY : CMakeFiles/Cygni.dir/TypeChecker.cpp.o.requires
+
+CMakeFiles/Cygni.dir/TypeChecker.cpp.o.provides: CMakeFiles/Cygni.dir/TypeChecker.cpp.o.requires
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/TypeChecker.cpp.o.provides.build
+.PHONY : CMakeFiles/Cygni.dir/TypeChecker.cpp.o.provides
+
+CMakeFiles/Cygni.dir/TypeChecker.cpp.o.provides.build: CMakeFiles/Cygni.dir/TypeChecker.cpp.o
+
+
 # Object files for target Cygni
 Cygni_OBJECTS = \
 "CMakeFiles/Cygni.dir/main.cpp.o" \
@@ -433,7 +505,10 @@ Cygni_OBJECTS = \
 "CMakeFiles/Cygni.dir/DebugInfo.cpp.o" \
 "CMakeFiles/Cygni.dir/Parser.cpp.o" \
 "CMakeFiles/Cygni.dir/Visitor.cpp.o" \
-"CMakeFiles/Cygni.dir/Scope.cpp.o"
+"CMakeFiles/Cygni.dir/Scope.cpp.o" \
+"CMakeFiles/Cygni.dir/Location.cpp.o" \
+"CMakeFiles/Cygni.dir/TypeEnv.cpp.o" \
+"CMakeFiles/Cygni.dir/TypeChecker.cpp.o"
 
 # External object files for target Cygni
 Cygni_EXTERNAL_OBJECTS =
@@ -453,9 +528,12 @@ Cygni: CMakeFiles/Cygni.dir/DebugInfo.cpp.o
 Cygni: CMakeFiles/Cygni.dir/Parser.cpp.o
 Cygni: CMakeFiles/Cygni.dir/Visitor.cpp.o
 Cygni: CMakeFiles/Cygni.dir/Scope.cpp.o
+Cygni: CMakeFiles/Cygni.dir/Location.cpp.o
+Cygni: CMakeFiles/Cygni.dir/TypeEnv.cpp.o
+Cygni: CMakeFiles/Cygni.dir/TypeChecker.cpp.o
 Cygni: CMakeFiles/Cygni.dir/build.make
 Cygni: CMakeFiles/Cygni.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/jasonhe/Documents/MyCode/CPP/Cygni/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Linking CXX executable Cygni"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/jasonhe/Documents/MyCode/CPP/Cygni/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Linking CXX executable Cygni"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/Cygni.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -478,6 +556,9 @@ CMakeFiles/Cygni.dir/requires: CMakeFiles/Cygni.dir/DebugInfo.cpp.o.requires
 CMakeFiles/Cygni.dir/requires: CMakeFiles/Cygni.dir/Parser.cpp.o.requires
 CMakeFiles/Cygni.dir/requires: CMakeFiles/Cygni.dir/Visitor.cpp.o.requires
 CMakeFiles/Cygni.dir/requires: CMakeFiles/Cygni.dir/Scope.cpp.o.requires
+CMakeFiles/Cygni.dir/requires: CMakeFiles/Cygni.dir/Location.cpp.o.requires
+CMakeFiles/Cygni.dir/requires: CMakeFiles/Cygni.dir/TypeEnv.cpp.o.requires
+CMakeFiles/Cygni.dir/requires: CMakeFiles/Cygni.dir/TypeChecker.cpp.o.requires
 
 .PHONY : CMakeFiles/Cygni.dir/requires
 

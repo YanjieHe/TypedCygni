@@ -28,6 +28,15 @@ class Type
 	static Type* Char();
 	static Type* String();
 	static Type* Unit();
+
+	bool IsInt();
+	bool IsLong();
+	bool IsFloat();
+	bool IsDouble();
+	bool IsBoolean();
+	bool IsChar();
+	bool IsString();
+	bool IsUnit();
 };
 
 class BasicType: public Type
@@ -66,7 +75,7 @@ class FunctionType: public Type
 	bool IsSubtypeOf(Type* other) override;
 	wstring ToString() override;
 	Type* Clone() override;
-
+	bool ParametersMatch(vector<Type*>& types);
   private:
 	bool ParametersMatch(FunctionType* other);
 };

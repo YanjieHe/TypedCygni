@@ -22,6 +22,7 @@ public:
     DebugInfo();
 
 	void Record(int line, int column, Expression* expression);
+	Position Locate(Expression* expression);
 };
 
 

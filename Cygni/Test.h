@@ -10,4 +10,8 @@ void TestType();
 void TestParser();
 
 void TestScope();
+
+void TestTypeChecker();
+
+
 #endif // TEST_H 

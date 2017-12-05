@@ -21,6 +21,8 @@ Exception.h
 /home/jasonhe/Documents/MyCode/CPP/Cygni/Exception.h
 
 /home/jasonhe/Documents/MyCode/CPP/Cygni/Exception.h
+DebugInfo.h
+/home/jasonhe/Documents/MyCode/CPP/Cygni/DebugInfo.h
 string
 -
 
@@ -66,6 +68,16 @@ StringBuilder.h
 Token.h
 /home/jasonhe/Documents/MyCode/CPP/Cygni/Token.h
 
+/home/jasonhe/Documents/MyCode/CPP/Cygni/Location.cpp
+Location.h
+/home/jasonhe/Documents/MyCode/CPP/Cygni/Location.h
+sstream
+-
+
+/home/jasonhe/Documents/MyCode/CPP/Cygni/Location.h
+string
+-
+
 /home/jasonhe/Documents/MyCode/CPP/Cygni/Parser.cpp
 Parser.h
 /home/jasonhe/Documents/MyCode/CPP/Cygni/Parser.h
@@ -85,8 +97,6 @@ vector
 /home/jasonhe/Documents/MyCode/CPP/Cygni/Scope.cpp
 Scope.h
 /home/jasonhe/Documents/MyCode/CPP/Cygni/Scope.h
-sstream
--
 
 /home/jasonhe/Documents/MyCode/CPP/Cygni/Scope.h
 map
@@ -95,6 +105,8 @@ string
 -
 Expression.h
 /home/jasonhe/Documents/MyCode/CPP/Cygni/Expression.h
+Location.h
+/home/jasonhe/Documents/MyCode/CPP/Cygni/Location.h
 
 /home/jasonhe/Documents/MyCode/CPP/Cygni/StringBuilder.cpp
 StringBuilder.h
@@ -125,6 +137,8 @@ Visitor.h
 /home/jasonhe/Documents/MyCode/CPP/Cygni/Visitor.h
 Scope.h
 /home/jasonhe/Documents/MyCode/CPP/Cygni/Scope.h
+TypeChecker.h
+/home/jasonhe/Documents/MyCode/CPP/Cygni/TypeChecker.h
 vector
 -
 iostream
@@ -162,6 +176,36 @@ TypeTag.h
 vector
 -
 string
+-
+
+/home/jasonhe/Documents/MyCode/CPP/Cygni/TypeChecker.cpp
+TypeChecker.h
+/home/jasonhe/Documents/MyCode/CPP/Cygni/TypeChecker.h
+Exception.h
+/home/jasonhe/Documents/MyCode/CPP/Cygni/Exception.h
+iostream
+-
+
+/home/jasonhe/Documents/MyCode/CPP/Cygni/TypeChecker.h
+Visitor.h
+/home/jasonhe/Documents/MyCode/CPP/Cygni/Visitor.h
+Scope.h
+/home/jasonhe/Documents/MyCode/CPP/Cygni/Scope.h
+TypeEnv.h
+/home/jasonhe/Documents/MyCode/CPP/Cygni/TypeEnv.h
+DebugInfo.h
+/home/jasonhe/Documents/MyCode/CPP/Cygni/DebugInfo.h
+
+/home/jasonhe/Documents/MyCode/CPP/Cygni/TypeEnv.cpp
+TypeEnv.h
+/home/jasonhe/Documents/MyCode/CPP/Cygni/TypeEnv.h
+
+/home/jasonhe/Documents/MyCode/CPP/Cygni/TypeEnv.h
+Type.h
+/home/jasonhe/Documents/MyCode/CPP/Cygni/Type.h
+string
+-
+map
 -
 
 /home/jasonhe/Documents/MyCode/CPP/Cygni/TypeTag.cpp

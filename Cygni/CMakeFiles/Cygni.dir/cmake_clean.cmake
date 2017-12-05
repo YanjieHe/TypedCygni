@@ -14,6 +14,9 @@ file(REMOVE_RECURSE
   "CMakeFiles/Cygni.dir/Parser.cpp.o"
   "CMakeFiles/Cygni.dir/Visitor.cpp.o"
   "CMakeFiles/Cygni.dir/Scope.cpp.o"
+  "CMakeFiles/Cygni.dir/Location.cpp.o"
+  "CMakeFiles/Cygni.dir/TypeEnv.cpp.o"
+  "CMakeFiles/Cygni.dir/TypeChecker.cpp.o"
   "Cygni.pdb"
   "Cygni"
 )

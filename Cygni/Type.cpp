@@ -50,6 +50,47 @@ Type* Type::Unit()
 	return new BasicType(TypeTag::Unit);
 }
 
+bool Type::IsInt()
+{
+	return tag == TypeTag::Int;
+}
+
+bool Type::IsLong()
+{
+	return tag == TypeTag::Long;
+}
+
+bool Type::IsFloat()
+{
+	return tag == TypeTag::Float;
+}
+
+bool Type::IsDouble()
+{
+	return tag == TypeTag::Double;
+}
+
+bool Type::IsBoolean()
+{
+	return tag == TypeTag::Boolean;
+}
+
+bool Type::IsChar()
+{
+	return tag == TypeTag::Char;
+}
+
+bool Type::IsString()
+{
+	return tag == TypeTag::String;
+}
+
+bool Type::IsUnit()
+{
+	return tag == TypeTag::Unit;
+}
+
+
 BasicType::BasicType(TypeTag tag)
 	:Type(tag)
 {
@@ -245,6 +286,25 @@ bool FunctionType::ParametersMatch(FunctionType* other)
 		i++;
 	}
 	return match;
+}
+
+bool FunctionType::ParametersMatch(vector<Type*>& types)
+{
+	if (parameters.size() == types.size())
+	{
+		unsigned int i = 0;
+		bool match = true;
+		while (match && i < parameters.size())
+		{
+			match = parameters.at(i)->Matches(types.at(i));
+			i++;
+		}
+		return match;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 BaseType::BaseType(wstring name)

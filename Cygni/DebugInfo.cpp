@@ -18,3 +18,8 @@ void DebugInfo::Record(int line, int column, Expression* expression)
 	expList.push_back(expression);
 	positions.push_back(Position(line, column));
 }
+
+Position DebugInfo::Locate(Expression* expression)
+{
+	return positions.at(expression->ID);
+}
