@@ -30,7 +30,7 @@ private:
 	ConstantPool pool;
 	Heap memory;
 
-	int ReadUShort();
+	i32 ReadUShort();
 	void MainLoop();
 };
 

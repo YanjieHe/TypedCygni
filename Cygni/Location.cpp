@@ -29,12 +29,9 @@ wstring Location::ToString()
 		case LocationKind::Global:
 			oss << L"[Global, ";
 			break;
+		default:
 		case LocationKind::Function:
 			oss << L"[Function, ";
-			break;
-		default:
-		case LocationKind::Class:
-			oss << L"[Class, ";
 			break;
 	}
 	oss << index << L"]";

@@ -45,6 +45,26 @@ Constant::Constant(TypeTag tag, wstring text)
 {
 }
 
+int Constant::GetInt()
+{
+	return std::stoi(text);
+}
+
+long Constant::GetLong()
+{
+	return std::stol(text);
+}
+
+float Constant::GetFloat()
+{
+	return std::stof(text);
+}
+
+double Constant::GetDouble()
+{
+	return std::stod(text);
+}
+
 ConstantExpression::ConstantExpression(Constant constant)
 	:Expression(ExpressionKind::Constant), constant{constant}
 {

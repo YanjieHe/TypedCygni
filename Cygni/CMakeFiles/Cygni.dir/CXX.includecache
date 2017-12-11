@@ -6,6 +6,24 @@
 
 #IncludeRegexTransform: 
 
+/home/jasonhe/Documents/MyCode/CPP/Cygni/Compiler.cpp
+Compiler.h
+/home/jasonhe/Documents/MyCode/CPP/Cygni/Compiler.h
+OpCode.h
+/home/jasonhe/Documents/MyCode/CPP/Cygni/OpCode.h
+iostream
+-
+
+/home/jasonhe/Documents/MyCode/CPP/Cygni/Compiler.h
+Visitor.h
+/home/jasonhe/Documents/MyCode/CPP/Cygni/Visitor.h
+Scope.h
+/home/jasonhe/Documents/MyCode/CPP/Cygni/Scope.h
+vector
+-
+cstdint
+-
+
 /home/jasonhe/Documents/MyCode/CPP/Cygni/DebugInfo.cpp
 DebugInfo.h
 /home/jasonhe/Documents/MyCode/CPP/Cygni/DebugInfo.h
@@ -78,6 +96,14 @@ sstream
 string
 -
 
+/home/jasonhe/Documents/MyCode/CPP/Cygni/OpCode.cpp
+OpCode.h
+/home/jasonhe/Documents/MyCode/CPP/Cygni/OpCode.h
+
+/home/jasonhe/Documents/MyCode/CPP/Cygni/OpCode.h
+string
+-
+
 /home/jasonhe/Documents/MyCode/CPP/Cygni/Parser.cpp
 Parser.h
 /home/jasonhe/Documents/MyCode/CPP/Cygni/Parser.h
@@ -139,9 +165,15 @@ Scope.h
 /home/jasonhe/Documents/MyCode/CPP/Cygni/Scope.h
 TypeChecker.h
 /home/jasonhe/Documents/MyCode/CPP/Cygni/TypeChecker.h
+Compiler.h
+/home/jasonhe/Documents/MyCode/CPP/Cygni/Compiler.h
 vector
 -
 iostream
+-
+fstream
+-
+string
 -
 
 /home/jasonhe/Documents/MyCode/CPP/Cygni/Test.h

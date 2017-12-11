@@ -1,12 +1,6 @@
 #include "Function.h"
 
-Function::Function(wstring name, int parametersSize, int frameSize, vector<byte>* code)
-	:name{name}, parametersSize{parametersSize}, frameSize{frameSize}
+Function::Function(i32 parametersSize, i32 frameSize, vector<byte>* code)
+	:parametersSize{parametersSize}, frameSize{frameSize}, code{code}
 {
-	this->code = code;
-}
-
-Function::~Function()
-{
-	delete this->code;
 }

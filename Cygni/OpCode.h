@@ -1,7 +1,6 @@
 #ifndef OPCODE_H
 #define OPCODE_H
 
-#include "Any.h"
 #include <string>
 
 using std::wstring;
@@ -77,7 +76,6 @@ enum class OpCode
     logical_not,
 
     minus_i32,
-
     minus_f64,
 
     cast_int32_to_float64,
@@ -113,7 +111,5 @@ enum class OpCode
 };
 
 wstring opcode_to_wstring(OpCode code);
-
-i32 OperandSize(OpCode op);
 
 #endif // OPCODE_H 

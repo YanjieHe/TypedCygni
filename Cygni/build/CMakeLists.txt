@@ -18,4 +18,6 @@ ADD_EXECUTABLE(Cygni main.cpp
 	Scope.h Scope.cpp
 	Location.h Location.cpp
 	TypeEnv.h TypeEnv.cpp
-	TypeChecker.h TypeChecker.cpp)
+	TypeChecker.h TypeChecker.cpp
+	OpCode.h OpCode.cpp
+	Compiler.h Compiler.cpp)

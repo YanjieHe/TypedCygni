@@ -13,5 +13,6 @@ void TestScope();
 
 void TestTypeChecker();
 
+void TestCompiler();
 
 #endif // TEST_H 

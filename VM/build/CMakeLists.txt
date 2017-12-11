@@ -7,4 +7,5 @@ ADD_EXECUTABLE(VM main.cpp
 	Any.h Any.cpp
 	Test.h Test.cpp
 	Function.h Function.cpp
-	Decoder.h Decoder.cpp)
+	Decoder.h Decoder.cpp
+	Disassembly.h Disassembly.cpp)

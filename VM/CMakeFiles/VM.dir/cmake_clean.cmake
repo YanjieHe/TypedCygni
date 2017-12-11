@@ -6,6 +6,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/VM.dir/Test.cpp.o"
   "CMakeFiles/VM.dir/Function.cpp.o"
   "CMakeFiles/VM.dir/Decoder.cpp.o"
+  "CMakeFiles/VM.dir/Disassembly.cpp.o"
   "VM.pdb"
   "VM"
 )

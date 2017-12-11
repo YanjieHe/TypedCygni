@@ -25,6 +25,11 @@ bool Scope::HasKey(wstring name)
 	return iter != table.end();
 }
 
+int Scope::Size()
+{
+	return table.size();
+}
+
 GlobalScope::GlobalScope()
 	:Scope()
 {

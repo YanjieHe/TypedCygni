@@ -17,6 +17,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/Cygni.dir/Location.cpp.o"
   "CMakeFiles/Cygni.dir/TypeEnv.cpp.o"
   "CMakeFiles/Cygni.dir/TypeChecker.cpp.o"
+  "CMakeFiles/Cygni.dir/OpCode.cpp.o"
+  "CMakeFiles/Cygni.dir/Compiler.cpp.o"
   "Cygni.pdb"
   "Cygni"
 )

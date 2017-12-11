@@ -4,4 +4,8 @@
 void TestByteCode();
 
 void TestDecoder();
+
+void TestDecoderReadFile();
+
+void TestDisassembly();
 #endif // TEST_H 

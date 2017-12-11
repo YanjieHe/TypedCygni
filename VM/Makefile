@@ -177,6 +177,33 @@ Decoder.cpp.s:
 	$(MAKE) -f CMakeFiles/VM.dir/build.make CMakeFiles/VM.dir/Decoder.cpp.s
 .PHONY : Decoder.cpp.s
 
+Disassembly.o: Disassembly.cpp.o
+
+.PHONY : Disassembly.o
+
+# target to build an object file
+Disassembly.cpp.o:
+	$(MAKE) -f CMakeFiles/VM.dir/build.make CMakeFiles/VM.dir/Disassembly.cpp.o
+.PHONY : Disassembly.cpp.o
+
+Disassembly.i: Disassembly.cpp.i
+
+.PHONY : Disassembly.i
+
+# target to preprocess a source file
+Disassembly.cpp.i:
+	$(MAKE) -f CMakeFiles/VM.dir/build.make CMakeFiles/VM.dir/Disassembly.cpp.i
+.PHONY : Disassembly.cpp.i
+
+Disassembly.s: Disassembly.cpp.s
+
+.PHONY : Disassembly.s
+
+# target to generate assembly for a file
+Disassembly.cpp.s:
+	$(MAKE) -f CMakeFiles/VM.dir/build.make CMakeFiles/VM.dir/Disassembly.cpp.s
+.PHONY : Disassembly.cpp.s
+
 Function.o: Function.cpp.o
 
 .PHONY : Function.o
@@ -327,6 +354,9 @@ help:
 	@echo "... Decoder.o"
 	@echo "... Decoder.i"
 	@echo "... Decoder.s"
+	@echo "... Disassembly.o"
+	@echo "... Disassembly.i"
+	@echo "... Disassembly.s"
 	@echo "... Function.o"
 	@echo "... Function.i"
 	@echo "... Function.s"

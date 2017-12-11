@@ -17,6 +17,7 @@ Decoder::Decoder(string path)
 			stream.push_back(b);
 		}
 		file.close();
+		stream.pop_back();
 	}
 	else
 	{
@@ -35,14 +36,15 @@ void Decoder::Decode()
 	i32 n = stream.size();
 	for (i32 i = index; i < n; i++)
 	{
-		code.push_back(stream[index]);
+		code.push_back(stream[i]);
 	}
 }
 
 i32 Decoder::LoadConstantPool(i32 index)
 {
 	bool done = false;
-	while (!done)
+	i32 n = stream.size();
+	while (!done && index < n)
 	{
 		OpCode op = (OpCode)stream[index];
 		switch (op)
@@ -87,6 +89,51 @@ i32 Decoder::LoadConstantPool(i32 index)
 			}
 		}
 	}
+	return index;
+}
+
+i32 Decoder::LoadFunctions(i32 index)
+{
+	bool done = false;
+	i32 n = stream.size();
+	while (!done && index < n)
+	{
+		OpCode op = (OpCode)stream[index];
+		if (op == OpCode::function_begin)
+		{
+			index++;
+			i32 parametersSize = ReadUShort();
+			i32 frameSize = ReadUShort();
+			index = LoadOneFunction(index, parametersSize, frameSize);
+		}
+		else
+		{
+			done = true;
+		}
+	}
+	return index;
+}
+
+i32 Decoder::LoadOneFunction(i32 index, i32 parametersSize, i32 frameSize)
+{
+	bool done = false;
+	vector<byte> fcode;
+	while (!done)
+	{
+		OpCode op = (OpCode)stream[index];
+		if (op == OpCode::function_end)
+		{
+			index++;
+			done = true;
+		}
+		else
+		{
+			index++;
+			i32 size = OperandSize(op);
+			index += size;
+		}
+	}
+	functions.push_back(Function(L"", parametersSize, frameSize, fcode));
 	return index;
 }
 

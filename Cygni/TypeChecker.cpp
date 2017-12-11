@@ -229,8 +229,17 @@ void TypeChecker::Visit(VarExpression* node)
 	if (node->GetType()->tag == TypeTag::Unknown)
 	{
 		node->SetType(node->value->GetType());
-		scope->Define(node->name);
-		env->Define(node->name, node->GetType());
+		if (scope->Define(node->name))
+		{
+			wcout << node->ID << L", " << node->name << endl; 
+			wcout << scope->Find(node->name).ToString() << endl;
+			record.Record(node, scope->Find(node->name));
+			env->Define(node->name, node->GetType());
+		}
+		else
+		{
+			throw SemanticException(debugInfo.Locate(node), L"name already defined");
+		}
 	}
 	else
 	{
@@ -255,7 +264,10 @@ void TypeChecker::Visit(DefineExpression* node)
 		env->Define(item->name, item->GetType());
 	}
 	node->body->Accept(this);
+	node->frameSize = scope->Size();
 	fenv->Define(node->name, node->GetType());
+	delete scope;
+	delete env;
 	scope = prev;
 	env = env->parent;
 }

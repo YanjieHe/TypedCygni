@@ -46,6 +46,11 @@ class Constant
 	TypeTag tag;
 	wstring text;
 	Constant(TypeTag tag, wstring text);
+
+	int GetInt();
+	long GetLong();
+	float GetFloat();
+	double GetDouble();
 };
 
 class ConstantExpression: public Expression
@@ -130,6 +135,7 @@ class DefineExpression: public Expression
 	wstring name;
 	vector<ParameterExpression*> parameters;
 	Expression* body;
+	int frameSize;
 	DefineExpression(wstring name, vector<ParameterExpression*> parameters, Expression* body, Type* type);
 	void Accept(Visitor* visitor) override;
 };

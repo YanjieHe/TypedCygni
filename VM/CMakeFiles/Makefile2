@@ -66,7 +66,7 @@ CMAKE_BINARY_DIR = /home/jasonhe/Documents/MyCode/CPP/VM
 CMakeFiles/VM.dir/all:
 	$(MAKE) -f CMakeFiles/VM.dir/build.make CMakeFiles/VM.dir/depend
 	$(MAKE) -f CMakeFiles/VM.dir/build.make CMakeFiles/VM.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jasonhe/Documents/MyCode/CPP/VM/CMakeFiles --progress-num=1,2,3,4,5,6,7,8 "Built target VM"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jasonhe/Documents/MyCode/CPP/VM/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9 "Built target VM"
 .PHONY : CMakeFiles/VM.dir/all
 
 # Include target in all.
@@ -76,7 +76,7 @@ all: CMakeFiles/VM.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/VM.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/jasonhe/Documents/MyCode/CPP/VM/CMakeFiles 8
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/jasonhe/Documents/MyCode/CPP/VM/CMakeFiles 9
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/VM.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/jasonhe/Documents/MyCode/CPP/VM/CMakeFiles 0
 .PHONY : CMakeFiles/VM.dir/rule

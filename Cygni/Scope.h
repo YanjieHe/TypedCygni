@@ -16,6 +16,7 @@ public:
     Scope();
 	bool Define(wstring name);
 	virtual Location Find(wstring name) = 0;
+	int Size();
 
 protected:
 	bool HasKey(wstring name);

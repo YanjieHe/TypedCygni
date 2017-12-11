@@ -417,6 +417,8 @@ bool Parser::IsBasicType(wstring name)
 
 Expression* Parser::Var()
 {
+	int currentLine = Line();
+	int currentColumn = Column();
 	Match(TokenKind::Var);
 	wstring name = Current().text;
 	Match(TokenKind::Name);
@@ -431,6 +433,7 @@ Expression* Parser::Var()
 			Expression* value = Or();
 			Expression* result = new VarExpression(name, value);
 			result->SetType(type);
+			Record(currentLine, currentColumn, result);
 			return result;
 		}
 		catch (SyntaxException& ex)
@@ -444,6 +447,7 @@ Expression* Parser::Var()
 		Match(TokenKind::Assign);	
 		Expression* value = Or();
 		Expression* result = new VarExpression(name, value);
+		Record(currentLine, currentColumn, result);
 		return result;
 	}
 }

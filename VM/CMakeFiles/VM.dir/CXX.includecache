@@ -27,6 +27,26 @@ iostream
 /home/jasonhe/Documents/MyCode/CPP/VM/Decoder.h
 Any.h
 /home/jasonhe/Documents/MyCode/CPP/VM/Any.h
+Function.h
+/home/jasonhe/Documents/MyCode/CPP/VM/Function.h
+string
+-
+vector
+-
+
+/home/jasonhe/Documents/MyCode/CPP/VM/Disassembly.cpp
+Disassembly.h
+/home/jasonhe/Documents/MyCode/CPP/VM/Disassembly.h
+OpCode.h
+/home/jasonhe/Documents/MyCode/CPP/VM/OpCode.h
+iostream
+-
+fstream
+-
+
+/home/jasonhe/Documents/MyCode/CPP/VM/Disassembly.h
+Any.h
+/home/jasonhe/Documents/MyCode/CPP/VM/Any.h
 string
 -
 vector
@@ -37,6 +57,8 @@ Function.h
 /home/jasonhe/Documents/MyCode/CPP/VM/Function.h
 
 /home/jasonhe/Documents/MyCode/CPP/VM/Function.h
+Any.h
+/home/jasonhe/Documents/MyCode/CPP/VM/Any.h
 string
 -
 vector
@@ -63,6 +85,8 @@ OpCode.h
 /home/jasonhe/Documents/MyCode/CPP/VM/OpCode.h
 
 /home/jasonhe/Documents/MyCode/CPP/VM/OpCode.h
+Any.h
+/home/jasonhe/Documents/MyCode/CPP/VM/Any.h
 string
 -
 
@@ -77,6 +101,12 @@ Any.h
 /home/jasonhe/Documents/MyCode/CPP/VM/Any.h
 Decoder.h
 /home/jasonhe/Documents/MyCode/CPP/VM/Decoder.h
+Disassembly.h
+/home/jasonhe/Documents/MyCode/CPP/VM/Disassembly.h
+string
+-
+iostream
+-
 
 /home/jasonhe/Documents/MyCode/CPP/VM/Test.h
 

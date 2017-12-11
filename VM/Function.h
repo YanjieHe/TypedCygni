@@ -1,22 +1,19 @@
 #ifndef FUNCTION_H
 #define FUNCTION_H
 
-#include <string>
+#include "Any.h"
 #include <vector>
 
-using std::wstring;
 using byte = unsigned char;
 using std::vector;
 
 class Function
 {
 public:
-	wstring name;
-	int parametersSize;
-	int frameSize;
-	vector<byte>* code;
-	Function(wstring name, int parametersSize, int frameSize, vector<byte>* code);
-	~Function();
+	i32 parametersSize;
+	i32 frameSize;
+	vector<byte> code;
+	Function(i32 parametersSize, i32 frameSize, vector<byte> code);
 };
 
 #endif // FUNCTION_H 

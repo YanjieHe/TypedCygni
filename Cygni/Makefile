@@ -123,6 +123,33 @@ Cygni/fast:
 	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/build
 .PHONY : Cygni/fast
 
+Compiler.o: Compiler.cpp.o
+
+.PHONY : Compiler.o
+
+# target to build an object file
+Compiler.cpp.o:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/Compiler.cpp.o
+.PHONY : Compiler.cpp.o
+
+Compiler.i: Compiler.cpp.i
+
+.PHONY : Compiler.i
+
+# target to preprocess a source file
+Compiler.cpp.i:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/Compiler.cpp.i
+.PHONY : Compiler.cpp.i
+
+Compiler.s: Compiler.cpp.s
+
+.PHONY : Compiler.s
+
+# target to generate assembly for a file
+Compiler.cpp.s:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/Compiler.cpp.s
+.PHONY : Compiler.cpp.s
+
 DebugInfo.o: DebugInfo.cpp.o
 
 .PHONY : DebugInfo.o
@@ -284,6 +311,33 @@ Location.s: Location.cpp.s
 Location.cpp.s:
 	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/Location.cpp.s
 .PHONY : Location.cpp.s
+
+OpCode.o: OpCode.cpp.o
+
+.PHONY : OpCode.o
+
+# target to build an object file
+OpCode.cpp.o:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/OpCode.cpp.o
+.PHONY : OpCode.cpp.o
+
+OpCode.i: OpCode.cpp.i
+
+.PHONY : OpCode.i
+
+# target to preprocess a source file
+OpCode.cpp.i:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/OpCode.cpp.i
+.PHONY : OpCode.cpp.i
+
+OpCode.s: OpCode.cpp.s
+
+.PHONY : OpCode.s
+
+# target to generate assembly for a file
+OpCode.cpp.s:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/OpCode.cpp.s
+.PHONY : OpCode.cpp.s
 
 Parser.o: Parser.cpp.o
 
@@ -618,6 +672,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... Cygni"
 	@echo "... edit_cache"
+	@echo "... Compiler.o"
+	@echo "... Compiler.i"
+	@echo "... Compiler.s"
 	@echo "... DebugInfo.o"
 	@echo "... DebugInfo.i"
 	@echo "... DebugInfo.s"
@@ -636,6 +693,9 @@ help:
 	@echo "... Location.o"
 	@echo "... Location.i"
 	@echo "... Location.s"
+	@echo "... OpCode.o"
+	@echo "... OpCode.i"
+	@echo "... OpCode.s"
 	@echo "... Parser.o"
 	@echo "... Parser.i"
 	@echo "... Parser.s"

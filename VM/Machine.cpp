@@ -5,7 +5,7 @@
 using namespace std;
 
 Machine::Machine(ConstantPool pool, i32 staticSize)
-	:code{nullptr}, pc{0}, sp{0}, fp{0}, ret{-1}, running{true}, pool{pool}
+	:code{nullptr}, pc{0}, sp{-1}, fp{0}, ret{-1}, running{true}, pool{pool}
 {
 	static_v.reserve(staticSize);
 	memory.reserve(1000000);
@@ -16,6 +16,9 @@ void Machine::Run(i32 entry)
 	pc = entry;
 
 	MainLoop();
+
+	wcout << "i = " << static_v[0].i32_v << endl;
+	wcout << "sum = " << static_v[1].i32_v << endl;
 }
 
 void Machine::LoadProgram(vector<byte>* code)
@@ -23,14 +26,15 @@ void Machine::LoadProgram(vector<byte>* code)
 	this->code = code;
 }
 
-int Machine::ReadUShort()
+i32 Machine::ReadUShort()
 {
 	return ((*code)[pc + 1] << 8) + (*code)[pc];
 }
 
 void Machine::MainLoop()
 {
-	int n = code->size();
+	i32 n = code->size();
+
 	while (pc < n)
 	{
 		OpCode op = (OpCode) (*code)[pc];
@@ -41,72 +45,72 @@ void Machine::MainLoop()
 			// push small number
 			case OpCode::push_i32_1byte:
 			{
+				sp++;
 				memory[sp].i32_v = (*code)[pc];
 				pc++;
-				sp++;
 				break;
 			}
 			case OpCode::push_i32_2byte:
 			{
+				sp++;
 				memory[sp].i32_v = ReadUShort();
 				pc += 2;
-				sp++;
 				break;
 			}
 			case OpCode::push_f64_0:
 			{
-				memory[sp].f64_v = 0.0;
 				sp++;
+				memory[sp].f64_v = 0.0;
 				break;
 			}
 			case OpCode::push_f64_1:
 			{
-				memory[sp].f64_v = 1.0;
 				sp++;
+				memory[sp].f64_v = 1.0;
 				break;
 			}
 
 			case OpCode::push_i32:
 			{
+				sp++;
 				memory[sp].i32_v = pool[ReadUShort()].i32_v;
 				pc += 2;
-				sp++;
 				break;
 			}
 			case OpCode::push_f64:
 			{
+				sp++;
 				memory[sp].f64_v = pool[ReadUShort()].f64_v;
 				pc += 2;
-				sp++;
 				break;
 			}
 
 			case OpCode::push_static_i32:
 			{
+				sp++;
 				memory[sp].i32_v = static_v[ReadUShort()].i32_v;
 				pc += 2;
-				sp++;
 				break;
 			}
 			case OpCode::push_static_f64:
 			{
+				sp++;
 				memory[sp].f64_v = static_v[ReadUShort()].f64_v;
 				pc += 2;
-				sp++;
 				break;
 			}
 			case OpCode::pop_static_i32:
 			{
-				memory[ReadUShort()].i32_v = memory[sp].i32_v;
-				pc += 2;
+				static_v[ReadUShort()].i32_v = memory[sp].i32_v;
 				sp--;
+				pc += 2;
 				break;
 			}
 			case OpCode::pop_static_f64:
 			{
-				memory[ReadUShort()].f64_v = memory[sp].f64_v;
-				pc += 2;
+				static_v[ReadUShort()].f64_v = memory[sp].f64_v;
 				sp--;
+				pc += 2;
 				break;
 			}
 
@@ -119,32 +123,31 @@ void Machine::MainLoop()
 			}
 			case OpCode::push_stack_f64:
 			{
+				sp++;
 				memory[sp].f64_v = memory[fp + ReadUShort()].f64_v;
 				pc += 2;
-				sp++;
 				break;
 			}
 			case OpCode::pop_stack_i32:
 			{
 				memory[fp + ReadUShort()].i32_v = memory[sp].i32_v;
-				pc += 2;
 				sp--;
+				pc += 2;
 				break;
 			}
 			case OpCode::pop_stack_f64:
 			{
 				memory[fp + ReadUShort()].f64_v = memory[sp].f64_v;
-				pc += 2;
 				sp--;
+				pc += 2;
 				break;
 			}
 
-			// int arithmetic operation
+			// i32 arithmetic operation
 			case OpCode::add_i32:
 			{
 				memory[sp - 1].i32_v = memory[sp - 1].i32_v + memory[sp].i32_v;
 				sp--;
-				wcout << memory[sp-1].i32_v << L" + " << memory[sp].i32_v << endl;
 				break;
 			}
 			case OpCode::sub_i32:
@@ -172,7 +175,7 @@ void Machine::MainLoop()
 				break;
 			}
 
-			// double arithmetic operation
+			// f64 arithmetic operation
 			case OpCode::add_f64:
 			{
 				memory[sp - 1].f64_v = memory[sp - 1].f64_v + memory[sp].f64_v;
@@ -204,7 +207,7 @@ void Machine::MainLoop()
 				break;
 			}*/
 
-			// int comparision
+			// i32 comparision
 			case OpCode::gt_i32:
 			{
 				memory[sp - 1].i32_v = memory[sp - 1].i32_v > memory[sp].i32_v;
@@ -242,7 +245,7 @@ void Machine::MainLoop()
 				break;
 			}
 
-			// float comparision
+			// f64 comparision
 			case OpCode::gt_f64:
 			{
 				memory[sp - 1].f64_v = memory[sp - 1].f64_v > memory[sp].f64_v;
@@ -314,7 +317,13 @@ void Machine::MainLoop()
 			{
 				if (memory[sp].i32_v)
 				{
+					sp--;
 					pc = ReadUShort();
+				}
+				else
+				{
+					sp--;
+					pc += 2;
 				}
 				break;
 			}
@@ -322,7 +331,13 @@ void Machine::MainLoop()
 			{
 				if (!memory[sp].i32_v)
 				{
+					sp--;
 					pc = ReadUShort();
+				}
+				else
+				{
+					sp--;
+					pc += 2;
 				}
 				break;
 			}

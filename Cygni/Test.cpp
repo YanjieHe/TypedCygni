@@ -8,8 +8,11 @@
 #include "Visitor.h"
 #include "Scope.h"
 #include "TypeChecker.h"
+#include "Compiler.h"
 #include <vector>
 #include <iostream>
+#include <fstream>
+#include <string>
 
 using namespace std;
 
@@ -113,6 +116,66 @@ void TestTypeChecker()
 	catch (SemanticException& ex)
 	{
 		wcout << ex.message << endl;
+		throw ex;
+	}
+}
+
+void TestCompiler()
+{
+	string path = "./TestCases/example2.txt";
+	Lexer lexer(path);
+	vector<Token> tokens = lexer.ReadAll();
+	wcout << "tokens: " << endl;
+	for (Token& t: tokens)
+	{
+		t.Display();
+	}
+	
+	DebugInfo debugInfo;
+	Parser parser(tokens, debugInfo);
+	Expression* program = parser.Program();
+
+	TreeViewer viewer;
+	program->Accept(&viewer);
+
+	LocationRecord record;
+
+	try
+	{
+		TypeChecker checker(debugInfo, record);
+		program->Accept(&checker);
+	}
+	catch (SemanticException& ex)
+	{
+		wcout << ex.message << endl;
+		throw ex;
+	}
+
+	try
+	{
+		Compiler compiler(record);
+		program->Accept(&compiler);
+		vector<byte>* code = compiler.code;
+
+		ofstream file("./TestCases/example2.bin", ofstream::binary);
+		if (file)
+		{
+			wcout << L"code size: " << code->size() << endl;
+			for (byte item: *code)
+			{
+				file.write((char*)&item, sizeof(item));
+			}
+			file.close();
+		}
+		else
+		{
+			throw L"cannot write binary file";
+		}
+
+	}
+	catch (const wchar_t* ex)
+	{
+		wcout << ex << endl;
 		throw ex;
 	}
 }

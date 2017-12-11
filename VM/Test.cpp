@@ -3,6 +3,11 @@
 #include "OpCode.h"
 #include "Any.h"
 #include "Decoder.h"
+#include "Disassembly.h"
+#include <string>
+#include <iostream>
+
+using namespace std;
 
 void TestByteCode()
 {
@@ -28,4 +33,20 @@ void TestDecoder()
 	};
 	Decoder decoder(code);
 	decoder.Decode();
+}
+
+void TestDecoderReadFile()
+{
+	Decoder decoder("./TestCases/example2.bin");
+	decoder.Decode();
+	Machine machine(ConstantPool(), 100);
+	wcout << L"code size: " << decoder.code.size() << endl;
+	machine.LoadProgram(&(decoder.code));
+	machine.Run(0);
+}
+
+void TestDisassembly()
+{
+	Disassembly disassembly("./TestCases/example2.bin");
+	disassembly.ReadCode(0);
 }
