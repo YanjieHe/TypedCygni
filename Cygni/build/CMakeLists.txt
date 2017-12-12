@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.1.0)
 PROJECT(Cygni)
 SET(CMAKE_CXX_STANDARD 11)
+SET(CMAKE_BUILD_TYPE Debug)
 ADD_EXECUTABLE(Cygni main.cpp 
 	TokenKind.h TokenKind.cpp 
 	Token.h Token.cpp 
@@ -20,4 +21,5 @@ ADD_EXECUTABLE(Cygni main.cpp
 	TypeEnv.h TypeEnv.cpp
 	TypeChecker.h TypeChecker.cpp
 	OpCode.h OpCode.cpp
-	Compiler.h Compiler.cpp)
+	Compiler.h Compiler.cpp
+	Function.h Function.cpp)

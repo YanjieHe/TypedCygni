@@ -26,20 +26,33 @@ Disassembly::Disassembly(string path)
 	}
 }
 
-void Disassembly::ReadCode(i32 offset)
+void Disassembly::ReadCode()
+{
+	ReadFunction(0);	
+}
+
+i32 Disassembly::ReadCode(i32 offset)
 {
 	i32 i = offset;
 	while (i < stream.size())
 	{
-		wcout << i << ": ";
 		OpCode op = (OpCode) stream.at(i);
-		if (OperandSize(op) == 0)
+		if (op == OpCode::function_end)
 		{
+			i++;
+			wcout << L"*** end of function ***" << endl;
+			wcout << endl;
+			return i;
+		}
+		else if (OperandSize(op) == 0)
+		{
+			wcout << i - offset << ": ";
 			wcout << opcode_to_wstring(op) << endl;
 			i++;
 		}
 		else if (OperandSize(op) == 1)
 		{
+			wcout << i - offset << ": ";
 			wcout << opcode_to_wstring(op) << L"  ";
 			i++;
 			wcout << stream.at(i) << endl;
@@ -47,6 +60,7 @@ void Disassembly::ReadCode(i32 offset)
 		}
 		else if (OperandSize(op) == 2)
 		{
+			wcout << i - offset << ": ";
 			wcout << opcode_to_wstring(op) << L"  ";
 			i++;
 			wcout << ReadUShort(i) << endl;
@@ -58,6 +72,36 @@ void Disassembly::ReadCode(i32 offset)
 			throw L"not implemented opcode: " + opcode_to_wstring(op);
 		}
 	}
+	return i;
+}
+
+i32 Disassembly::ReadFunction(i32 offset)
+{
+	i32 i = offset;
+	while (i < stream.size())
+	{
+		OpCode op = (OpCode) stream.at(i);
+		if (op == OpCode::function_begin)
+		{
+			i++;
+			wcout << endl;
+			wcout << L"*** begin of function ***" << endl;
+			i32 args_size = ReadUShort(i);
+			i += 2;
+			i32 stack = ReadUShort(i);
+			i += 2;
+			i32 locals = stack - args_size;
+			wcout << L"args_size: " << args_size << endl;
+			wcout << L"stack: " << stack << endl;
+			wcout << L"locals: " << locals << endl;
+			i = ReadCode(i);
+		}
+		else
+		{
+			return ReadCode(i);
+		}
+	}
+	return i;
 }
 
 i32 Disassembly::ReadUShort(i32 offset)

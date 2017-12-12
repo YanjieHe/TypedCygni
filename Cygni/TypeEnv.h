@@ -26,8 +26,10 @@ class FunctionEnv
 {
 public:
 	FunctionEnv();
-	map<wstring, Type*> table;
+	map<wstring, int> table;
+	vector<Type*> types;
 	bool Define(wstring name, Type* type);
-	Type* Find(wstring name);
+	int Find(wstring name);
+	Type* ResolveType(wstring name);
 };
 #endif // TYPEENV_H 

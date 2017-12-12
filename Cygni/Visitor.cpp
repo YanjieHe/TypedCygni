@@ -124,6 +124,25 @@ void TreeViewer::Visit(NewExpression* node)
 	wcout << L"new" << endl;
 }
 
+void TreeViewer::Visit(AssignExpression* node)
+{
+	Indent();
+	wcout << "var " << endl;
+	depth++;
+	node->variable->Accept(this);
+	node->value->Accept(this);
+	depth--;
+}
+
+void TreeViewer::Visit(ReturnExpression* node)
+{
+	Indent();
+	wcout << "return" << endl;
+	depth++;
+	node->value->Accept(this);
+	depth--;
+}
+
 void TreeViewer::Indent()
 {
 	for (int i = 0; i < depth; i++)
@@ -131,3 +150,4 @@ void TreeViewer::Indent()
 		wcout << L"    ";
 	}
 }
+

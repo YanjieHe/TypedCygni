@@ -1,4 +1,7 @@
 #include "OpCode.h"
+#include <iostream>
+
+using namespace std;
 
 wstring opcode_to_wstring(OpCode code)
 {
@@ -206,6 +209,8 @@ i32 OperandSize(OpCode op)
 		case OpCode::cast_int32_to_float64:
 		case OpCode::cast_float64_to_int32:
 
+		case OpCode::return_i32:
+		case OpCode::return_f64:
 			return 0;
 		case OpCode::push_i32_1byte:
 			return 1;
@@ -213,6 +218,8 @@ i32 OperandSize(OpCode op)
 		case OpCode::push_i32:
 		case OpCode::push_f64:
 		case OpCode::push_string:
+		case OpCode::push_function:
+		case OpCode::invoke:
 
 		case OpCode::push_static_i32:
 		case OpCode::push_static_f64:
@@ -240,6 +247,8 @@ i32 OperandSize(OpCode op)
 			return 2;
 
 		default:
-			throw L"not supported Operand Size";
+			wcout << L"not supported Operand Size: " << endl;
+			wcout << opcode_to_wstring(op) << endl;
+			throw L"not supported Operand Size: ";
 	}
 }

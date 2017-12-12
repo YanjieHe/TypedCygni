@@ -96,6 +96,8 @@ Expression* Parser::Statement()
 			return If();
 		case TokenKind::While:
 			return While();
+		case TokenKind::Return:
+			return Return();
 		default:
 			return Assign();
 	}
@@ -110,8 +112,15 @@ Expression* Parser::Assign()
 		int currentColumn = Column();
 		Advance();
 		Expression* right = Or();
-		left = new BinaryExpression(ExpressionKind::Assign, left, right);
-		Record(currentLine, currentColumn, left);
+		if (left->kind == ExpressionKind::Parameter)
+		{
+			left = new AssignExpression((ParameterExpression*)left, right);
+			Record(currentLine, currentColumn, left);
+		}
+		else
+		{
+			throw SyntaxException(currentLine, currentColumn, L"can't assign to left object");
+		}
 	}
 	return left;
 }
@@ -463,7 +472,7 @@ Expression* Parser::Define()
 
 	vector<ParameterExpression*> parameters;
 
-	if (Current().kind == TokenKind::LeftParenthesis)
+	if (Current().kind == TokenKind::RightParenthesis)
 	{
 		Match(TokenKind::RightParenthesis);
 		Type* returnType = ParseType();
@@ -485,6 +494,7 @@ Expression* Parser::Define()
 			Match(TokenKind::Comma);
 			parameters.push_back(Parameter());
 		}
+		Match(TokenKind::RightParenthesis);
 		Match(TokenKind::Colon);
 		Type* returnType = ParseType();
 		Expression* body = Block();
@@ -558,6 +568,18 @@ Expression* Parser::While()
 	Expression* condition = Or();
 	Expression* body = Block();
 	Expression* result = new WhileExpression(condition, body);
+	Record(currentLine, currentColumn, result);
+	return result;
+}
+
+Expression* Parser::Return()
+{
+	int currentLine = Line();
+	int currentColumn = Column();
+
+	Match(TokenKind::Return);
+	Expression* value = Or();
+	Expression* result = new ReturnExpression(value);
 	Record(currentLine, currentColumn, result);
 	return result;
 }

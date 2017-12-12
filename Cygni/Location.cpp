@@ -29,6 +29,9 @@ wstring Location::ToString()
 		case LocationKind::Global:
 			oss << L"[Global, ";
 			break;
+		case LocationKind::StaticMethod:
+			oss << L"[StaticMethod, ";
+			break;
 		default:
 		case LocationKind::Function:
 			oss << L"[Function, ";

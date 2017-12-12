@@ -258,6 +258,33 @@ ExpressionKind.cpp.s:
 	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/ExpressionKind.cpp.s
 .PHONY : ExpressionKind.cpp.s
 
+Function.o: Function.cpp.o
+
+.PHONY : Function.o
+
+# target to build an object file
+Function.cpp.o:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/Function.cpp.o
+.PHONY : Function.cpp.o
+
+Function.i: Function.cpp.i
+
+.PHONY : Function.i
+
+# target to preprocess a source file
+Function.cpp.i:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/Function.cpp.i
+.PHONY : Function.cpp.i
+
+Function.s: Function.cpp.s
+
+.PHONY : Function.s
+
+# target to generate assembly for a file
+Function.cpp.s:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/Function.cpp.s
+.PHONY : Function.cpp.s
+
 Lexer.o: Lexer.cpp.o
 
 .PHONY : Lexer.o
@@ -687,6 +714,9 @@ help:
 	@echo "... ExpressionKind.o"
 	@echo "... ExpressionKind.i"
 	@echo "... ExpressionKind.s"
+	@echo "... Function.o"
+	@echo "... Function.i"
+	@echo "... Function.s"
 	@echo "... Lexer.o"
 	@echo "... Lexer.i"
 	@echo "... Lexer.s"

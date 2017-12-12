@@ -9,8 +9,8 @@
 /home/jasonhe/Documents/MyCode/CPP/Cygni/Compiler.cpp
 Compiler.h
 /home/jasonhe/Documents/MyCode/CPP/Cygni/Compiler.h
-OpCode.h
-/home/jasonhe/Documents/MyCode/CPP/Cygni/OpCode.h
+Exception.h
+/home/jasonhe/Documents/MyCode/CPP/Cygni/Exception.h
 iostream
 -
 
@@ -19,6 +19,12 @@ Visitor.h
 /home/jasonhe/Documents/MyCode/CPP/Cygni/Visitor.h
 Scope.h
 /home/jasonhe/Documents/MyCode/CPP/Cygni/Scope.h
+DebugInfo.h
+/home/jasonhe/Documents/MyCode/CPP/Cygni/DebugInfo.h
+OpCode.h
+/home/jasonhe/Documents/MyCode/CPP/Cygni/OpCode.h
+Function.h
+/home/jasonhe/Documents/MyCode/CPP/Cygni/Function.h
 vector
 -
 cstdint
@@ -65,6 +71,18 @@ ExpressionKind.h
 /home/jasonhe/Documents/MyCode/CPP/Cygni/ExpressionKind.h
 
 /home/jasonhe/Documents/MyCode/CPP/Cygni/ExpressionKind.h
+string
+-
+
+/home/jasonhe/Documents/MyCode/CPP/Cygni/Function.cpp
+Function.h
+/home/jasonhe/Documents/MyCode/CPP/Cygni/Function.h
+
+/home/jasonhe/Documents/MyCode/CPP/Cygni/Function.h
+vector
+-
+cstdint
+-
 string
 -
 

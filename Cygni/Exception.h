@@ -37,7 +37,17 @@ class SemanticException
 	int column;
 	wstring message;
 	SemanticException(int line, int column, wstring message);
-	SemanticException(Position position, wstring message);
+	SemanticException(const Position& position, wstring message);
+};
+
+class CompilationException
+{
+public:
+	int line;
+	int column;
+	wstring message;
+	CompilationException(int line, int column, wstring message);
+	CompilationException(const Position& position, wstring message);
 };
 
 #endif // EXCEPTION_H 

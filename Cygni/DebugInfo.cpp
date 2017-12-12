@@ -19,7 +19,7 @@ void DebugInfo::Record(int line, int column, Expression* expression)
 	positions.push_back(Position(line, column));
 }
 
-Position DebugInfo::Locate(Expression* expression)
+Position DebugInfo::Locate(Expression* expression) const
 {
 	return positions.at(expression->ID);
 }

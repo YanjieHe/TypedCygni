@@ -1,11 +1,11 @@
 #include "Compiler.h"
-#include "OpCode.h"
+#include "Exception.h"
 #include <iostream>
 
 using namespace std;
 
-Compiler::Compiler(LocationRecord& record)
-	:record{record}
+Compiler::Compiler(DebugInfo& debugInfo, LocationRecord& record)
+	:debugInfo{debugInfo}, record{record}
 {
 	code = new vector<byte>();
 }
@@ -15,21 +15,22 @@ void Compiler::Visit(UnaryExpression* node)
 	node->operand->Accept(this);
 	if (node->kind == ExpressionKind::UnaryPlus)
 	{
-		return;
+		return; // eliminate unary plus
 	}
 	else if (node->kind == ExpressionKind::Negate)
 	{
 		if (node->GetType()->IsInt())
 		{
-			code->push_back((byte)OpCode::minus_i32);
+			Emit(OpCode::minus_i32);
 		}
 		else if (node->GetType()->IsDouble())
 		{
-			code->push_back((byte)OpCode::minus_f64);
+			Emit(OpCode::minus_f64);
 		}
 		else
 		{
-			throw L"5 impossible";
+			throw CompilationException(debugInfo.Locate(node),
+					L"negate: " + node->GetType()->ToString());
 		}
 	}
 	else if (node->kind == ExpressionKind::Not)
@@ -51,52 +52,6 @@ void Compiler::Visit(UnaryExpression* node)
 
 void Compiler::Visit(BinaryExpression* node)
 {
-	if (node->kind == ExpressionKind::Assign)
-	{
-		auto variable = (ParameterExpression*) node->left;
-		Location location = record.Find(variable);
-		node->right->Accept(this);
-		if (node->GetType()->IsInt())
-		{
-			if (location.kind == LocationKind::Global)
-			{
-				code->push_back((byte)OpCode::pop_static_i32);
-				AppendUShort(location.index);
-			}
-			else if (location.kind == LocationKind::Function)
-			{
-				code->push_back((byte)OpCode::pop_stack_i32);
-				AppendUShort(location.index);
-			}
-			else
-			{
-				throw L"8 impossible";
-			}
-		}
-		else if (node->GetType()->IsDouble())
-		{
-			if (location.kind == LocationKind::Global)
-			{
-				code->push_back((byte)OpCode::pop_static_f64);
-				AppendUShort(location.index);
-			}
-			else if (location.kind == LocationKind::Function)
-			{
-				code->push_back((byte)OpCode::pop_stack_f64);
-				AppendUShort(location.index);
-			}
-			else
-			{
-				throw L"9 impossible";
-			}
-		}
-		else
-		{
-			throw L"1 not implemented";
-		}
-		return;
-	}
-
 	node->left->Accept(this);
 	node->right->Accept(this);
 
@@ -107,12 +62,12 @@ void Compiler::Visit(BinaryExpression* node)
 			if (node->left->GetType()->IsInt() &&
 				node->right->GetType()->IsInt())
 			{
-				code->push_back((byte)OpCode::add_i32);
+				Emit(OpCode::add_i32);
 			}
 			else if (node->left->GetType()->IsDouble() &&
 				node->right->GetType()->IsDouble())
 			{
-				code->push_back((byte)OpCode::add_f64);
+				Emit(OpCode::add_f64);
 			}
 			else
 			{
@@ -125,12 +80,12 @@ void Compiler::Visit(BinaryExpression* node)
 			if (node->left->GetType()->IsInt() &&
 				node->right->GetType()->IsInt())
 			{
-				code->push_back((byte)OpCode::sub_i32);
+				Emit(OpCode::sub_i32);
 			}
 			else if (node->left->GetType()->IsDouble() &&
 				node->right->GetType()->IsDouble())
 			{
-				code->push_back((byte)OpCode::sub_f64);
+				Emit(OpCode::sub_f64);
 			}
 			else
 			{
@@ -143,12 +98,12 @@ void Compiler::Visit(BinaryExpression* node)
 			if (node->left->GetType()->IsInt() &&
 				node->right->GetType()->IsInt())
 			{
-				code->push_back((byte)OpCode::mul_i32);
+				Emit(OpCode::mul_i32);
 			}
 			else if (node->left->GetType()->IsDouble() &&
 				node->right->GetType()->IsDouble())
 			{
-				code->push_back((byte)OpCode::mul_f64);
+				Emit(OpCode::mul_f64);
 			}
 			else
 			{
@@ -161,12 +116,12 @@ void Compiler::Visit(BinaryExpression* node)
 			if (node->left->GetType()->IsInt() &&
 				node->right->GetType()->IsInt())
 			{
-				code->push_back((byte)OpCode::div_i32);
+				Emit(OpCode::div_i32);
 			}
 			else if (node->left->GetType()->IsDouble() &&
 				node->right->GetType()->IsDouble())
 			{
-				code->push_back((byte)OpCode::div_f64);
+				Emit(OpCode::div_f64);
 			}
 			else
 			{
@@ -179,12 +134,12 @@ void Compiler::Visit(BinaryExpression* node)
 			if (node->left->GetType()->IsInt() &&
 				node->right->GetType()->IsInt())
 			{
-				code->push_back((byte)OpCode::mod_i32);
+				Emit(OpCode::mod_i32);
 			}
 			else if (node->left->GetType()->IsDouble() &&
 				node->right->GetType()->IsDouble())
 			{
-				code->push_back((byte)OpCode::mod_f64);
+				Emit(OpCode::mod_f64);
 			}
 			else
 			{
@@ -198,12 +153,12 @@ void Compiler::Visit(BinaryExpression* node)
 			if (node->left->GetType()->IsInt() &&
 				node->right->GetType()->IsInt())
 			{
-				code->push_back((byte)OpCode::gt_i32);
+				Emit(OpCode::gt_i32);
 			}
 			else if (node->left->GetType()->IsDouble() &&
 				node->right->GetType()->IsDouble())
 			{
-				code->push_back((byte)OpCode::gt_f64);
+				Emit(OpCode::gt_f64);
 			}
 			else
 			{
@@ -216,12 +171,12 @@ void Compiler::Visit(BinaryExpression* node)
 			if (node->left->GetType()->IsInt() &&
 				node->right->GetType()->IsInt())
 			{
-				code->push_back((byte)OpCode::lt_i32);
+				Emit(OpCode::lt_i32);
 			}
 			else if (node->left->GetType()->IsDouble() &&
 				node->right->GetType()->IsDouble())
 			{
-				code->push_back((byte)OpCode::lt_f64);
+				Emit(OpCode::lt_f64);
 			}
 			else
 			{
@@ -234,12 +189,12 @@ void Compiler::Visit(BinaryExpression* node)
 			if (node->left->GetType()->IsInt() &&
 				node->right->GetType()->IsInt())
 			{
-				code->push_back((byte)OpCode::ge_i32);
+				Emit(OpCode::ge_i32);
 			}
 			else if (node->left->GetType()->IsDouble() &&
 				node->right->GetType()->IsDouble())
 			{
-				code->push_back((byte)OpCode::ge_f64);
+				Emit(OpCode::ge_f64);
 			}
 			else
 			{
@@ -252,12 +207,12 @@ void Compiler::Visit(BinaryExpression* node)
 			if (node->left->GetType()->IsInt() &&
 				node->right->GetType()->IsInt())
 			{
-				code->push_back((byte)OpCode::lt_i32);
+				Emit(OpCode::lt_i32);
 			}
 			else if (node->left->GetType()->IsDouble() &&
 				node->right->GetType()->IsDouble())
 			{
-				code->push_back((byte)OpCode::lt_f64);
+				Emit(OpCode::lt_f64);
 			}
 			else
 			{
@@ -270,12 +225,12 @@ void Compiler::Visit(BinaryExpression* node)
 			if (node->left->GetType()->IsInt() &&
 				node->right->GetType()->IsInt())
 			{
-				code->push_back((byte)OpCode::eq_i32);
+				Emit(OpCode::eq_i32);
 			}
 			else if (node->left->GetType()->IsDouble() &&
 				node->right->GetType()->IsDouble())
 			{
-				code->push_back((byte)OpCode::eq_i32);
+				Emit(OpCode::eq_i32);
 			}
 			else
 			{
@@ -288,12 +243,12 @@ void Compiler::Visit(BinaryExpression* node)
 			if (node->left->GetType()->IsInt() &&
 				node->right->GetType()->IsInt())
 			{
-				code->push_back((byte)OpCode::ne_i32);
+				Emit(OpCode::ne_i32);
 			}
 			else if (node->left->GetType()->IsDouble() &&
 				node->right->GetType()->IsDouble())
 			{
-				code->push_back((byte)OpCode::ne_f64);
+				Emit(OpCode::ne_f64);
 			}
 			else
 			{
@@ -318,12 +273,12 @@ void Compiler::Visit(ConstantExpression* node)
 		const int USHORT_MAX = 65536;
 		if (value >= 0 && value < BYTE_MAX)
 		{
-			code->push_back((byte)OpCode::push_i32_1byte);
-			code->push_back((byte)value);
+			Emit(OpCode::push_i32_1byte);
+			code->push_back((byte) value);
 		}
 		else if (value >= 0 && value < USHORT_MAX)
 		{
-			code->push_back((byte)OpCode::push_i32_1byte);
+			Emit(OpCode::push_i32_1byte);
 			AppendUShort((unsigned short) value);
 		}
 		else
@@ -343,6 +298,7 @@ void Compiler::Visit(ConstantExpression* node)
 
 void Compiler::Visit(BlockExpression* node)
 {
+	wcout << "block expression" << endl;
 	for (Expression* expression: node->expressions)
 	{
 		expression->Accept(this);
@@ -368,13 +324,13 @@ void Compiler::Visit(ConditionalExpression* node)
 {
 	node->test->Accept(this);
 
-	code->push_back((byte)OpCode::jump_if_false);
-	int index = code->size();
+	Emit(OpCode::jump_if_false);
+	int index = CurrentIndex();
 	AppendUShort((unsigned short)0);
 
 	node->ifTrue->Accept(this);
 
-	WriteUShort(index, (unsigned short) code->size());
+	WriteUShort(index, (unsigned short) CurrentIndex());
 }
 
 /*
@@ -403,19 +359,19 @@ void Compiler::Visit(FullConditionalExpression* node)
 {
 	node->test->Accept(this);
 
-	code->push_back((byte)OpCode::jump_if_false);
-	int index = code->size();
+	Emit(OpCode::jump_if_false);
+	int index = CurrentIndex();
 	AppendUShort((unsigned short)0);
 
 	node->ifTrue->Accept(this);
 	
-	code->push_back((byte)OpCode::jump);
+	Emit(OpCode::jump);
 	AppendUShort((unsigned short)0);
-	int index2 = code->size();
-	WriteUShort(index, (unsigned short) code->size());
+	int index2 = CurrentIndex();
+	WriteUShort(index, (unsigned short) CurrentIndex());
 
 	node->ifFalse->Accept(this);
-	WriteUShort(index2, (unsigned short) code->size());
+	WriteUShort(index2, (unsigned short) CurrentIndex());
 }
 
 void Compiler::Visit(ParameterExpression* node)
@@ -425,12 +381,12 @@ void Compiler::Visit(ParameterExpression* node)
 	{
 		if (location.kind == LocationKind::Global)
 		{
-			code->push_back((byte)OpCode::push_static_i32);
+			Emit(OpCode::push_static_i32);
 			AppendUShort(location.index);
 		}
 		else if (location.kind == LocationKind::Function)
 		{
-			code->push_back((byte)OpCode::push_stack_i32);
+			Emit(OpCode::push_stack_i32);
 			AppendUShort(location.index);
 		}
 		else
@@ -442,17 +398,29 @@ void Compiler::Visit(ParameterExpression* node)
 	{
 		if (location.kind == LocationKind::Global)
 		{
-			code->push_back((byte)OpCode::push_static_f64);
+			Emit(OpCode::push_static_f64);
 			AppendUShort(location.index);
 		}
 		else if (location.kind == LocationKind::Function)
 		{
-			code->push_back((byte)OpCode::push_stack_f64);
+			Emit(OpCode::push_stack_f64);
 			AppendUShort(location.index);
 		}
 		else
 		{
 			throw L"2 impossible";
+		}
+	}
+	else if (node->GetType()->tag == TypeTag::Function)
+	{
+		if (location.kind == LocationKind::StaticMethod)
+		{
+			Emit(OpCode::push_function);
+			AppendUShort(location.index);
+		}
+		else
+		{
+			throw L"cannot compile procedure";
 		}
 	}
 	else
@@ -463,7 +431,16 @@ void Compiler::Visit(ParameterExpression* node)
 
 void Compiler::Visit(CallExpression* node)
 {
-	throw L"18 not implemented";
+	wcout << "call expression" << endl;
+	for (Expression* argument: node->arguments)
+	{
+		argument->Accept(this);
+	}
+	wcout << "arguments finished" << endl;
+	node->procedure->Accept(this);
+	wcout << "procedure finished" << endl;
+	Emit(OpCode::invoke);
+	AppendUShort((unsigned short) node->arguments.size());
 }
 
 /*
@@ -473,35 +450,34 @@ void Compiler::Visit(CallExpression* node)
  */
 void Compiler::Visit(WhileExpression* node)
 {
-	int index = code->size();
+	int index = CurrentIndex();
 	node->condition->Accept(this);
-	code->push_back((byte)OpCode::jump_if_false);
-	int index2 = code->size();
+	Emit(OpCode::jump_if_false);
+	int index2 = CurrentIndex();
 	AppendUShort((unsigned short)0);
 	node->body->Accept(this);
-	code->push_back((byte)OpCode::jump);
+	Emit(OpCode::jump);
 	AppendUShort(index);
-	WriteUShort(index2, (unsigned short) code->size());
+	WriteUShort(index2, (unsigned short) CurrentIndex());
 }
 
 void Compiler::Visit(VarExpression* node)
 {
+	wcout << "var " << node->name << endl;
 	node->value->Accept(this);
+	wcout << "value finished" << endl;
 
 	Location location = record.Find(node);
-	wcout << "name = " << node->name << endl;
-	wcout << "Location = " << location.ToString() << endl;
 	if (node->GetType()->IsInt())
 	{
 		if (location.kind == LocationKind::Global)
 		{
-			code->push_back((byte)OpCode::pop_static_i32);
-			wcout << L"location index: " << location.index << endl;
+			Emit(OpCode::pop_static_i32);
 			AppendUShort(location.index);
 		}
 		else if (location.kind == LocationKind::Function)
 		{
-			code->push_back((byte)OpCode::pop_stack_i32);
+			Emit(OpCode::pop_stack_i32);
 			AppendUShort(location.index);
 		}
 		else
@@ -513,12 +489,12 @@ void Compiler::Visit(VarExpression* node)
 	{
 		if (location.kind == LocationKind::Global)
 		{
-			code->push_back((byte)OpCode::pop_static_f64);
+			Emit(OpCode::pop_static_f64);
 			AppendUShort(location.index);
 		}
 		else if (location.kind == LocationKind::Function)
 		{
-			code->push_back((byte)OpCode::pop_stack_f64);
+			Emit(OpCode::pop_stack_f64);
 			AppendUShort(location.index);
 		}
 		else
@@ -532,6 +508,63 @@ void Compiler::Visit(VarExpression* node)
 	}
 }
 
+void Compiler::Visit(AssignExpression* node)
+{
+	ParameterExpression* variable = node->variable;
+	Location location = record.Find(variable);
+	node->value->Accept(this);
+	if (node->GetType()->IsInt())
+	{
+		if (location.kind == LocationKind::Global)
+		{
+			Emit(OpCode::pop_static_i32);
+			AppendUShort(location.index);
+		}
+		else if (location.kind == LocationKind::Function)
+		{
+			Emit(OpCode::pop_stack_i32);
+			AppendUShort(location.index);
+		}
+		else
+		{
+			throw L"8 impossible";
+		}
+	}
+	else if (node->GetType()->IsDouble())
+	{
+		if (location.kind == LocationKind::Global)
+		{
+			Emit(OpCode::pop_static_f64);
+			AppendUShort(location.index);
+		}
+		else if (location.kind == LocationKind::Function)
+		{
+			Emit(OpCode::pop_stack_f64);
+			AppendUShort(location.index);
+		}
+		else
+		{
+			throw L"9 impossible";
+		}
+	}
+	else if (node->GetType()->tag == TypeTag::Function)
+	{
+		if (location.kind == LocationKind::StaticMethod)
+		{
+			Emit(OpCode::push_function);
+			AppendUShort(location.index);
+		}
+		else
+		{
+			throw L"parameter is not static method";
+		}
+	}
+	else
+	{
+		throw L"1 not implemented";
+	}
+}
+
 void Compiler::Visit(DefaultExpression* node)
 {
 	throw L"20 not implemented";
@@ -539,12 +572,50 @@ void Compiler::Visit(DefaultExpression* node)
 
 void Compiler::Visit(DefineExpression* node)
 {
-	throw L"21 not implemented";
+	wcout << "define expression" << endl;
+	vector<byte>* fcode = new vector<byte>();
+	vector<byte>* prev = code;
+	code = fcode;
+	Emit(OpCode::function_begin);
+	AppendUShort((unsigned short) node->parameters.size());
+	AppendUShort((unsigned short) node->frameSize);
+	node->body->Accept(this);
+	Emit(OpCode::function_end);
+	functions.push_back(new Function(node->name, node->parameters.size(), node->frameSize, fcode));
+	code = prev;
 }
 
 void Compiler::Visit(NewExpression* node)
 {
 	throw L"22 not implemented";
+}
+
+void Compiler::Visit(ReturnExpression* node)
+{
+	wcout << "return expression" << endl;
+	node->value->Accept(this);
+	if (node->GetType()->IsInt())
+	{
+		Emit(OpCode::return_i32);
+	}
+	else if (node->GetType()->IsDouble())
+	{
+		Emit(OpCode::return_f64);
+	}
+	else
+	{
+		throw L"return value type not supprted";
+	}
+}
+
+void Compiler::Emit(OpCode op)
+{
+	code->push_back((byte) op);
+}
+
+i32 Compiler::CurrentIndex()
+{
+	return code->size();
 }
 
 void Compiler::AppendBytes(byte* bytes, int length)

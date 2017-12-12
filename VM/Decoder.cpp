@@ -33,6 +33,7 @@ Decoder::Decoder(vector<byte> stream)
 void Decoder::Decode()
 {
 	i32 index = LoadConstantPool(0);
+	index = LoadFunctions(index);
 	i32 n = stream.size();
 	for (i32 i = index; i < n; i++)
 	{
@@ -102,8 +103,10 @@ i32 Decoder::LoadFunctions(i32 index)
 		if (op == OpCode::function_begin)
 		{
 			index++;
-			i32 parametersSize = ReadUShort();
-			i32 frameSize = ReadUShort();
+			i32 parametersSize = ReadUShort(index);
+			index += 2;
+			i32 frameSize = ReadUShort(index);
+			index += 2;
 			index = LoadOneFunction(index, parametersSize, frameSize);
 		}
 		else
@@ -128,13 +131,24 @@ i32 Decoder::LoadOneFunction(i32 index, i32 parametersSize, i32 frameSize)
 		}
 		else
 		{
+			fcode.push_back(stream[index]);
 			index++;
 			i32 size = OperandSize(op);
+			for (i32 i = 0; i < size; i++)
+			{
+				fcode.push_back(stream[index + i]);
+			}
 			index += size;
 		}
 	}
-	functions.push_back(Function(L"", parametersSize, frameSize, fcode));
+	functions.push_back(Function(parametersSize, frameSize, fcode));
 	return index;
+}
+
+i32 Decoder::ReadUShort(i32 offset)
+{
+	return (stream[offset + 1] << 8)
+		+ stream[offset];
 }
 
 i32 Decoder::ReadInt32(i32 offset)

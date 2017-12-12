@@ -175,3 +175,23 @@ void DefineExpression::Accept(Visitor* visitor)
 {
 	visitor->Visit(this);
 }
+
+AssignExpression::AssignExpression(ParameterExpression* variable, Expression* value)
+	:Expression(ExpressionKind::Assign), variable{variable}, value{value}
+{
+}
+
+void AssignExpression::Accept(Visitor* visitor)
+{
+	visitor->Visit(this);
+}
+
+ReturnExpression::ReturnExpression(Expression* value)
+	:Expression(ExpressionKind::Return), value{value}
+{
+}
+
+void ReturnExpression::Accept(Visitor* visitor)
+{
+	visitor->Visit(this);
+}

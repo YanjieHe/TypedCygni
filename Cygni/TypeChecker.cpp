@@ -178,8 +178,17 @@ void TypeChecker::Visit(ParameterExpression* node)
 	Location location = scope->Find(node->name);
 	if (location.kind == LocationKind::Unknown)
 	{
-		throw SemanticException(debugInfo.Locate(node),
-				L"not defined variable");
+		int index = fenv->Find(node->name);
+		if (index != -1)
+		{
+			record.Record(node, Location(LocationKind::StaticMethod, index));
+			node->SetType(fenv->ResolveType(node->name));
+		}
+		else
+		{
+			throw SemanticException(debugInfo.Locate(node),
+					L"not defined variable: " + node->name);
+		}
 	}
 	else
 	{
@@ -198,7 +207,7 @@ void TypeChecker::Visit(CallExpression* node)
 		argsType.push_back(item->GetType()->Clone());
 	}
 
-	if (node->GetType()->tag == TypeTag::Function)
+	if (node->procedure->GetType()->tag == TypeTag::Function)
 	{
 		FunctionType* ft = (FunctionType*) node->procedure->GetType();
 		if (ft->ParametersMatch(argsType))
@@ -231,8 +240,6 @@ void TypeChecker::Visit(VarExpression* node)
 		node->SetType(node->value->GetType());
 		if (scope->Define(node->name))
 		{
-			wcout << node->ID << L", " << node->name << endl; 
-			wcout << scope->Find(node->name).ToString() << endl;
 			record.Record(node, scope->Find(node->name));
 			env->Define(node->name, node->GetType());
 		}
@@ -257,6 +264,7 @@ void TypeChecker::Visit(DefineExpression* node)
 {
 	Scope* prev = scope;
 	scope = new FunctionScope(scope);
+	TypeEnv* prev_env = env;
 	env = new TypeEnv(fenv, env);
 	for (ParameterExpression* item: node->parameters)
 	{
@@ -269,11 +277,25 @@ void TypeChecker::Visit(DefineExpression* node)
 	delete scope;
 	delete env;
 	scope = prev;
-	env = env->parent;
+	env = prev_env;
 }
 
 void TypeChecker::Visit(NewExpression* node)
 {
 	// TO DO
+	return;
 }
 
+void TypeChecker::Visit(AssignExpression* node)
+{
+	node->variable->Accept(this);
+	node->value->Accept(this);
+	node->SetType(node->variable->GetType());
+}
+
+void TypeChecker::Visit(ReturnExpression* node)
+{
+	node->value->Accept(this);
+	// TO DO: function return type check
+	node->SetType(node->value->GetType());
+}

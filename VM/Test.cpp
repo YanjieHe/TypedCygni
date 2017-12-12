@@ -37,16 +37,36 @@ void TestDecoder()
 
 void TestDecoderReadFile()
 {
-	Decoder decoder("./TestCases/example2.bin");
-	decoder.Decode();
-	Machine machine(ConstantPool(), 100);
-	wcout << L"code size: " << decoder.code.size() << endl;
-	machine.LoadProgram(&(decoder.code));
-	machine.Run(0);
+	try
+	{
+		Decoder decoder("./TestCases/example3.bin");
+		decoder.Decode();
+		Machine machine(ConstantPool(), 100);
+		wcout << L"code size: " << decoder.code.size() << endl;
+		machine.LoadProgram(&(decoder.code));
+		wcout << "stating loading functions" << endl;
+		for (Function f: decoder.functions)
+		{
+			machine.LoadFunction(f);
+		}
+		wcout << "finish loading functions" << endl;
+		machine.Run(0);
+	}
+	catch (const wchar_t* ex)
+	{
+		wcout << ex << endl;
+	}
 }
 
 void TestDisassembly()
 {
-	Disassembly disassembly("./TestCases/example2.bin");
-	disassembly.ReadCode(0);
+	try
+	{
+		Disassembly disassembly("./TestCases/example3.bin");
+		disassembly.ReadCode();
+	}
+	catch (const wchar_t* ex)
+	{
+		wcout << ex << endl;
+	}
 }

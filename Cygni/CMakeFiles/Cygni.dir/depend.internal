@@ -4,8 +4,11 @@
 CMakeFiles/Cygni.dir/Compiler.cpp.o
  /home/jasonhe/Documents/MyCode/CPP/Cygni/Compiler.cpp
  /home/jasonhe/Documents/MyCode/CPP/Cygni/Compiler.h
+ /home/jasonhe/Documents/MyCode/CPP/Cygni/DebugInfo.h
+ /home/jasonhe/Documents/MyCode/CPP/Cygni/Exception.h
  /home/jasonhe/Documents/MyCode/CPP/Cygni/Expression.h
  /home/jasonhe/Documents/MyCode/CPP/Cygni/ExpressionKind.h
+ /home/jasonhe/Documents/MyCode/CPP/Cygni/Function.h
  /home/jasonhe/Documents/MyCode/CPP/Cygni/Location.h
  /home/jasonhe/Documents/MyCode/CPP/Cygni/OpCode.h
  /home/jasonhe/Documents/MyCode/CPP/Cygni/Scope.h
@@ -37,6 +40,9 @@ CMakeFiles/Cygni.dir/Expression.cpp.o
 CMakeFiles/Cygni.dir/ExpressionKind.cpp.o
  /home/jasonhe/Documents/MyCode/CPP/Cygni/ExpressionKind.cpp
  /home/jasonhe/Documents/MyCode/CPP/Cygni/ExpressionKind.h
+CMakeFiles/Cygni.dir/Function.cpp.o
+ /home/jasonhe/Documents/MyCode/CPP/Cygni/Function.cpp
+ /home/jasonhe/Documents/MyCode/CPP/Cygni/Function.h
 CMakeFiles/Cygni.dir/Lexer.cpp.o
  /home/jasonhe/Documents/MyCode/CPP/Cygni/DebugInfo.h
  /home/jasonhe/Documents/MyCode/CPP/Cygni/Exception.h
@@ -83,8 +89,10 @@ CMakeFiles/Cygni.dir/Test.cpp.o
  /home/jasonhe/Documents/MyCode/CPP/Cygni/Exception.h
  /home/jasonhe/Documents/MyCode/CPP/Cygni/Expression.h
  /home/jasonhe/Documents/MyCode/CPP/Cygni/ExpressionKind.h
+ /home/jasonhe/Documents/MyCode/CPP/Cygni/Function.h
  /home/jasonhe/Documents/MyCode/CPP/Cygni/Lexer.h
  /home/jasonhe/Documents/MyCode/CPP/Cygni/Location.h
+ /home/jasonhe/Documents/MyCode/CPP/Cygni/OpCode.h
  /home/jasonhe/Documents/MyCode/CPP/Cygni/Parser.h
  /home/jasonhe/Documents/MyCode/CPP/Cygni/Scope.h
  /home/jasonhe/Documents/MyCode/CPP/Cygni/StringBuilder.h

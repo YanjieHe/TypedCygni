@@ -3,8 +3,11 @@
 
 CMakeFiles/Cygni.dir/Compiler.cpp.o: Compiler.cpp
 CMakeFiles/Cygni.dir/Compiler.cpp.o: Compiler.h
+CMakeFiles/Cygni.dir/Compiler.cpp.o: DebugInfo.h
+CMakeFiles/Cygni.dir/Compiler.cpp.o: Exception.h
 CMakeFiles/Cygni.dir/Compiler.cpp.o: Expression.h
 CMakeFiles/Cygni.dir/Compiler.cpp.o: ExpressionKind.h
+CMakeFiles/Cygni.dir/Compiler.cpp.o: Function.h
 CMakeFiles/Cygni.dir/Compiler.cpp.o: Location.h
 CMakeFiles/Cygni.dir/Compiler.cpp.o: OpCode.h
 CMakeFiles/Cygni.dir/Compiler.cpp.o: Scope.h
@@ -36,6 +39,9 @@ CMakeFiles/Cygni.dir/Expression.cpp.o: Visitor.h
 
 CMakeFiles/Cygni.dir/ExpressionKind.cpp.o: ExpressionKind.cpp
 CMakeFiles/Cygni.dir/ExpressionKind.cpp.o: ExpressionKind.h
+
+CMakeFiles/Cygni.dir/Function.cpp.o: Function.cpp
+CMakeFiles/Cygni.dir/Function.cpp.o: Function.h
 
 CMakeFiles/Cygni.dir/Lexer.cpp.o: DebugInfo.h
 CMakeFiles/Cygni.dir/Lexer.cpp.o: Exception.h
@@ -82,8 +88,10 @@ CMakeFiles/Cygni.dir/Test.cpp.o: DebugInfo.h
 CMakeFiles/Cygni.dir/Test.cpp.o: Exception.h
 CMakeFiles/Cygni.dir/Test.cpp.o: Expression.h
 CMakeFiles/Cygni.dir/Test.cpp.o: ExpressionKind.h
+CMakeFiles/Cygni.dir/Test.cpp.o: Function.h
 CMakeFiles/Cygni.dir/Test.cpp.o: Lexer.h
 CMakeFiles/Cygni.dir/Test.cpp.o: Location.h
+CMakeFiles/Cygni.dir/Test.cpp.o: OpCode.h
 CMakeFiles/Cygni.dir/Test.cpp.o: Parser.h
 CMakeFiles/Cygni.dir/Test.cpp.o: Scope.h
 CMakeFiles/Cygni.dir/Test.cpp.o: StringBuilder.h

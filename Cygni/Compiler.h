@@ -3,6 +3,9 @@
 
 #include "Visitor.h"
 #include "Scope.h"
+#include "DebugInfo.h"
+#include "OpCode.h"
+#include "Function.h"
 
 #include <vector>
 #include <cstdint>
@@ -17,8 +20,12 @@ class Compiler: public Visitor
 {
 public:
 	vector<byte>* code;
+	DebugInfo& debugInfo;
 	LocationRecord& record;
-    Compiler(LocationRecord& record);
+	vector<Function*> functions;
+
+    Compiler(DebugInfo& debugInfo, LocationRecord& record);
+    Compiler(DebugInfo& debugInfo, LocationRecord& record, vector<byte>* code);
 
 	void Visit(UnaryExpression* node) override;
 	void Visit(BinaryExpression* node) override;
@@ -33,6 +40,11 @@ public:
 	void Visit(DefaultExpression* node) override;
 	void Visit(DefineExpression* node) override;
 	void Visit(NewExpression* node) override;
+	void Visit(AssignExpression* node) override;
+	void Visit(ReturnExpression* node) override;
+
+	void Emit(OpCode op);
+	i32 CurrentIndex();
 
 	void AppendBytes(byte* bytes, int length);
 	void AppendUShort(unsigned short x);

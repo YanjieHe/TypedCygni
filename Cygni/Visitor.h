@@ -19,6 +19,8 @@ public:
 	virtual void Visit(DefaultExpression* node) = 0;
 	virtual void Visit(DefineExpression* node) = 0;
 	virtual void Visit(NewExpression* node) = 0;
+	virtual void Visit(AssignExpression* node) = 0;
+	virtual void Visit(ReturnExpression* node) = 0;
 };
 
 class TreeViewer: public Visitor
@@ -39,6 +41,8 @@ public:
 	void Visit(DefaultExpression* node) override;
 	void Visit(DefineExpression* node) override;
 	void Visit(NewExpression* node) override;
+	void Visit(AssignExpression* node) override;
+	void Visit(ReturnExpression* node) override;
 
 private:
 	int depth;

@@ -9,6 +9,10 @@ Machine::Machine(ConstantPool pool, i32 staticSize)
 {
 	static_v.reserve(staticSize);
 	memory.reserve(1000000);
+	for (int i = 0; i < 1000000; i++)
+	{
+		memory[i].i32_v = 0;
+	}
 }
 
 void Machine::Run(i32 entry)
@@ -16,14 +20,18 @@ void Machine::Run(i32 entry)
 	pc = entry;
 
 	MainLoop();
-
-	wcout << "i = " << static_v[0].i32_v << endl;
-	wcout << "sum = " << static_v[1].i32_v << endl;
+	wcout << "result = " << static_v[0].i32_v << endl;
 }
 
 void Machine::LoadProgram(vector<byte>* code)
 {
+	this->globalCode = code;
 	this->code = code;
+}
+
+void Machine::LoadFunction(Function f)
+{
+	functions.push_back(f);
 }
 
 i32 Machine::ReadUShort()
@@ -33,13 +41,20 @@ i32 Machine::ReadUShort()
 
 void Machine::MainLoop()
 {
-	i32 n = code->size();
+//	i32 n = code->size();
 
-	while (pc < n)
+	while (pc < (i32) code->size())
 	{
 		OpCode op = (OpCode) (*code)[pc];
 		pc++;
 
+		wcout << L"memory sp = " << sp << L" fp = " << fp << endl;
+		for (int i = 0; i < 10; i++)
+		{
+			wcout << memory[i].i32_v << L"  ";
+		}
+		wcout << endl;
+		wcout << L"run: " << opcode_to_wstring(op) << endl;
 		switch (op)
 		{
 			// push small number
@@ -84,6 +99,13 @@ void Machine::MainLoop()
 				pc += 2;
 				break;
 			}
+			case OpCode::push_function:
+			{
+				sp++;
+				memory[sp].i32_v = ReadUShort();
+				pc += 2;
+				break;
+			}
 
 			case OpCode::push_static_i32:
 			{
@@ -116,9 +138,9 @@ void Machine::MainLoop()
 
 			case OpCode::push_stack_i32:
 			{
+				sp++;
 				memory[sp].i32_v = memory[fp + ReadUShort()].i32_v;
 				pc += 2;
-				sp++;
 				break;
 			}
 			case OpCode::push_stack_f64:
@@ -342,6 +364,42 @@ void Machine::MainLoop()
 				break;
 			}
 
+			case OpCode::invoke:
+			{
+				wcout << "invoke" << endl;
+				i32 args_size = ReadUShort();
+				pc += 2;
+				i32 function_id = memory[sp].i32_v;
+				sp--;
+
+				wcout << "args_size = " << functions[function_id].parametersSize << endl;
+				wcout << "frame_size = " << functions[function_id].frameSize << endl;
+				fp = sp - functions[function_id].parametersSize + 1;
+				sp = fp + functions[function_id].frameSize;
+
+				ret = pc;
+				pc = 0;
+				code = &(functions[function_id].code);
+				wcout << "first: " << opcode_to_wstring((OpCode) code->at(0)) << endl;
+				break;
+			}
+
+			case OpCode::return_i32:
+			{
+				pc = ret;
+				code = globalCode;
+				memory[fp].i32_v = memory[sp].i32_v;
+				sp = fp;
+				break;
+			}
+			case OpCode::return_f64:
+			{
+				pc = ret;
+				code = globalCode;
+				memory[fp].f64_v = memory[sp].f64_v;
+				sp = fp;
+				break;
+			}
 			default:
 			{
 				wcout << opcode_to_wstring(op) << endl;

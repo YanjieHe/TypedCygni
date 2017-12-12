@@ -33,13 +33,12 @@ Type* TypeEnv::Find(wstring name)
 	}
 	else
 	{
-		return functionEnv->Find(name);
+		return nullptr;
 	}
 }
 
 FunctionEnv::FunctionEnv()
 {
-	this->table = map<wstring, Type*>();
 }
 
 bool FunctionEnv::Define(wstring name, Type* type)
@@ -50,16 +49,30 @@ bool FunctionEnv::Define(wstring name, Type* type)
 	}
 	else
 	{
-		table.insert(map<wstring, Type*>::value_type(name, type));
+		int n = table.size();
+		table.insert(map<wstring, int>::value_type(name, n));
+		types.push_back(type);
 		return true;
 	}
 }
 
-Type* FunctionEnv::Find(wstring name)
+int FunctionEnv::Find(wstring name)
 {
 	if (table.find(name) != table.end())
 	{
 		return table[name];
+	}
+	else
+	{
+		return -1;
+	}
+}
+
+Type* FunctionEnv::ResolveType(wstring name)
+{
+	if (table.find(name) != table.end())
+	{
+		return types[table[name]];
 	}
 	else
 	{

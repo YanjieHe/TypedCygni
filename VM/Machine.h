@@ -2,6 +2,7 @@
 #define MACHINE_H
 
 #include "Any.h"
+#include "Function.h"
 #include <vector>
 #include <string>
 
@@ -16,9 +17,11 @@ public:
     Machine(ConstantPool pool, i32 staticSize);
 	void Run(i32 entry);
 	void LoadProgram(vector<byte>* code);
+	void LoadFunction(Function f);
 
 private:
 	vector<byte>* code;
+	vector<byte>* globalCode;
 
 	i32 pc; // program counter
 	i32 sp; // stack pointer
@@ -29,6 +32,8 @@ private:
 	Heap static_v;
 	ConstantPool pool;
 	Heap memory;
+
+	vector<Function> functions;
 
 	i32 ReadUShort();
 	void MainLoop();

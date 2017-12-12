@@ -19,7 +19,17 @@ SemanticException::SemanticException(int line, int column, wstring message)
 {
 }
 
-SemanticException::SemanticException(Position position, wstring message)
+SemanticException::SemanticException(const Position& position, wstring message)
+	:line{position.line}, column{position.column}, message{message}
+{
+}
+
+CompilationException::CompilationException(int line, int column, wstring message)
+	:line{line}, column{column}, message{message}
+{
+}
+
+CompilationException::CompilationException(const Position& position, wstring message)
 	:line{position.line}, column{position.column}, message{message}
 {
 }

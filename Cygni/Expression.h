@@ -148,4 +148,20 @@ class NewExpression: public Expression
 	void Accept(Visitor* visitor) override;
 };
 
+class AssignExpression: public Expression
+{
+public:
+	ParameterExpression* variable;
+	Expression* value;
+	AssignExpression(ParameterExpression* variable, Expression* value);
+	void Accept(Visitor* visitor) override;
+};
+
+class ReturnExpression: public Expression
+{
+public:
+	Expression* value;
+	ReturnExpression(Expression* value);
+	void Accept(Visitor* visitor) override;
+};
 #endif // EXPRESSION_H 

@@ -29,6 +29,8 @@ public:
 	void Visit(DefaultExpression* node) override;
 	void Visit(DefineExpression* node) override;
 	void Visit(NewExpression* node) override;
+	void Visit(AssignExpression* node) override;
+	void Visit(ReturnExpression* node) override;
 };
 
 #endif // TYPECHECKER_H 

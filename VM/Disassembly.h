@@ -15,9 +15,12 @@ public:
     Disassembly(string path);
 
 	void ReadConstantPool();
-	void ReadCode(i32 offset); 
+	void ReadCode();
 
 private:
+	i32 ReadCode(i32 offset); 
+	i32 ReadFunction(i32 offset);
+
 	i32 ReadUShort(i32 offset);
 	i32 ReadInt32(i32 offset);
 	i64 ReadInt64(i32 offset);

@@ -18,7 +18,7 @@ void Token::Display()
 {
 	wcout << L"(" << line << L", " << column << "): ";
 	wcout << L"[" << token_kind_to_wstring(kind);
-	wcout << ", " << text << "]" << endl;
+	wcout << L", " << text << L"]" << endl;
 }
 
 void Token::CheckKeywords()
@@ -64,6 +64,10 @@ void Token::CheckKeywords()
 		else if (this->text == L"while")
 		{
 			this->kind = TokenKind::While;
+		}
+		else if (this->text == L"return")
+		{
+			this->kind = TokenKind::Return;
 		}
 		else
 		{

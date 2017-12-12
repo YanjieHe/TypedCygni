@@ -7,7 +7,7 @@ using std::wstring;
 
 enum class LocationKind
 {
-	Unknown, Global, Function
+	Unknown, Global, Function, StaticMethod
 };
 
 class Location

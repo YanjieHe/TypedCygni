@@ -16,6 +16,10 @@ union Any
 	i64 i64_v;
 	f32 f32_v;
 	f64 f64_v;
+	Object* object;
 };
 
+class Object
+{
+};
 #endif // ANY_H 

@@ -20,6 +20,7 @@ CMakeFiles/VM.dir/Function.cpp.o: Function.cpp
 CMakeFiles/VM.dir/Function.cpp.o: Function.h
 
 CMakeFiles/VM.dir/Machine.cpp.o: Any.h
+CMakeFiles/VM.dir/Machine.cpp.o: Function.h
 CMakeFiles/VM.dir/Machine.cpp.o: Machine.cpp
 CMakeFiles/VM.dir/Machine.cpp.o: Machine.h
 CMakeFiles/VM.dir/Machine.cpp.o: OpCode.h
