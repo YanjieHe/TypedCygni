@@ -22,13 +22,15 @@ Disassembly::Disassembly(string path)
 	}
 	else
 	{
+		wcout << "cannot open binary file" << endl;
 		throw "cannot open binary file" + path;
 	}
 }
 
 void Disassembly::ReadCode()
 {
-	ReadFunction(0);	
+	i32 i = ReadFunction(0);	
+	ReadCode(i);
 }
 
 i32 Disassembly::ReadCode(i32 offset)
@@ -40,8 +42,7 @@ i32 Disassembly::ReadCode(i32 offset)
 		if (op == OpCode::function_end)
 		{
 			i++;
-			wcout << L"*** end of function ***" << endl;
-			wcout << endl;
+			wcout << L"*** end of function ***" << endl << endl;
 			return i;
 		}
 		else if (OperandSize(op) == 0)
@@ -98,7 +99,7 @@ i32 Disassembly::ReadFunction(i32 offset)
 		}
 		else
 		{
-			return ReadCode(i);
+			return i;
 		}
 	}
 	return i;

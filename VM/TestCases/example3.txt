@@ -1,6 +1,0 @@
-def add(x: Int, y: Int): Int
-{
-	return x + y
-}
-
-var result = add(10, 20)

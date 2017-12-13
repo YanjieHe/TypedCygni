@@ -2,8 +2,10 @@
 #define OPCODE_H
 
 #include <string>
+#include <cstdint>
 
 using std::wstring;
+using i32 = int32_t;
 
 enum class OpCode
 {
@@ -76,6 +78,7 @@ enum class OpCode
     logical_not,
 
     minus_i32,
+
     minus_f64,
 
     cast_int32_to_float64,
@@ -111,5 +114,7 @@ enum class OpCode
 };
 
 wstring opcode_to_wstring(OpCode code);
+
+i32 OperandSize(OpCode op);
 
 #endif // OPCODE_H 

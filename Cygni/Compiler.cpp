@@ -298,7 +298,6 @@ void Compiler::Visit(ConstantExpression* node)
 
 void Compiler::Visit(BlockExpression* node)
 {
-	wcout << "block expression" << endl;
 	for (Expression* expression: node->expressions)
 	{
 		expression->Accept(this);
@@ -366,11 +365,13 @@ void Compiler::Visit(FullConditionalExpression* node)
 	node->ifTrue->Accept(this);
 	
 	Emit(OpCode::jump);
-	AppendUShort((unsigned short)0);
 	int index2 = CurrentIndex();
+	AppendUShort((unsigned short)0);
+
 	WriteUShort(index, (unsigned short) CurrentIndex());
 
 	node->ifFalse->Accept(this);
+	wcout << "write " << CurrentIndex() << endl;
 	WriteUShort(index2, (unsigned short) CurrentIndex());
 }
 
@@ -431,14 +432,11 @@ void Compiler::Visit(ParameterExpression* node)
 
 void Compiler::Visit(CallExpression* node)
 {
-	wcout << "call expression" << endl;
 	for (Expression* argument: node->arguments)
 	{
 		argument->Accept(this);
 	}
-	wcout << "arguments finished" << endl;
 	node->procedure->Accept(this);
-	wcout << "procedure finished" << endl;
 	Emit(OpCode::invoke);
 	AppendUShort((unsigned short) node->arguments.size());
 }
@@ -463,9 +461,7 @@ void Compiler::Visit(WhileExpression* node)
 
 void Compiler::Visit(VarExpression* node)
 {
-	wcout << "var " << node->name << endl;
 	node->value->Accept(this);
-	wcout << "value finished" << endl;
 
 	Location location = record.Find(node);
 	if (node->GetType()->IsInt())
@@ -513,6 +509,7 @@ void Compiler::Visit(AssignExpression* node)
 	ParameterExpression* variable = node->variable;
 	Location location = record.Find(variable);
 	node->value->Accept(this);
+
 	if (node->GetType()->IsInt())
 	{
 		if (location.kind == LocationKind::Global)
@@ -572,15 +569,14 @@ void Compiler::Visit(DefaultExpression* node)
 
 void Compiler::Visit(DefineExpression* node)
 {
-	wcout << "define expression" << endl;
 	vector<byte>* fcode = new vector<byte>();
 	vector<byte>* prev = code;
 	code = fcode;
-	Emit(OpCode::function_begin);
-	AppendUShort((unsigned short) node->parameters.size());
-	AppendUShort((unsigned short) node->frameSize);
+	//Emit(OpCode::function_begin);
+	//AppendUShort((unsigned short) node->parameters.size());
+	//AppendUShort((unsigned short) node->frameSize);
 	node->body->Accept(this);
-	Emit(OpCode::function_end);
+	// Emit(OpCode::function_end);
 	functions.push_back(new Function(node->name, node->parameters.size(), node->frameSize, fcode));
 	code = prev;
 }
@@ -592,7 +588,6 @@ void Compiler::Visit(NewExpression* node)
 
 void Compiler::Visit(ReturnExpression* node)
 {
-	wcout << "return expression" << endl;
 	node->value->Accept(this);
 	if (node->GetType()->IsInt())
 	{
@@ -610,6 +605,7 @@ void Compiler::Visit(ReturnExpression* node)
 
 void Compiler::Emit(OpCode op)
 {
+	wcout << code->size() << L" emit: " << opcode_to_wstring(op) << endl;
 	code->push_back((byte) op);
 }
 

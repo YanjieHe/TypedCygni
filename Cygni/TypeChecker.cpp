@@ -156,7 +156,18 @@ void TypeChecker::Visit(BlockExpression* node)
 {
 	for (Expression* expression: node->expressions)
 	{
-		expression->Accept(this);
+		if (expression->kind == ExpressionKind::Define)
+		{
+			expression->Accept(this);
+		}
+	}
+
+	for (Expression* expression: node->expressions)
+	{
+		if (expression->kind != ExpressionKind::Define)
+		{
+			expression->Accept(this);
+		}
 	}
 }
 
@@ -271,9 +282,9 @@ void TypeChecker::Visit(DefineExpression* node)
 		scope->Define(item->name);
 		env->Define(item->name, item->GetType());
 	}
+	fenv->Define(node->name, node->GetType());
 	node->body->Accept(this);
 	node->frameSize = scope->Size();
-	fenv->Define(node->name, node->GetType());
 	delete scope;
 	delete env;
 	scope = prev;

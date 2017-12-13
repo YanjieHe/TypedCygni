@@ -127,7 +127,7 @@ void TreeViewer::Visit(NewExpression* node)
 void TreeViewer::Visit(AssignExpression* node)
 {
 	Indent();
-	wcout << "var " << endl;
+	wcout << "assign" << endl;
 	depth++;
 	node->variable->Accept(this);
 	node->value->Accept(this);

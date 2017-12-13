@@ -11,7 +11,7 @@ Machine::Machine(ConstantPool pool, i32 staticSize)
 	memory.reserve(1000000);
 	for (int i = 0; i < 1000000; i++)
 	{
-		memory[i].i32_v = 0;
+		memory[i].i32_v = -100;
 	}
 }
 
@@ -23,7 +23,7 @@ void Machine::Run(i32 entry)
 	wcout << "result = " << static_v[0].i32_v << endl;
 }
 
-void Machine::LoadProgram(vector<byte>* code)
+void Machine::LoadProgram(ByteCode* code)
 {
 	this->globalCode = code;
 	this->code = code;
@@ -49,7 +49,7 @@ void Machine::MainLoop()
 		pc++;
 
 		wcout << L"memory sp = " << sp << L" fp = " << fp << endl;
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < 20; i++)
 		{
 			wcout << memory[i].i32_v << L"  ";
 		}
@@ -372,30 +372,35 @@ void Machine::MainLoop()
 				i32 function_id = memory[sp].i32_v;
 				sp--;
 
-				wcout << "args_size = " << functions[function_id].parametersSize << endl;
-				wcout << "frame_size = " << functions[function_id].frameSize << endl;
-				fp = sp - functions[function_id].parametersSize + 1;
-				sp = fp + functions[function_id].frameSize;
+				Function& f = functions[function_id];
+				wcout << "args_size = " << f.parametersSize << endl;
+				wcout << "frame_size = " << f.frameSize << endl;
+				fp = sp - f.parametersSize + 1;
+				sp = fp + f.frameSize;
 
 				ret = pc;
 				pc = 0;
-				code = &(functions[function_id].code);
-				wcout << "first: " << opcode_to_wstring((OpCode) code->at(0)) << endl;
+				call_stack.push(code);
+				wcout << "call_stack: " << call_stack.size() << endl;
+				code = &(f.code);
 				break;
 			}
 
 			case OpCode::return_i32:
 			{
 				pc = ret;
-				code = globalCode;
+				code = call_stack.top();
+				call_stack.pop();
 				memory[fp].i32_v = memory[sp].i32_v;
+				wcout << "stack_peek: " << memory[sp].i32_v << endl;
 				sp = fp;
 				break;
 			}
 			case OpCode::return_f64:
 			{
 				pc = ret;
-				code = globalCode;
+				code = call_stack.top();
+				call_stack.pop();
 				memory[fp].f64_v = memory[sp].f64_v;
 				sp = fp;
 				break;

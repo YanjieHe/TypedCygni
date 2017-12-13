@@ -39,7 +39,7 @@ void TestDecoderReadFile()
 {
 	try
 	{
-		Decoder decoder("./TestCases/example3.bin");
+		Decoder decoder("/home/jasonhe/Documents/MyCode/CPP/Cygni/TestCases/factorial.bin");
 		decoder.Decode();
 		Machine machine(ConstantPool(), 100);
 		wcout << L"code size: " << decoder.code.size() << endl;
@@ -62,7 +62,7 @@ void TestDisassembly()
 {
 	try
 	{
-		Disassembly disassembly("./TestCases/example3.bin");
+		Disassembly disassembly("/home/jasonhe/Documents/MyCode/CPP/Cygni/TestCases/factorial.bin");
 		disassembly.ReadCode();
 	}
 	catch (const wchar_t* ex)

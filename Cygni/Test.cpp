@@ -120,9 +120,22 @@ void TestTypeChecker()
 	}
 }
 
+void AppendBytes(vector<byte>& code, byte* bytes, int length)
+{
+	for (int i = 0; i < length; i++)
+	{
+		code.push_back(bytes[i]);
+	}
+}
+
+void AppendUShort(vector<byte> &code, unsigned short x)
+{
+	AppendBytes(code, (byte*)&x, 2);
+}
+
 void TestCompiler()
 {
-	string path = "./TestCases/example3.txt";
+	string path = "./TestCases/factorial.txt";
 	Lexer lexer(path);
 	vector<Token> tokens = lexer.ReadAll();
 	wcout << "*** Lexical Analysis ***" << endl;
@@ -170,7 +183,7 @@ void TestCompiler()
 		program->Accept(&compiler);
 		vector<byte>* code = compiler.code;
 
-		ofstream file("./TestCases/example3.bin", ofstream::binary);
+		ofstream file("./TestCases/factorial.bin", ofstream::binary);
 		if (file)
 		{
 			wcout << L"writing functions" << endl;
@@ -178,10 +191,26 @@ void TestCompiler()
 			{
 				wcout << L"function " << f->name << endl;
 				wcout << L"function code size = " << f->code->size() << endl;
+
+				byte fbegin = (byte) OpCode::function_begin;
+				file.write((char*)&fbegin, sizeof(fbegin));
+
+				vector<byte> f_info;
+				AppendUShort(f_info, (unsigned short) f->parameterSize);
+				AppendUShort(f_info, (unsigned short) f->frameSize);
+
+				for (byte item: f_info)
+				{
+					file.write((char*)&item, sizeof(item));
+				}
+
 				for (byte item: *(f->code))
 				{
 					file.write((char*)&item, sizeof(item));
 				}
+
+				byte fend = (byte) OpCode::function_end;
+				file.write((char*)&fend, sizeof(fend));
 				wcout << L"function " << f->name << " finished" << endl;
 			}
 			wcout << L"code size: " << code->size() << endl;

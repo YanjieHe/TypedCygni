@@ -21,6 +21,7 @@ Decoder::Decoder(string path)
 	}
 	else
 	{
+		wcout << "cannot open binary file" << endl;
 		throw "cannot open binary file" + path;
 	}
 }

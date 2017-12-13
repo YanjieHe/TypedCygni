@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 	locale loc("");
 	locale::global(loc);
 
-	TestDisassembly();
-	TestDecoderReadFile();
+	// TestDisassembly();
+	// TestDecoderReadFile();
 	return 0;
 }
