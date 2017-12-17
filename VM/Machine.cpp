@@ -7,6 +7,7 @@ using namespace std;
 Machine::Machine(ConstantPool pool, i32 staticSize)
 	:code{nullptr}, pc{0}, sp{-1}, fp{0}, ret{-1}, running{true}, pool{pool}
 {
+	this->codePointer = 0;
 	static_v.reserve(staticSize);
 	memory.reserve(1000000);
 	for (int i = 0; i < 1000000; i++)
@@ -27,11 +28,13 @@ void Machine::LoadProgram(ByteCode* code)
 {
 	this->globalCode = code;
 	this->code = code;
+	this->codeList.push_back(code);
 }
 
 void Machine::LoadFunction(Function f)
 {
 	functions.push_back(f);
+	this->codeList.push_back(&(f.code));
 }
 
 i32 Machine::ReadUShort()
@@ -49,9 +52,36 @@ void Machine::MainLoop()
 		pc++;
 
 		wcout << L"memory sp = " << sp << L" fp = " << fp << endl;
-		for (int i = 0; i < 20; i++)
+		for (int i = 0; i < 40; i++)
 		{
-			wcout << memory[i].i32_v << L"  ";
+			if (memory[i].i32_v == -100)
+			{
+				wcout << "*  ";
+			}
+			else
+			{
+				wcout << memory[i].i32_v << L"  ";
+			}
+		}
+		wcout << endl;
+		for (int i = 0; i < 40; i++)
+		{
+			if (i != sp && i != fp)
+			{
+				wcout << "*  ";
+			}
+			else if (i == sp && i == fp)
+			{
+				wcout << L"sp(fp)  ";
+			}
+			else if (i == sp)
+			{
+				wcout << L"sp  ";
+			}
+			else if (i == fp)
+			{
+				wcout << L"fp  ";
+			}
 		}
 		wcout << endl;
 		wcout << L"run: " << opcode_to_wstring(op) << endl;
@@ -123,6 +153,7 @@ void Machine::MainLoop()
 			}
 			case OpCode::pop_static_i32:
 			{
+				wcout << "ReadUShort: " << ReadUShort() << endl;
 				static_v[ReadUShort()].i32_v = memory[sp].i32_v;
 				sp--;
 				pc += 2;
@@ -180,6 +211,7 @@ void Machine::MainLoop()
 			}
 			case OpCode::mul_i32:
 			{
+				wcout << "mul_i32: " << memory[sp-1].i32_v << "*" << memory[sp].i32_v << endl;
 				memory[sp - 1].i32_v = memory[sp - 1].i32_v * memory[sp].i32_v;
 				sp--;
 				break;
@@ -256,6 +288,7 @@ void Machine::MainLoop()
 			}
 			case OpCode::eq_i32:
 			{
+				wcout << L"eq_i32: " << memory[sp - 1].i32_v << L"==" << memory[sp].i32_v << endl;
 				memory[sp - 1].i32_v = memory[sp - 1].i32_v == memory[sp].i32_v;
 				sp--;
 				break;
@@ -366,43 +399,56 @@ void Machine::MainLoop()
 
 			case OpCode::invoke:
 			{
-				wcout << "invoke" << endl;
 				i32 args_size = ReadUShort();
 				pc += 2;
 				i32 function_id = memory[sp].i32_v;
-				sp--;
 
-				Function& f = functions[function_id];
-				wcout << "args_size = " << f.parametersSize << endl;
-				wcout << "frame_size = " << f.frameSize << endl;
-				fp = sp - f.parametersSize + 1;
-				sp = fp + f.frameSize;
+				Function* f = &(functions[function_id]);
 
-				ret = pc;
+				i32 prev_fp = fp;
+
+				fp = sp - f->parametersSize;
+				memory[fp + f->frameSize].i32_v = pc;
+				memory[fp + f->frameSize + 1].i32_v = prev_fp;
+				memory[fp + f->frameSize + 2].i32_v = this->codePointer;
+				const int offset = 3;
+				sp = fp + f->frameSize + offset - 1;
 				pc = 0;
-				call_stack.push(code);
-				wcout << "call_stack: " << call_stack.size() << endl;
-				code = &(f.code);
+				code = &(f->code);
+				this->codePointer = function_id + 1;
 				break;
 			}
 
 			case OpCode::return_i32:
 			{
-				pc = ret;
-				code = call_stack.top();
-				call_stack.pop();
-				memory[fp].i32_v = memory[sp].i32_v;
-				wcout << "stack_peek: " << memory[sp].i32_v << endl;
+				i32 result = memory[sp].i32_v;
+				sp--;
+
+				codePointer = memory[sp].i32_v;
+				sp--;
+
+				i32 prev_fp = memory[sp].i32_v;
+				sp--;
+
+				pc = memory[sp].i32_v;
+				sp--;
+
 				sp = fp;
+				fp = prev_fp;
+				memory[sp].i32_v = result;
+				code = codeList.at(codePointer);
 				break;
 			}
 			case OpCode::return_f64:
 			{
+				/*
 				pc = ret;
 				code = call_stack.top();
 				call_stack.pop();
 				memory[fp].f64_v = memory[sp].f64_v;
 				sp = fp;
+				*/
+				throw L"not implemented";
 				break;
 			}
 			default:

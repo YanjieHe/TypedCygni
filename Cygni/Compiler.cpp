@@ -371,7 +371,6 @@ void Compiler::Visit(FullConditionalExpression* node)
 	WriteUShort(index, (unsigned short) CurrentIndex());
 
 	node->ifFalse->Accept(this);
-	wcout << "write " << CurrentIndex() << endl;
 	WriteUShort(index2, (unsigned short) CurrentIndex());
 }
 

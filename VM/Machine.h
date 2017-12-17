@@ -13,6 +13,7 @@ using std::stack;
 using Heap = std::vector<Any>;
 using ConstantPool = std::vector<Any>;
 using ByteCode = std::vector<byte>;
+using ByteCodeList = std::vector<ByteCode*>;
 
 class Machine
 {
@@ -25,6 +26,9 @@ public:
 private:
 	ByteCode* code;
 	ByteCode* globalCode;
+	ByteCodeList codeList;
+	i32 codePointer;
+	
 
 	i32 pc; // program counter
 	i32 sp; // stack pointer
@@ -37,7 +41,6 @@ private:
 	Heap memory;
 
 	vector<Function> functions;
-	stack<ByteCode*> call_stack;
 
 	i32 ReadUShort();
 	void MainLoop();

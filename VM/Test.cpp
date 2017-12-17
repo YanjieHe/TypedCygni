@@ -62,7 +62,7 @@ void TestDisassembly()
 {
 	try
 	{
-		Disassembly disassembly("/home/jasonhe/Documents/MyCode/CPP/Cygni/TestCases/factorial.bin");
+		Disassembly disassembly("/home/jasonhe/Documents/MyCode/CPP/Cygni/TestCases/multiplication.bin");
 		disassembly.ReadCode();
 	}
 	catch (const wchar_t* ex)
