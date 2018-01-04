@@ -114,6 +114,6 @@ enum class OpCode
 
 wstring opcode_to_wstring(OpCode code);
 
-i32 OperandSize(OpCode op);
+u32 OperandSize(OpCode op);
 
-#endif // OPCODE_H 
+#endif // OPCODE_H

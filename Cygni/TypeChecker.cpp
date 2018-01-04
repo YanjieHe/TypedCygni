@@ -5,58 +5,58 @@
 using namespace std;
 
 TypeChecker::TypeChecker(DebugInfo& debugInfo, LocationRecord& record)
-	:debugInfo{debugInfo}, record{record}
+    : debugInfo{debugInfo}, record{record}
 {
-	this->scope = new GlobalScope();
-	this->fenv = new FunctionEnv();
-	this->env = new TypeEnv(fenv);
+    this->scope = new GlobalScope();
+    this->fenv = new FunctionList();
+    this->env = new GlobalTypeEnv();
 }
 
 void TypeChecker::Visit(UnaryExpression* node)
 {
 	node->operand->Accept(this);
-	if (node->operand->GetType()->IsInt())
+    if (node->operand->type.IsInt())
 	{
 		if (node->kind == ExpressionKind::UnaryPlus)
 		{
-			node->SetType(Type::Int());
+            node->type = Type::Int();
 		}
 		else if (node->kind == ExpressionKind::Negate)
-		{
-			node->SetType(Type::Int());
+        {
+            node->type = Type::Int();
 		}
 		else
 		{
 			throw SemanticException(debugInfo.Locate(node),
-					L"not supported unary operation");
+                                    L"not supported unary operation");
 		}
 	}
-	else if (node->operand->GetType()->IsDouble())
+    else if (node->operand->type.IsDouble())
 	{
 		if (node->kind == ExpressionKind::UnaryPlus)
 		{
-			node->SetType(Type::Double());
+            node->type = Type::Double();
 		}
 		else if (node->kind == ExpressionKind::Negate)
 		{
-			node->SetType(Type::Double());
+            node->type = Type::Double();
 		}
 		else
 		{
 			throw SemanticException(debugInfo.Locate(node),
-					L"not supported unary operation");
+                                    L"not supported unary operation");
 		}
 	}
-	else if (node->operand->GetType()->IsBoolean())
+    else if (node->operand->type.IsBoolean())
 	{
 		if (node->kind == ExpressionKind::Not)
 		{
-			node->SetType(Type::Boolean());
+            node->type = Type::Boolean();
 		}
 		else
 		{
 			throw SemanticException(debugInfo.Locate(node),
-					L"not supported unary operation");
+                                    L"not supported unary operation");
 		}
 	}
 }
@@ -64,97 +64,62 @@ void TypeChecker::Visit(UnaryExpression* node)
 void TypeChecker::Visit(BinaryExpression* node)
 {
 	node->left->Accept(this);
-	node->right->Accept(this);
+    node->right->Accept(this);
 
-	if (node->left->GetType()->IsInt() && node->right->GetType()->IsInt())
+    if (node->left->type.IsInt() && node->right->type.IsInt())
 	{
-		switch (node->kind)
-		{
-			case ExpressionKind::Add:
-			case ExpressionKind::Subtract:
-			case ExpressionKind::Multiply:
-			case ExpressionKind::Divide:
-			case ExpressionKind::Modulo:
-				node->SetType(Type::Int());
-				return;
-			case ExpressionKind::GreaterThan:
-			case ExpressionKind::LessThan:
-			case ExpressionKind::GreaterThanOrEqual:
-			case ExpressionKind::LessThanOrEqual:
-			case ExpressionKind::Equal:
-			case ExpressionKind::NotEqual:
-				node->SetType(Type::Boolean());
-				return;
-			case ExpressionKind::Assign:
-				node->SetType(Type::Int());
-				return;
-			default:
-				throw SemanticException(debugInfo.Locate(node),
-						L"not supported binary operation");
-		}
+        VisitBinary(node, Type::Int());
 	}
-	else if (node->left->GetType()->IsDouble() && node->right->GetType()->IsDouble())
-	{
-		switch (node->kind)
-		{
-			case ExpressionKind::Add:
-			case ExpressionKind::Subtract:
-			case ExpressionKind::Multiply:
-			case ExpressionKind::Divide:
-			case ExpressionKind::Modulo:
-				node->SetType(Type::Double());
-				return;
-			case ExpressionKind::GreaterThan:
-			case ExpressionKind::LessThan:
-			case ExpressionKind::GreaterThanOrEqual:
-			case ExpressionKind::LessThanOrEqual:
-			case ExpressionKind::Equal:
-			case ExpressionKind::NotEqual:
-				node->SetType(Type::Boolean());
-				return;
-			case ExpressionKind::Assign:
-				node->SetType(Type::Double());
-				return;
-			default:
-				throw SemanticException(debugInfo.Locate(node),
-						L"not supported binary operation");
-		}
+    else if (node->left->type.IsDouble() && node->right->type.IsDouble())
+    {
+        VisitBinary(node, Type::Double());
 	}
+    else if (node->left->type.IsInt() && node->right->type.IsDouble())
+    {
+        Position p = debugInfo.Locate(node->left);
+        node->left = Expression::Convert(node->left, Type::Double());
+        debugInfo.Record(p.line, p.column, node->left);
+        VisitBinary(node, Type::Double());
+    }
+    else if (node->left->type.IsDouble() && node->right->type.IsInt())
+    {
+        Position p = debugInfo.Locate(node->right);
+        node->right = Expression::Convert(node->right, Type::Double());
+        debugInfo.Record(p.line, p.column, node->right);
+        VisitBinary(node, Type::Double());
+    }
 	else
 	{
 		throw SemanticException(debugInfo.Locate(node),
-				L"not supported binary operation");
+                                L"not supported binary operation");
 	}
 }
 
 void TypeChecker::Visit(ConstantExpression* node)
 {
-	if (node->constant.tag == TypeTag::Int)
-	{
-		node->SetType(Type::Int());
-	}
-	else if (node->constant.tag == TypeTag::Double)
-	{
-		node->SetType(Type::Double());
-	}
-	else if (node->constant.tag == TypeTag::Boolean)
-	{
-		node->SetType(Type::Boolean());
-	}
-	else if (node->constant.tag == TypeTag::String)
-	{
-		node->SetType(Type::String());
-	}
-	else
-	{
-		throw SemanticException(debugInfo.Locate(node),
-				L"unsupported constant type");
-	}
+    switch (node->constant.tag)
+    {
+    case TypeTag::Int:
+        node->type = Type::Int();
+        break;
+    case TypeTag::Boolean:
+        node->type = Type::Boolean();
+        break;
+    case TypeTag::Double:
+        node->type = Type::Double();
+        break;
+    case TypeTag::String:
+        node->type = Type::String();
+        break;
+    default:
+        throw SemanticException(debugInfo.Locate(node),
+                                L"unsupported constant type");
+    }
 }
 
 void TypeChecker::Visit(BlockExpression* node)
 {
-	for (Expression* expression: node->expressions)
+    for (Expression* expression : node->expressions)
 	{
 		if (expression->kind == ExpressionKind::Define)
 		{
@@ -162,7 +127,7 @@ void TypeChecker::Visit(BlockExpression* node)
 		}
 	}
 
-	for (Expression* expression: node->expressions)
+    for (Expression* expression : node->expressions)
 	{
 		if (expression->kind != ExpressionKind::Define)
 		{
@@ -192,48 +157,50 @@ void TypeChecker::Visit(ParameterExpression* node)
 		int index = fenv->Find(node->name);
 		if (index != -1)
 		{
-			record.Record(node, Location(LocationKind::StaticMethod, index));
-			node->SetType(fenv->ResolveType(node->name));
+            record.Record(node, Location(LocationKind::FunctionID, index));
+            node->type = fenv->ResolveType(node->name);
 		}
 		else
 		{
 			throw SemanticException(debugInfo.Locate(node),
-					L"not defined variable: " + node->name);
+                                    L"not defined variable: " + node->name);
 		}
 	}
 	else
 	{
 		record.Record(node, location);
-		node->SetType(env->Find(node->name));
+        node->type = env->Find(node->name);
 	}
 }
 
 void TypeChecker::Visit(CallExpression* node)
 {
 	node->procedure->Accept(this);
-	vector<Type*> argsType;
-	for (Expression* item: node->arguments)
+    vector<Type> argsType;
+    for (Expression* item : node->arguments)
 	{
 		item->Accept(this);
-		argsType.push_back(item->GetType()->Clone());
+        argsType.push_back(item->type);
 	}
 
-	if (node->procedure->GetType()->tag == TypeTag::Function)
+    if (node->procedure->type.IsFunction())
 	{
-		FunctionType* ft = (FunctionType*) node->procedure->GetType();
-		if (ft->ParametersMatch(argsType))
+        Type ft = node->procedure->type;
+
+        if (ft.ParametersMatch(argsType))
 		{
-			node->SetType(ft->returnType->Clone());
-			return;
+            node->type = ft.ReturnType();
 		}
 		else
 		{
-			throw SemanticException(debugInfo.Locate(node), L"arguments type error");
+            throw SemanticException(debugInfo.Locate(node),
+                                    L"arguments type error");
 		}
 	}
 	else
 	{
-		throw SemanticException(debugInfo.Locate(node), L"procedure type error");
+        throw SemanticException(debugInfo.Locate(node),
+                                L"procedure type error");
 	}
 }
 
@@ -246,17 +213,18 @@ void TypeChecker::Visit(WhileExpression* node)
 void TypeChecker::Visit(VarExpression* node)
 {
 	node->value->Accept(this);
-	if (node->GetType()->tag == TypeTag::Unknown)
+    if (node->type.tag == TypeTag::Unknown)
 	{
-		node->SetType(node->value->GetType());
+        node->type = node->value->type;
 		if (scope->Define(node->name))
 		{
 			record.Record(node, scope->Find(node->name));
-			env->Define(node->name, node->GetType());
+            env->Define(node->name, node->type);
 		}
 		else
 		{
-			throw SemanticException(debugInfo.Locate(node), L"name already defined");
+            throw SemanticException(debugInfo.Locate(node),
+                                    L"name already defined");
 		}
 	}
 	else
@@ -268,7 +236,7 @@ void TypeChecker::Visit(VarExpression* node)
 void TypeChecker::Visit(DefaultExpression* node)
 {
 	// TO DO
-	return;
+    throw NotImplementedException();
 }
 
 void TypeChecker::Visit(DefineExpression* node)
@@ -276,13 +244,13 @@ void TypeChecker::Visit(DefineExpression* node)
 	Scope* prev = scope;
 	scope = new FunctionScope(scope);
 	TypeEnv* prev_env = env;
-	env = new TypeEnv(fenv, env);
-	for (ParameterExpression* item: node->parameters)
+    env = new FunctionTypeEnv(node->type, env);
+    for (ParameterExpression* item : node->parameters)
 	{
 		scope->Define(item->name);
-		env->Define(item->name, item->GetType());
+        env->Define(item->name, item->type);
 	}
-	fenv->Define(node->name, node->GetType());
+    fenv->Define(node->name, node->type);
 	node->body->Accept(this);
 	node->frameSize = scope->Size();
 	delete scope;
@@ -293,20 +261,66 @@ void TypeChecker::Visit(DefineExpression* node)
 
 void TypeChecker::Visit(NewExpression* node)
 {
-	// TO DO
-	return;
+    // TO DO
+    throw NotImplementedException();
 }
 
 void TypeChecker::Visit(AssignExpression* node)
 {
 	node->variable->Accept(this);
 	node->value->Accept(this);
-	node->SetType(node->variable->GetType());
+    node->type = (node->variable->type);
 }
 
 void TypeChecker::Visit(ReturnExpression* node)
 {
-	node->value->Accept(this);
-	// TO DO: function return type check
-	node->SetType(node->value->GetType());
+    if (!env->IsGlobal())
+    {
+        node->value->Accept(this);
+        FunctionTypeEnv* ftenv = static_cast<FunctionTypeEnv*>(env);
+        if (node->value->type.Mathces(ftenv->type.ReturnType()))
+        {
+            node->type = (node->value->type);
+        }
+        else if (node->value->type.IsSubtypeOf(ftenv->type.ReturnType()))
+        {
+            throw NotImplementedException();
+        }
+        else
+        {
+            throw SemanticException(debugInfo.Locate(node),
+                                    L"type of the return statement does not "
+                                    L"match the return type of the function");
+        }
+    }
+    else
+    {
+        throw SemanticException(debugInfo.Locate(node),
+                                L"return statement should be in a function");
+    }
+}
+
+void TypeChecker::VisitBinary(BinaryExpression* node, Type typeOfArithmetic)
+{
+    switch (node->kind)
+    {
+    case ExpressionKind::Add:
+    case ExpressionKind::Subtract:
+    case ExpressionKind::Multiply:
+    case ExpressionKind::Divide:
+    case ExpressionKind::Modulo:
+        node->type = typeOfArithmetic;
+        return;
+    case ExpressionKind::GreaterThan:
+    case ExpressionKind::LessThan:
+    case ExpressionKind::GreaterThanOrEqual:
+    case ExpressionKind::LessThanOrEqual:
+    case ExpressionKind::Equal:
+    case ExpressionKind::NotEqual:
+        node->type = Type::Boolean();
+        return;
+    default:
+        throw SemanticException(debugInfo.Locate(node),
+                                L"not supported binary operation");
+    }
 }

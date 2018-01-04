@@ -7,7 +7,7 @@ Scope::Scope()
 
 bool Scope::Define(wstring name)
 {
-	int n = table.size();
+    int n = static_cast<int>(table.size());
 	if (HasKey(name))
 	{
 		return false;
@@ -27,11 +27,14 @@ bool Scope::HasKey(wstring name)
 
 int Scope::Size()
 {
-	return table.size();
+    return static_cast<int>(table.size());
 }
 
-GlobalScope::GlobalScope()
-	:Scope()
+Scope::~Scope()
+{
+}
+
+GlobalScope::GlobalScope() : Scope()
 {
 }
 
@@ -47,8 +50,7 @@ Location GlobalScope::Find(wstring name)
 	}
 }
 
-FunctionScope::FunctionScope(Scope* parent)
-	:Scope(), parent{parent}
+FunctionScope::FunctionScope(Scope* parent) : Scope(), parent{parent}
 {
 }
 
@@ -56,7 +58,7 @@ Location FunctionScope::Find(wstring name)
 {
 	if (HasKey(name))
 	{
-		return Location(LocationKind::Function, table[name]);
+        return Location(LocationKind::InFunction, table[name]);
 	}
 	else
 	{

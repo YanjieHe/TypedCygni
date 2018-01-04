@@ -1,8 +1,8 @@
 #ifndef STRINGBUILDER_H
 #define STRINGBUILDER_H
 
-#include <vector>
 #include <string>
+#include <vector>
 
 using std::vector;
 using std::wstring;
@@ -15,12 +15,10 @@ class StringBuilder
 	void Append(wchar_t c);
 	void Append(wstring& str);
 	void Clear();
-	wstring ToString();
-
-	~StringBuilder();
+    wstring ToString();
 
   private:
-	vector<wchar_t>* vec;
+    vector<wchar_t> vec;
 };
 
-#endif // STRINGBUILDER_H 
+#endif // STRINGBUILDER_H

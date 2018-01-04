@@ -1,7 +1,7 @@
 #include "Parser.h"
 
 Parser::Parser(vector<Token>& tokens, DebugInfo& debugInfo)
-	:tokens{tokens}, tokens_pointer{0}, debugInfo{debugInfo}
+    : tokens{tokens}, tokens_pointer{0}, debugInfo{debugInfo}
 {
 }
 
@@ -13,7 +13,7 @@ Expression* Parser::Program()
 		expressions.push_back(Statement());
 	}
 	Expression* result = new BlockExpression(expressions);
-	Record(0, 1, result);
+    Record(Position(0, 1), result);
 	return result;
 }
 
@@ -29,7 +29,7 @@ inline void Parser::Back()
 
 inline Token& Parser::Current()
 {
-	return tokens[tokens_pointer];
+    return tokens.at(tokens_pointer);
 }
 
 inline int Parser::Line()
@@ -39,7 +39,12 @@ inline int Parser::Line()
 
 inline int Parser::Column()
 {
-	return Current().column;
+    return Current().column;
+}
+
+Position Parser::CurrentPosition()
+{
+    return Position(Current().line, Current().column);
 }
 
 inline bool Parser::IsEof()
@@ -56,23 +61,22 @@ void Parser::Match(TokenKind kind)
 	else
 	{
 		throw SyntaxException(Line(), Column(),
-				L"expecting " + token_kind_to_wstring(kind) + 
-				L", unexpected " +
-				token_kind_to_wstring(Current().kind));
+                              L"expecting " + token_kind_to_wstring(kind) +
+                                  L", unexpected " +
+                                  token_kind_to_wstring(Current().kind));
 	}
 }
 
-inline void Parser::Record(int line, int column, Expression* expression)
+inline void Parser::Record(Position position, Expression* expression)
 {
-	debugInfo.Record(line, column, expression);
+    debugInfo.Record(position, expression);
 }
 
 Expression* Parser::Block()
 {
-	int currentLine = Line();
-	int currentColumn = Column();
+    Position position = CurrentPosition();
 
-	Match(TokenKind::LeftBrace);
+    Match(TokenKind::LeftBrace);
 	vector<Expression*> expressions;
 	while (Current().kind != TokenKind::RightBrace)
 	{
@@ -80,7 +84,7 @@ Expression* Parser::Block()
 	}
 	Match(TokenKind::RightBrace);
 	Expression* result = new BlockExpression(expressions);
-	Record(currentLine, currentColumn, result);
+    Record(position, result);
 	return result;
 }
 
@@ -88,18 +92,18 @@ Expression* Parser::Statement()
 {
 	switch (Current().kind)
 	{
-		case TokenKind::Var:
-			return Var();
-		case TokenKind::Define:
-			return Define();
-		case TokenKind::If:
-			return If();
-		case TokenKind::While:
-			return While();
-		case TokenKind::Return:
-			return Return();
-		default:
-			return Assign();
+    case TokenKind::Var:
+        return Var();
+    case TokenKind::Define:
+        return Define();
+    case TokenKind::If:
+        return If();
+    case TokenKind::While:
+        return While();
+    case TokenKind::Return:
+        return Return();
+    default:
+        return Assign();
 	}
 }
 
@@ -108,18 +112,19 @@ Expression* Parser::Assign()
 	Expression* left = Or();
 	if (Current().kind == TokenKind::Assign)
 	{
-		int currentLine = Line();
-		int currentColumn = Column();
+        Position position = CurrentPosition();
+
 		Advance();
 		Expression* right = Or();
 		if (left->kind == ExpressionKind::Parameter)
 		{
-			left = new AssignExpression((ParameterExpression*)left, right);
-			Record(currentLine, currentColumn, left);
+            left = new AssignExpression(static_cast<ParameterExpression*>(left),
+                                        right);
+            Record(position, left);
 		}
 		else
 		{
-			throw SyntaxException(currentLine, currentColumn, L"can't assign to left object");
+            throw SyntaxException(position, L"can't assign to left object");
 		}
 	}
 	return left;
@@ -130,12 +135,12 @@ Expression* Parser::Or()
 	Expression* left = And();
 	while (Current().kind == TokenKind::Or)
 	{
-		int currentLine = Line();
-		int currentColumn = Column();
+        Position position = CurrentPosition();
+
 		Advance();
 		Expression* right = And();
 		left = new BinaryExpression(ExpressionKind::Or, left, right);
-		Record(currentLine, currentColumn, left);
+        Record(position, left);
 	}
 	return left;
 }
@@ -145,12 +150,12 @@ Expression* Parser::And()
 	Expression* left = Equality();
 	while (Current().kind == TokenKind::And)
 	{
-		int currentLine = Line();
-		int currentColumn = Column();
+        Position position = CurrentPosition();
+
 		Advance();
 		Expression* right = Equality();
 		left = new BinaryExpression(ExpressionKind::And, left, right);
-		Record(currentLine, currentColumn, left);
+        Record(position, left);
 	}
 	return left;
 }
@@ -159,20 +164,21 @@ Expression* Parser::Equality()
 {
 	Expression* left = Relation();
 	while (Current().kind == TokenKind::Equal ||
-			Current().kind == TokenKind::NotEqual)
+           Current().kind == TokenKind::NotEqual)
 	{
 		Token& token = Current();
+        Position position = CurrentPosition();
 		Advance();
 		Expression* right = Relation();
 		if (token.kind == TokenKind::Equal)
 		{
 			left = new BinaryExpression(ExpressionKind::Equal, left, right);
-			Record(token.line, token.column, left);
+            Record(position, left);
 		}
 		else
 		{
 			left = new BinaryExpression(ExpressionKind::NotEqual, left, right);
-			Record(token.line, token.column, left);
+            Record(position, left);
 		}
 	}
 	return left;
@@ -187,27 +193,31 @@ Expression* Parser::Relation()
 		Current().kind == TokenKind::LessThanOrEqual)
 	{
 		Token& token = Current();
+        Position position = CurrentPosition();
 		Advance();
 		Expression* right = Addition();
 		switch (token.kind)
 		{
-			case TokenKind::GreaterThan:
-				left = new BinaryExpression(ExpressionKind::GreaterThan, left, right);
-				Record(token.line, token.column, left);
-				break;
-			case TokenKind::LessThan:
-				left = new BinaryExpression(ExpressionKind::LessThan, left, right);
-				Record(token.line, token.column, left);
-				break;
-			case TokenKind::GreaterThanOrEqual:
-				left = new BinaryExpression(ExpressionKind::GreaterThanOrEqual, left, right);
-				Record(token.line, token.column, left);
-				break;
-			default:
-			case TokenKind::LessThanOrEqual:
-				left = new BinaryExpression(ExpressionKind::LessThanOrEqual, left, right);
-				Record(token.line, token.column, left);
-				break;
+        case TokenKind::GreaterThan:
+            left =
+                new BinaryExpression(ExpressionKind::GreaterThan, left, right);
+            Record(position, left);
+            break;
+        case TokenKind::LessThan:
+            left = new BinaryExpression(ExpressionKind::LessThan, left, right);
+            Record(position, left);
+            break;
+        case TokenKind::GreaterThanOrEqual:
+            left = new BinaryExpression(ExpressionKind::GreaterThanOrEqual,
+                                        left, right);
+            Record(position, left);
+            break;
+        default:
+        case TokenKind::LessThanOrEqual:
+            left = new BinaryExpression(ExpressionKind::LessThanOrEqual, left,
+                                        right);
+            Record(position, left);
+            break;
 		}
 	}
 	return left;
@@ -217,20 +227,21 @@ Expression* Parser::Addition()
 {
 	Expression* left = Multiplication();
 	while (Current().kind == TokenKind::Add ||
-			Current().kind == TokenKind::Subtract)
+           Current().kind == TokenKind::Subtract)
 	{
 		Token& token = Current();
+        Position position = CurrentPosition();
 		Advance();
 		Expression* right = Multiplication();
 		if (token.kind == TokenKind::Add)
 		{
 			left = new BinaryExpression(ExpressionKind::Add, left, right);
-			Record(token.line, token.column, left);
+            Record(position, left);
 		}
 		else
 		{
 			left = new BinaryExpression(ExpressionKind::Subtract, left, right);
-			Record(token.line, token.column, left);
+            Record(position, left);
 		}
 	}
 	return left;
@@ -240,26 +251,27 @@ Expression* Parser::Multiplication()
 {
 	Expression* left = Unary();
 	while (Current().kind == TokenKind::Multiply ||
-			Current().kind == TokenKind::Divide ||
-			Current().kind == TokenKind::Modulo)
+           Current().kind == TokenKind::Divide ||
+           Current().kind == TokenKind::Modulo)
 	{
 		Token& token = Current();
+        Position position = CurrentPosition();
 		Advance();
 		Expression* right = Unary();
 		if (token.kind == TokenKind::Multiply)
 		{
 			left = new BinaryExpression(ExpressionKind::Multiply, left, right);
-			Record(token.line, token.column, left);
+            Record(position, left);
 		}
 		else if (token.kind == TokenKind::Divide)
 		{
 			left = new BinaryExpression(ExpressionKind::Divide, left, right);
-			Record(token.line, token.column, left);
+            Record(position, left);
 		}
 		else
 		{
 			left = new BinaryExpression(ExpressionKind::Modulo, left, right);
-			Record(token.line, token.column, left);
+            Record(position, left);
 		}
 	}
 	return left;
@@ -272,24 +284,28 @@ Expression* Parser::Unary()
 		Current().kind == TokenKind::Not)
 	{
 		Token& token = Current();
+        Position position = CurrentPosition();
 		Advance();
 		Expression* operand = Unary();
 		if (token.kind == TokenKind::Add)
 		{
-			Expression* result = new UnaryExpression(ExpressionKind::UnaryPlus, operand);
-			Record(token.line, token.column, result);
+            Expression* result =
+                new UnaryExpression(ExpressionKind::UnaryPlus, operand);
+            Record(position, result);
 			return result;
 		}
 		else if (token.kind == TokenKind::Subtract)
 		{
-			Expression* result = new UnaryExpression(ExpressionKind::Negate, operand);
-			Record(token.line, token.column, result);
+            Expression* result =
+                new UnaryExpression(ExpressionKind::Negate, operand);
+            Record(position, result);
 			return result;
 		}
 		else
 		{
-			Expression* result = new UnaryExpression(ExpressionKind::Not, operand);
-			Record(token.line, token.column, result);
+            Expression* result =
+                new UnaryExpression(ExpressionKind::Not, operand);
+            Record(position, result);
 			return result;
 		}
 	}
@@ -299,7 +315,8 @@ Expression* Parser::Unary()
 Expression* Parser::Postfix()
 {
 	Expression* left = Factor();
-	Token& token = Current();
+    //	Token& token = Current();
+    Position position = CurrentPosition();
 	while (Current().kind == TokenKind::LeftParenthesis)
 	{
 		Advance();
@@ -308,7 +325,7 @@ Expression* Parser::Postfix()
 		{
 			Advance();
 			left = new CallExpression(left, arguments);
-			Record(token.line, token.column, left);
+            Record(position, left);
 		}
 		else
 		{
@@ -320,7 +337,7 @@ Expression* Parser::Postfix()
 			}
 			Advance();
 			left = new CallExpression(left, arguments);
-			Record(token.line, token.column, left);
+            Record(position, left);
 		}
 	}
 	return left;
@@ -337,74 +354,66 @@ Expression* Parser::Factor()
 	}
 	else if (Current().kind == TokenKind::Integer)
 	{
-		int currentLine = Line();
-		int currentColumn = Column();
+        Position position = CurrentPosition();
+
 		Constant value(TypeTag::Int, Current().text); // TO DO: Int64
 		Advance();
 		Expression* result = new ConstantExpression(value);
-		Record(currentLine, currentColumn, result);
+        Record(position, result);
 		return result;
 	}
 	else if (Current().kind == TokenKind::Float)
 	{
-		int currentLine = Line();
-		int currentColumn = Column();
+        Position position = CurrentPosition();
+
 		Constant value(TypeTag::Double, Current().text); // TO DO: Float32
 		Advance();
 		Expression* result = new ConstantExpression(value);
-		Record(currentLine, currentColumn, result);
+        Record(position, result);
 		return result;
 	}
 	else if (Current().kind == TokenKind::String)
 	{
-		int currentLine = Line();
-		int currentColumn = Column();
+        Position position = CurrentPosition();
+
 		Constant value(TypeTag::String, Current().text);
 		Advance();
 		Expression* result = new ConstantExpression(value);
-		Record(currentLine, currentColumn, result);
+        Record(position, result);
 		return result;
 	}
 	else if (Current().kind == TokenKind::Name)
 	{
-		int currentLine = Line();
-		int currentColumn = Column();
+        Position position = CurrentPosition();
+
 		wstring name = Current().text;
 		Advance();
 		Expression* result = new ParameterExpression(name);
-		Record(currentLine, currentColumn, result);
+        Record(position, result);
 		return result;
 	}
 	else
 	{
 		throw SyntaxException(Line(), Column(),
-				L"syntax error: " +
-				token_kind_to_wstring(Current().kind));
+                              L"syntax error: " +
+                                  token_kind_to_wstring(Current().kind));
 	}
 }
 
-Type* Parser::ParseType()
+Type Parser::ParseType()
 {
 	wstring name = Current().text;
 	Match(TokenKind::Name);
-	if (IsBasicType(name))
+    if (Type::IsBasicType(name))
 	{
-		return BasicType::FromString(name);
+        return Type::FromString(name);
 	}
 	else if (name == L"Array")
 	{
 		Match(TokenKind::LeftBracket);
-		Type* element = ParseType();
-		try
-		{
-			Match(TokenKind::RightBracket);
-		}
-		catch (SyntaxException& ex)
-		{
-			delete element;
-			throw ex;
-		}
-		return new ArrayType(element);
+        Type element = ParseType();
+        Match(TokenKind::RightBracket);
+        return Type::Array(element);
 	}
 	else
 	{
@@ -412,22 +421,10 @@ Type* Parser::ParseType()
 	}
 }
 
-bool Parser::IsBasicType(wstring name)
-{
-	return name == L"Int" || 
-		name == L"Long" ||
-		name == L"Float" ||
-		name == L"Double" ||
-		name == L"Boolean" ||
-		name == L"Char" ||
-		name == L"String" ||
-		name == L"Unit";
-}
-
 Expression* Parser::Var()
 {
-	int currentLine = Line();
-	int currentColumn = Column();
+    Position position = CurrentPosition();
+
 	Match(TokenKind::Var);
 	wstring name = Current().text;
 	Match(TokenKind::Name);
@@ -435,36 +432,28 @@ Expression* Parser::Var()
 	if (Current().kind == TokenKind::Colon)
 	{
 		Match(TokenKind::Colon);
-		Type* type = ParseType();
-		try
-		{
-			Match(TokenKind::Assign);
-			Expression* value = Or();
-			Expression* result = new VarExpression(name, value);
-			result->SetType(type);
-			Record(currentLine, currentColumn, result);
-			return result;
-		}
-		catch (SyntaxException& ex)
-		{
-			delete type;
-			throw ex;
-		}
+        Type type = ParseType();
+        Match(TokenKind::Assign);
+        Expression* value = Or();
+        Expression* result = new VarExpression(name, value);
+        result->type = type;
+        Record(position, result);
+        return result;
 	}
 	else
 	{
-		Match(TokenKind::Assign);	
+        Match(TokenKind::Assign);
 		Expression* value = Or();
 		Expression* result = new VarExpression(name, value);
-		Record(currentLine, currentColumn, result);
+        Record(position, result);
 		return result;
 	}
 }
 
 Expression* Parser::Define()
 {
-	int currentLine = Line();
-	int currentColumn = Column();
+    Position position = CurrentPosition();
+
 	Match(TokenKind::Define);
 	wstring name = Current().text;
 	Match(TokenKind::Name);
@@ -475,15 +464,15 @@ Expression* Parser::Define()
 	if (Current().kind == TokenKind::RightParenthesis)
 	{
 		Match(TokenKind::RightParenthesis);
-		Type* returnType = ParseType();
+        Type returnType = ParseType();
 		Expression* body = Block();
 
-		vector<Type*> parametersType;
+        vector<Type> parametersType;
 
-		FunctionType* ft = new FunctionType(parametersType, returnType);
+        Type ft = Type::Function(parametersType, returnType);
 
 		Expression* result = new DefineExpression(name, parameters, body, ft);
-		Record(currentLine, currentColumn, result);
+        Record(position, result);
 		return result;
 	}
 	else
@@ -496,39 +485,37 @@ Expression* Parser::Define()
 		}
 		Match(TokenKind::RightParenthesis);
 		Match(TokenKind::Colon);
-		Type* returnType = ParseType();
+        Type returnType = ParseType();
 		Expression* body = Block();
 
-		vector<Type*> parametersType;
-		for (ParameterExpression* item: parameters)
+        vector<Type> parametersType;
+        for (ParameterExpression* item : parameters)
 		{
-			parametersType.push_back(((Expression*)item)->GetType()->Clone());
+            parametersType.push_back(item->type);
 		}
-		FunctionType* ft = new FunctionType(parametersType, returnType);
+        Type ft = Type::Function(parametersType, returnType);
 		Expression* result = new DefineExpression(name, parameters, body, ft);
-		Record(currentLine, currentColumn, result);
+        Record(position, result);
 		return result;
 	}
 }
 
-
 ParameterExpression* Parser::Parameter()
 {
-	int currentLine = Line();
-	int currentColumn = Column();
+    Position position = CurrentPosition();
+
 	wstring name = Current().text;
 	Match(TokenKind::Name);
 	Match(TokenKind::Colon);
-	Type* type = ParseType();
+    Type type = ParseType();
 	ParameterExpression* result = new ParameterExpression(name, type);
-	Record(currentLine, currentColumn, result);
+    Record(position, result);
 	return result;
 }
 
 Expression* Parser::If()
 {
-	int currentLine = Line();
-	int currentColumn = Column();
+    Position position = CurrentPosition();
 
 	Match(TokenKind::If);
 	Expression* test = Or();
@@ -539,47 +526,54 @@ Expression* Parser::If()
 		if (Current().kind == TokenKind::If)
 		{
 			Expression* ifFalse = If();
-			Expression* result = new FullConditionalExpression(test, ifTrue, ifFalse);
-			Record(currentLine, currentColumn, result);
+            Expression* result =
+                new FullConditionalExpression(test, ifTrue, ifFalse);
+            Record(position, result);
 			return result;
 		}
 		else
 		{
 			Expression* ifFalse = Block();
-			Expression* result = new FullConditionalExpression(test, ifTrue, ifFalse);
-			Record(currentLine, currentColumn, result);
+            Expression* result =
+                new FullConditionalExpression(test, ifTrue, ifFalse);
+            Record(position, result);
 			return result;
 		}
 	}
 	else
 	{
 		Expression* result = new ConditionalExpression(test, ifTrue);
-		Record(currentLine, currentColumn, result);
+        Record(position, result);
 		return result;
 	}
 }
 
 Expression* Parser::While()
 {
-	int currentLine = Line();
-	int currentColumn = Column();
+    Position position = CurrentPosition();
 
 	Match(TokenKind::While);
 	Expression* condition = Or();
 	Expression* body = Block();
 	Expression* result = new WhileExpression(condition, body);
-	Record(currentLine, currentColumn, result);
+    Record(position, result);
 	return result;
 }
 
 Expression* Parser::Return()
 {
-	int currentLine = Line();
-	int currentColumn = Column();
+    Position position = CurrentPosition();
 
 	Match(TokenKind::Return);
 	Expression* value = Or();
 	Expression* result = new ReturnExpression(value);
-	Record(currentLine, currentColumn, result);
-	return result;
+    Record(position, result);
+    return result;
 }
+
+// Expression* Parser::Require()
+//{
+//    Position position = CurrentPosition();
+//    Match(TokenKind::Require);
+//    return nullptr;
+//}

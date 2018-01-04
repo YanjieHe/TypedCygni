@@ -1,18 +1,18 @@
 #include "Test.h"
+#include "Compiler.h"
+#include "DebugInfo.h"
+#include "Lexer.h"
+#include "Parser.h"
+#include "Scope.h"
 #include "StringBuilder.h"
 #include "Token.h"
-#include "Lexer.h"
 #include "Type.h"
-#include "Parser.h"
-#include "DebugInfo.h"
-#include "Visitor.h"
-#include "Scope.h"
 #include "TypeChecker.h"
-#include "Compiler.h"
-#include <vector>
-#include <iostream>
+#include "Visitor.h"
 #include <fstream>
+#include <iostream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -31,7 +31,7 @@ void TestLexer()
 	Lexer lexer(path);
 	vector<Token> tokens = lexer.ReadAll();
 	wcout << "tokens: " << endl;
-	for (Token& t: tokens)
+    for (Token& t : tokens)
 	{
 		t.Display();
 	}
@@ -39,16 +39,14 @@ void TestLexer()
 
 void TestType()
 {
-	wcout << Type::Int()->ToString() << endl;
-	wcout << Type::Boolean()->ToString() << endl;
+    wcout << Type::Int().ToString() << endl;
+    wcout << Type::Boolean().ToString() << endl;
 
-	vector<Type*> params(2);
-	params.at(0) = Type::Int();
-	params.at(1) = Type::Int();
-	FunctionType ft(params, Type::Int());
+    vector<Type> params = {Type::Int(), Type::Int()};
+    Type ft = Type::Function(params, Type::Int());
 	wcout << ft.ToString() << endl;
 
-	ArrayType atype(Type::String());
+    Type atype = Type::Array(Type::String());
 	wcout << atype.ToString() << endl;
 }
 
@@ -58,11 +56,11 @@ void TestParser()
 	Lexer lexer(path);
 	vector<Token> tokens = lexer.ReadAll();
 	wcout << "tokens: " << endl;
-	for (Token& t: tokens)
+    for (Token& t : tokens)
 	{
 		t.Display();
 	}
-	
+
 	DebugInfo debugInfo;
 	Parser parser(tokens, debugInfo);
 	Expression* program = parser.Program();
@@ -94,11 +92,11 @@ void TestTypeChecker()
 	Lexer lexer(path);
 	vector<Token> tokens = lexer.ReadAll();
 	wcout << "tokens: " << endl;
-	for (Token& t: tokens)
+    for (Token& t : tokens)
 	{
 		t.Display();
 	}
-	
+
 	DebugInfo debugInfo;
 	Parser parser(tokens, debugInfo);
 	Expression* program = parser.Program();
@@ -128,9 +126,9 @@ void AppendBytes(vector<byte>& code, byte* bytes, int length)
 	}
 }
 
-void AppendUShort(vector<byte> &code, unsigned short x)
+void AppendUShort(vector<byte>& code, unsigned short x)
 {
-	AppendBytes(code, (byte*)&x, 2);
+    AppendBytes(code, reinterpret_cast<byte*>(&x), 2);
 }
 
 void TestCompiler()
@@ -139,11 +137,11 @@ void TestCompiler()
 	Lexer lexer(path);
 	vector<Token> tokens = lexer.ReadAll();
 	wcout << "*** Lexical Analysis ***" << endl;
-	for (Token& t: tokens)
+    for (Token& t : tokens)
 	{
 		t.Display();
 	}
-	
+
 	DebugInfo debugInfo;
 	Parser parser(tokens, debugInfo);
 	Expression* program;
@@ -181,59 +179,35 @@ void TestCompiler()
 	{
 		Compiler compiler(debugInfo, record);
 		program->Accept(&compiler);
-		vector<byte>* code = compiler.code;
+        vector<byte> code = compiler.GetByteSequence();
 
 		ofstream file("./TestCases/factorial.bin", ofstream::binary);
 		if (file)
 		{
-			wcout << L"writing functions" << endl;
-			for (Function* f: compiler.functions)
-			{
-				wcout << L"function " << f->name << endl;
-				wcout << L"function code size = " << f->code->size() << endl;
-
-				byte fbegin = (byte) OpCode::function_begin;
-				file.write((char*)&fbegin, sizeof(fbegin));
-
-				vector<byte> f_info;
-				AppendUShort(f_info, (unsigned short) f->parameterSize);
-				AppendUShort(f_info, (unsigned short) f->frameSize);
-
-				for (byte item: f_info)
-				{
-					file.write((char*)&item, sizeof(item));
-				}
-
-				for (byte item: *(f->code))
-				{
-					file.write((char*)&item, sizeof(item));
-				}
-
-				byte fend = (byte) OpCode::function_end;
-				file.write((char*)&fend, sizeof(fend));
-				wcout << L"function " << f->name << " finished" << endl;
-			}
-			wcout << L"code size: " << code->size() << endl;
-			for (byte item: *code)
-			{
-				file.write((char*)&item, sizeof(item));
-			}
-			file.close();
-		}
-		else
-		{
-			throw L"cannot write binary file";
-		}
-
-	}
-	catch (SemanticException& ex)
-	{
-		wcout << ex.message << endl;
-		throw ex;
-	}
-	catch (const wchar_t* ex)
-	{
-		wcout << ex << endl;
-		throw ex;
-	}
+            for (byte item : code)
+            {
+                file.write(reinterpret_cast<char*>(&item), sizeof(byte));
+            }
+            file.close();
+        }
+        else
+        {
+            throw L"cannot write binary file";
+        }
+    }
+    catch (SemanticException& ex)
+    {
+        wcout << ex.message << endl;
+        throw ex;
+    }
+    catch (CompilationException& ex)
+    {
+        wcout << ex.message << endl;
+        throw ex;
+    }
+    catch (const wchar_t* ex)
+    {
+        wcout << ex << endl;
+        throw ex;
+    }
 }

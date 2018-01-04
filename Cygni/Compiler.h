@@ -1,14 +1,14 @@
 #ifndef COMPILER_H
 #define COMPILER_H
 
-#include "Visitor.h"
-#include "Scope.h"
 #include "DebugInfo.h"
-#include "OpCode.h"
 #include "Function.h"
+#include "OpCode.h"
+#include "Scope.h"
+#include "Visitor.h"
 
-#include <vector>
 #include <cstdint>
+#include <vector>
 
 using byte = unsigned char;
 using i32 = int32_t;
@@ -16,16 +16,18 @@ using i64 = int64_t;
 using f32 = float;
 using f64 = double;
 
-class Compiler: public Visitor
+using ByteCode = vector<byte>;
+
+class Compiler : public Visitor
 {
 public:
-	vector<byte>* code;
+    ByteCode* code;
 	DebugInfo& debugInfo;
 	LocationRecord& record;
-	vector<Function*> functions;
+    vector<Function> functions;
+    ByteCode globalCode;
 
     Compiler(DebugInfo& debugInfo, LocationRecord& record);
-    Compiler(DebugInfo& debugInfo, LocationRecord& record, vector<byte>* code);
 
 	void Visit(UnaryExpression* node) override;
 	void Visit(BinaryExpression* node) override;
@@ -46,8 +48,10 @@ public:
 	void Emit(OpCode op);
 	i32 CurrentIndex();
 
-	void AppendBytes(byte* bytes, int length);
+    void AppendBytes(byte* bytes, int length);
 	void AppendUShort(unsigned short x);
+    void AppendBytes(ByteCode& code, byte* bytes, int length);
+    void AppendUShort(ByteCode& code, unsigned short x);
 	void AppendInt(i32 x);
 	void AppendLong(i64 x);
 	void AppendFloat(f32 x);
@@ -59,6 +63,8 @@ public:
 	void WriteLong(int offset, i64 x);
 	void WriteFloat(int offset, f32 x);
 	void WriteDouble(int offset, f64 x);
+
+    ByteCode GetByteSequence();
 };
 
-#endif // COMPILER_H 
+#endif // COMPILER_H

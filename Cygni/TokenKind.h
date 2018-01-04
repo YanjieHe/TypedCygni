@@ -49,19 +49,18 @@ enum class TokenKind
     False,
 
     If,
-	Then,
     Else,
     While,
-	Do,
-	End,
 
 	For,
     Break,
     Return,
+
+    Require,
 
     Eof
 };
 
 std::wstring token_kind_to_wstring(TokenKind kind);
 
-#endif // TOKENKIND_H 
+#endif // TOKENKIND_H

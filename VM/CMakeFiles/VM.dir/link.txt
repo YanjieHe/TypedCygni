@@ -1,1 +1,0 @@
-/usr/bin/c++    -rdynamic CMakeFiles/VM.dir/main.cpp.o CMakeFiles/VM.dir/OpCode.cpp.o CMakeFiles/VM.dir/Machine.cpp.o CMakeFiles/VM.dir/Any.cpp.o CMakeFiles/VM.dir/Test.cpp.o CMakeFiles/VM.dir/Function.cpp.o CMakeFiles/VM.dir/Decoder.cpp.o CMakeFiles/VM.dir/Disassembly.cpp.o  -o VM 

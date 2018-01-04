@@ -1,10 +1,10 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include "Exception.h"
-#include "Token.h"
-#include "Expression.h"
 #include "DebugInfo.h"
+#include "Exception.h"
+#include "Expression.h"
+#include "Token.h"
 #include <vector>
 
 using std::vector;
@@ -17,20 +17,20 @@ public:
 
 private:
 	vector<Token>& tokens;
-	int tokens_pointer;
+    unsigned long tokens_pointer;
 	DebugInfo& debugInfo;
-	
-	
+
 	void Advance();
 	void Back();
 
 	Token& Current();
 	int Line();
 	int Column();
+    Position CurrentPosition();
 
 	bool IsEof();
 	void Match(TokenKind kind);
-	void Record(int line, int column, Expression* expression);
+    void Record(Position position, Expression* expression);
 
 	Expression* Block();
 	Expression* Statement();
@@ -45,8 +45,7 @@ private:
 	Expression* Postfix();
 	Expression* Factor();
 
-	Type* ParseType();
-	bool IsBasicType(wstring name);
+    Type ParseType();
 
 	Expression* Var();
 	Expression* Define();
@@ -54,6 +53,9 @@ private:
 	Expression* If();
 	Expression* While();
 	Expression* Return();
+	Expression* Class();
+
+    Expression* Require();
 };
 
-#endif // PARSER_H 
+#endif // PARSER_H

@@ -21,9 +21,11 @@ public:
 	virtual void Visit(NewExpression* node) = 0;
 	virtual void Visit(AssignExpression* node) = 0;
 	virtual void Visit(ReturnExpression* node) = 0;
+
+    virtual ~Visitor();
 };
 
-class TreeViewer: public Visitor
+class TreeViewer : public Visitor
 {
 public:
 	TreeViewer();
@@ -48,6 +50,7 @@ private:
 	int depth;
 
 	void Indent();
+    void PrintKind(Expression* node);
 };
 
-#endif // VISITOR_H 
+#endif // VISITOR_H

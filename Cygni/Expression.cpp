@@ -1,26 +1,28 @@
 #include "Expression.h"
 #include "Visitor.h"
 
-Expression::Expression(ExpressionKind kind)
-	:kind{kind}
+Expression::Expression(ExpressionKind kind) : kind{kind}
 {
-	this->type = Type::Unknown();
-	this->ID = -1;
+    this->ID = -1;
 }
 
-Type* Expression::GetType()
+Expression::Expression(ExpressionKind kind, Type type) : kind{kind}, type{type}
 {
-	return this->type;
 }
 
-void Expression::SetType(Type* type)
+Expression::~Expression()
 {
-	delete this->type;
-	this->type = type;
+}
+
+UnaryExpression* Expression::Convert(Expression* node, Type type)
+{
+    auto expression = new UnaryExpression(ExpressionKind::Convert, node);
+    expression->type = type;
+    return expression;
 }
 
 UnaryExpression::UnaryExpression(ExpressionKind kind, Expression* operand)
-	:Expression(kind), operand{operand}
+    : Expression(kind), operand{operand}
 {
 }
 
@@ -29,9 +31,9 @@ void UnaryExpression::Accept(Visitor* visitor)
 	visitor->Visit(this);
 }
 
-BinaryExpression::BinaryExpression(ExpressionKind kind,
-		Expression* left, Expression* right)
-	:Expression(kind), left{left}, right{right}
+BinaryExpression::BinaryExpression(ExpressionKind kind, Expression* left,
+                                   Expression* right)
+    : Expression(kind), left{left}, right{right}
 {
 }
 
@@ -40,8 +42,7 @@ void BinaryExpression::Accept(Visitor* visitor)
 	visitor->Visit(this);
 }
 
-Constant::Constant(TypeTag tag, wstring text)
-	:tag{tag}, text{text}
+Constant::Constant(TypeTag tag, wstring text) : tag{tag}, text{text}
 {
 }
 
@@ -66,7 +67,7 @@ double Constant::GetDouble()
 }
 
 ConstantExpression::ConstantExpression(Constant constant)
-	:Expression(ExpressionKind::Constant), constant{constant}
+    : Expression(ExpressionKind::Constant), constant{constant}
 {
 }
 
@@ -76,7 +77,7 @@ void ConstantExpression::Accept(Visitor* visitor)
 }
 
 BlockExpression::BlockExpression(vector<Expression*> expressions)
-	:Expression(ExpressionKind::Block), expressions{expressions}
+    : Expression(ExpressionKind::Block), expressions{expressions}
 {
 }
 
@@ -86,8 +87,8 @@ void BlockExpression::Accept(Visitor* visitor)
 }
 
 ConditionalExpression::ConditionalExpression(Expression* test,
-		Expression* ifTrue)
-	:Expression(ExpressionKind::Conditional), test{test}, ifTrue{ifTrue}
+                                             Expression* ifTrue)
+    : Expression(ExpressionKind::Conditional), test{test}, ifTrue{ifTrue}
 {
 }
 
@@ -97,8 +98,9 @@ void ConditionalExpression::Accept(Visitor* visitor)
 }
 
 FullConditionalExpression::FullConditionalExpression(Expression* test,
-		Expression* ifTrue, Expression* ifFalse)
-	:ConditionalExpression(test, ifTrue), ifFalse{ifFalse}
+                                                     Expression* ifTrue,
+                                                     Expression* ifFalse)
+    : ConditionalExpression(test, ifTrue), ifFalse{ifFalse}
 {
 }
 
@@ -108,14 +110,13 @@ void FullConditionalExpression::Accept(Visitor* visitor)
 }
 
 ParameterExpression::ParameterExpression(wstring name)
-	:Expression(ExpressionKind::Parameter), name{name}
+    : Expression(ExpressionKind::Parameter), name{name}
 {
 }
 
-ParameterExpression::ParameterExpression(wstring name, Type* type)
-	:Expression(ExpressionKind::Parameter), name{name}
+ParameterExpression::ParameterExpression(wstring name, Type type)
+    : Expression(ExpressionKind::Parameter, type), name{name}
 {
-	SetType(type);
 }
 
 void ParameterExpression::Accept(Visitor* visitor)
@@ -123,8 +124,10 @@ void ParameterExpression::Accept(Visitor* visitor)
 	visitor->Visit(this);
 }
 
-CallExpression::CallExpression(Expression* procedure, vector<Expression*> arguments)
-	:Expression(ExpressionKind::Call), procedure{procedure}, arguments{arguments}
+CallExpression::CallExpression(Expression* procedure,
+                               vector<Expression*> arguments)
+    : Expression(ExpressionKind::Call), procedure{procedure}, arguments{
+                                                                  arguments}
 {
 }
 
@@ -134,7 +137,7 @@ void CallExpression::Accept(Visitor* visitor)
 }
 
 WhileExpression::WhileExpression(Expression* condition, Expression* body)
-	:Expression(ExpressionKind::While), condition{condition}, body{body}
+    : Expression(ExpressionKind::While), condition{condition}, body{body}
 {
 }
 
@@ -144,7 +147,7 @@ void WhileExpression::Accept(Visitor* visitor)
 }
 
 VarExpression::VarExpression(wstring name, Expression* value)
-	:Expression(ExpressionKind::Var), name{name}, value{value}
+    : Expression(ExpressionKind::Var), name{name}, value{value}
 {
 }
 
@@ -153,10 +156,9 @@ void VarExpression::Accept(Visitor* visitor)
 	visitor->Visit(this);
 }
 
-DefaultExpression::DefaultExpression(Type* type)
-	:Expression(ExpressionKind::Default)
+DefaultExpression::DefaultExpression(Type type)
+    : Expression(ExpressionKind::Default, type)
 {
-	SetType(type);
 }
 
 void DefaultExpression::Accept(Visitor* visitor)
@@ -164,11 +166,12 @@ void DefaultExpression::Accept(Visitor* visitor)
 	visitor->Visit(this);
 }
 
-DefineExpression::DefineExpression(wstring name, vector<ParameterExpression*> parameters,
-		Expression* body, Type* type)
-	:Expression(ExpressionKind::Define), name{name}, parameters{parameters}, body{body}
+DefineExpression::DefineExpression(wstring name,
+                                   vector<ParameterExpression*> parameters,
+                                   Expression* body, Type type)
+    : Expression(ExpressionKind::Define, type), name{name},
+      parameters{parameters}, body{body}
 {
-	SetType(type);
 }
 
 void DefineExpression::Accept(Visitor* visitor)
@@ -176,8 +179,9 @@ void DefineExpression::Accept(Visitor* visitor)
 	visitor->Visit(this);
 }
 
-AssignExpression::AssignExpression(ParameterExpression* variable, Expression* value)
-	:Expression(ExpressionKind::Assign), variable{variable}, value{value}
+AssignExpression::AssignExpression(ParameterExpression* variable,
+                                   Expression* value)
+    : Expression(ExpressionKind::Assign), variable{variable}, value{value}
 {
 }
 
@@ -187,7 +191,7 @@ void AssignExpression::Accept(Visitor* visitor)
 }
 
 ReturnExpression::ReturnExpression(Expression* value)
-	:Expression(ExpressionKind::Return), value{value}
+    : Expression(ExpressionKind::Return), value{value}
 {
 }
 

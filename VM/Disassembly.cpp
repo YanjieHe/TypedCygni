@@ -1,7 +1,7 @@
 #include "Disassembly.h"
 #include "OpCode.h"
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 using namespace std;
 
@@ -13,7 +13,7 @@ Disassembly::Disassembly(string path)
 		byte b;
 		while (!file.eof())
 		{
-			file.read((char*)&b, sizeof(b));
+            file.read(reinterpret_cast<char*>(&b), sizeof(b));
 			stream.push_back(b);
 		}
 		file.close();
@@ -29,16 +29,16 @@ Disassembly::Disassembly(string path)
 
 void Disassembly::ReadCode()
 {
-	i32 i = ReadFunction(0);	
+    u32 i = ReadFunction(0);
 	ReadCode(i);
 }
 
-i32 Disassembly::ReadCode(i32 offset)
+u32 Disassembly::ReadCode(u32 offset)
 {
-	i32 i = offset;
-	while (i < stream.size())
+    u32 i = offset;
+    while (i < stream.size())
 	{
-		OpCode op = (OpCode) stream.at(i);
+        OpCode op = static_cast<OpCode>(stream.at(i));
 		if (op == OpCode::function_end)
 		{
 			i++;
@@ -56,7 +56,7 @@ i32 Disassembly::ReadCode(i32 offset)
 			wcout << i - offset << ": ";
 			wcout << opcode_to_wstring(op) << L"  ";
 			i++;
-			wcout << stream.at(i) << endl;
+            wcout << stream.at(i) << endl;
 			i++;
 		}
 		else if (OperandSize(op) == 2)
@@ -64,32 +64,33 @@ i32 Disassembly::ReadCode(i32 offset)
 			wcout << i - offset << ": ";
 			wcout << opcode_to_wstring(op) << L"  ";
 			i++;
-			wcout << ReadUShort(i) << endl;
+            wcout << ReadUShort(static_cast<u16>(i)) << endl;
 			i += 2;
 		}
 		else
 		{
-			wcout << L"not implemented opcode: " + opcode_to_wstring(op) << endl;
+            wcout << L"not implemented opcode: " + opcode_to_wstring(op)
+                  << endl;
 			throw L"not implemented opcode: " + opcode_to_wstring(op);
 		}
 	}
 	return i;
 }
 
-i32 Disassembly::ReadFunction(i32 offset)
+u32 Disassembly::ReadFunction(u32 offset)
 {
-	i32 i = offset;
-	while (i < stream.size())
+    u32 i = offset;
+    while (i < stream.size())
 	{
-		OpCode op = (OpCode) stream.at(i);
+        OpCode op = static_cast<OpCode>(stream.at(i));
 		if (op == OpCode::function_begin)
 		{
 			i++;
 			wcout << endl;
 			wcout << L"*** begin of function ***" << endl;
-			i32 args_size = ReadUShort(i);
+            i32 args_size = ReadUShort(static_cast<u16>(i));
 			i += 2;
-			i32 stack = ReadUShort(i);
+            i32 stack = ReadUShort(static_cast<u16>(i));
 			i += 2;
 			i32 locals = stack - args_size;
 			wcout << L"args_size: " << args_size << endl;
@@ -105,24 +106,21 @@ i32 Disassembly::ReadFunction(i32 offset)
 	return i;
 }
 
-i32 Disassembly::ReadUShort(i32 offset)
+i32 Disassembly::ReadUShort(u32 offset)
 {
 	return (stream[offset + 1] << 8) + stream[offset];
 }
 
-i32 Disassembly::ReadInt32(i32 offset)
+i32 Disassembly::ReadInt32(u32 offset)
 {
-	return 
-		(stream[offset + 3] << 24)
-		+ (stream[offset + 2] << 16)
-		+ (stream[offset + 1] << 8)
-		+ stream[offset];
+    return (stream[offset + 3] << 24) + (stream[offset + 2] << 16) +
+           (stream[offset + 1] << 8) + stream[offset];
 }
 
-i64 Disassembly::ReadInt64(i32 offset)
+i64 Disassembly::ReadInt64(u32 offset)
 {
 	i64 n = 0;
-	for (i32 i = 0; i < sizeof(i64); ++i)
+    for (u32 i = 0; i < sizeof(i64); ++i)
 	{
 		n <<= 8;
 		n |= (stream[offset + i]);
@@ -130,10 +128,9 @@ i64 Disassembly::ReadInt64(i32 offset)
 	return n;
 }
 
-f64 Disassembly::ReadFloat64(i32 offset)
+f64 Disassembly::ReadFloat64(u32 offset)
 {
-	union 
-	{
+    union {
 		i64 i64_v;
 		f64 f64_v;
 	} value;

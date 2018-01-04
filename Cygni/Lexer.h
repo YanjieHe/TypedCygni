@@ -1,27 +1,26 @@
 #ifndef LEXER_H
 #define LEXER_H
 
-#include <fstream>
-#include <vector>
-#include <string>
 #include "Exception.h"
 #include "StringBuilder.h"
 #include "Token.h"
+#include <fstream>
+#include <string>
+#include <vector>
 
-using std::wifstream;
-using std::vector;
 using std::string;
+using std::vector;
+using std::wifstream;
 
 class Lexer
 {
-  public:
+public:
     Lexer(string path);
-	~Lexer();
 	vector<Token> ReadAll();
 
-  private:
-	wifstream *stream;
-	StringBuilder* builder;
+private:
+    wifstream stream;
+    StringBuilder builder;
 
 	int line;
 	int column;
@@ -44,4 +43,4 @@ class Lexer
 	void SetPosition(int currentLine, int currentColumn, Token& token);
 };
 
-#endif // LEXER_H 
+#endif // LEXER_H

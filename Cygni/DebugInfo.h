@@ -20,10 +20,14 @@ public:
 	vector<Expression*> expList;
 	vector<Position> positions;
     DebugInfo();
-
+    DebugInfo(const DebugInfo&) = delete;
+    DebugInfo& operator=(const DebugInfo&) = delete;
+    DebugInfo(DebugInfo&& other);
+    DebugInfo& operator=(DebugInfo&& other);
+    ~DebugInfo();
 	void Record(int line, int column, Expression* expression);
-	Position Locate(Expression* expression) const;
+    void Record(Position position, Expression* expression);
+    Position Locate(Expression* expression);
 };
 
-
-#endif // DEBUGINFO_H 
+#endif // DEBUGINFO_H

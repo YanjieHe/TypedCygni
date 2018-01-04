@@ -5,9 +5,8 @@
 using namespace std;
 
 Compiler::Compiler(DebugInfo& debugInfo, LocationRecord& record)
-	:debugInfo{debugInfo}, record{record}
+    : code{&globalCode}, debugInfo{debugInfo}, record{record}
 {
-	code = new vector<byte>();
 }
 
 void Compiler::Visit(UnaryExpression* node)
@@ -17,36 +16,23 @@ void Compiler::Visit(UnaryExpression* node)
 	{
 		return; // eliminate unary plus
 	}
-	else if (node->kind == ExpressionKind::Negate)
-	{
-		if (node->GetType()->IsInt())
-		{
-			Emit(OpCode::minus_i32);
-		}
-		else if (node->GetType()->IsDouble())
-		{
-			Emit(OpCode::minus_f64);
-		}
-		else
-		{
-			throw CompilationException(debugInfo.Locate(node),
-					L"negate: " + node->GetType()->ToString());
-		}
-	}
-	else if (node->kind == ExpressionKind::Not)
-	{
-		if (node->GetType()->IsBoolean())
-		{
-			throw L"23 not implemented";
-		}
-		else
-		{
-			throw L"6 impossible";
-		}
+    else if (node->kind == ExpressionKind::Negate && node->type.IsInt())
+    {
+        Emit(OpCode::minus_i32);
+    }
+    else if (node->kind == ExpressionKind::Negate && node->type.IsDouble())
+    {
+        Emit(OpCode::minus_f64);
+    }
+    else if (node->kind == ExpressionKind::Not && node->type.IsBoolean())
+    {
+        Emit(OpCode::logical_not);
 	}
 	else
 	{
-		throw L"7 impossible";
+        throw CompilationException(debugInfo.Locate(node),
+                                   L"unary operation: " +
+                                       node->type.ToString());
 	}
 }
 
@@ -54,219 +40,109 @@ void Compiler::Visit(BinaryExpression* node)
 {
 	node->left->Accept(this);
 	node->right->Accept(this);
-
-	switch (node->kind)
-	{
-		case ExpressionKind::Add:
-		{
-			if (node->left->GetType()->IsInt() &&
-				node->right->GetType()->IsInt())
-			{
-				Emit(OpCode::add_i32);
-			}
-			else if (node->left->GetType()->IsDouble() &&
-				node->right->GetType()->IsDouble())
-			{
-				Emit(OpCode::add_f64);
-			}
-			else
-			{
-				throw L"2 not implemented";
-			}
-			break;
-		}
-		case ExpressionKind::Subtract:
-		{
-			if (node->left->GetType()->IsInt() &&
-				node->right->GetType()->IsInt())
-			{
-				Emit(OpCode::sub_i32);
-			}
-			else if (node->left->GetType()->IsDouble() &&
-				node->right->GetType()->IsDouble())
-			{
-				Emit(OpCode::sub_f64);
-			}
-			else
-			{
-				throw L"3 not implemented";
-			}
-			break;
-		}
-		case ExpressionKind::Multiply:
-		{
-			if (node->left->GetType()->IsInt() &&
-				node->right->GetType()->IsInt())
-			{
-				Emit(OpCode::mul_i32);
-			}
-			else if (node->left->GetType()->IsDouble() &&
-				node->right->GetType()->IsDouble())
-			{
-				Emit(OpCode::mul_f64);
-			}
-			else
-			{
-				throw L"4 not implemented";
-			}
-			break;
-		}
-		case ExpressionKind::Divide:
-		{
-			if (node->left->GetType()->IsInt() &&
-				node->right->GetType()->IsInt())
-			{
-				Emit(OpCode::div_i32);
-			}
-			else if (node->left->GetType()->IsDouble() &&
-				node->right->GetType()->IsDouble())
-			{
-				Emit(OpCode::div_f64);
-			}
-			else
-			{
-				throw L"5 not implemented";
-			}
-			break;
-		}
-		case ExpressionKind::Modulo:
-		{
-			if (node->left->GetType()->IsInt() &&
-				node->right->GetType()->IsInt())
-			{
-				Emit(OpCode::mod_i32);
-			}
-			else if (node->left->GetType()->IsDouble() &&
-				node->right->GetType()->IsDouble())
-			{
-				Emit(OpCode::mod_f64);
-			}
-			else
-			{
-				throw L"6 not implemented";
-			}
-			break;
-		}
-
-		case ExpressionKind::GreaterThan:
-		{
-			if (node->left->GetType()->IsInt() &&
-				node->right->GetType()->IsInt())
-			{
-				Emit(OpCode::gt_i32);
-			}
-			else if (node->left->GetType()->IsDouble() &&
-				node->right->GetType()->IsDouble())
-			{
-				Emit(OpCode::gt_f64);
-			}
-			else
-			{
-				throw L"7 not implemented";
-			}
-			break;
-		}
-		case ExpressionKind::LessThan:
-		{
-			if (node->left->GetType()->IsInt() &&
-				node->right->GetType()->IsInt())
-			{
-				Emit(OpCode::lt_i32);
-			}
-			else if (node->left->GetType()->IsDouble() &&
-				node->right->GetType()->IsDouble())
-			{
-				Emit(OpCode::lt_f64);
-			}
-			else
-			{
-				throw L"8 not implemented";
-			}
-			break;
-		}
-		case ExpressionKind::GreaterThanOrEqual:
-		{
-			if (node->left->GetType()->IsInt() &&
-				node->right->GetType()->IsInt())
-			{
-				Emit(OpCode::ge_i32);
-			}
-			else if (node->left->GetType()->IsDouble() &&
-				node->right->GetType()->IsDouble())
-			{
-				Emit(OpCode::ge_f64);
-			}
-			else
-			{
-				throw L"9 not implemented";
-			}
-			break;
-		}
-		case ExpressionKind::LessThanOrEqual:
-		{
-			if (node->left->GetType()->IsInt() &&
-				node->right->GetType()->IsInt())
-			{
-				Emit(OpCode::lt_i32);
-			}
-			else if (node->left->GetType()->IsDouble() &&
-				node->right->GetType()->IsDouble())
-			{
-				Emit(OpCode::lt_f64);
-			}
-			else
-			{
-				throw L"10 not implemented";
-			}
-			break;
-		}
-		case ExpressionKind::Equal:
-		{
-			if (node->left->GetType()->IsInt() &&
-				node->right->GetType()->IsInt())
-			{
-				Emit(OpCode::eq_i32);
-			}
-			else if (node->left->GetType()->IsDouble() &&
-				node->right->GetType()->IsDouble())
-			{
-				Emit(OpCode::eq_i32);
-			}
-			else
-			{
-				throw L"11 not implemented";
-			}
-			break;
-		}
-		case ExpressionKind::NotEqual:
-		{
-			if (node->left->GetType()->IsInt() &&
-				node->right->GetType()->IsInt())
-			{
-				Emit(OpCode::ne_i32);
-			}
-			else if (node->left->GetType()->IsDouble() &&
-				node->right->GetType()->IsDouble())
-			{
-				Emit(OpCode::ne_f64);
-			}
-			else
-			{
-				throw L"12 not implemented";
-			}
-			break;
-		}
-		default:
-		{
-			wcout << expression_kind_to_wstring(node->kind) << endl;	
-			throw L"13 not implemented";
-		}
-	}
+    bool areInts = node->left->type.IsInt() && node->right->type.IsInt();
+    bool areDoubles =
+        node->left->type.IsDouble() && node->right->type.IsDouble();
+    ExpressionKind kind = node->kind;
+    if (kind == ExpressionKind::Add && areInts)
+    {
+        Emit(OpCode::add_i32);
+    }
+    else if (kind == ExpressionKind::Add && areDoubles)
+    {
+        Emit(OpCode::add_f64);
+    }
+    else if (kind == ExpressionKind::Subtract && areInts)
+    {
+        Emit(OpCode::sub_i32);
+    }
+    else if (kind == ExpressionKind::Subtract && areDoubles)
+    {
+        Emit(OpCode::sub_f64);
+    }
+    else if (kind == ExpressionKind::Multiply && areInts)
+    {
+        Emit(OpCode::mul_i32);
+    }
+    else if (kind == ExpressionKind::Multiply && areDoubles)
+    {
+        Emit(OpCode::mul_f64);
+    }
+    else if (kind == ExpressionKind::Divide && areInts)
+    {
+        Emit(OpCode::div_i32);
+    }
+    else if (kind == ExpressionKind::Divide && areDoubles)
+    {
+        Emit(OpCode::div_f64);
+    }
+    else if (kind == ExpressionKind::Modulo && areInts)
+    {
+        Emit(OpCode::mod_i32);
+    }
+    else if (kind == ExpressionKind::Modulo && areDoubles)
+    {
+        Emit(OpCode::mod_f64);
+    }
+    else if (kind == ExpressionKind::GreaterThan && areInts)
+    {
+        Emit(OpCode::gt_i32);
+    }
+    else if (kind == ExpressionKind::GreaterThan && areDoubles)
+    {
+        Emit(OpCode::gt_f64);
+    }
+    else if (kind == ExpressionKind::LessThan && areInts)
+    {
+        Emit(OpCode::lt_i32);
+    }
+    else if (kind == ExpressionKind::LessThan && areDoubles)
+    {
+        Emit(OpCode::lt_i32);
+    }
+    else if (kind == ExpressionKind::GreaterThanOrEqual && areInts)
+    {
+        Emit(OpCode::ge_i32);
+    }
+    else if (kind == ExpressionKind::GreaterThanOrEqual && areDoubles)
+    {
+        Emit(OpCode::ge_f64);
+    }
+    else if (kind == ExpressionKind::LessThanOrEqual && areInts)
+    {
+        Emit(OpCode::le_i32);
+    }
+    else if (kind == ExpressionKind::LessThanOrEqual && areDoubles)
+    {
+        Emit(OpCode::le_f64);
+    }
+    else if (kind == ExpressionKind::Equal && areInts)
+    {
+        Emit(OpCode::eq_i32);
+    }
+    else if (kind == ExpressionKind::Equal && areDoubles)
+    {
+        Emit(OpCode::eq_f64);
+    }
+    else if (kind == ExpressionKind::NotEqual && areInts)
+    {
+        Emit(OpCode::ne_i32);
+    }
+    else if (kind == ExpressionKind::NotEqual && areDoubles)
+    {
+        Emit(OpCode::ne_f64);
+    }
+    else
+    {
+        throw CompilationException(debugInfo.Locate(node),
+                                   L"binary operation: " +
+                                       expression_kind_to_wstring(node->kind));
+    }
 }
 
 void Compiler::Visit(ConstantExpression* node)
 {
-	if (node->GetType()->IsInt())
+    if (node->type.IsInt())
 	{
 		int value = node->constant.GetInt();
 		const int BYTE_MAX = 256;
@@ -274,20 +150,21 @@ void Compiler::Visit(ConstantExpression* node)
 		if (value >= 0 && value < BYTE_MAX)
 		{
 			Emit(OpCode::push_i32_1byte);
-			code->push_back((byte) value);
+            code->push_back(static_cast<byte>(value));
 		}
 		else if (value >= 0 && value < USHORT_MAX)
 		{
 			Emit(OpCode::push_i32_1byte);
-			AppendUShort((unsigned short) value);
+            AppendUShort(static_cast<unsigned short>(value));
 		}
 		else
 		{
 			throw L"14 not implemented";
 		}
 	}
-	else if (node->GetType()->IsDouble())
+    else if (node->type.IsDouble())
 	{
+        //        double value = node->constant.GetDouble();
 		throw L"15 not implemented";
 	}
 	else
@@ -298,7 +175,7 @@ void Compiler::Visit(ConstantExpression* node)
 
 void Compiler::Visit(BlockExpression* node)
 {
-	for (Expression* expression: node->expressions)
+    for (Expression* expression : node->expressions)
 	{
 		expression->Accept(this);
 	}
@@ -317,7 +194,7 @@ void Compiler::Visit(BlockExpression* node)
  * 7: jump_if_false 15
  * 10: push 10
  * 12: pop_static a
- * 15: 
+ * 15:
  */
 void Compiler::Visit(ConditionalExpression* node)
 {
@@ -325,11 +202,11 @@ void Compiler::Visit(ConditionalExpression* node)
 
 	Emit(OpCode::jump_if_false);
 	int index = CurrentIndex();
-	AppendUShort((unsigned short)0);
+    AppendUShort(0);
 
 	node->ifTrue->Accept(this);
 
-	WriteUShort(index, (unsigned short) CurrentIndex());
+    WriteUShort(index, static_cast<unsigned short>(CurrentIndex()));
 }
 
 /*
@@ -352,7 +229,7 @@ void Compiler::Visit(ConditionalExpression* node)
  * 15: jump 24
  * 18: push 15
  * 21: pop_static a
- * 24: 
+ * 24:
  */
 void Compiler::Visit(FullConditionalExpression* node)
 {
@@ -360,63 +237,63 @@ void Compiler::Visit(FullConditionalExpression* node)
 
 	Emit(OpCode::jump_if_false);
 	int index = CurrentIndex();
-	AppendUShort((unsigned short)0);
+    AppendUShort(0);
 
 	node->ifTrue->Accept(this);
-	
+
 	Emit(OpCode::jump);
 	int index2 = CurrentIndex();
-	AppendUShort((unsigned short)0);
+    AppendUShort(0);
 
-	WriteUShort(index, (unsigned short) CurrentIndex());
+    WriteUShort(index, static_cast<unsigned short>(CurrentIndex()));
 
 	node->ifFalse->Accept(this);
-	WriteUShort(index2, (unsigned short) CurrentIndex());
+    WriteUShort(index2, static_cast<unsigned short>(CurrentIndex()));
 }
 
 void Compiler::Visit(ParameterExpression* node)
 {
 	Location location = record.Find(node);
-	if (node->GetType()->IsInt())
+    if (node->type.IsInt())
 	{
 		if (location.kind == LocationKind::Global)
 		{
 			Emit(OpCode::push_static_i32);
-			AppendUShort(location.index);
+            AppendUShort(static_cast<unsigned short>(location.index));
 		}
-		else if (location.kind == LocationKind::Function)
+		else if (location.kind == LocationKind::InFunction)
 		{
-			Emit(OpCode::push_stack_i32);
-			AppendUShort(location.index);
+            Emit(OpCode::push_stack_i32);
+            AppendUShort(static_cast<unsigned short>(location.index));
 		}
 		else
 		{
 			throw L"1 impossible";
 		}
 	}
-	else if (node->GetType()->IsDouble())
+    else if (node->type.IsDouble())
 	{
 		if (location.kind == LocationKind::Global)
 		{
-			Emit(OpCode::push_static_f64);
-			AppendUShort(location.index);
+            Emit(OpCode::push_static_f64);
+            AppendUShort(static_cast<unsigned short>(location.index));
 		}
-		else if (location.kind == LocationKind::Function)
+		else if (location.kind == LocationKind::InFunction)
 		{
-			Emit(OpCode::push_stack_f64);
-			AppendUShort(location.index);
+            Emit(OpCode::push_stack_f64);
+            AppendUShort(static_cast<unsigned short>(location.index));
 		}
 		else
 		{
 			throw L"2 impossible";
 		}
 	}
-	else if (node->GetType()->tag == TypeTag::Function)
+    else if (node->type.IsFunction())
 	{
-		if (location.kind == LocationKind::StaticMethod)
+		if (location.kind == LocationKind::FunctionID)
 		{
-			Emit(OpCode::push_function);
-			AppendUShort(location.index);
+            Emit(OpCode::push_function);
+            AppendUShort(static_cast<unsigned short>(location.index));
 		}
 		else
 		{
@@ -431,13 +308,13 @@ void Compiler::Visit(ParameterExpression* node)
 
 void Compiler::Visit(CallExpression* node)
 {
-	for (Expression* argument: node->arguments)
+    for (Expression* argument : node->arguments)
 	{
 		argument->Accept(this);
 	}
 	node->procedure->Accept(this);
 	Emit(OpCode::invoke);
-	AppendUShort((unsigned short) node->arguments.size());
+    //    AppendUShort(static_cast<unsigned short>(node->arguments.size()));
 }
 
 /*
@@ -450,12 +327,14 @@ void Compiler::Visit(WhileExpression* node)
 	int index = CurrentIndex();
 	node->condition->Accept(this);
 	Emit(OpCode::jump_if_false);
+
 	int index2 = CurrentIndex();
-	AppendUShort((unsigned short)0);
+    AppendUShort(0);
 	node->body->Accept(this);
 	Emit(OpCode::jump);
-	AppendUShort(index);
-	WriteUShort(index2, (unsigned short) CurrentIndex());
+
+    AppendUShort(static_cast<unsigned short>(index));
+    WriteUShort(index2, static_cast<unsigned short>(CurrentIndex()));
 }
 
 void Compiler::Visit(VarExpression* node)
@@ -463,34 +342,34 @@ void Compiler::Visit(VarExpression* node)
 	node->value->Accept(this);
 
 	Location location = record.Find(node);
-	if (node->GetType()->IsInt())
+    if (node->type.IsInt())
 	{
 		if (location.kind == LocationKind::Global)
 		{
-			Emit(OpCode::pop_static_i32);
-			AppendUShort(location.index);
+            Emit(OpCode::pop_static_i32);
+            AppendUShort(static_cast<unsigned short>(location.index));
 		}
-		else if (location.kind == LocationKind::Function)
+		else if (location.kind == LocationKind::InFunction)
 		{
-			Emit(OpCode::pop_stack_i32);
-			AppendUShort(location.index);
+            Emit(OpCode::pop_stack_i32);
+            AppendUShort(static_cast<unsigned short>(location.index));
 		}
 		else
 		{
 			throw L"3 impossible";
 		}
 	}
-	else if (node->GetType()->IsDouble())
+    else if (node->type.IsDouble())
 	{
 		if (location.kind == LocationKind::Global)
 		{
-			Emit(OpCode::pop_static_f64);
-			AppendUShort(location.index);
+            Emit(OpCode::pop_static_f64);
+            AppendUShort(static_cast<unsigned short>(location.index));
 		}
-		else if (location.kind == LocationKind::Function)
+		else if (location.kind == LocationKind::InFunction)
 		{
-			Emit(OpCode::pop_stack_f64);
-			AppendUShort(location.index);
+            Emit(OpCode::pop_stack_f64);
+            AppendUShort(static_cast<unsigned short>(location.index));
 		}
 		else
 		{
@@ -509,46 +388,46 @@ void Compiler::Visit(AssignExpression* node)
 	Location location = record.Find(variable);
 	node->value->Accept(this);
 
-	if (node->GetType()->IsInt())
+    if (node->type.IsInt())
 	{
 		if (location.kind == LocationKind::Global)
 		{
-			Emit(OpCode::pop_static_i32);
-			AppendUShort(location.index);
+            Emit(OpCode::pop_static_i32);
+            AppendUShort(static_cast<unsigned short>(location.index));
 		}
-		else if (location.kind == LocationKind::Function)
+		else if (location.kind == LocationKind::InFunction)
 		{
-			Emit(OpCode::pop_stack_i32);
-			AppendUShort(location.index);
+            Emit(OpCode::pop_stack_i32);
+            AppendUShort(static_cast<unsigned short>(location.index));
 		}
 		else
 		{
 			throw L"8 impossible";
 		}
 	}
-	else if (node->GetType()->IsDouble())
+    else if (node->type.IsDouble())
 	{
 		if (location.kind == LocationKind::Global)
 		{
-			Emit(OpCode::pop_static_f64);
-			AppendUShort(location.index);
+            Emit(OpCode::pop_static_f64);
+            AppendUShort(static_cast<unsigned short>(location.index));
 		}
-		else if (location.kind == LocationKind::Function)
+		else if (location.kind == LocationKind::InFunction)
 		{
-			Emit(OpCode::pop_stack_f64);
-			AppendUShort(location.index);
+            Emit(OpCode::pop_stack_f64);
+            AppendUShort(static_cast<unsigned short>(location.index));
 		}
 		else
 		{
 			throw L"9 impossible";
 		}
 	}
-	else if (node->GetType()->tag == TypeTag::Function)
+    else if (node->type.tag == TypeTag::Function)
 	{
-		if (location.kind == LocationKind::StaticMethod)
+		if (location.kind == LocationKind::FunctionID)
 		{
-			Emit(OpCode::push_function);
-			AppendUShort(location.index);
+            Emit(OpCode::push_function);
+            AppendUShort(static_cast<unsigned short>(location.index));
 		}
 		else
 		{
@@ -563,20 +442,30 @@ void Compiler::Visit(AssignExpression* node)
 
 void Compiler::Visit(DefaultExpression* node)
 {
-	throw L"20 not implemented";
+    if (node->type.IsInt())
+    {
+        Emit(OpCode::push_i32_1byte);
+        code->push_back(0);
+    }
+    else if (node->type.IsDouble())
+    {
+        throw NotImplementedException();
+    }
+    else
+    {
+        throw L"20 not implemented";
+    }
 }
 
 void Compiler::Visit(DefineExpression* node)
 {
-	vector<byte>* fcode = new vector<byte>();
+    vector<byte> fcode;
 	vector<byte>* prev = code;
-	code = fcode;
-	//Emit(OpCode::function_begin);
-	//AppendUShort((unsigned short) node->parameters.size());
-	//AppendUShort((unsigned short) node->frameSize);
-	node->body->Accept(this);
-	// Emit(OpCode::function_end);
-	functions.push_back(new Function(node->name, node->parameters.size(), node->frameSize, fcode));
+    code = &fcode;
+    node->body->Accept(this);
+    functions.push_back(Function(node->name,
+                                 static_cast<int>(node->parameters.size()),
+                                 node->frameSize, fcode));
 	code = prev;
 }
 
@@ -588,11 +477,11 @@ void Compiler::Visit(NewExpression* node)
 void Compiler::Visit(ReturnExpression* node)
 {
 	node->value->Accept(this);
-	if (node->GetType()->IsInt())
+    if (node->type.IsInt())
 	{
 		Emit(OpCode::return_i32);
 	}
-	else if (node->GetType()->IsDouble())
+    else if (node->type.IsDouble())
 	{
 		Emit(OpCode::return_f64);
 	}
@@ -605,12 +494,12 @@ void Compiler::Visit(ReturnExpression* node)
 void Compiler::Emit(OpCode op)
 {
 	wcout << code->size() << L" emit: " << opcode_to_wstring(op) << endl;
-	code->push_back((byte) op);
+    code->push_back(static_cast<byte>(op));
 }
 
 i32 Compiler::CurrentIndex()
 {
-	return code->size();
+    return static_cast<i32>(code->size());
 }
 
 void Compiler::AppendBytes(byte* bytes, int length)
@@ -623,18 +512,54 @@ void Compiler::AppendBytes(byte* bytes, int length)
 
 void Compiler::AppendUShort(unsigned short x)
 {
-	AppendBytes((byte*)&x, 2);
+    AppendBytes(reinterpret_cast<byte*>(&x), 2);
+}
+
+void Compiler::AppendBytes(ByteCode& code, byte* bytes, int length)
+{
+    for (int i = 0; i < length; i++)
+    {
+        code.push_back(bytes[i]);
+    }
+}
+
+void Compiler::AppendUShort(ByteCode& code, unsigned short x)
+{
+    AppendBytes(code, reinterpret_cast<byte*>(&x), 2);
 }
 
 void Compiler::WriteBytes(int offset, byte* bytes, int length)
 {
 	for (int i = 0; i < length; i++)
 	{
-		code->at(offset + i) = bytes[i];
+        code->at(static_cast<unsigned long>(offset + i)) = bytes[i];
 	}
 }
 
 void Compiler::WriteUShort(int offset, unsigned short x)
 {
-	WriteBytes(offset, (byte*)&x, 2);
+    WriteBytes(offset, reinterpret_cast<byte*>(&x), 2);
+}
+
+ByteCode Compiler::GetByteSequence()
+{
+    ByteCode result;
+    for (Function& f : functions)
+    {
+        byte fbegin = static_cast<byte>(OpCode::function_begin);
+        result.push_back(fbegin);
+        AppendUShort(result, static_cast<unsigned short>(f.parameterSize));
+        AppendUShort(result, static_cast<unsigned short>(f.frameSize));
+        for (byte item : f.code)
+        {
+            result.push_back(item);
+        }
+        byte fend = static_cast<byte>(OpCode::function_end);
+        result.push_back(fend);
+    }
+    for (byte item : *code)
+    {
+        result.push_back(item);
+    }
+    return result;
 }

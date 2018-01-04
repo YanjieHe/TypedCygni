@@ -1,3 +1,0 @@
-/home/jasonhe/Documents/MyCode/CPP/Cygni/CMakeFiles/rebuild_cache.dir
-/home/jasonhe/Documents/MyCode/CPP/Cygni/CMakeFiles/Cygni.dir
-/home/jasonhe/Documents/MyCode/CPP/Cygni/CMakeFiles/edit_cache.dir

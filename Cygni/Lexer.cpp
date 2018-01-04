@@ -2,17 +2,9 @@
 
 Lexer::Lexer(string path)
 {
-	this->stream = new wifstream(path);
-	this->builder = new StringBuilder();
-	this->line = 1;
-	this->column = 1;
-}
-
-Lexer::~Lexer()
-{
-	this->stream->close();
-	delete this->stream;
-	delete this->builder;
+    stream.open(path);
+    this->line = 1;
+    this->column = 1;
 }
 
 vector<Token> Lexer::ReadAll()
@@ -24,8 +16,8 @@ vector<Token> Lexer::ReadAll()
 
 	while (!IsEof())
 	{
-		wchar_t c = (wchar_t) Peek();
-		int currentLine = line;
+        wchar_t c = static_cast<wchar_t>(Peek());
+        int currentLine = line;
 		int currentColumn = column;
 
 		if (isdigit(c))
@@ -54,8 +46,7 @@ vector<Token> Lexer::ReadAll()
 		}
 		else
 		{
-			throw LexicalException(line, column,
-					L"unrecognizable token");
+            throw LexicalException(line, column, L"unrecognizable token");
 		}
 
 		SkipSpaces();
@@ -66,12 +57,12 @@ vector<Token> Lexer::ReadAll()
 
 inline int Lexer::Peek()
 {
-	return (int) stream->peek();
+    return static_cast<int>(stream.peek());
 }
 
 inline wchar_t Lexer::Read()
 {
-	return (wchar_t) stream->get();
+    return static_cast<wchar_t>(stream.get());
 }
 
 inline bool Lexer::IsEof()
@@ -84,13 +75,13 @@ void Lexer::Consume()
 	wchar_t c = this->Read();
 	if (c == L'\n')
 	{
-		this->builder->Append(c);
+        this->builder.Append(c);
 		this->line++;
 		this->column = 1;
 	}
 	else
 	{
-		this->builder->Append(c);
+        this->builder.Append(c);
 		this->column++;
 	}
 }
@@ -111,7 +102,7 @@ void Lexer::Move()
 
 Token Lexer::Digits()
 {
-	builder->Clear();
+    builder.Clear();
 	Consume();
 	while (!IsEof() && isdigit(Peek()))
 	{
@@ -128,7 +119,7 @@ Token Lexer::Digits()
 	}
 	else
 	{
-		return Token(TokenKind::Integer, builder->ToString());
+        return Token(TokenKind::Integer, builder.ToString());
 	}
 }
 
@@ -138,7 +129,7 @@ Token Lexer::Decimals()
 	if (IsEof() || !isdigit(Peek()))
 	{
 		throw LexicalException(line, column,
-				L"error occurs when reading decimals.");
+                               L"error occurs when reading decimals.");
 	}
 	else
 	{
@@ -149,7 +140,7 @@ Token Lexer::Decimals()
 
 		if (IsEof())
 		{
-			return Token(TokenKind::Float, builder->ToString());
+            return Token(TokenKind::Float, builder.ToString());
 		}
 		else if (tolower(Peek()) == L'e')
 		{
@@ -157,7 +148,7 @@ Token Lexer::Decimals()
 		}
 		else
 		{
-			return Token(TokenKind::Float, builder->ToString());
+            return Token(TokenKind::Float, builder.ToString());
 		}
 	}
 }
@@ -173,7 +164,7 @@ Token Lexer::Exponent()
 	if (IsEof() || !isdigit(Peek()))
 	{
 		throw LexicalException(line, column,
-				L"error occurs when reading exponent.");
+                               L"error occurs when reading exponent.");
 	}
 	else
 	{
@@ -181,14 +172,14 @@ Token Lexer::Exponent()
 		{
 			Consume();
 		}
-		return Token(TokenKind::Float, builder->ToString());
+        return Token(TokenKind::Float, builder.ToString());
 	}
 }
 
 Token Lexer::Text()
 {
 	Move();
-	builder->Clear();
+    builder.Clear();
 	bool done = false;
 	while (!IsEof() && !done)
 	{
@@ -206,23 +197,23 @@ Token Lexer::Text()
 			Consume();
 		}
 	}
-	return Token(TokenKind::String, builder->ToString());
+    return Token(TokenKind::String, builder.ToString());
 }
 
 Token Lexer::Identifier()
 {
-	builder->Clear();
+    builder.Clear();
 	Consume();
 	while (!IsEof() && (isalnum(Peek()) || Peek() == '_'))
 	{
 		Consume();
 	}
-	return Token(TokenKind::Name, builder->ToString());
+    return Token(TokenKind::Name, builder.ToString());
 }
 
 Token Lexer::Operator()
 {
-	wchar_t first = (wchar_t) Peek();
+    wchar_t first = static_cast<wchar_t>(Peek());
 	Move();
 	int second = Peek();
 	if (first == L'>' && second == L'=')
@@ -247,48 +238,47 @@ Token Lexer::Operator()
 	}
 	else
 	{
-		switch(first)
+        switch (first)
 		{
-			case L'=':
-				return Token(TokenKind::Assign, L"=");
-			case L'+':
-				return Token(TokenKind::Add, L"+");
-			case L'-':
-				return Token(TokenKind::Subtract, L"-");
-			case L'*':
-				return Token(TokenKind::Multiply, L"*");
-			case L'/':
-				return Token(TokenKind::Divide, L"/");
-			case L'%':
-				return Token(TokenKind::Modulo, L"%");
+        case L'=':
+            return Token(TokenKind::Assign, L"=");
+        case L'+':
+            return Token(TokenKind::Add, L"+");
+        case L'-':
+            return Token(TokenKind::Subtract, L"-");
+        case L'*':
+            return Token(TokenKind::Multiply, L"*");
+        case L'/':
+            return Token(TokenKind::Divide, L"/");
+        case L'%':
+            return Token(TokenKind::Modulo, L"%");
 
-			case L'>':
-				return Token(TokenKind::GreaterThan, L">");
-			case L'<':
-				return Token(TokenKind::LessThan, L"<");
-			case L'{':
-				return Token(TokenKind::LeftBrace, L"{");
-			case L'}':
-				return Token(TokenKind::RightBrace, L"}");
-			case L'[':
-				return Token(TokenKind::LeftBracket, L"[");
-			case L']':
-				return Token(TokenKind::RightBracket, L"]");
-			case L'(':
-				return Token(TokenKind::LeftParenthesis, L"(");
-			case L')':
-				return Token(TokenKind::RightParenthesis, L")");
-			case L'.':
-				return Token(TokenKind::Dot, L".");
-			case L',':
-				return Token(TokenKind::Comma, L",");
-			case L';':
-				return Token(TokenKind::Semicolon, L";");
-			case L':':
-				return Token(TokenKind::Colon, L":");
-			default:
-				throw LexicalException(line, column,
-						L"error operator format");
+        case L'>':
+            return Token(TokenKind::GreaterThan, L">");
+        case L'<':
+            return Token(TokenKind::LessThan, L"<");
+        case L'{':
+            return Token(TokenKind::LeftBrace, L"{");
+        case L'}':
+            return Token(TokenKind::RightBrace, L"}");
+        case L'[':
+            return Token(TokenKind::LeftBracket, L"[");
+        case L']':
+            return Token(TokenKind::RightBracket, L"]");
+        case L'(':
+            return Token(TokenKind::LeftParenthesis, L"(");
+        case L')':
+            return Token(TokenKind::RightParenthesis, L")");
+        case L'.':
+            return Token(TokenKind::Dot, L".");
+        case L',':
+            return Token(TokenKind::Comma, L",");
+        case L';':
+            return Token(TokenKind::Semicolon, L";");
+        case L':':
+            return Token(TokenKind::Colon, L":");
+        default:
+            throw LexicalException(line, column, L"error operator format");
 		}
 	}
 }
@@ -302,46 +292,45 @@ void Lexer::EscapedChar()
 	}
 	else
 	{
-		wchar_t c = (wchar_t) Peek();
+        wchar_t c = static_cast<wchar_t>(Peek());
 		Move();
-		switch(c)
+        switch (c)
 		{
-			case L'a':
-				builder->Append(L'\a');
-				return;
-			case L'b':
-				builder->Append(L'\b');
-				return;
-			case L'f':
-				builder->Append(L'\f');
-				return;
-			case L'n':
-				builder->Append(L'\n');
-				return;
-			case L'r':
-				builder->Append(L'\r');
-				return;
-			case L't':
-				builder->Append(L'\t');
-				return;
-			case L'v':
-				builder->Append(L'\v');
-				return;
-			case L'\\':
-				builder->Append(L'\\');
-				return;
-			case L'"':
-				builder->Append(L'"');
-				return;
-			case L'?':
-				builder->Append(L'\?');
-				return;
-			case L'0':
-				builder->Append(L'\0');
-				return;
-			default:
-				throw LexicalException(line, column,
-						L"unsupported escaped char");
+        case L'a':
+            builder.Append(L'\a');
+            return;
+        case L'b':
+            builder.Append(L'\b');
+            return;
+        case L'f':
+            builder.Append(L'\f');
+            return;
+        case L'n':
+            builder.Append(L'\n');
+            return;
+        case L'r':
+            builder.Append(L'\r');
+            return;
+        case L't':
+            builder.Append(L'\t');
+            return;
+        case L'v':
+            builder.Append(L'\v');
+            return;
+        case L'\\':
+            builder.Append(L'\\');
+            return;
+        case L'"':
+            builder.Append(L'"');
+            return;
+        case L'?':
+            builder.Append(L'\?');
+            return;
+        case L'0':
+            builder.Append(L'\0');
+            return;
+        default:
+            throw LexicalException(line, column, L"unsupported escaped char");
 		}
 	}
 }
@@ -354,9 +343,8 @@ void Lexer::SkipSpaces()
 	}
 }
 
-
 void Lexer::SetPosition(int currentLine, int currentColumn, Token& token)
 {
-	token.line = currentLine;
+    token.line = currentLine;
 	token.column = currentColumn;
 }

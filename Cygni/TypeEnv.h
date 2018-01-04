@@ -2,34 +2,49 @@
 #define TYPEENV_H
 
 #include "Type.h"
-#include <string>
 #include <map>
+#include <string>
 
-using std::wstring;
 using std::map;
-
-class FunctionEnv;
+using std::wstring;
 
 class TypeEnv
 {
 public:
-    TypeEnv(FunctionEnv* functionEnv, TypeEnv* parent = nullptr);
-	TypeEnv* parent;
-	FunctionEnv* functionEnv;
-	map<wstring, Type*> table;
-	bool Define(wstring name, Type* type);
-	Type* Find(wstring name);
+    TypeEnv();
+    map<wstring, Type> table;
+    bool Define(wstring name, Type type);
+    virtual Type Find(wstring name) = 0;
+    virtual ~TypeEnv();
+    virtual bool IsGlobal() = 0;
 };
 
-
-class FunctionEnv
+class GlobalTypeEnv : public TypeEnv
 {
 public:
-	FunctionEnv();
-	map<wstring, int> table;
-	vector<Type*> types;
-	bool Define(wstring name, Type* type);
-	int Find(wstring name);
-	Type* ResolveType(wstring name);
+    GlobalTypeEnv();
+    Type Find(wstring name) override;
+    bool IsGlobal() override;
 };
-#endif // TYPEENV_H 
+
+class FunctionTypeEnv : public TypeEnv
+{
+public:
+    Type type;
+    TypeEnv* parent;
+    FunctionTypeEnv(Type type, TypeEnv* parent);
+    Type Find(wstring name) override;
+    bool IsGlobal() override;
+};
+
+class FunctionList
+{
+public:
+    FunctionList();
+	map<wstring, int> table;
+    vector<Type> types;
+    bool Define(wstring name, Type type);
+	int Find(wstring name);
+    Type ResolveType(wstring name);
+};
+#endif // TYPEENV_H

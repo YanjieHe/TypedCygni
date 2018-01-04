@@ -1,22 +1,20 @@
-#include <iostream>
-#include <locale>
 #include "StringBuilder.h"
 #include "Test.h"
+#include <iostream>
+#include <locale>
 
 using namespace std;
 
-int main(int argc, char *argv[])
+// int main(int argc, char *argv[])
+int main()
 {
-	locale loc("");
-	locale::global(loc);
-
+    locale::global(locale(""));
 	// TestStringBuilder();
 	// TestLexer();
 	// TestType();
 	// TestParser();
 	// TestScope();
 	// TestTypeChecker();
-	TestCompiler();
-	cin.get();
+    TestCompiler();
 	return 0;
 }

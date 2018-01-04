@@ -13,7 +13,7 @@ Decoder::Decoder(string path)
 		byte b;
 		while (!file.eof())
 		{
-			file.read((char*)&b, sizeof(b));
+            file.read(reinterpret_cast<char*>(&b), sizeof(b));
 			stream.push_back(b);
 		}
 		file.close();
@@ -26,87 +26,87 @@ Decoder::Decoder(string path)
 	}
 }
 
-Decoder::Decoder(vector<byte> stream)
-	:stream{stream}
+Decoder::Decoder(vector<byte> stream) : stream{stream}
 {
 }
 
 void Decoder::Decode()
 {
-	i32 index = LoadConstantPool(0);
+    wcout << "start decoding" << endl;
+    u32 index = LoadConstantPool(0);
 	index = LoadFunctions(index);
-	i32 n = stream.size();
-	for (i32 i = index; i < n; i++)
+    u64 n = stream.size();
+    for (u32 i = index; i < n; i++)
 	{
 		code.push_back(stream[i]);
 	}
 }
 
-i32 Decoder::LoadConstantPool(i32 index)
+u32 Decoder::LoadConstantPool(u32 index)
 {
 	bool done = false;
-	i32 n = stream.size();
+    u32 n = static_cast<u32>(stream.size());
 	while (!done && index < n)
 	{
-		OpCode op = (OpCode)stream[index];
+        OpCode op = static_cast<OpCode>(stream[index]);
 		switch (op)
 		{
-			case OpCode::constant_i32:
-			{
-				index++;
+        case OpCode::constant_i32:
+        {
+            index++;
 
-				Any value;
-				value.i32_v = ReadInt32(index);
-				pool.push_back(value);
+            Any value;
+            value.i32_v = ReadInt32(index);
+            pool.push_back(value);
 
-				index += 4;
-				break;
-			}
-			case OpCode::constant_i64:
-			{
-				index++;
+            index += 4;
+            break;
+        }
+        case OpCode::constant_i64:
+        {
+            index++;
 
-				Any value;
-				value.i64_v = ReadInt64(index);
-				pool.push_back(value);
+            Any value;
+            value.i64_v = ReadInt64(index);
+            pool.push_back(value);
 
-				index += 8;
-				break;
-			}
-			case OpCode::constant_f64:
-			{
-				index++;
+            index += 8;
+            break;
+        }
+        case OpCode::constant_f64:
+        {
+            index++;
 
-				Any value;
-				value.f64_v = ReadFloat64(index);
-				pool.push_back(value);
+            Any value;
+            value.f64_v = ReadFloat64(index);
+            pool.push_back(value);
 
-				index += 8;
-				break;
-			}
-			default:
-			{
-				done = true;
-				break;
-			}
+            index += 8;
+            break;
 		}
-	}
+        default:
+        {
+            done = true;
+            break;
+        }
+        }
+    }
 	return index;
 }
 
-i32 Decoder::LoadFunctions(i32 index)
+u32 Decoder::LoadFunctions(u32 index)
 {
 	bool done = false;
-	i32 n = stream.size();
+    u32 n = static_cast<u32>(stream.size());
 	while (!done && index < n)
 	{
-		OpCode op = (OpCode)stream[index];
+        OpCode op = static_cast<OpCode>(stream[index]);
 		if (op == OpCode::function_begin)
 		{
 			index++;
-			i32 parametersSize = ReadUShort(index);
+            i32 parametersSize = ReadUShort(index);
 			index += 2;
-			i32 frameSize = ReadUShort(index);
+            i32 frameSize = ReadUShort(index);
 			index += 2;
 			index = LoadOneFunction(index, parametersSize, frameSize);
 		}
@@ -118,13 +118,13 @@ i32 Decoder::LoadFunctions(i32 index)
 	return index;
 }
 
-i32 Decoder::LoadOneFunction(i32 index, i32 parametersSize, i32 frameSize)
+u32 Decoder::LoadOneFunction(u32 index, i32 parametersSize, i32 frameSize)
 {
 	bool done = false;
 	vector<byte> fcode;
 	while (!done)
 	{
-		OpCode op = (OpCode)stream[index];
+        OpCode op = static_cast<OpCode>(stream[index]);
 		if (op == OpCode::function_end)
 		{
 			index++;
@@ -134,8 +134,8 @@ i32 Decoder::LoadOneFunction(i32 index, i32 parametersSize, i32 frameSize)
 		{
 			fcode.push_back(stream[index]);
 			index++;
-			i32 size = OperandSize(op);
-			for (i32 i = 0; i < size; i++)
+            u32 size = OperandSize(op);
+            for (u32 i = 0; i < size; i++)
 			{
 				fcode.push_back(stream[index + i]);
 			}
@@ -146,25 +146,21 @@ i32 Decoder::LoadOneFunction(i32 index, i32 parametersSize, i32 frameSize)
 	return index;
 }
 
-i32 Decoder::ReadUShort(i32 offset)
+i32 Decoder::ReadUShort(u32 offset)
 {
-	return (stream[offset + 1] << 8)
-		+ stream[offset];
+    return (stream[offset + 1] << 8) + stream[offset];
 }
 
-i32 Decoder::ReadInt32(i32 offset)
+i32 Decoder::ReadInt32(u32 offset)
 {
-	return 
-		(stream[offset + 3] << 24)
-		+ (stream[offset + 2] << 16)
-		+ (stream[offset + 1] << 8)
-		+ stream[offset];
+    return (stream[offset + 3] << 24) + (stream[offset + 2] << 16) +
+           (stream[offset + 1] << 8) + stream[offset];
 }
 
-i64 Decoder::ReadInt64(i32 offset)
+i64 Decoder::ReadInt64(u32 offset)
 {
 	i64 n = 0;
-	for (i32 i = 0; i < 8; ++i)
+    for (u32 i = 0; i < 8; ++i)
 	{
 		n <<= 8;
 		n |= (stream[offset + i]);
@@ -172,10 +168,9 @@ i64 Decoder::ReadInt64(i32 offset)
 	return n;
 }
 
-f64 Decoder::ReadFloat64(i32 offset)
+f64 Decoder::ReadFloat64(u32 offset)
 {
-	union 
-	{
+    union {
 		i64 i64_v;
 		f64 f64_v;
 	} value;

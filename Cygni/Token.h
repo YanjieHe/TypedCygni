@@ -2,15 +2,17 @@
 #define TOKEN_H
 
 #include "TokenKind.h"
+#include <map>
 #include <string>
 
+using std::map;
 using std::wstring;
 
 class Token
 {
-  public:
+public:
 	int line;
-	int column;
+    int column;
 	TokenKind kind;
 	wstring text;
 
@@ -18,7 +20,9 @@ class Token
 	Token(TokenKind kind, wstring text);
 
 	void Display();
-	void CheckKeywords();
-};
+    void CheckKeywords();
 
-#endif // TOKEN_H 
+private:
+    static map<wstring, TokenKind> table;
+};
+#endif // TOKEN_H

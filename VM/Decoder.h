@@ -8,26 +8,26 @@
 
 using std::string;
 using std::vector;
-using ConstantPool = std::vector<Any>;
 
 class Decoder
 {
 public:
 	vector<byte> stream;
-	ConstantPool pool;
-	vector<byte> code;
+    vector<Any> pool;
+    vector<byte> code;
 	vector<Function> functions;
     Decoder(string path);
 	Decoder(vector<byte> stream);
 	void Decode();
+
 private:
-	i32 LoadConstantPool(i32 index);
-	i32 LoadFunctions(i32 index);
-	i32 LoadOneFunction(i32 index, i32 parametersSize, i32 frameSize);
-	i32 ReadUShort(i32 offset);
-	i32 ReadInt32(i32 offset);
-	i64 ReadInt64(i32 offset);
-	f64 ReadFloat64(i32 offset);
+    u32 LoadConstantPool(u32 index);
+    u32 LoadFunctions(u32 index);
+    u32 LoadOneFunction(u32 index, i32 parametersSize, i32 frameSize);
+    i32 ReadUShort(u32 offset);
+    i32 ReadInt32(u32 offset);
+    i64 ReadInt64(u32 offset);
+    f64 ReadFloat64(u32 offset);
 };
 
-#endif // DECODER_H 
+#endif // DECODER_H

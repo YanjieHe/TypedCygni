@@ -1,388 +1,244 @@
 #include "Type.h"
 
-Type::Type(TypeTag tag)
-	:tag{tag}
+Type::Type() : tag{TypeTag::Unknown}, name{L""}
 {
 }
 
-Type* Type::Unknown()
+bool Type::Mathces(Type other)
 {
-	return new BasicType(TypeTag::Unknown);
+    if (tag == other.tag && name == other.name)
+    {
+        if (items.size() == other.items.size())
+        {
+            for (unsigned long i = 0; i < items.size(); i++)
+            {
+                if (!items[i].Mathces(other.items[i]))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    else
+    {
+        return false;
+    }
 }
 
-Type* Type::Int()
+bool Type::IsSubtypeOf(Type other)
 {
-	return new BasicType(TypeTag::Int);
+    if (IsInt() && other.IsLong())
+    {
+        return true;
+    }
+    else if (IsInt() && other.IsDouble())
+    {
+        return true;
+    }
+    else if (IsFloat() && other.IsDouble())
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
-Type* Type::Long()
+bool Type::IsUnknown()
 {
-	return new BasicType(TypeTag::Long);
-}
-
-Type* Type::Float()
-{
-	return new BasicType(TypeTag::Float);
-}
-
-Type* Type::Double()
-{
-	return new BasicType(TypeTag::Double);
-}
-
-Type* Type::Boolean()
-{
-	return new BasicType(TypeTag::Boolean);
-}
-
-Type* Type::Char()
-{
-	return new BasicType(TypeTag::Char);
-}
-
-Type* Type::String()
-{
-	return new BasicType(TypeTag::String);
-}
-
-Type* Type::Unit()
-{
-	return new BasicType(TypeTag::Unit);
+    return tag == TypeTag::Unknown;
 }
 
 bool Type::IsInt()
 {
-	return tag == TypeTag::Int;
+    return tag == TypeTag::Int;
 }
 
 bool Type::IsLong()
 {
-	return tag == TypeTag::Long;
+    return tag == TypeTag::Long;
 }
 
 bool Type::IsFloat()
 {
-	return tag == TypeTag::Float;
+    return tag == TypeTag::Float;
 }
 
 bool Type::IsDouble()
 {
-	return tag == TypeTag::Double;
+    return tag == TypeTag::Double;
 }
 
 bool Type::IsBoolean()
 {
-	return tag == TypeTag::Boolean;
+    return tag == TypeTag::Boolean;
 }
 
 bool Type::IsChar()
 {
-	return tag == TypeTag::Char;
+    return tag == TypeTag::Char;
 }
 
 bool Type::IsString()
 {
-	return tag == TypeTag::String;
+    return tag == TypeTag::String;
 }
 
-bool Type::IsUnit()
+bool Type::IsArray()
 {
-	return tag == TypeTag::Unit;
+    return tag == TypeTag::Array;
 }
 
-
-BasicType::BasicType(TypeTag tag)
-	:Type(tag)
+bool Type::IsFunction()
 {
+    return tag == TypeTag::Function;
 }
 
-bool BasicType::Matches(Type* other)
+bool Type::ParametersMatch(vector<Type> parameters)
 {
-	return this->tag == other->tag;
+    if (items.size() == parameters.size() + 1)
+    {
+        for (unsigned long i = 0; i < parameters.size(); i++)
+        {
+            if (!items.at(i).Mathces(parameters.at(i)))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
-bool BasicType::IsSubtypeOf(Type* other)
+Type Type::ReturnType()
 {
-	if (this->tag == TypeTag::Int && this->tag == TypeTag::Double)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+    return items.at(items.size() - 1);
 }
 
-wstring BasicType::ToString()
+std::wstring Type::ToString()
 {
-	return type_tag_to_wstring(tag);
+    switch (tag)
+    {
+    case TypeTag::Unknown:
+        return L"Unknown";
+    case TypeTag::Int:
+        return L"Int";
+    case TypeTag::Long:
+        return L"Long";
+    case TypeTag::Float:
+        return L"Float";
+    case TypeTag::Double:
+        return L"Double";
+    case TypeTag::Boolean:
+        return L"Boolean";
+    case TypeTag::Char:
+        return L"Char";
+    case TypeTag::String:
+        return L"String";
+    case TypeTag::Array:
+        return L"Array[" + items.at(0).ToString() + L"]";
+    case TypeTag::Function:
+    {
+        wstring text = L"Function[" + items.at(0).ToString();
+        for (unsigned long i = 1; i < items.size(); i++)
+        {
+            text += items.at(i).ToString();
+        }
+        text += L"]";
+        return text;
+    }
+    default:
+        throw L"not supported type tag";
+    }
 }
 
-Type* BasicType::Clone()
+Type Type::Unknown()
 {
-	return new BasicType(tag);
+    return Type(TypeTag::Unknown);
 }
 
-Type* BasicType::FromString(wstring name)
+Type Type::Int()
 {
-	if (name == L"Int")
-	{
-		return Type::Int();
-	}
-	else if (name == L"Long")
-	{
-		return Type::Long();
-	}
-	else if (name == L"Float")
-	{
-		return Type::Float();
-	}
-	else if (name == L"Double")
-	{
-		return Type::Double();
-	}
-	else if (name == L"Boolean")
-	{
-		return Type::Boolean();
-	}
-	else if (name == L"Char")
-	{
-		return Type::Char();
-	}
-	else if (name == L"String")
-	{
-		return Type::String();
-	}
-	else if (name == L"Unit")
-	{
-		return Type::Unit();
-	}
-	else
-	{
-		throw L"basic type parsing error";
-	}
+    return Type(TypeTag::Int);
 }
 
-ArrayType::ArrayType(Type* element)
-	:Type(TypeTag::Array)
+Type Type::Long()
 {
-	this->element = element;
+    return Type(TypeTag::Long);
 }
 
-ArrayType::~ArrayType()
+Type Type::Float()
 {
-	delete this->element;
+    return Type(TypeTag::Float);
 }
 
-bool ArrayType::Matches(Type* other)
+Type Type::Double()
 {
-	if (other->tag == TypeTag::Array)
-	{
-		return element->Matches(((ArrayType*)other)->element);
-	}
-	else
-	{
-		return false;
-	}
+    return Type(TypeTag::Double);
 }
 
-bool ArrayType::IsSubtypeOf(Type*)
+Type Type::Boolean()
 {
-	return false;
+    return Type(TypeTag::Boolean);
 }
 
-wstring ArrayType::ToString()
+Type Type::Char()
 {
-	return L"Array[" + element->ToString() + L"]";
+    return Type(TypeTag::Char);
 }
 
-Type* ArrayType::Clone()
+Type Type::String()
 {
-	return new ArrayType(element->Clone());
+    return Type(TypeTag::String);
 }
 
-FunctionType::FunctionType(vector<Type*> parameters, Type* returnType)
-	:Type(TypeTag::Function)
+Type Type::Array(Type element)
 {
-	this->parameters = parameters;
-	this->returnType = returnType;
+    return Type(TypeTag::Array, vector<Type>{element});
 }
 
-FunctionType::~FunctionType()
+Type Type::Function(vector<Type> parameters, Type returnType)
 {
-	for (Type* item: parameters)
-	{
-		delete item;
-	}
-	delete returnType;
+    parameters.push_back(returnType);
+    return Type(TypeTag::Function, parameters);
 }
 
-bool FunctionType::Matches(Type* other)
+Type Type::FromString(std::wstring text)
 {
-	if (other->tag == TypeTag::Function)
-	{
-		FunctionType* ft = (FunctionType*) other;
-		if (parameters.size() == ft->parameters.size())
-		{
-			return ParametersMatch(ft) && returnType->Matches(ft);
-		}
-		else
-		{
-			return false;
-		}
-	}
-	else
-	{
-		return false;
-	}
+    if (table.find(text) != table.end())
+    {
+        return table[text];
+    }
+    else
+    {
+        return Type::Unknown();
+    }
 }
 
-wstring FunctionType::ToString()
+bool Type::IsBasicType(std::wstring text)
 {
-	wstring result = L"Func[";
-	if (parameters.size() == 0)
-	{
-		result += returnType->ToString();
-		result += L"]";
-		return result;
-	}
-	else
-	{
-		result += parameters.at(0)->ToString();
-		for (unsigned int i = 1; i < parameters.size(); i++)
-		{
-			result += L", ";
-			result += parameters.at(1)->ToString();
-		}
-		result += L", ";
-		result += returnType->ToString();
-		result += L"]";
-		return result;
-	}
+    return table.find(text) != table.end();
 }
 
-bool FunctionType::IsSubtypeOf(Type*)
-{
-	return false;
-}
-
-Type* FunctionType::Clone()
-{
-	vector<Type*> types;
-	for (Type* item: parameters)
-	{
-		types.push_back(item->Clone());
-	}
-	return new FunctionType(types, returnType->Clone());
-}
-
-bool FunctionType::ParametersMatch(FunctionType* other)
-{
-	unsigned int i = 0;
-	bool match = true;
-	while (match && i < parameters.size())
-	{
-		match = parameters.at(i)->Matches(other->parameters.at(i));
-		i++;
-	}
-	return match;
-}
-
-bool FunctionType::ParametersMatch(vector<Type*>& types)
-{
-	if (parameters.size() == types.size())
-	{
-		unsigned int i = 0;
-		bool match = true;
-		while (match && i < parameters.size())
-		{
-			match = parameters.at(i)->Matches(types.at(i));
-			i++;
-		}
-		return match;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-BaseType::BaseType(wstring name)
-	:Type(TypeTag::Base), name{name}
+Type::Type(TypeTag tag) : tag{tag}, name{L""}
 {
 }
 
-bool BaseType::Matches(Type* other)
-{
-	if (other->tag == TypeTag::Base)
-	{
-		return name == ((BaseType*) other)->name;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-bool BaseType::IsSubtypeOf(Type*)
-{
-	return false;
-}
-
-wstring BaseType::ToString()
-{
-	return name;
-}
-
-Type* BaseType::Clone()
-{
-	return new BaseType(name);
-}
-
-InheritedType::InheritedType(wstring name, Type* base)
-	:Type(TypeTag::Inherited), name{name}, base{base}
+Type::Type(TypeTag tag, vector<Type> items) : tag{tag}, items{items}, name{L""}
 {
 }
 
-InheritedType::~InheritedType()
-{
-	delete this->base;
-}
-
-bool InheritedType::Matches(Type* other)
-{
-	if (other->tag == TypeTag::Inherited)
-	{
-		return name == ((InheritedType*) other)->name;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-bool InheritedType::IsSubtypeOf(Type* other)
-{
-	if (base->Matches(other))
-	{
-		return true;
-	}
-	else if (base->IsSubtypeOf(other))
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-wstring InheritedType::ToString()
-{
-	return name;
-}
-
-Type* InheritedType::Clone()
-{
-	return new InheritedType(name, base->Clone());
-}
+map<wstring, Type> Type::table = {
+    {L"Int", Type::Int()},		   {L"Long", Type::Long()},
+    {L"Float", Type::Float()},	 {L"Double", Type::Double()},
+    {L"Boolean", Type::Boolean()}, {L"Char", Type::Char()},
+    {L"String", Type::String()}};

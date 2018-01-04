@@ -8,46 +8,50 @@ using std::wstring;
 
 class Exception
 {
-  public:
-    Exception();
+public:
+    wstring message;
+    Exception(wstring name);
 };
 
-class LexicalException
+class CodeException : public Exception
 {
-  public:
-	int line;
-	int column;
-	wstring message;
+public:
+    int line;
+    int column;
+    CodeException(int line, int column, wstring message);
+};
+
+class LexicalException : public CodeException
+{
+public:
 	LexicalException(int line, int column, wstring message);
 };
 
-class SyntaxException
+class SyntaxException : public CodeException
 {
-  public:
-	int line;
-	int column;
-	wstring message;
+public:
 	SyntaxException(int line, int column, wstring message);
+    SyntaxException(const Position& position, wstring message);
 };
 
-class SemanticException
+class SemanticException : public CodeException
 {
-  public:
-	int line;
-	int column;
-	wstring message;
+public:
 	SemanticException(int line, int column, wstring message);
 	SemanticException(const Position& position, wstring message);
 };
 
-class CompilationException
+class CompilationException : public CodeException
 {
 public:
-	int line;
-	int column;
-	wstring message;
 	CompilationException(int line, int column, wstring message);
 	CompilationException(const Position& position, wstring message);
 };
 
-#endif // EXCEPTION_H 
+class NotImplementedException : public Exception
+{
+public:
+    NotImplementedException();
+};
+
+#endif // EXCEPTION_H

@@ -18,13 +18,13 @@ public:
 	void ReadCode();
 
 private:
-	i32 ReadCode(i32 offset); 
-	i32 ReadFunction(i32 offset);
+    u32 ReadCode(u32 offset);
+    u32 ReadFunction(u32 offset);
 
-	i32 ReadUShort(i32 offset);
-	i32 ReadInt32(i32 offset);
-	i64 ReadInt64(i32 offset);
-	f64 ReadFloat64(i32 offset);
+    i32 ReadUShort(u32 offset);
+    i32 ReadInt32(u32 offset);
+    i64 ReadInt64(u32 offset);
+    f64 ReadFloat64(u32 offset);
 };
 
-#endif // DISASSEMBLY_H 
+#endif // DISASSEMBLY_H
