@@ -1,8 +1,8 @@
 #ifndef OPCODE_H
 #define OPCODE_H
 
-#include <string>
 #include <cstdint>
+#include <string>
 
 using std::wstring;
 using i32 = int32_t;
@@ -40,10 +40,6 @@ enum class OpCode
     push_constant_f64,
     push_constant_string,
 
-    store_constant_i32,
-    store_constant_f64,
-    store_constant_string,
-
     function_begin,
     function_end,
 
@@ -78,7 +74,6 @@ enum class OpCode
     logical_not,
 
     minus_i32,
-
     minus_f64,
 
     cast_int32_to_float64,
@@ -117,4 +112,4 @@ wstring opcode_to_wstring(OpCode code);
 
 i32 OperandSize(OpCode op);
 
-#endif // OPCODE_H 
+#endif // OPCODE_H

@@ -56,7 +56,7 @@ Type FunctionList::ResolveType(wstring name)
 {
 	if (table.find(name) != table.end())
 	{
-        return types[static_cast<unsigned long>(table[name])];
+        return types[static_cast<unsigned int>(table[name])];
 	}
 	else
 	{
@@ -85,7 +85,7 @@ bool GlobalTypeEnv::IsGlobal()
     return true;
 }
 
-FunctionTypeEnv::FunctionTypeEnv(Type type, TypeEnv* parent)
+FunctionTypeEnv::FunctionTypeEnv(Type type, TypeEnvPtr parent)
     : TypeEnv(), type{type}, parent{parent}
 {
 }

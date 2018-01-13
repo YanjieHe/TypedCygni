@@ -1,35 +1,21 @@
 #ifndef FUNCTION_H
 #define FUNCTION_H
 
-#include "Any.h"
-#include "ByteCode.h"
-#include "Memory.h"
+#include "Array"
+#include "PrimitiveType.h"
+#include <string>
 #include <vector>
-
-using byte = unsigned char;
 using std::vector;
+using std::wstring;
+using ByteCode = Array<byte>;
 
 class Function
 {
 public:
+    wstring name;
     i32 parametersSize;
     i32 frameSize;
 	ByteCode code;
-    i32 index;
-    Function(i32 parametersSize, i32 frameSize, ByteCode code);
+    Function(wstring name, i32 parametersSize, i32 frameSize, ByteCode code);
 };
-
-// class NativeFunction
-//{
-// public:
-//	i32 parametersSize;
-//	NativeFunction();
-//	virtual i32 Call(Memory* memory, i32 sp) = 0;
-//};
-
-// class Print: public NativeFunction
-//{
-// public:
-//	i32 Call(Memory* memory, i32 sp) override;
-//};
 #endif // FUNCTION_H

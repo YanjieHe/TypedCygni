@@ -2,25 +2,28 @@
 #define LEXER_H
 
 #include "Exception.h"
-#include "StringBuilder.h"
 #include "Token.h"
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <vector>
 
 using std::string;
 using std::vector;
 using std::wifstream;
+using std::wostringstream;
 
 class Lexer
 {
 public:
     Lexer(string path);
+    Lexer(const Lexer&) = delete;
+    Lexer& operator=(const Lexer&) = delete;
 	vector<Token> ReadAll();
 
 private:
     wifstream stream;
-    StringBuilder builder;
+    wostringstream builder;
 
 	int line;
 	int column;
@@ -41,6 +44,7 @@ private:
 	void EscapedChar();
 	void SkipSpaces();
 	void SetPosition(int currentLine, int currentColumn, Token& token);
+    void Clear();
 };
 
 #endif // LEXER_H

@@ -50,7 +50,7 @@ Location GlobalScope::Find(wstring name)
 	}
 }
 
-FunctionScope::FunctionScope(Scope* parent) : Scope(), parent{parent}
+FunctionScope::FunctionScope(ScopePtr parent) : Scope(), parent{parent}
 {
 }
 
@@ -63,28 +63,5 @@ Location FunctionScope::Find(wstring name)
 	else
 	{
 		return parent->Find(name);
-	}
-}
-
-LocationRecord::LocationRecord()
-{
-	this->record = map<int, Location>();
-}
-
-void LocationRecord::Record(Expression* expression, Location location)
-{
-	record.insert(map<int, Location>::value_type(expression->ID, location));
-}
-
-Location LocationRecord::Find(Expression* expression)
-{
-	auto iter = record.find(expression->ID);
-	if (iter != record.end())
-	{
-		return record[expression->ID];
-	}
-	else
-	{
-		return Location();
 	}
 }

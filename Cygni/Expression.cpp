@@ -1,5 +1,8 @@
 #include "Expression.h"
+#include "Exception.h"
 #include "Visitor.h"
+
+using std::make_shared;
 
 Expression::Expression(ExpressionKind kind) : kind{kind}
 {
@@ -8,20 +11,22 @@ Expression::Expression(ExpressionKind kind) : kind{kind}
 
 Expression::Expression(ExpressionKind kind, Type type) : kind{kind}, type{type}
 {
+    this->ID = -1;
 }
 
 Expression::~Expression()
 {
 }
 
-UnaryExpression* Expression::Convert(Expression* node, Type type)
+UnaryExpressionPtr Expression::Convert(ExpressionPtr node, Type type)
 {
-    auto expression = new UnaryExpression(ExpressionKind::Convert, node);
+    UnaryExpressionPtr expression =
+        make_shared<UnaryExpression>(ExpressionKind::Convert, node);
     expression->type = type;
     return expression;
 }
 
-UnaryExpression::UnaryExpression(ExpressionKind kind, Expression* operand)
+UnaryExpression::UnaryExpression(ExpressionKind kind, ExpressionPtr operand)
     : Expression(kind), operand{operand}
 {
 }
@@ -31,8 +36,8 @@ void UnaryExpression::Accept(Visitor* visitor)
 	visitor->Visit(this);
 }
 
-BinaryExpression::BinaryExpression(ExpressionKind kind, Expression* left,
-                                   Expression* right)
+BinaryExpression::BinaryExpression(ExpressionKind kind, ExpressionPtr left,
+                                   ExpressionPtr right)
     : Expression(kind), left{left}, right{right}
 {
 }
@@ -76,7 +81,7 @@ void ConstantExpression::Accept(Visitor* visitor)
 	visitor->Visit(this);
 }
 
-BlockExpression::BlockExpression(vector<Expression*> expressions)
+BlockExpression::BlockExpression(vector<ExpressionPtr> expressions)
     : Expression(ExpressionKind::Block), expressions{expressions}
 {
 }
@@ -86,8 +91,8 @@ void BlockExpression::Accept(Visitor* visitor)
 	visitor->Visit(this);
 }
 
-ConditionalExpression::ConditionalExpression(Expression* test,
-                                             Expression* ifTrue)
+ConditionalExpression::ConditionalExpression(ExpressionPtr test,
+                                             ExpressionPtr ifTrue)
     : Expression(ExpressionKind::Conditional), test{test}, ifTrue{ifTrue}
 {
 }
@@ -97,9 +102,9 @@ void ConditionalExpression::Accept(Visitor* visitor)
 	visitor->Visit(this);
 }
 
-FullConditionalExpression::FullConditionalExpression(Expression* test,
-                                                     Expression* ifTrue,
-                                                     Expression* ifFalse)
+FullConditionalExpression::FullConditionalExpression(ExpressionPtr test,
+                                                     ExpressionPtr ifTrue,
+                                                     ExpressionPtr ifFalse)
     : ConditionalExpression(test, ifTrue), ifFalse{ifFalse}
 {
 }
@@ -124,8 +129,8 @@ void ParameterExpression::Accept(Visitor* visitor)
 	visitor->Visit(this);
 }
 
-CallExpression::CallExpression(Expression* procedure,
-                               vector<Expression*> arguments)
+CallExpression::CallExpression(ExpressionPtr procedure,
+                               vector<ExpressionPtr> arguments)
     : Expression(ExpressionKind::Call), procedure{procedure}, arguments{
                                                                   arguments}
 {
@@ -136,7 +141,7 @@ void CallExpression::Accept(Visitor* visitor)
 	visitor->Visit(this);
 }
 
-WhileExpression::WhileExpression(Expression* condition, Expression* body)
+WhileExpression::WhileExpression(ExpressionPtr condition, ExpressionPtr body)
     : Expression(ExpressionKind::While), condition{condition}, body{body}
 {
 }
@@ -146,7 +151,7 @@ void WhileExpression::Accept(Visitor* visitor)
 	visitor->Visit(this);
 }
 
-VarExpression::VarExpression(wstring name, Expression* value)
+VarExpression::VarExpression(wstring name, ExpressionPtr value)
     : Expression(ExpressionKind::Var), name{name}, value{value}
 {
 }
@@ -167,8 +172,8 @@ void DefaultExpression::Accept(Visitor* visitor)
 }
 
 DefineExpression::DefineExpression(wstring name,
-                                   vector<ParameterExpression*> parameters,
-                                   Expression* body, Type type)
+                                   vector<ParameterExpressionPtr> parameters,
+                                   ExpressionPtr body, Type type)
     : Expression(ExpressionKind::Define, type), name{name},
       parameters{parameters}, body{body}
 {
@@ -179,8 +184,8 @@ void DefineExpression::Accept(Visitor* visitor)
 	visitor->Visit(this);
 }
 
-AssignExpression::AssignExpression(ParameterExpression* variable,
-                                   Expression* value)
+AssignExpression::AssignExpression(ParameterExpressionPtr variable,
+                                   ExpressionPtr value)
     : Expression(ExpressionKind::Assign), variable{variable}, value{value}
 {
 }
@@ -190,7 +195,7 @@ void AssignExpression::Accept(Visitor* visitor)
 	visitor->Visit(this);
 }
 
-ReturnExpression::ReturnExpression(Expression* value)
+ReturnExpression::ReturnExpression(ExpressionPtr value)
     : Expression(ExpressionKind::Return), value{value}
 {
 }
@@ -198,4 +203,20 @@ ReturnExpression::ReturnExpression(Expression* value)
 void ReturnExpression::Accept(Visitor* visitor)
 {
 	visitor->Visit(this);
+}
+
+ImportExpression::ImportExpression(std::wstring name)
+    : Expression(ExpressionKind::Import), name{name}
+{
+}
+
+void ImportExpression::Accept(Visitor* visitor)
+{
+    visitor->Visit(this);
+}
+
+ModuleExpression::ModuleExpression(std::wstring name,
+                                   vector<ExpressionPtr> expressions)
+    : BlockExpression(expressions), name{name}
+{
 }

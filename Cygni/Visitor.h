@@ -21,6 +21,7 @@ public:
 	virtual void Visit(NewExpression* node) = 0;
 	virtual void Visit(AssignExpression* node) = 0;
 	virtual void Visit(ReturnExpression* node) = 0;
+    virtual void Visit(ImportExpression* node) = 0;
 
     virtual ~Visitor();
 };
@@ -45,6 +46,7 @@ public:
 	void Visit(NewExpression* node) override;
 	void Visit(AssignExpression* node) override;
 	void Visit(ReturnExpression* node) override;
+    void Visit(ImportExpression* node) override;
 
 private:
 	int depth;

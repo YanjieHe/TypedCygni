@@ -32,9 +32,9 @@ void Token::CheckKeywords()
 }
 
 map<wstring, TokenKind> Token::table = {
-    {L"and", TokenKind::And},	  {L"or", TokenKind::Or},
-    {L"not", TokenKind::Not},	  {L"true", TokenKind::True},
-    {L"false", TokenKind::False},  {L"var", TokenKind::Var},
-    {L"def", TokenKind::Define},   {L"if", TokenKind::If},
-    {L"else", TokenKind::Else},	{L"while", TokenKind::While},
-    {L"return", TokenKind::Return}};
+    {L"and", TokenKind::And},		{L"or", TokenKind::Or},
+    {L"not", TokenKind::Not},		{L"true", TokenKind::True},
+    {L"false", TokenKind::False},   {L"var", TokenKind::Var},
+    {L"def", TokenKind::Define},	{L"if", TokenKind::If},
+    {L"else", TokenKind::Else},		{L"while", TokenKind::While},
+    {L"return", TokenKind::Return}, {L"import", TokenKind::Import}};

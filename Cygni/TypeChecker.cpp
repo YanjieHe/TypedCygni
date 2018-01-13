@@ -1,15 +1,15 @@
 #include "TypeChecker.h"
 #include "Exception.h"
 #include <iostream>
-
+#include <memory>
 using namespace std;
 
-TypeChecker::TypeChecker(DebugInfo& debugInfo, LocationRecord& record)
-    : debugInfo{debugInfo}, record{record}
+TypeChecker::TypeChecker(DebugInfo& debugInfo, LocationRecord& record,
+                         GlobalScopePtr globalScope, FunctionList& fenv)
+    : debugInfo{debugInfo}, record{record}, scope{static_pointer_cast<Scope>(
+                                                globalScope)},
+      fenv{fenv}, env{make_shared<GlobalTypeEnv>()}
 {
-    this->scope = new GlobalScope();
-    this->fenv = new FunctionList();
-    this->env = new GlobalTypeEnv();
 }
 
 void TypeChecker::Visit(UnaryExpression* node)
@@ -73,21 +73,21 @@ void TypeChecker::Visit(BinaryExpression* node)
     else if (node->left->type.IsDouble() && node->right->type.IsDouble())
     {
         VisitBinary(node, Type::Double());
-	}
+    }
     else if (node->left->type.IsInt() && node->right->type.IsDouble())
     {
         Position p = debugInfo.Locate(node->left);
         node->left = Expression::Convert(node->left, Type::Double());
-        debugInfo.Record(p.line, p.column, node->left);
+        debugInfo.Record(p, node->left);
         VisitBinary(node, Type::Double());
     }
     else if (node->left->type.IsDouble() && node->right->type.IsInt())
     {
         Position p = debugInfo.Locate(node->right);
         node->right = Expression::Convert(node->right, Type::Double());
-        debugInfo.Record(p.line, p.column, node->right);
+        debugInfo.Record(p, node->right);
         VisitBinary(node, Type::Double());
-    }
+	}
 	else
 	{
 		throw SemanticException(debugInfo.Locate(node),
@@ -119,20 +119,9 @@ void TypeChecker::Visit(ConstantExpression* node)
 
 void TypeChecker::Visit(BlockExpression* node)
 {
-    for (Expression* expression : node->expressions)
-	{
-		if (expression->kind == ExpressionKind::Define)
-		{
-			expression->Accept(this);
-		}
-	}
-
-    for (Expression* expression : node->expressions)
-	{
-		if (expression->kind != ExpressionKind::Define)
-		{
-			expression->Accept(this);
-		}
+    for (ExpressionPtr expression : node->expressions)
+    {
+        expression->Accept(this);
 	}
 }
 
@@ -154,11 +143,11 @@ void TypeChecker::Visit(ParameterExpression* node)
 	Location location = scope->Find(node->name);
 	if (location.kind == LocationKind::Unknown)
 	{
-		int index = fenv->Find(node->name);
+        int index = fenv.Find(node->name);
 		if (index != -1)
 		{
             record.Record(node, Location(LocationKind::FunctionID, index));
-            node->type = fenv->ResolveType(node->name);
+            node->type = fenv.ResolveType(node->name);
 		}
 		else
 		{
@@ -177,7 +166,7 @@ void TypeChecker::Visit(CallExpression* node)
 {
 	node->procedure->Accept(this);
     vector<Type> argsType;
-    for (Expression* item : node->arguments)
+    for (ExpressionPtr item : node->arguments)
 	{
 		item->Accept(this);
         argsType.push_back(item->type);
@@ -186,7 +175,6 @@ void TypeChecker::Visit(CallExpression* node)
     if (node->procedure->type.IsFunction())
 	{
         Type ft = node->procedure->type;
-
         if (ft.ParametersMatch(argsType))
 		{
             node->type = ft.ReturnType();
@@ -233,7 +221,7 @@ void TypeChecker::Visit(VarExpression* node)
 	}
 }
 
-void TypeChecker::Visit(DefaultExpression* node)
+void TypeChecker::Visit(DefaultExpression*)
 {
 	// TO DO
     throw NotImplementedException();
@@ -241,25 +229,22 @@ void TypeChecker::Visit(DefaultExpression* node)
 
 void TypeChecker::Visit(DefineExpression* node)
 {
-	Scope* prev = scope;
-	scope = new FunctionScope(scope);
-	TypeEnv* prev_env = env;
-    env = new FunctionTypeEnv(node->type, env);
-    for (ParameterExpression* item : node->parameters)
+    ScopePtr prev = scope;
+    scope = make_shared<FunctionScope>(scope);
+    TypeEnvPtr prev_env = env;
+    env = make_shared<FunctionTypeEnv>(node->type, env);
+    for (ParameterExpressionPtr item : node->parameters)
 	{
 		scope->Define(item->name);
         env->Define(item->name, item->type);
-	}
-    fenv->Define(node->name, node->type);
+    }
 	node->body->Accept(this);
-	node->frameSize = scope->Size();
-	delete scope;
-	delete env;
+    node->frameSize = scope->Size();
 	scope = prev;
 	env = prev_env;
 }
 
-void TypeChecker::Visit(NewExpression* node)
+void TypeChecker::Visit(NewExpression*)
 {
     // TO DO
     throw NotImplementedException();
@@ -277,7 +262,7 @@ void TypeChecker::Visit(ReturnExpression* node)
     if (!env->IsGlobal())
     {
         node->value->Accept(this);
-        FunctionTypeEnv* ftenv = static_cast<FunctionTypeEnv*>(env);
+        FunctionTypeEnvPtr ftenv = static_pointer_cast<FunctionTypeEnv>(env);
         if (node->value->type.Mathces(ftenv->type.ReturnType()))
         {
             node->type = (node->value->type);
@@ -298,6 +283,12 @@ void TypeChecker::Visit(ReturnExpression* node)
         throw SemanticException(debugInfo.Locate(node),
                                 L"return statement should be in a function");
     }
+}
+
+void TypeChecker::Visit(ImportExpression*)
+{
+    // TO DO
+    return;
 }
 
 void TypeChecker::VisitBinary(BinaryExpression* node, Type typeOfArithmetic)

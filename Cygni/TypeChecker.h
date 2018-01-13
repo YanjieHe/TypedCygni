@@ -11,10 +11,11 @@ class TypeChecker : public Visitor
 public:
 	DebugInfo& debugInfo;
 	LocationRecord& record;
-    Scope* scope;
-	FunctionList* fenv;
-	TypeEnv* env;
-    TypeChecker(DebugInfo& debugInfo, LocationRecord& record);
+    ScopePtr scope;
+    FunctionList& fenv;
+    TypeEnvPtr env;
+    TypeChecker(DebugInfo& debugInfo, LocationRecord& record,
+                GlobalScopePtr globalScope, FunctionList& fenv);
 
 	void Visit(UnaryExpression* node) override;
 	void Visit(BinaryExpression* node) override;
@@ -31,6 +32,7 @@ public:
 	void Visit(NewExpression* node) override;
 	void Visit(AssignExpression* node) override;
 	void Visit(ReturnExpression* node) override;
+    void Visit(ImportExpression* node) override;
 
     void VisitBinary(BinaryExpression* node, Type typeOfArithmetic);
 };

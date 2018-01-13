@@ -49,9 +49,10 @@ enum class ExpressionKind
 	Var,
 	Define,
 	Default,
-	New
+    New,
+    Import
 };
 
 wstring expression_kind_to_wstring(ExpressionKind kind);
 
-#endif // EXPRESSIONKIND_H 
+#endif // EXPRESSIONKIND_H

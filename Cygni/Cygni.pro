@@ -7,7 +7,6 @@ SOURCES += main.cpp \
     TokenKind.cpp \
     Token.cpp \
     Lexer.cpp \
-    StringBuilder.cpp \
     Test.cpp \
     Exception.cpp \
     ExpressionKind.cpp \
@@ -22,13 +21,15 @@ SOURCES += main.cpp \
     TypeEnv.cpp \
     TypeChecker.cpp \
     OpCode.cpp \
-    Compiler.cpp \
     Function.cpp \
+    Position.cpp \
+    ByteCodeGenerator.cpp \
+    Compiler.cpp \
+    DefinitionCollector.cpp
 
 HEADERS +=  TokenKind.h \
     Token.h \
     Lexer.h \
-    StringBuilder.h \
     Test.h \
     Exception.h \
     ExpressionKind.h \
@@ -43,5 +44,9 @@ HEADERS +=  TokenKind.h \
     TypeEnv.h \
     TypeChecker.h \
     OpCode.h \
-    Compiler.h \
     Function.h \
+    Position.h \
+    ByteCodeGenerator.h \
+    Compiler.h \
+    DefinitionCollector.h \
+    PrimitiveType.h

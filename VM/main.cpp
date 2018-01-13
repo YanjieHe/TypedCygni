@@ -6,16 +6,13 @@
 
 using namespace std;
 
-int main(int argc, char* argv[])
+// int main(int argc, char* argv[])
+int main()
 {
 	locale loc("");
 	locale::global(loc);
-
-    //	wcout << "argc: " << argc << endl;
-    //	wcout << "argv[0]: " << argv[0] << endl;
-    //	wcout << "argv[1]: " << argv[1] << endl;
-    // TestDisassembly();
-	TestDecoderReadFile("factorial.bin");
+    TestDisassembly("factorial.bin");
+    TestDecoderReadFile("factorial.bin");
 
 	return 0;
 }

@@ -1,18 +1,21 @@
 #include "Parser.h"
+#include <memory>
+using std::make_shared;
+using std::static_pointer_cast;
 
 Parser::Parser(vector<Token>& tokens, DebugInfo& debugInfo)
     : tokens{tokens}, tokens_pointer{0}, debugInfo{debugInfo}
 {
 }
 
-Expression* Parser::Program()
+ExpressionPtr Parser::Program()
 {
-	vector<Expression*> expressions;
+    vector<ExpressionPtr> expressions;
 	while (!IsEof())
 	{
-		expressions.push_back(Statement());
+        expressions.push_back(StatementOnTop());
 	}
-	Expression* result = new BlockExpression(expressions);
+    ExpressionPtr result = make_shared<BlockExpression>(expressions);
     Record(Position(0, 1), result);
 	return result;
 }
@@ -67,28 +70,28 @@ void Parser::Match(TokenKind kind)
 	}
 }
 
-inline void Parser::Record(Position position, Expression* expression)
+inline void Parser::Record(Position position, ExpressionPtr expression)
 {
     debugInfo.Record(position, expression);
 }
 
-Expression* Parser::Block()
+ExpressionPtr Parser::Block()
 {
     Position position = CurrentPosition();
 
     Match(TokenKind::LeftBrace);
-	vector<Expression*> expressions;
+    vector<ExpressionPtr> expressions;
 	while (Current().kind != TokenKind::RightBrace)
 	{
 		expressions.push_back(Statement());
 	}
 	Match(TokenKind::RightBrace);
-	Expression* result = new BlockExpression(expressions);
+    ExpressionPtr result = make_shared<BlockExpression>(expressions);
     Record(position, result);
 	return result;
 }
 
-Expression* Parser::Statement()
+ExpressionPtr Parser::Statement()
 {
 	switch (Current().kind)
 	{
@@ -107,19 +110,19 @@ Expression* Parser::Statement()
 	}
 }
 
-Expression* Parser::Assign()
+ExpressionPtr Parser::Assign()
 {
-	Expression* left = Or();
+    ExpressionPtr left = Or();
 	if (Current().kind == TokenKind::Assign)
 	{
         Position position = CurrentPosition();
 
 		Advance();
-		Expression* right = Or();
+        ExpressionPtr right = Or();
 		if (left->kind == ExpressionKind::Parameter)
 		{
-            left = new AssignExpression(static_cast<ParameterExpression*>(left),
-                                        right);
+            left = make_shared<AssignExpression>(
+                static_pointer_cast<ParameterExpression>(left), right);
             Record(position, left);
 		}
 		else
@@ -130,63 +133,65 @@ Expression* Parser::Assign()
 	return left;
 }
 
-Expression* Parser::Or()
+ExpressionPtr Parser::Or()
 {
-	Expression* left = And();
+    ExpressionPtr left = And();
 	while (Current().kind == TokenKind::Or)
 	{
         Position position = CurrentPosition();
 
 		Advance();
-		Expression* right = And();
-		left = new BinaryExpression(ExpressionKind::Or, left, right);
+        ExpressionPtr right = And();
+        left = make_shared<BinaryExpression>(ExpressionKind::Or, left, right);
         Record(position, left);
 	}
 	return left;
 }
 
-Expression* Parser::And()
+ExpressionPtr Parser::And()
 {
-	Expression* left = Equality();
+    ExpressionPtr left = Equality();
 	while (Current().kind == TokenKind::And)
 	{
         Position position = CurrentPosition();
 
 		Advance();
-		Expression* right = Equality();
-		left = new BinaryExpression(ExpressionKind::And, left, right);
+        ExpressionPtr right = Equality();
+        left = make_shared<BinaryExpression>(ExpressionKind::And, left, right);
         Record(position, left);
 	}
 	return left;
 }
 
-Expression* Parser::Equality()
+ExpressionPtr Parser::Equality()
 {
-	Expression* left = Relation();
+    ExpressionPtr left = Relation();
 	while (Current().kind == TokenKind::Equal ||
            Current().kind == TokenKind::NotEqual)
 	{
 		Token& token = Current();
         Position position = CurrentPosition();
 		Advance();
-		Expression* right = Relation();
+        ExpressionPtr right = Relation();
 		if (token.kind == TokenKind::Equal)
 		{
-			left = new BinaryExpression(ExpressionKind::Equal, left, right);
+            left = make_shared<BinaryExpression>(ExpressionKind::Equal, left,
+                                                 right);
             Record(position, left);
 		}
 		else
 		{
-			left = new BinaryExpression(ExpressionKind::NotEqual, left, right);
+            left = make_shared<BinaryExpression>(ExpressionKind::NotEqual, left,
+                                                 right);
             Record(position, left);
 		}
 	}
 	return left;
 }
 
-Expression* Parser::Relation()
+ExpressionPtr Parser::Relation()
 {
-	Expression* left = Addition();
+    ExpressionPtr left = Addition();
 	if (Current().kind == TokenKind::GreaterThan ||
 		Current().kind == TokenKind::LessThan ||
 		Current().kind == TokenKind::GreaterThanOrEqual ||
@@ -195,27 +200,28 @@ Expression* Parser::Relation()
 		Token& token = Current();
         Position position = CurrentPosition();
 		Advance();
-		Expression* right = Addition();
+        ExpressionPtr right = Addition();
 		switch (token.kind)
 		{
         case TokenKind::GreaterThan:
-            left =
-                new BinaryExpression(ExpressionKind::GreaterThan, left, right);
+            left = make_shared<BinaryExpression>(ExpressionKind::GreaterThan,
+                                                 left, right);
             Record(position, left);
             break;
         case TokenKind::LessThan:
-            left = new BinaryExpression(ExpressionKind::LessThan, left, right);
+            left = make_shared<BinaryExpression>(ExpressionKind::LessThan, left,
+                                                 right);
             Record(position, left);
             break;
         case TokenKind::GreaterThanOrEqual:
-            left = new BinaryExpression(ExpressionKind::GreaterThanOrEqual,
-                                        left, right);
+            left = make_shared<BinaryExpression>(
+                ExpressionKind::GreaterThanOrEqual, left, right);
             Record(position, left);
             break;
         default:
         case TokenKind::LessThanOrEqual:
-            left = new BinaryExpression(ExpressionKind::LessThanOrEqual, left,
-                                        right);
+            left = make_shared<BinaryExpression>(
+                ExpressionKind::LessThanOrEqual, left, right);
             Record(position, left);
             break;
 		}
@@ -223,33 +229,35 @@ Expression* Parser::Relation()
 	return left;
 }
 
-Expression* Parser::Addition()
+ExpressionPtr Parser::Addition()
 {
-	Expression* left = Multiplication();
+    ExpressionPtr left = Multiplication();
 	while (Current().kind == TokenKind::Add ||
            Current().kind == TokenKind::Subtract)
 	{
 		Token& token = Current();
         Position position = CurrentPosition();
 		Advance();
-		Expression* right = Multiplication();
+        ExpressionPtr right = Multiplication();
 		if (token.kind == TokenKind::Add)
 		{
-			left = new BinaryExpression(ExpressionKind::Add, left, right);
+            left =
+                make_shared<BinaryExpression>(ExpressionKind::Add, left, right);
             Record(position, left);
 		}
 		else
 		{
-			left = new BinaryExpression(ExpressionKind::Subtract, left, right);
+            left = make_shared<BinaryExpression>(ExpressionKind::Subtract, left,
+                                                 right);
             Record(position, left);
 		}
 	}
 	return left;
 }
 
-Expression* Parser::Multiplication()
+ExpressionPtr Parser::Multiplication()
 {
-	Expression* left = Unary();
+    ExpressionPtr left = Unary();
 	while (Current().kind == TokenKind::Multiply ||
            Current().kind == TokenKind::Divide ||
            Current().kind == TokenKind::Modulo)
@@ -257,27 +265,30 @@ Expression* Parser::Multiplication()
 		Token& token = Current();
         Position position = CurrentPosition();
 		Advance();
-		Expression* right = Unary();
+        ExpressionPtr right = Unary();
 		if (token.kind == TokenKind::Multiply)
 		{
-			left = new BinaryExpression(ExpressionKind::Multiply, left, right);
+            left = make_shared<BinaryExpression>(ExpressionKind::Multiply, left,
+                                                 right);
             Record(position, left);
 		}
 		else if (token.kind == TokenKind::Divide)
 		{
-			left = new BinaryExpression(ExpressionKind::Divide, left, right);
+            left = make_shared<BinaryExpression>(ExpressionKind::Divide, left,
+                                                 right);
             Record(position, left);
 		}
 		else
 		{
-			left = new BinaryExpression(ExpressionKind::Modulo, left, right);
+            left = make_shared<BinaryExpression>(ExpressionKind::Modulo, left,
+                                                 right);
             Record(position, left);
 		}
 	}
 	return left;
 }
 
-Expression* Parser::Unary()
+ExpressionPtr Parser::Unary()
 {
 	if (Current().kind == TokenKind::Add ||
 		Current().kind == TokenKind::Subtract ||
@@ -286,25 +297,25 @@ Expression* Parser::Unary()
 		Token& token = Current();
         Position position = CurrentPosition();
 		Advance();
-		Expression* operand = Unary();
+        ExpressionPtr operand = Unary();
 		if (token.kind == TokenKind::Add)
 		{
-            Expression* result =
-                new UnaryExpression(ExpressionKind::UnaryPlus, operand);
+            ExpressionPtr result = make_shared<UnaryExpression>(
+                ExpressionKind::UnaryPlus, operand);
             Record(position, result);
 			return result;
 		}
 		else if (token.kind == TokenKind::Subtract)
 		{
-            Expression* result =
-                new UnaryExpression(ExpressionKind::Negate, operand);
+            ExpressionPtr result =
+                make_shared<UnaryExpression>(ExpressionKind::Negate, operand);
             Record(position, result);
 			return result;
 		}
 		else
 		{
-            Expression* result =
-                new UnaryExpression(ExpressionKind::Not, operand);
+            ExpressionPtr result =
+                make_shared<UnaryExpression>(ExpressionKind::Not, operand);
             Record(position, result);
 			return result;
 		}
@@ -312,19 +323,19 @@ Expression* Parser::Unary()
 	return Postfix();
 }
 
-Expression* Parser::Postfix()
+ExpressionPtr Parser::Postfix()
 {
-	Expression* left = Factor();
+    ExpressionPtr left = Factor();
     //	Token& token = Current();
     Position position = CurrentPosition();
 	while (Current().kind == TokenKind::LeftParenthesis)
 	{
 		Advance();
-		vector<Expression*> arguments;
+        vector<ExpressionPtr> arguments;
 		if (Current().kind == TokenKind::RightParenthesis)
 		{
 			Advance();
-			left = new CallExpression(left, arguments);
+            left = make_shared<CallExpression>(left, arguments);
             Record(position, left);
 		}
 		else
@@ -336,19 +347,19 @@ Expression* Parser::Postfix()
 				arguments.push_back(Or());
 			}
 			Advance();
-			left = new CallExpression(left, arguments);
+            left = make_shared<CallExpression>(left, arguments);
             Record(position, left);
 		}
 	}
 	return left;
 }
 
-Expression* Parser::Factor()
+ExpressionPtr Parser::Factor()
 {
 	if (Current().kind == TokenKind::LeftParenthesis)
 	{
 		Advance();
-		Expression* value = Or();
+        ExpressionPtr value = Or();
 		Match(TokenKind::RightParenthesis);
 		return value;
 	}
@@ -358,7 +369,7 @@ Expression* Parser::Factor()
 
 		Constant value(TypeTag::Int, Current().text); // TO DO: Int64
 		Advance();
-		Expression* result = new ConstantExpression(value);
+        ExpressionPtr result = make_shared<ConstantExpression>(value);
         Record(position, result);
 		return result;
 	}
@@ -368,7 +379,7 @@ Expression* Parser::Factor()
 
 		Constant value(TypeTag::Double, Current().text); // TO DO: Float32
 		Advance();
-		Expression* result = new ConstantExpression(value);
+        ExpressionPtr result = make_shared<ConstantExpression>(value);
         Record(position, result);
 		return result;
 	}
@@ -378,7 +389,7 @@ Expression* Parser::Factor()
 
 		Constant value(TypeTag::String, Current().text);
 		Advance();
-		Expression* result = new ConstantExpression(value);
+        ExpressionPtr result = make_shared<ConstantExpression>(value);
         Record(position, result);
 		return result;
 	}
@@ -388,7 +399,7 @@ Expression* Parser::Factor()
 
 		wstring name = Current().text;
 		Advance();
-		Expression* result = new ParameterExpression(name);
+        ExpressionPtr result = make_shared<ParameterExpression>(name);
         Record(position, result);
 		return result;
 	}
@@ -403,6 +414,7 @@ Expression* Parser::Factor()
 Type Parser::ParseType()
 {
 	wstring name = Current().text;
+    Position p = CurrentPosition();
 	Match(TokenKind::Name);
     if (Type::IsBasicType(name))
 	{
@@ -416,12 +428,12 @@ Type Parser::ParseType()
         return Type::Array(element);
 	}
 	else
-	{
-		throw L"not supported type name";
+    {
+        throw SyntaxException(p, L"not supported type name: " + name);
 	}
 }
 
-Expression* Parser::Var()
+ExpressionPtr Parser::Var()
 {
     Position position = CurrentPosition();
 
@@ -434,8 +446,8 @@ Expression* Parser::Var()
 		Match(TokenKind::Colon);
         Type type = ParseType();
         Match(TokenKind::Assign);
-        Expression* value = Or();
-        Expression* result = new VarExpression(name, value);
+        ExpressionPtr value = Or();
+        ExpressionPtr result = make_shared<VarExpression>(name, value);
         result->type = type;
         Record(position, result);
         return result;
@@ -443,14 +455,14 @@ Expression* Parser::Var()
 	else
 	{
         Match(TokenKind::Assign);
-		Expression* value = Or();
-		Expression* result = new VarExpression(name, value);
+        ExpressionPtr value = Or();
+        ExpressionPtr result = make_shared<VarExpression>(name, value);
         Record(position, result);
 		return result;
 	}
 }
 
-Expression* Parser::Define()
+ExpressionPtr Parser::Define()
 {
     Position position = CurrentPosition();
 
@@ -459,19 +471,21 @@ Expression* Parser::Define()
 	Match(TokenKind::Name);
 	Match(TokenKind::LeftParenthesis);
 
-	vector<ParameterExpression*> parameters;
+    vector<ParameterExpressionPtr> parameters;
 
 	if (Current().kind == TokenKind::RightParenthesis)
 	{
 		Match(TokenKind::RightParenthesis);
+        Match(TokenKind::Colon);
         Type returnType = ParseType();
-		Expression* body = Block();
+        ExpressionPtr body = Block();
 
         vector<Type> parametersType;
 
         Type ft = Type::Function(parametersType, returnType);
 
-		Expression* result = new DefineExpression(name, parameters, body, ft);
+        ExpressionPtr result =
+            make_shared<DefineExpression>(name, parameters, body, ft);
         Record(position, result);
 		return result;
 	}
@@ -486,21 +500,22 @@ Expression* Parser::Define()
 		Match(TokenKind::RightParenthesis);
 		Match(TokenKind::Colon);
         Type returnType = ParseType();
-		Expression* body = Block();
+        ExpressionPtr body = Block();
 
         vector<Type> parametersType;
-        for (ParameterExpression* item : parameters)
+        for (ParameterExpressionPtr item : parameters)
 		{
             parametersType.push_back(item->type);
 		}
         Type ft = Type::Function(parametersType, returnType);
-		Expression* result = new DefineExpression(name, parameters, body, ft);
+        ExpressionPtr result =
+            make_shared<DefineExpression>(name, parameters, body, ft);
         Record(position, result);
 		return result;
 	}
 }
 
-ParameterExpression* Parser::Parameter()
+ParameterExpressionPtr Parser::Parameter()
 {
     Position position = CurrentPosition();
 
@@ -508,70 +523,103 @@ ParameterExpression* Parser::Parameter()
 	Match(TokenKind::Name);
 	Match(TokenKind::Colon);
     Type type = ParseType();
-	ParameterExpression* result = new ParameterExpression(name, type);
+    ParameterExpressionPtr result =
+        make_shared<ParameterExpression>(name, type);
     Record(position, result);
 	return result;
 }
 
-Expression* Parser::If()
+ExpressionPtr Parser::If()
 {
     Position position = CurrentPosition();
 
 	Match(TokenKind::If);
-	Expression* test = Or();
-	Expression* ifTrue = Block();
+    ExpressionPtr test = Or();
+    ExpressionPtr ifTrue = Block();
 	if (Current().kind == TokenKind::Else)
 	{
 		Advance();
 		if (Current().kind == TokenKind::If)
 		{
-			Expression* ifFalse = If();
-            Expression* result =
-                new FullConditionalExpression(test, ifTrue, ifFalse);
+            ExpressionPtr ifFalse = If();
+            ExpressionPtr result =
+                make_shared<FullConditionalExpression>(test, ifTrue, ifFalse);
             Record(position, result);
 			return result;
 		}
 		else
 		{
-			Expression* ifFalse = Block();
-            Expression* result =
-                new FullConditionalExpression(test, ifTrue, ifFalse);
+            ExpressionPtr ifFalse = Block();
+            ExpressionPtr result =
+                make_shared<FullConditionalExpression>(test, ifTrue, ifFalse);
             Record(position, result);
 			return result;
 		}
 	}
 	else
 	{
-		Expression* result = new ConditionalExpression(test, ifTrue);
+        ExpressionPtr result = make_shared<ConditionalExpression>(test, ifTrue);
         Record(position, result);
 		return result;
 	}
 }
 
-Expression* Parser::While()
+ExpressionPtr Parser::While()
 {
     Position position = CurrentPosition();
 
 	Match(TokenKind::While);
-	Expression* condition = Or();
-	Expression* body = Block();
-	Expression* result = new WhileExpression(condition, body);
+    ExpressionPtr condition = Or();
+    ExpressionPtr body = Block();
+    ExpressionPtr result = make_shared<WhileExpression>(condition, body);
     Record(position, result);
 	return result;
 }
 
-Expression* Parser::Return()
+ExpressionPtr Parser::Return()
 {
     Position position = CurrentPosition();
 
 	Match(TokenKind::Return);
-	Expression* value = Or();
-	Expression* result = new ReturnExpression(value);
+    ExpressionPtr value = Or();
+    ExpressionPtr result = make_shared<ReturnExpression>(value);
     Record(position, result);
     return result;
 }
 
-// Expression* Parser::Require()
+ExpressionPtr Parser::Import()
+{
+    Position position = CurrentPosition();
+    Match(TokenKind::Import);
+    wstring name = Current().text;
+    Match(TokenKind::Name);
+    while (Current().kind == TokenKind::Dot)
+    {
+        Advance();
+        name += Current().text;
+        Match(TokenKind::Name);
+    }
+    ExpressionPtr result = make_shared<ImportExpression>(name);
+    Record(position, result);
+    return result;
+}
+
+ExpressionPtr Parser::StatementOnTop()
+{
+    switch (Current().kind)
+    {
+    case TokenKind::Var:
+        return Var();
+    case TokenKind::Define:
+        return Define();
+    case TokenKind::Import:
+        return Import();
+    default:
+        throw SyntaxException(CurrentPosition(), L"erroneous statement");
+    }
+}
+
+// ExpressionPtr Parser::Require()
 //{
 //    Position position = CurrentPosition();
 //    Match(TokenKind::Require);

@@ -11,8 +11,6 @@ void TestParser();
 
 void TestScope();
 
-void TestTypeChecker();
-
 void TestCompiler();
 
-#endif // TEST_H 
+#endif // TEST_H

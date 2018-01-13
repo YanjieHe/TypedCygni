@@ -1,0 +1,104 @@
+#ifndef ARRAY_H
+#define ARRAY_H
+#include "PrimitiveType.h"
+#include <vector>
+using std::vector;
+
+template <typename T>
+class Array
+{
+public:
+    Array();
+    Array(int length);
+    Array(vector<T> vec);
+    Array(const Array& other);
+    Array& operator=(const Array& other);
+    Array(Array&& other);
+    Array& operator=(Array&& other);
+    T& operator[](i32 index);
+    ~Array();
+    i32 Length();
+
+private:
+    int length;
+    T* code;
+};
+
+template <typename T>
+Array<T>::Array() : length{0}, code{nullptr}
+{
+}
+
+template <typename T>
+Array<T>::Array(vector<T> vec)
+    : length{static_cast<i32>(vec.size())}, code{new T[vec.size()]}
+{
+    for (u32 i = 0; i < vec.size(); i++)
+    {
+        code[i] = vec[i];
+    }
+}
+
+template <typename T>
+Array<T>::Array(int length) : length{length}, code{new T[length]}
+{
+}
+
+template <typename T>
+Array<T>::Array(const Array& other)
+{
+    length = other.length;
+    code = new T[length];
+    for (i32 i = 0; i < length; i++)
+    {
+        code[i] = other.code[i];
+    }
+}
+
+template <typename T>
+Array<T>& Array<T>::operator=(const Array& other)
+{
+    length = other.length;
+    code = new T[length];
+    for (i32 i = 0; i < length; i++)
+    {
+        code[i] = other.code[i];
+    }
+    return *this;
+}
+template <typename T>
+Array<T>::Array(Array&& other)
+{
+    length = other.length;
+    code = other.code;
+    other.code = nullptr;
+}
+
+template <typename T>
+Array<T>& Array<T>::operator=(Array&& other)
+{
+    length = other.length;
+    code = other.code;
+    other.code = nullptr;
+    return *this;
+}
+
+template <typename T>
+T& Array<T>::operator[](i32 index)
+{
+    return code[index];
+}
+
+template <typename T>
+Array<T>::~Array()
+{
+    delete[] code;
+}
+
+template <typename T>
+i32 Array<T>::Length()
+{
+    return length;
+}
+
+#endif // ARRAY_H

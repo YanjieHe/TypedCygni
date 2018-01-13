@@ -76,6 +76,8 @@ wstring expression_kind_to_wstring(ExpressionKind kind)
         return L"New";
     case ExpressionKind::Call:
         return L"Call";
+    case ExpressionKind::Import:
+        return L"Import";
     default:
         throw L"ExpressionKind Error";
 	}

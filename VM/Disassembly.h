@@ -1,7 +1,8 @@
 #ifndef DISASSEMBLY_H
 #define DISASSEMBLY_H
 
-#include "Any.h"
+#include "BinaryFileReader.h"
+#include "PrimitiveType.h"
 #include <string>
 #include <vector>
 
@@ -11,15 +12,15 @@ using std::vector;
 class Disassembly
 {
 public:
-	vector<byte> stream;
-    Disassembly(string path);
+    BinaryStreamReader reader;
+    Disassembly(vector<byte>& stream);
 
 	void ReadConstantPool();
-	void ReadCode();
+    void ReadAll();
 
 private:
-    u32 ReadCode(u32 offset);
-    u32 ReadFunction(u32 offset);
+    void ReadCode();
+    void ReadFunction();
 
     i32 ReadUShort(u32 offset);
     i32 ReadInt32(u32 offset);

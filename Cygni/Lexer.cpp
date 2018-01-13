@@ -3,8 +3,8 @@
 Lexer::Lexer(string path)
 {
     stream.open(path);
-    this->line = 1;
-    this->column = 1;
+    line = 1;
+    column = 1;
 }
 
 vector<Token> Lexer::ReadAll()
@@ -39,10 +39,10 @@ vector<Token> Lexer::ReadAll()
 			tokens.push_back(t);
 		}
 		else if (prefix.find(c) != wstring::npos)
-		{
-			Token t = Operator();
-			SetPosition(currentLine, currentColumn, t);
-			tokens.push_back(t);
+        {
+            Token t = Operator();
+            SetPosition(currentLine, currentColumn, t);
+            tokens.push_back(t);
 		}
 		else
 		{
@@ -75,14 +75,14 @@ void Lexer::Consume()
 	wchar_t c = this->Read();
 	if (c == L'\n')
 	{
-        this->builder.Append(c);
-		this->line++;
-		this->column = 1;
+        builder << c;
+        line++;
+        column = 1;
 	}
 	else
 	{
-        this->builder.Append(c);
-		this->column++;
+        builder << c;
+        column++;
 	}
 }
 
@@ -102,7 +102,7 @@ void Lexer::Move()
 
 Token Lexer::Digits()
 {
-    builder.Clear();
+    Clear();
 	Consume();
 	while (!IsEof() && isdigit(Peek()))
 	{
@@ -119,7 +119,7 @@ Token Lexer::Digits()
 	}
 	else
 	{
-        return Token(TokenKind::Integer, builder.ToString());
+        return Token(TokenKind::Integer, builder.str());
 	}
 }
 
@@ -140,7 +140,7 @@ Token Lexer::Decimals()
 
 		if (IsEof())
 		{
-            return Token(TokenKind::Float, builder.ToString());
+            return Token(TokenKind::Float, builder.str());
 		}
 		else if (tolower(Peek()) == L'e')
 		{
@@ -148,7 +148,7 @@ Token Lexer::Decimals()
 		}
 		else
 		{
-            return Token(TokenKind::Float, builder.ToString());
+            return Token(TokenKind::Float, builder.str());
 		}
 	}
 }
@@ -172,14 +172,14 @@ Token Lexer::Exponent()
 		{
 			Consume();
 		}
-        return Token(TokenKind::Float, builder.ToString());
+        return Token(TokenKind::Float, builder.str());
 	}
 }
 
 Token Lexer::Text()
 {
 	Move();
-    builder.Clear();
+    Clear();
 	bool done = false;
 	while (!IsEof() && !done)
 	{
@@ -197,18 +197,18 @@ Token Lexer::Text()
 			Consume();
 		}
 	}
-    return Token(TokenKind::String, builder.ToString());
+    return Token(TokenKind::String, builder.str());
 }
 
 Token Lexer::Identifier()
 {
-    builder.Clear();
+    Clear();
 	Consume();
 	while (!IsEof() && (isalnum(Peek()) || Peek() == '_'))
 	{
 		Consume();
 	}
-    return Token(TokenKind::Name, builder.ToString());
+    return Token(TokenKind::Name, builder.str());
 }
 
 Token Lexer::Operator()
@@ -297,37 +297,37 @@ void Lexer::EscapedChar()
         switch (c)
 		{
         case L'a':
-            builder.Append(L'\a');
+            builder << L'\a';
             return;
         case L'b':
-            builder.Append(L'\b');
+            builder << L'\b';
             return;
         case L'f':
-            builder.Append(L'\f');
+            builder << L'\f';
             return;
         case L'n':
-            builder.Append(L'\n');
+            builder << L'\n';
             return;
         case L'r':
-            builder.Append(L'\r');
+            builder << L'\r';
             return;
         case L't':
-            builder.Append(L'\t');
+            builder << L'\t';
             return;
         case L'v':
-            builder.Append(L'\v');
+            builder << L'\v';
             return;
         case L'\\':
-            builder.Append(L'\\');
+            builder << L'\\';
             return;
         case L'"':
-            builder.Append(L'"');
+            builder << L'"';
             return;
         case L'?':
-            builder.Append(L'\?');
+            builder << L'\?';
             return;
         case L'0':
-            builder.Append(L'\0');
+            builder << L'\0';
             return;
         default:
             throw LexicalException(line, column, L"unsupported escaped char");
@@ -346,5 +346,11 @@ void Lexer::SkipSpaces()
 void Lexer::SetPosition(int currentLine, int currentColumn, Token& token)
 {
     token.line = currentLine;
-	token.column = currentColumn;
+    token.column = currentColumn;
+}
+
+void Lexer::Clear()
+{
+    builder.str(wstring());
+    builder.clear();
 }

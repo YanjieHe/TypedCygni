@@ -1,4 +1,3 @@
-#include "StringBuilder.h"
 #include "Test.h"
 #include <iostream>
 #include <locale>

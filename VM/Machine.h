@@ -2,28 +2,28 @@
 #define MACHINE_H
 
 #include "Any.h"
-#include "ByteCode.h"
+#include "Array"
 #include "Function.h"
-#include "Memory.h"
 #include <string>
 #include <vector>
 
 using std::vector;
 using std::wstring;
-using ByteCodeList = std::vector<ByteCode*>;
-
+using ByteCode = Array<byte>;
+using Memory = Array<Any>;
+using CodeStack = Array<ByteCode*>;
 class Machine
 {
 public:
-    Machine(Memory pool, i32 staticSize);
+    Machine(Memory pool, i32 staticSize, ByteCode topCode,
+            vector<Function> functions);
 	void Run(i32 entry);
-	void LoadProgram(ByteCode* code);
-	void LoadFunction(Function f);
+    void LoadFunction(Function f);
 
 private:
-	ByteCode* code;
-	ByteCode* globalCode;
-	ByteCodeList codeList;
+    ByteCode& code;
+    ByteCode topCode;
+    CodeStack codeStack;
     i32 codePointer;
 
     i32 pc;  // program counter
@@ -38,9 +38,9 @@ private:
 
 	vector<Function> functions;
 
-    u32 ReadUShort();
-    i32 ReadUShortAsInt();
-	void MainLoop();
+    i32 ReadUShort();
+    Function& GetMainFunction();
+    void MainLoop();
 };
 
 #endif // MACHINE_H

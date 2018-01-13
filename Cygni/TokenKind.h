@@ -56,7 +56,7 @@ enum class TokenKind
     Break,
     Return,
 
-    Require,
+    Import,
 
     Eof
 };

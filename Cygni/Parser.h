@@ -13,11 +13,11 @@ class Parser
 {
 public:
     Parser(vector<Token>& tokens, DebugInfo& debugInfo);
-	Expression* Program();
+    ExpressionPtr Program();
 
 private:
 	vector<Token>& tokens;
-    unsigned long tokens_pointer;
+    unsigned int tokens_pointer;
 	DebugInfo& debugInfo;
 
 	void Advance();
@@ -30,32 +30,33 @@ private:
 
 	bool IsEof();
 	void Match(TokenKind kind);
-    void Record(Position position, Expression* expression);
+    void Record(Position position, ExpressionPtr expression);
 
-	Expression* Block();
-	Expression* Statement();
-	Expression* Assign();
-	Expression* Or();
-	Expression* And();
-	Expression* Equality();
-	Expression* Relation();
-	Expression* Addition();
-	Expression* Multiplication();
-	Expression* Unary();
-	Expression* Postfix();
-	Expression* Factor();
+    ExpressionPtr Block();
+    ExpressionPtr Statement();
+    ExpressionPtr Assign();
+    ExpressionPtr Or();
+    ExpressionPtr And();
+    ExpressionPtr Equality();
+    ExpressionPtr Relation();
+    ExpressionPtr Addition();
+    ExpressionPtr Multiplication();
+    ExpressionPtr Unary();
+    ExpressionPtr Postfix();
+    ExpressionPtr Factor();
 
     Type ParseType();
 
-	Expression* Var();
-	Expression* Define();
-	ParameterExpression* Parameter();
-	Expression* If();
-	Expression* While();
-	Expression* Return();
-	Expression* Class();
+    ExpressionPtr Var();
+    ExpressionPtr Define();
+    ParameterExpressionPtr Parameter();
+    ExpressionPtr If();
+    ExpressionPtr While();
+    ExpressionPtr Return();
+    ExpressionPtr Class();
 
-    Expression* Require();
+    ExpressionPtr Import();
+    ExpressionPtr StatementOnTop();
 };
 
 #endif // PARSER_H

@@ -3,14 +3,49 @@
 
 #include "ExpressionKind.h"
 #include "Type.h"
+#include <memory>
 #include <string>
 #include <vector>
+using std::shared_ptr;
 using std::vector;
 using std::wstring;
 
 class Expression;
 class UnaryExpression;
 class BinaryExpression;
+class ConstantExpression;
+class BlockExpression;
+class ConditionalExpression;
+class FullConditionalExpression;
+class ParameterExpression;
+class CallExpression;
+class WhileExpression;
+class VarExpression;
+class DefaultExpression;
+class DefineExpression;
+class NewExpression;
+class AssignExpression;
+class ReturnExpression;
+class ImportExpression;
+
+using ExpressionPtr = shared_ptr<Expression>;
+using UnaryExpressionPtr = shared_ptr<UnaryExpression>;
+using BinaryExpressionPtr = shared_ptr<BinaryExpression>;
+using ConstantExpressionPtr = shared_ptr<ConstantExpression>;
+using BlockExpressionPtr = shared_ptr<BlockExpression>;
+using ConditionalExpressionPtr = shared_ptr<ConditionalExpression>;
+using FullConditionalExpressionPtr = shared_ptr<FullConditionalExpression>;
+using ParameterExpressionPtr = shared_ptr<ParameterExpression>;
+using CallExpressionPtr = shared_ptr<CallExpression>;
+using WhileExpressionPtr = shared_ptr<WhileExpression>;
+using VarExpressionPtr = shared_ptr<VarExpression>;
+using DefaultExpressionPtr = shared_ptr<DefaultExpression>;
+using DefineExpressionPtr = shared_ptr<DefineExpression>;
+using NewExpressionPtr = shared_ptr<NewExpression>;
+using AssignExpressionPtr = shared_ptr<AssignExpression>;
+using ReturnExpressionPtr = shared_ptr<ReturnExpression>;
+using ImportExpressionPtr = shared_ptr<ImportExpression>;
+
 class Visitor;
 
 class Expression
@@ -22,7 +57,7 @@ public:
     Type type;
     virtual ~Expression();
 
-    static UnaryExpression* Convert(Expression* node, Type type);
+    static UnaryExpressionPtr Convert(ExpressionPtr node, Type type);
 
 protected:
     Expression(ExpressionKind kind);
@@ -32,17 +67,18 @@ protected:
 class UnaryExpression : public Expression
 {
 public:
-	Expression* operand;
-	UnaryExpression(ExpressionKind kind, Expression* operand);
+    ExpressionPtr operand;
+    UnaryExpression(ExpressionKind kind, ExpressionPtr operand);
 	void Accept(Visitor* visitor) override;
 };
 
 class BinaryExpression : public Expression
 {
 public:
-	Expression* left;
-	Expression* right;
-	BinaryExpression(ExpressionKind kind, Expression* left, Expression* right);
+    ExpressionPtr left;
+    ExpressionPtr right;
+    BinaryExpression(ExpressionKind kind, ExpressionPtr left,
+                     ExpressionPtr right);
 	void Accept(Visitor* visitor) override;
 };
 
@@ -70,26 +106,26 @@ public:
 class BlockExpression : public Expression
 {
 public:
-	vector<Expression*> expressions;
-	BlockExpression(vector<Expression*> expressions);
+    vector<ExpressionPtr> expressions;
+    BlockExpression(vector<ExpressionPtr> expressions);
 	void Accept(Visitor* visitor) override;
 };
 
 class ConditionalExpression : public Expression
 {
 public:
-	Expression* test;
-	Expression* ifTrue;
-	ConditionalExpression(Expression* test, Expression* ifTrue);
+    ExpressionPtr test;
+    ExpressionPtr ifTrue;
+    ConditionalExpression(ExpressionPtr test, ExpressionPtr ifTrue);
 	void Accept(Visitor* visitor) override;
 };
 
 class FullConditionalExpression : public ConditionalExpression
 {
 public:
-	Expression* ifFalse;
-    FullConditionalExpression(Expression* test, Expression* ifTrue,
-                              Expression* ifFalse);
+    ExpressionPtr ifFalse;
+    FullConditionalExpression(ExpressionPtr test, ExpressionPtr ifTrue,
+                              ExpressionPtr ifFalse);
 	void Accept(Visitor* visitor) override;
 };
 
@@ -105,18 +141,18 @@ public:
 class CallExpression : public Expression
 {
 public:
-	Expression* procedure;
-	vector<Expression*> arguments;
-	CallExpression(Expression* procedure, vector<Expression*> arguments);
+    ExpressionPtr procedure;
+    vector<ExpressionPtr> arguments;
+    CallExpression(ExpressionPtr procedure, vector<ExpressionPtr> arguments);
 	void Accept(Visitor* visitor) override;
 };
 
 class WhileExpression : public Expression
 {
 public:
-	Expression* condition;
-	Expression* body;
-	WhileExpression(Expression* condition, Expression* body);
+    ExpressionPtr condition;
+    ExpressionPtr body;
+    WhileExpression(ExpressionPtr condition, ExpressionPtr body);
 	void Accept(Visitor* visitor) override;
 };
 
@@ -124,8 +160,8 @@ class VarExpression : public Expression
 {
 public:
 	wstring name;
-	Expression* value;
-	VarExpression(wstring name, Expression* value);
+    ExpressionPtr value;
+    VarExpression(wstring name, ExpressionPtr value);
 	void Accept(Visitor* visitor) override;
 };
 
@@ -140,36 +176,51 @@ class DefineExpression : public Expression
 {
 public:
 	wstring name;
-	vector<ParameterExpression*> parameters;
-	Expression* body;
+    vector<ParameterExpressionPtr> parameters;
+    ExpressionPtr body;
 	int frameSize;
-    DefineExpression(wstring name, vector<ParameterExpression*> parameters,
-                     Expression* body, Type type);
+    DefineExpression(wstring name, vector<ParameterExpressionPtr> parameters,
+                     ExpressionPtr body, Type type);
 	void Accept(Visitor* visitor) override;
 };
 
 class NewExpression : public Expression
 {
 public:
-	vector<Expression*> initializers;
-	NewExpression(vector<Expression*> initializers);
+    vector<ExpressionPtr> initializers;
+    NewExpression(vector<ExpressionPtr> initializers);
 	void Accept(Visitor* visitor) override;
 };
 
 class AssignExpression : public Expression
 {
 public:
-	ParameterExpression* variable;
-	Expression* value;
-	AssignExpression(ParameterExpression* variable, Expression* value);
+    ParameterExpressionPtr variable;
+    ExpressionPtr value;
+    AssignExpression(ParameterExpressionPtr variable, ExpressionPtr value);
 	void Accept(Visitor* visitor) override;
 };
 
 class ReturnExpression : public Expression
 {
 public:
-	Expression* value;
-	ReturnExpression(Expression* value);
+    ExpressionPtr value;
+    ReturnExpression(ExpressionPtr value);
 	void Accept(Visitor* visitor) override;
+};
+
+class ImportExpression : public Expression
+{
+public:
+    wstring name;
+    ImportExpression(wstring name);
+    void Accept(Visitor* visitor) override;
+};
+
+class ModuleExpression : public BlockExpression
+{
+public:
+    wstring name;
+    ModuleExpression(wstring name, vector<ExpressionPtr> expressions);
 };
 #endif // EXPRESSION_H

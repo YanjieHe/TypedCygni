@@ -11,8 +11,9 @@ SOURCES += main.cpp \
     Machine.cpp \
     OpCode.cpp \
     Test.cpp \
-    ByteCode.cpp \
-    Memory.cpp
+    Exception.cpp \
+    Position.cpp \
+    BinaryFileReader.cpp
 
 HEADERS +=  Any.h \
     Decoder.h \
@@ -21,5 +22,8 @@ HEADERS +=  Any.h \
     Machine.h \
     OpCode.h \
     Test.h \
-    ByteCode.h \
-    Memory.h
+    Exception.h \
+    Position.h \
+    BinaryFileReader.h \
+    PrimitiveType.h \
+    Array

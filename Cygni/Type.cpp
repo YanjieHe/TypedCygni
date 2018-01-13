@@ -10,7 +10,7 @@ bool Type::Mathces(Type other)
     {
         if (items.size() == other.items.size())
         {
-            for (unsigned long i = 0; i < items.size(); i++)
+            for (unsigned int i = 0; i < items.size(); i++)
             {
                 if (!items[i].Mathces(other.items[i]))
                 {
@@ -104,7 +104,7 @@ bool Type::ParametersMatch(vector<Type> parameters)
 {
     if (items.size() == parameters.size() + 1)
     {
-        for (unsigned long i = 0; i < parameters.size(); i++)
+        for (unsigned int i = 0; i < parameters.size(); i++)
         {
             if (!items.at(i).Mathces(parameters.at(i)))
             {
@@ -149,7 +149,7 @@ std::wstring Type::ToString()
     case TypeTag::Function:
     {
         wstring text = L"Function[" + items.at(0).ToString();
-        for (unsigned long i = 1; i < items.size(); i++)
+        for (unsigned int i = 1; i < items.size(); i++)
         {
             text += items.at(i).ToString();
         }

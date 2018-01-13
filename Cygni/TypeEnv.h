@@ -3,10 +3,20 @@
 
 #include "Type.h"
 #include <map>
+#include <memory>
 #include <string>
 
 using std::map;
+using std::shared_ptr;
 using std::wstring;
+
+class TypeEnv;
+class GlobalTypeEnv;
+class FunctionTypeEnv;
+
+using TypeEnvPtr = shared_ptr<TypeEnv>;
+using GlobalTypeEnvPtr = shared_ptr<GlobalTypeEnv>;
+using FunctionTypeEnvPtr = shared_ptr<FunctionTypeEnv>;
 
 class TypeEnv
 {
@@ -31,8 +41,8 @@ class FunctionTypeEnv : public TypeEnv
 {
 public:
     Type type;
-    TypeEnv* parent;
-    FunctionTypeEnv(Type type, TypeEnv* parent);
+    TypeEnvPtr parent;
+    FunctionTypeEnv(Type type, TypeEnvPtr parent);
     Type Find(wstring name) override;
     bool IsGlobal() override;
 };

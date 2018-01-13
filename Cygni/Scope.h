@@ -4,10 +4,20 @@
 #include "Expression.h"
 #include "Location.h"
 #include <map>
+#include <memory>
 #include <string>
 
 using std::map;
+using std::shared_ptr;
 using std::wstring;
+
+class Scope;
+class GlobalScope;
+class FunctionScope;
+
+using ScopePtr = shared_ptr<Scope>;
+using GlobalScopePtr = shared_ptr<GlobalScope>;
+using FunctionScopePtr = shared_ptr<FunctionScope>;
 
 class Scope
 {
@@ -33,20 +43,9 @@ public:
 class FunctionScope : public Scope
 {
 public:
-    Scope* parent;
-    FunctionScope(Scope* parent);
+    ScopePtr parent;
+    FunctionScope(ScopePtr parent);
     Location Find(wstring name) override;
-};
-
-class LocationRecord
-{
-public:
-	LocationRecord();
-	void Record(Expression* expression, Location location);
-	Location Find(Expression* expression);
-
-private:
-	map<int, Location> record;
 };
 
 #endif // SCOPE_H

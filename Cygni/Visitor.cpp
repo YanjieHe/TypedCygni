@@ -42,7 +42,7 @@ void TreeViewer::Visit(BlockExpression* node)
 	Indent();
     PrintKind(node);
 	depth++;
-    for (Expression* expression : node->expressions)
+    for (ExpressionPtr expression : node->expressions)
 	{
 		expression->Accept(this);
 	}
@@ -146,7 +146,13 @@ void TreeViewer::Visit(ReturnExpression* node)
     PrintKind(node);
 	depth++;
 	node->value->Accept(this);
-	depth--;
+    depth--;
+}
+
+void TreeViewer::Visit(ImportExpression* node)
+{
+    wcout << expression_kind_to_wstring(node->kind) << L": " << node->name
+          << endl;
 }
 
 void TreeViewer::Indent()

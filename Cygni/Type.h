@@ -3,12 +3,19 @@
 
 #include "TypeTag.h"
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
-
 using std::map;
+using std::shared_ptr;
 using std::vector;
 using std::wstring;
+class Type;
+using TypePtr = shared_ptr<Type>;
+
+class ValueType;
+class ArrayType;
+class FunctionType;
 
 class Type
 {

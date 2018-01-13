@@ -2,69 +2,45 @@
 #define COMPILER_H
 
 #include "DebugInfo.h"
-#include "Function.h"
-#include "OpCode.h"
+#include "Expression.h"
+#include "PrimitiveType.h"
 #include "Scope.h"
-#include "Visitor.h"
-
-#include <cstdint>
+#include <fstream>
+#include <map>
+#include <string>
 #include <vector>
-
-using byte = unsigned char;
-using i32 = int32_t;
-using i64 = int64_t;
-using f32 = float;
-using f64 = double;
-
-using ByteCode = vector<byte>;
-
-class Compiler : public Visitor
+using std::map;
+using std::ofstream;
+using std::string;
+using std::vector;
+class SourceFile
 {
 public:
-    ByteCode* code;
-	DebugInfo& debugInfo;
-	LocationRecord& record;
-    vector<Function> functions;
-    ByteCode globalCode;
-
-    Compiler(DebugInfo& debugInfo, LocationRecord& record);
-
-	void Visit(UnaryExpression* node) override;
-	void Visit(BinaryExpression* node) override;
-	void Visit(ConstantExpression* node) override;
-	void Visit(BlockExpression* node) override;
-	void Visit(ConditionalExpression* node) override;
-	void Visit(FullConditionalExpression* node) override;
-	void Visit(ParameterExpression* node) override;
-	void Visit(CallExpression* node) override;
-	void Visit(WhileExpression* node) override;
-	void Visit(VarExpression* node) override;
-	void Visit(DefaultExpression* node) override;
-	void Visit(DefineExpression* node) override;
-	void Visit(NewExpression* node) override;
-	void Visit(AssignExpression* node) override;
-	void Visit(ReturnExpression* node) override;
-
-	void Emit(OpCode op);
-	i32 CurrentIndex();
-
-    void AppendBytes(byte* bytes, int length);
-	void AppendUShort(unsigned short x);
-    void AppendBytes(ByteCode& code, byte* bytes, int length);
-    void AppendUShort(ByteCode& code, unsigned short x);
-	void AppendInt(i32 x);
-	void AppendLong(i64 x);
-	void AppendFloat(f32 x);
-	void AppendDouble(f64 x);
-
-	void WriteBytes(int offset, byte* bytes, int length);
-	void WriteUShort(int offset, unsigned short x);
-	void WriteInt(int offset, i32 x);
-	void WriteLong(int offset, i64 x);
-	void WriteFloat(int offset, f32 x);
-	void WriteDouble(int offset, f64 x);
-
-    ByteCode GetByteSequence();
+    wstring path;
+    DebugInfo debugInfo;
+    ExpressionPtr program;
+    LocationRecord record;
+    SourceFile();
+    SourceFile(wstring path, DebugInfo debugInfo, ExpressionPtr program,
+               LocationRecord record);
 };
 
+class Compiler
+{
+public:
+    string workingDirectory = "/home/jasonhe/Documents/MyCode/CPP/Qt/"
+                              "build-Cygni-Desktop-Debug/TestCases/";
+    string extension = ".txt";
+    vector<SourceFile> files;
+    string mainFile;
+    map<wstring, SourceFile&> table;
+    Compiler(string mainFile);
+    void ParseAll();
+    void Parse(string path);
+    vector<SourceFile*> GetReversedSequence();
+    void ParseModules(ExpressionPtr program);
+    void CheckType();
+    void Compile(std::string output);
+    void WriteByteCode(ofstream& outFile, vector<byte>& code);
+};
 #endif // COMPILER_H

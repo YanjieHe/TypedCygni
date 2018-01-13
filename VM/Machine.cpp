@@ -1,13 +1,14 @@
 #include "Machine.h"
+#include "Exception.h"
 #include "OpCode.h"
 #include <iostream>
-
 using namespace std;
 
-Machine::Machine(Memory pool, i32 staticSize)
-    : code{nullptr}, codePointer{0}, pc{0}, sp{-1}, fp{0}, ret{-1},
-      running{true}, static_v{Memory(staticSize)}, pool{pool}, memory{Memory(
-                                                                   1000000)}
+Machine::Machine(Memory pool, i32 staticSize, ByteCode topCode,
+                 vector<Function> functions)
+    : code{topCode}, topCode{topCode}, codeStack(1000),
+      codePointer{-1}, pc{0}, sp{-1}, fp{0}, ret{-1}, running{true},
+      static_v(staticSize), pool{pool}, memory(1000000), functions{functions}
 {
 }
 
@@ -15,41 +16,46 @@ void Machine::Run(i32 entry)
 {
 	pc = entry;
     wcout << L"start running" << endl;
+    Function& f = GetMainFunction();
+
+    i32 prev_fp = fp;
+    sp++;
+    fp = sp - f.parametersSize;
+    memory[fp + f.frameSize].i32_v = pc;
+    memory[fp + f.frameSize + 1].i32_v = prev_fp;
+    sp = fp + f.frameSize + (2 - 1);
+
+    pc = 0;
+    code = f.code;
+    codePointer++;
+    codeStack[codePointer] = &code;
+
     MainLoop();
-    wcout << "result = " << static_v[0].i32_v << endl;
 }
 
-void Machine::LoadProgram(ByteCode* code)
+inline i32 Machine::ReadUShort()
 {
-	this->globalCode = code;
-	this->code = code;
-	this->codeList.push_back(code);
+    return (code[pc + 1] << 8) + code[pc];
 }
 
-void Machine::LoadFunction(Function f)
+Function& Machine::GetMainFunction()
 {
-    f.index = static_cast<i32>(this->codeList.size());
-	functions.push_back(f);
-	this->codeList.push_back(&(f.code));
-}
-
-inline u32 Machine::ReadUShort()
-{
-    return static_cast<u32>(((*code)[pc + 1] << 8) + (*code)[pc]);
-}
-
-inline i32 Machine::ReadUShortAsInt()
-{
-    return ((*code)[pc + 1] << 8) + (*code)[pc];
+    for (Function& f : functions)
+    {
+        wcout << L"f.name = " << f.name << endl;
+        if (f.name == L"main")
+        {
+            return f;
+        }
+    }
+    throw NotImplementedException(L"main function not found");
 }
 
 void Machine::MainLoop()
 {
-    //	i32 n = code->size();
-
-    while (pc < code->Length())
-	{
-        OpCode op = static_cast<OpCode>((*code)[pc]);
+    while (pc < code.Length())
+    {
+        OpCode op = static_cast<OpCode>(code[pc]);
         pc++;
 		switch (op)
 		{
@@ -57,14 +63,14 @@ void Machine::MainLoop()
         case OpCode::push_i32_1byte:
         {
             sp++;
-            memory[sp].i32_v = (*code)[pc];
+            memory[sp].i32_v = code[pc];
             pc++;
             break;
         }
         case OpCode::push_i32_2byte:
         {
             sp++;
-            memory[sp].i32_v = ReadUShortAsInt();
+            memory[sp].i32_v = ReadUShort();
             pc += 2;
             break;
         }
@@ -84,21 +90,21 @@ void Machine::MainLoop()
         case OpCode::push_i32:
         {
             sp++;
-            memory[sp].i32_v = pool[ReadUShortAsInt()].i32_v;
+            memory[sp].i32_v = pool[ReadUShort()].i32_v;
             pc += 2;
             break;
         }
         case OpCode::push_f64:
         {
             sp++;
-            memory[sp].f64_v = pool[ReadUShortAsInt()].f64_v;
+            memory[sp].f64_v = pool[ReadUShort()].f64_v;
             pc += 2;
             break;
         }
         case OpCode::push_function:
         {
             sp++;
-            memory[sp].i32_v = ReadUShortAsInt();
+            memory[sp].i32_v = ReadUShort();
             pc += 2;
             break;
         }
@@ -106,27 +112,27 @@ void Machine::MainLoop()
         case OpCode::push_static_i32:
         {
             sp++;
-            memory[sp].i32_v = static_v[ReadUShortAsInt()].i32_v;
+            memory[sp].i32_v = static_v[ReadUShort()].i32_v;
             pc += 2;
             break;
         }
         case OpCode::push_static_f64:
         {
             sp++;
-            memory[sp].f64_v = static_v[ReadUShortAsInt()].f64_v;
+            memory[sp].f64_v = static_v[ReadUShort()].f64_v;
             pc += 2;
             break;
         }
         case OpCode::pop_static_i32:
         {
-            static_v[ReadUShortAsInt()].i32_v = memory[sp].i32_v;
+            static_v[ReadUShort()].i32_v = memory[sp].i32_v;
             sp--;
             pc += 2;
             break;
         }
         case OpCode::pop_static_f64:
         {
-            static_v[ReadUShortAsInt()].f64_v = memory[sp].f64_v;
+            static_v[ReadUShort()].f64_v = memory[sp].f64_v;
             sp--;
             pc += 2;
             break;
@@ -135,27 +141,27 @@ void Machine::MainLoop()
         case OpCode::push_stack_i32:
         {
             sp++;
-            memory[sp].i32_v = memory[fp + ReadUShortAsInt()].i32_v;
+            memory[sp].i32_v = memory[fp + ReadUShort()].i32_v;
             pc += 2;
             break;
         }
         case OpCode::push_stack_f64:
         {
             sp++;
-            memory[sp].f64_v = memory[fp + ReadUShortAsInt()].f64_v;
+            memory[sp].f64_v = memory[fp + ReadUShort()].f64_v;
             pc += 2;
             break;
         }
         case OpCode::pop_stack_i32:
         {
-            memory[fp + ReadUShortAsInt()].i32_v = memory[sp].i32_v;
+            memory[fp + ReadUShort()].i32_v = memory[sp].i32_v;
             sp--;
             pc += 2;
             break;
         }
         case OpCode::pop_stack_f64:
         {
-            memory[fp + ReadUShortAsInt()].f64_v = memory[sp].f64_v;
+            memory[fp + ReadUShort()].f64_v = memory[sp].f64_v;
             sp--;
             pc += 2;
             break;
@@ -344,7 +350,7 @@ void Machine::MainLoop()
         // jump
         case OpCode::jump:
         {
-            pc = ReadUShortAsInt();
+            pc = ReadUShort();
             break;
         }
         case OpCode::jump_if_true:
@@ -352,7 +358,7 @@ void Machine::MainLoop()
             if (memory[sp].i32_v)
 			{
                 sp--;
-                pc = ReadUShortAsInt();
+                pc = ReadUShort();
 			}
             else
 			{
@@ -366,7 +372,7 @@ void Machine::MainLoop()
             if (!memory[sp].i32_v)
 			{
                 sp--;
-                pc = ReadUShortAsInt();
+                pc = ReadUShort();
 			}
             else
 			{
@@ -380,29 +386,26 @@ void Machine::MainLoop()
         {
             u32 function_id = static_cast<u32>(memory[sp].i32_v);
 
-            Function* f = &(functions[function_id]);
+            Function& f = functions[function_id];
 
             i32 prev_fp = fp;
 
-            fp = sp - f->parametersSize;
-            memory[fp + f->frameSize].i32_v = pc;
-            memory[fp + f->frameSize + 1].i32_v = prev_fp;
-            memory[fp + f->frameSize + 2].i32_v = codePointer;
-            const int offset = 3;
+            fp = sp - f.parametersSize;
+            memory[fp + f.frameSize].i32_v = pc;
+            memory[fp + f.frameSize + 1].i32_v = prev_fp;
+            sp = fp + f.frameSize + (2 - 1);
 
-            sp = fp + f->frameSize + (offset - 1);
             pc = 0;
-            code = &(f->code);
-            codePointer = f->index;
+            code = f.code;
+            codePointer++;
+            codeStack[codePointer] = &code;
             break;
         }
 
         case OpCode::return_i32:
         {
             i32 result = memory[sp].i32_v;
-            sp--;
-
-            codePointer = memory[sp].i32_v;
+            wcout << "result = " << result << endl;
             sp--;
 
             i32 prev_fp = memory[sp].i32_v;
@@ -414,15 +417,18 @@ void Machine::MainLoop()
             sp = fp;
             fp = prev_fp;
             memory[sp].i32_v = result;
-            code = codeList[static_cast<u32>(codePointer)];
+
+            code = *(codeStack[codePointer]);
+            codePointer--;
+            if (codePointer == -1)
+            {
+                return;
+            }
             break;
         }
         case OpCode::return_f64:
         {
             f64 result = memory[sp].f64_v;
-            sp--;
-
-            codePointer = memory[sp].i32_v;
             sp--;
 
             i32 prev_fp = memory[sp].i32_v;
@@ -434,7 +440,9 @@ void Machine::MainLoop()
             sp = fp;
             fp = prev_fp;
             memory[sp].f64_v = result;
-            code = codeList[static_cast<u32>(codePointer)];
+
+            code = *(codeStack[codePointer]);
+            codePointer--;
             break;
         }
         default:

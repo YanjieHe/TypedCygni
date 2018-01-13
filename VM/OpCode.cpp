@@ -53,12 +53,6 @@ wstring opcode_to_wstring(OpCode code)
         return L"push_constant_f64";
     case OpCode::push_constant_string:
         return L"push_constant_string";
-    case OpCode::store_constant_i32:
-        return L"store_constant_i32";
-    case OpCode::store_constant_f64:
-        return L"store_constant_f64";
-    case OpCode::store_constant_string:
-        return L"store_constant_string";
     case OpCode::function_begin:
         return L"function_begin";
     case OpCode::function_end:
@@ -168,7 +162,7 @@ wstring opcode_to_wstring(OpCode code)
 	}
 }
 
-u32 OperandSize(OpCode op)
+i32 OperandSize(OpCode op)
 {
 	switch (op)
 	{
@@ -211,7 +205,6 @@ u32 OperandSize(OpCode op)
 
     case OpCode::return_i32:
     case OpCode::return_f64:
-
     case OpCode::invoke:
         return 0;
     case OpCode::push_i32_1byte:
