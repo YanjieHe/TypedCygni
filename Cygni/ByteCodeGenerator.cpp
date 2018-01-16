@@ -4,9 +4,7 @@
 #include <memory>
 using namespace std;
 
-ByteCodeGenerator::ByteCodeGenerator(DebugInfo& debugInfo,
-                                     LocationRecord& record)
-    : code{&globalCode}, debugInfo{debugInfo}, record{record}
+ByteCodeGenerator::ByteCodeGenerator() : code{&globalCode}
 {
 }
 
@@ -31,9 +29,8 @@ void ByteCodeGenerator::Visit(UnaryExpression* node)
 	}
 	else
 	{
-        throw CompilationException(debugInfo.Locate(node),
-                                   L"unary operation: " +
-                                       node->type.ToString());
+        throw CompilationException(node->position, L"unary operation: " +
+                                                       node->type.ToString());
 	}
 }
 
@@ -135,9 +132,9 @@ void ByteCodeGenerator::Visit(BinaryExpression* node)
     }
     else
     {
-        throw CompilationException(debugInfo.Locate(node),
+        throw CompilationException(node->position,
                                    L"binary operation: " +
-                                       expression_kind_to_wstring(node->kind));
+                                       ExpressionKindToString(node->kind));
     }
 }
 
@@ -265,7 +262,7 @@ void ByteCodeGenerator::Visit(FullConditionalExpression* node)
 
 void ByteCodeGenerator::Visit(ParameterExpression* node)
 {
-	Location location = record.Find(node);
+    Location location = node->location;
     if (node->type.IsInt() && location.kind == LocationKind::Global)
     {
         Emit(OpCode::push_static_i32);
@@ -294,7 +291,7 @@ void ByteCodeGenerator::Visit(ParameterExpression* node)
     }
     else
     {
-        throw CompilationException(debugInfo.Locate(node),
+        throw CompilationException(node->position,
                                    L"cannot compile parameter expression: " +
                                        node->name);
 	}
@@ -308,7 +305,6 @@ void ByteCodeGenerator::Visit(CallExpression* node)
 	}
 	node->procedure->Accept(this);
 	Emit(OpCode::invoke);
-    //    AppendUShort(static_cast<u16>(node->arguments.size()));
 }
 
 /*
@@ -335,7 +331,7 @@ void ByteCodeGenerator::Visit(VarExpression* node)
 {
 	node->value->Accept(this);
 
-	Location location = record.Find(node);
+    Location location = node->location;
     if (node->type.IsInt() && location.kind == LocationKind::Global)
     {
         Emit(OpCode::pop_static_i32);
@@ -371,8 +367,7 @@ void ByteCodeGenerator::Visit(VarExpression* node)
 void ByteCodeGenerator::Visit(AssignExpression* node)
 {
     ParameterExpressionPtr variable = node->variable;
-    ExpressionPtr exp = static_pointer_cast<Expression>(variable);
-    Location location = record.Find(exp);
+    Location location = variable->location;
 	node->value->Accept(this);
 
     if (node->type.IsInt() && location.kind == LocationKind::Global)
@@ -465,7 +460,7 @@ void ByteCodeGenerator::Visit(ImportExpression*)
 
 void ByteCodeGenerator::Emit(OpCode op)
 {
-	wcout << code->size() << L" emit: " << opcode_to_wstring(op) << endl;
+	wcout << code->size() << L" emit: " << OpCodeToString(op) << endl;
     code->push_back(static_cast<byte>(op));
 }
 
@@ -544,19 +539,26 @@ ByteCode ByteCodeGenerator::GetTopCode()
     return result;
 }
 
+/*
+ * function_info
+ * function name
+ * parameter size
+ * frame size
+ * code size
+ */
 ByteCode ByteCodeGenerator::GetFunctionCode(Function& f)
 {
     ByteCode result;
-    byte fbegin = static_cast<byte>(OpCode::function_begin);
-    result.push_back(fbegin);
+    byte finfo = static_cast<byte>(OpCode::function_info);
+    result.push_back(finfo);
     AppendWString(result, f.name);
     AppendUShort(result, static_cast<u16>(f.parameterSize));
     AppendUShort(result, static_cast<u16>(f.frameSize));
+    AppendUShort(result, static_cast<u16>(f.code.size()));
+
     for (byte item : f.code)
     {
         result.push_back(item);
     }
-    byte fend = static_cast<byte>(OpCode::function_end);
-    result.push_back(fend);
     return result;
 }

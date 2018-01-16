@@ -1,4 +1,5 @@
 #include "DefinitionCollector.h"
+#include "Exception.h"
 #include <memory>
 using std::make_shared;
 
@@ -50,8 +51,15 @@ void DefinitionCollector::Visit(WhileExpression*)
 void DefinitionCollector::Visit(VarExpression* node)
 {
     // TO DO: handle the return value of the define function
-    scope->Define(node->name);
-    env->Define(node->name, node->type);
+    try
+    {
+        scope->Define(node->name);
+        env->Define(node->name, node->type);
+    }
+    catch (NameDefinedException& ex)
+    {
+        throw SemanticException(node->position, ex.message);
+    }
 }
 
 void DefinitionCollector::Visit(DefaultExpression*)

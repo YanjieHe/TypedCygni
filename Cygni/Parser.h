@@ -1,7 +1,6 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include "DebugInfo.h"
 #include "Exception.h"
 #include "Expression.h"
 #include "Token.h"
@@ -12,13 +11,12 @@ using std::vector;
 class Parser
 {
 public:
-    Parser(vector<Token>& tokens, DebugInfo& debugInfo);
+    Parser(vector<Token>& tokens);
     ExpressionPtr Program();
 
 private:
 	vector<Token>& tokens;
     unsigned int tokens_pointer;
-	DebugInfo& debugInfo;
 
 	void Advance();
 	void Back();

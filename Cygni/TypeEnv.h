@@ -23,7 +23,7 @@ class TypeEnv
 public:
     TypeEnv();
     map<wstring, Type> table;
-    bool Define(wstring name, Type type);
+    void Define(wstring name, Type type);
     virtual Type Find(wstring name) = 0;
     virtual ~TypeEnv();
     virtual bool IsGlobal() = 0;

@@ -1,6 +1,6 @@
 #include "ExpressionKind.h"
 
-wstring expression_kind_to_wstring(ExpressionKind kind)
+wstring ExpressionKindToString(ExpressionKind kind)
 {
 	switch (kind)
     {
@@ -48,10 +48,6 @@ wstring expression_kind_to_wstring(ExpressionKind kind)
         return L"Block";
     case ExpressionKind::Parameter:
         return L"Parameter";
-    case ExpressionKind::VariableDefinition:
-        return L"VariableDefinition";
-    case ExpressionKind::FunctionDefinition:
-        return L"FunctionDefinition";
     case ExpressionKind::Conditional:
         return L"Conditional";
     case ExpressionKind::Unit:

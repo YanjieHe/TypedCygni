@@ -1,34 +1,6 @@
-#include "BinaryFileReader.h"
-#include "Exception.h"
-#include <fstream>
+#include "BinaryStreamReader.h"
 #include <sstream>
 using namespace std;
-BinaryFileReader::BinaryFileReader(string path) : path{path}
-{
-}
-
-vector<byte> BinaryFileReader::ReadAll()
-{
-    vector<byte> stream;
-    ifstream file(path, ifstream::binary);
-    if (file)
-    {
-        byte item;
-        while (!file.eof())
-        {
-            file.read(reinterpret_cast<char*>(&item), sizeof(item));
-            stream.push_back(item);
-        }
-        file.close();
-        stream.pop_back(); // delete the last byte
-        return stream;
-    }
-    else
-    {
-        throw FileNotFoundException(wstring(path.begin(), path.end()));
-    }
-}
-
 BinaryStreamReader::BinaryStreamReader(vector<byte>& stream)
     : offset{0}, stream{stream}
 {

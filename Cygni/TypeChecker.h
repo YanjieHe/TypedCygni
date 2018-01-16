@@ -1,7 +1,6 @@
 #ifndef TYPECHECKER_H
 #define TYPECHECKER_H
 
-#include "DebugInfo.h"
 #include "Scope.h"
 #include "TypeEnv.h"
 #include "Visitor.h"
@@ -9,13 +8,10 @@
 class TypeChecker : public Visitor
 {
 public:
-	DebugInfo& debugInfo;
-	LocationRecord& record;
     ScopePtr scope;
     FunctionList& fenv;
     TypeEnvPtr env;
-    TypeChecker(DebugInfo& debugInfo, LocationRecord& record,
-                GlobalScopePtr globalScope, FunctionList& fenv);
+    TypeChecker(GlobalScopePtr globalScope, FunctionList& fenv);
 
 	void Visit(UnaryExpression* node) override;
 	void Visit(BinaryExpression* node) override;

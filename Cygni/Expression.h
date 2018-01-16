@@ -2,6 +2,8 @@
 #define EXPRESSION_H
 
 #include "ExpressionKind.h"
+#include "Location.h"
+#include "Position.h"
 #include "Type.h"
 #include <memory>
 #include <string>
@@ -55,6 +57,7 @@ public:
     int ID;
     virtual void Accept(Visitor* visitor) = 0;
     Type type;
+    Position position;
     virtual ~Expression();
 
     static UnaryExpressionPtr Convert(ExpressionPtr node, Type type);
@@ -133,6 +136,7 @@ class ParameterExpression : public Expression
 {
 public:
 	wstring name;
+    Location location;
 	ParameterExpression(wstring name);
     ParameterExpression(wstring name, Type type);
 	void Accept(Visitor* visitor) override;
@@ -161,6 +165,7 @@ class VarExpression : public Expression
 public:
 	wstring name;
     ExpressionPtr value;
+    Location location;
     VarExpression(wstring name, ExpressionPtr value);
 	void Accept(Visitor* visitor) override;
 };

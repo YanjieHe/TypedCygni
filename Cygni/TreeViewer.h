@@ -1,19 +1,10 @@
-#ifndef DEFINITIONCOLLECTOR_H
-#define DEFINITIONCOLLECTOR_H
-
-#include "Scope.h"
-#include "Type.h"
-#include "TypeEnv.h"
+#ifndef TREEVIEWER_H
+#define TREEVIEWER_H
 #include "Visitor.h"
-#include <string>
-using std::wstring;
-class DefinitionCollector : public Visitor
+class TreeViewer : public Visitor
 {
 public:
-    DefinitionCollector();
-    GlobalScopePtr scope;
-    GlobalTypeEnvPtr env;
-    FunctionList fenv;
+    TreeViewer();
 
     void Visit(UnaryExpression* node) override;
     void Visit(BinaryExpression* node) override;
@@ -31,6 +22,11 @@ public:
     void Visit(AssignExpression* node) override;
     void Visit(ReturnExpression* node) override;
     void Visit(ImportExpression* node) override;
-};
 
-#endif // DEFINITIONCOLLECTOR_H
+private:
+    int depth;
+
+    void Indent();
+    void PrintKind(Expression* node);
+};
+#endif // TREEVIEWER_H

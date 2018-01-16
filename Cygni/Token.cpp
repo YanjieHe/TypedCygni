@@ -16,7 +16,7 @@ Token::Token(TokenKind kind, wstring text) : Token(-1, -1, kind, text)
 void Token::Display()
 {
 	wcout << L"(" << line << L", " << column << "): ";
-	wcout << L"[" << token_kind_to_wstring(kind);
+	wcout << L"[" << TokenKindToString(kind);
 	wcout << L", " << text << L"]" << endl;
 }
 

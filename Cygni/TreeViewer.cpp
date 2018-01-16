@@ -1,123 +1,117 @@
-#include "Visitor.h"
-#include "ExpressionKind.h"
+#include "TreeViewer.h"
 #include <iostream>
-
-using namespace std;
-
-Visitor::~Visitor()
-{
-}
-
+using std::endl;
+using std::wcout;
 TreeViewer::TreeViewer() : depth{0}
 {
 }
 
 void TreeViewer::Visit(UnaryExpression* node)
 {
-	Indent();
+    Indent();
     PrintKind(node);
-	depth++;
-	node->operand->Accept(this);
-	depth--;
+    depth++;
+    node->operand->Accept(this);
+    depth--;
 }
 
 void TreeViewer::Visit(BinaryExpression* node)
 {
     Indent();
     PrintKind(node);
-	depth++;
-	node->left->Accept(this);
-	node->right->Accept(this);
-	depth--;
+    depth++;
+    node->left->Accept(this);
+    node->right->Accept(this);
+    depth--;
 }
 
 void TreeViewer::Visit(ConstantExpression* node)
 {
-	Indent();
-	wcout << node->constant.text << endl;
+    Indent();
+    wcout << node->constant.text << endl;
 }
 
 void TreeViewer::Visit(BlockExpression* node)
 {
-	Indent();
+    Indent();
     PrintKind(node);
-	depth++;
+    depth++;
     for (ExpressionPtr expression : node->expressions)
-	{
-		expression->Accept(this);
-	}
-	depth--;
+    {
+        expression->Accept(this);
+    }
+    depth--;
 }
 
 void TreeViewer::Visit(ConditionalExpression* node)
 {
     Indent();
     PrintKind(node);
-	depth++;
-	node->test->Accept(this);
-	node->ifTrue->Accept(this);
-	depth--;
+    depth++;
+    node->test->Accept(this);
+    node->ifTrue->Accept(this);
+    depth--;
 }
 
 void TreeViewer::Visit(FullConditionalExpression* node)
 {
     Indent();
     PrintKind(node);
-	depth++;
-	node->test->Accept(this);
-	node->ifTrue->Accept(this);
-	node->ifFalse->Accept(this);
-	depth--;
+    depth++;
+    node->test->Accept(this);
+    node->ifTrue->Accept(this);
+    node->ifFalse->Accept(this);
+    depth--;
 }
 
 void TreeViewer::Visit(ParameterExpression* node)
 {
-	Indent();
-	wcout << node->name << endl;
+    Indent();
+    wcout << node->name << endl;
 }
 
 void TreeViewer::Visit(CallExpression* node)
 {
     Indent();
     PrintKind(node);
-	depth++;
-	node->procedure->Accept(this);
-	for (unsigned int i = 0; i < node->arguments.size(); i++)
-	{
-		node->arguments.at(i)->Accept(this);
-	}
-	depth--;
+    depth++;
+    node->procedure->Accept(this);
+    for (unsigned int i = 0; i < node->arguments.size(); i++)
+    {
+        node->arguments.at(i)->Accept(this);
+    }
+    depth--;
 }
 
 void TreeViewer::Visit(WhileExpression* node)
 {
     Indent();
     PrintKind(node);
-	depth++;
-	node->condition->Accept(this);
-	node->body->Accept(this);
-	depth--;
+    depth++;
+    node->condition->Accept(this);
+    node->body->Accept(this);
+    depth--;
 }
 
 void TreeViewer::Visit(VarExpression* node)
 {
     Indent();
     wcout << "var " << node->name << endl;
-	depth++;
-	node->value->Accept(this);
-	depth--;
+    depth++;
+    node->value->Accept(this);
+    depth--;
 }
 
 void TreeViewer::Visit(DefaultExpression* node)
 {
-	Indent();
-    wcout << L"default(" << static_cast<Expression*>(node)->type.ToString()
-          << L")" << endl;
+    Indent();
+    wcout << L"default(" << endl;
+    wcout << node->type.ToString() << L")" << endl;
 }
 
 void TreeViewer::Visit(DefineExpression* node)
 {
-	Indent();
+    Indent();
     wcout << L"def " << node->name << endl;
     depth++;
     node->body->Accept(this);
@@ -126,44 +120,44 @@ void TreeViewer::Visit(DefineExpression* node)
 
 void TreeViewer::Visit(NewExpression* node)
 {
-	Indent();
+    Indent();
     PrintKind(node);
 }
 
 void TreeViewer::Visit(AssignExpression* node)
 {
-	Indent();
+    Indent();
     PrintKind(node);
-	depth++;
-	node->variable->Accept(this);
-	node->value->Accept(this);
-	depth--;
+    depth++;
+    node->variable->Accept(this);
+    node->value->Accept(this);
+    depth--;
 }
 
 void TreeViewer::Visit(ReturnExpression* node)
 {
-	Indent();
+    Indent();
     PrintKind(node);
-	depth++;
-	node->value->Accept(this);
+    depth++;
+    node->value->Accept(this);
     depth--;
 }
 
 void TreeViewer::Visit(ImportExpression* node)
 {
-    wcout << expression_kind_to_wstring(node->kind) << L": " << node->name
-          << endl;
+    wcout << ExpressionKindToString(node->kind);
+    wcout << L": " << node->name << endl;
 }
 
 void TreeViewer::Indent()
 {
-	for (int i = 0; i < depth; i++)
-	{
-		wcout << L"    ";
+    for (int i = 0; i < depth; i++)
+    {
+        wcout << L"    ";
     }
 }
 
 void TreeViewer::PrintKind(Expression* node)
 {
-    wcout << expression_kind_to_wstring(node->kind) << endl;
+    wcout << ExpressionKindToString(node->kind) << endl;
 }

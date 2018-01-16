@@ -6,6 +6,7 @@ class Position
 public:
     int line;
     int column;
+    Position();
     Position(int line, int column);
 };
 

@@ -61,4 +61,18 @@ public:
     FileNotFoundException();
     FileNotFoundException(wstring message);
 };
+
+class NameDefinedException : public Exception
+{
+public:
+    NameDefinedException();
+    NameDefinedException(wstring name);
+};
+
+class NameNotDefinedException : public Exception
+{
+public:
+    NameNotDefinedException();
+    NameNotDefinedException(wstring name);
+};
 #endif // EXCEPTION_H

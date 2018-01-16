@@ -1,6 +1,6 @@
 #include "TokenKind.h"
 
-std::wstring token_kind_to_wstring(TokenKind kind)
+std::wstring TokenKindToString(TokenKind kind)
 {
     switch (kind)
     {

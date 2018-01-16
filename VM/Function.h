@@ -15,7 +15,7 @@ public:
     wstring name;
     i32 parametersSize;
     i32 frameSize;
-	ByteCode code;
+    ByteCode code;
     Function(wstring name, i32 parametersSize, i32 frameSize, ByteCode code);
 };
 #endif // FUNCTION_H

@@ -1,7 +1,6 @@
 #ifndef COMPILER_H
 #define COMPILER_H
 
-#include "DebugInfo.h"
 #include "Expression.h"
 #include "PrimitiveType.h"
 #include "Scope.h"
@@ -13,16 +12,14 @@ using std::map;
 using std::ofstream;
 using std::string;
 using std::vector;
+
 class SourceFile
 {
 public:
     wstring path;
-    DebugInfo debugInfo;
     ExpressionPtr program;
-    LocationRecord record;
     SourceFile();
-    SourceFile(wstring path, DebugInfo debugInfo, ExpressionPtr program,
-               LocationRecord record);
+    SourceFile(wstring path, ExpressionPtr program);
 };
 
 class Compiler
@@ -34,7 +31,9 @@ public:
     vector<SourceFile> files;
     string mainFile;
     map<wstring, SourceFile&> table;
+
     Compiler(string mainFile);
+
     void ParseAll();
     void Parse(string path);
     vector<SourceFile*> GetReversedSequence();

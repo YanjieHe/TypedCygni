@@ -4,7 +4,6 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += main.cpp \
-    Any.cpp \
     Decoder.cpp \
     Disassembly.cpp \
     Function.cpp \
@@ -13,9 +12,11 @@ SOURCES += main.cpp \
     Test.cpp \
     Exception.cpp \
     Position.cpp \
-    BinaryFileReader.cpp
+    BinaryStreamReader.cpp \
+    Value.cpp \
+    ReadBinaryFile.cpp
 
-HEADERS +=  Any.h \
+HEADERS +=  \
     Decoder.h \
     Disassembly.h \
     Function.h \
@@ -24,6 +25,8 @@ HEADERS +=  Any.h \
     Test.h \
     Exception.h \
     Position.h \
-    BinaryFileReader.h \
     PrimitiveType.h \
-    Array
+    Array \
+    BinaryStreamReader.h \
+    Value.h \
+    ReadBinaryFile.h

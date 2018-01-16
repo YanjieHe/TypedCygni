@@ -3,7 +3,7 @@
 
 #include "PrimitiveType.h"
 
-class Any
+class Value
 {
 public:
     i32 i32_v = 0;
@@ -11,10 +11,10 @@ public:
     f32 f32_v = 0;
     f64 f64_v = 0;
     void* refObject;
-    static Any Int(i32 value);
-    static Any Float(f32 value);
-    static Any Long(i64 value);
-    static Any Double(f64 value);
+    static Value Int(i32 value);
+    static Value Float(f32 value);
+    static Value Long(i64 value);
+    static Value Double(f64 value);
 };
 
 class Object

@@ -1,19 +1,18 @@
 #include "TypeEnv.h"
-
+#include "Exception.h"
 TypeEnv::TypeEnv()
 {
 }
 
-bool TypeEnv::Define(wstring name, Type type)
+void TypeEnv::Define(wstring name, Type type)
 {
 	if (table.find(name) != table.end())
 	{
-		return false;
+        throw NameNotDefinedException(name);
 	}
 	else
 	{
         table.insert(map<wstring, Type>::value_type(name, type));
-		return true;
     }
 }
 
@@ -60,7 +59,7 @@ Type FunctionList::ResolveType(wstring name)
 	}
 	else
 	{
-        return Type::Unknown();
+        throw NameNotDefinedException(name);
 	}
 }
 
@@ -76,7 +75,7 @@ Type GlobalTypeEnv::Find(std::wstring name)
     }
     else
     {
-        return Type::Unknown();
+        throw NameNotDefinedException(name);
     }
 }
 

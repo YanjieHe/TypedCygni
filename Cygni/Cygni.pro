@@ -13,9 +13,7 @@ SOURCES += main.cpp \
     Expression.cpp \
     Type.cpp \
     TypeTag.cpp \
-    DebugInfo.cpp \
     Parser.cpp \
-    Visitor.cpp \
     Scope.cpp \
     Location.cpp \
     TypeEnv.cpp \
@@ -25,7 +23,8 @@ SOURCES += main.cpp \
     Position.cpp \
     ByteCodeGenerator.cpp \
     Compiler.cpp \
-    DefinitionCollector.cpp
+    DefinitionCollector.cpp \
+    TreeViewer.cpp
 
 HEADERS +=  TokenKind.h \
     Token.h \
@@ -36,7 +35,6 @@ HEADERS +=  TokenKind.h \
     Expression.h \
     Type.h \
     TypeTag.h \
-    DebugInfo.h \
     Parser.h \
     Visitor.h \
     Scope.h \
@@ -49,4 +47,5 @@ HEADERS +=  TokenKind.h \
     ByteCodeGenerator.h \
     Compiler.h \
     DefinitionCollector.h \
-    PrimitiveType.h
+    PrimitiveType.h \
+    TreeViewer.h

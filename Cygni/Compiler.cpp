@@ -6,6 +6,7 @@
 #include "Lexer.h"
 #include "Parser.h"
 #include "PrimitiveType.h"
+#include "TreeViewer.h"
 #include "TypeChecker.h"
 #include <fstream>
 #include <iostream>
@@ -15,9 +16,8 @@ SourceFile::SourceFile()
 {
 }
 
-SourceFile::SourceFile(wstring path, DebugInfo debugInfo, ExpressionPtr program,
-                       LocationRecord record)
-    : path{path}, debugInfo{debugInfo}, program{program}, record{record}
+SourceFile::SourceFile(wstring path, ExpressionPtr program)
+    : path{path}, program{program}
 {
 }
 
@@ -39,11 +39,9 @@ void Compiler::Parse(std::string path)
     {
         item.Display();
     }
-    DebugInfo debugInfo;
-    Parser parser(tokens, debugInfo);
+    Parser parser(tokens);
     ExpressionPtr program = parser.Program();
-    SourceFile file(wstring(path.begin(), path.end()), debugInfo, program,
-                    LocationRecord());
+    SourceFile file(wstring(path.begin(), path.end()), program);
     files.push_back(file);
     table.insert(std::pair<wstring, SourceFile&>(file.path, file));
 
@@ -91,8 +89,7 @@ void Compiler::CheckType()
     }
     for (SourceFile* file : sequence)
     {
-        TypeChecker checker(file->debugInfo, file->record, collector.scope,
-                            collector.fenv);
+        TypeChecker checker(collector.scope, collector.fenv);
 
         file->program->Accept(&checker);
         TreeViewer viewer;
@@ -115,7 +112,7 @@ void Compiler::Compile(string output)
         ByteCode topCode;
         for (SourceFile* file : sequence)
         {
-            ByteCodeGenerator generator(file->debugInfo, file->record);
+            ByteCodeGenerator generator;
             file->program->Accept(&generator);
             for (Function& f : generator.functions)
             {

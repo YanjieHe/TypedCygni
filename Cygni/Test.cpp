@@ -1,11 +1,11 @@
 #include "Test.h"
 #include "ByteCodeGenerator.h"
 #include "Compiler.h"
-#include "DebugInfo.h"
 #include "Lexer.h"
 #include "Parser.h"
 #include "Scope.h"
 #include "Token.h"
+#include "TreeViewer.h"
 #include "Type.h"
 #include "TypeChecker.h"
 #include "Visitor.h"
@@ -13,7 +13,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
 using namespace std;
 
 void TestLexer()
@@ -52,8 +51,7 @@ void TestParser()
 		t.Display();
 	}
 
-	DebugInfo debugInfo;
-	Parser parser(tokens, debugInfo);
+    Parser parser(tokens);
     ExpressionPtr program = parser.Program();
 
 	TreeViewer viewer;
@@ -79,13 +77,13 @@ void TestScope()
 
 void TestCompiler()
 {
-    string path = "./TestCases/factorial.txt";
+    string path = "./TestCases/fib.txt";
     try
     {
         Compiler compiler(path);
         compiler.ParseAll();
         compiler.CheckType();
-        compiler.Compile("./TestCases/factorial.bin");
+        compiler.Compile("./TestCases/fib.bin");
     }
     catch (SyntaxException& ex)
     {

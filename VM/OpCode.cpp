@@ -3,7 +3,7 @@
 
 using namespace std;
 
-wstring opcode_to_wstring(OpCode code)
+wstring OpCodeToString(OpCode code)
 {
 	switch (code)
 	{
@@ -15,12 +15,12 @@ wstring opcode_to_wstring(OpCode code)
         return L"push_f64_0";
     case OpCode::push_f64_1:
         return L"push_f64_1";
-    case OpCode::push_i32:
-        return L"push_i32";
-    case OpCode::push_f64:
-        return L"push_f64";
-    case OpCode::push_string:
-        return L"push_string";
+    case OpCode::push_constant_i32:
+        return L"push_constant_i32";
+    case OpCode::push_constant_f64:
+        return L"push_constant_f64";
+    case OpCode::push_constant_string:
+        return L"push_constant_string";
     case OpCode::push_null:
         return L"push_null";
     case OpCode::push_static_i32:
@@ -29,34 +29,26 @@ wstring opcode_to_wstring(OpCode code)
         return L"push_static_f64";
     case OpCode::push_static_string:
         return L"push_static_string";
-    case OpCode::push_stack_i32:
-        return L"push_stack_i32";
-    case OpCode::push_stack_f64:
-        return L"push_stack_f64";
-    case OpCode::push_stack_string:
-        return L"push_stack_string";
     case OpCode::pop_static_i32:
         return L"pop_static_i32";
     case OpCode::pop_static_f64:
         return L"pop_static_f64";
     case OpCode::pop_static_string:
         return L"pop_static_string";
+    case OpCode::push_stack_i32:
+        return L"push_stack_i32";
+    case OpCode::push_stack_f64:
+        return L"push_stack_f64";
+    case OpCode::push_stack_string:
+        return L"push_stack_string";
     case OpCode::pop_stack_i32:
         return L"pop_stack_i32";
     case OpCode::pop_stack_f64:
         return L"pop_stack_f64";
     case OpCode::pop_stack_string:
         return L"pop_stack_string";
-    case OpCode::push_constant_i32:
-        return L"push_constant_i32";
-    case OpCode::push_constant_f64:
-        return L"push_constant_f64";
-    case OpCode::push_constant_string:
-        return L"push_constant_string";
-    case OpCode::function_begin:
-        return L"function_begin";
-    case OpCode::function_end:
-        return L"function_end";
+    case OpCode::push_function:
+        return L"push_function";
     case OpCode::add_i32:
         return L"add_i32";
     case OpCode::sub_i32:
@@ -111,10 +103,10 @@ wstring opcode_to_wstring(OpCode code)
         return L"minus_i32";
     case OpCode::minus_f64:
         return L"minus_f64";
-    case OpCode::cast_int32_to_float64:
-        return L"cast_int32_to_float64";
-    case OpCode::cast_float64_to_int32:
-        return L"cast_float64_to_int32";
+    case OpCode::cast_i32_to_f64:
+        return L"cast_i32_to_f64";
+    case OpCode::cast_f64_to_i32:
+        return L"cast_f64_to_i32";
     case OpCode::jump:
         return L"jump";
     case OpCode::jump_if_true:
@@ -125,8 +117,6 @@ wstring opcode_to_wstring(OpCode code)
         return L"return_i32";
     case OpCode::return_f64:
         return L"return_f64";
-    case OpCode::push_function:
-        return L"push_function";
     case OpCode::invoke:
         return L"invoke";
     case OpCode::push_array_i32:
@@ -149,14 +139,16 @@ wstring opcode_to_wstring(OpCode code)
         return L"new_array_literal_f64";
     case OpCode::new_array_literal_object:
         return L"new_array_literal_object";
-    case OpCode::constant_i32:
-        return L"constant_i32";
-    case OpCode::constant_i64:
-        return L"constant_i64";
-    case OpCode::constant_f64:
-        return L"constant_f64";
-    case OpCode::constant_string:
-        return L"constant_string";
+    case OpCode::constant_pool_i32:
+        return L"constant_pool_i32";
+    case OpCode::constant_pool_i64:
+        return L"constant_pool_i64";
+    case OpCode::constant_pool_f64:
+        return L"constant_pool_f64";
+    case OpCode::constant_pool_string:
+        return L"constant_pool_string";
+    case OpCode::function_info:
+        return L"function_info";
     default:
         throw L"error opcode";
 	}
@@ -168,8 +160,6 @@ i32 OperandSize(OpCode op)
 	{
     case OpCode::push_f64_0:
     case OpCode::push_f64_1:
-    case OpCode::function_begin:
-    case OpCode::function_end:
     case OpCode::add_i32:
     case OpCode::sub_i32:
     case OpCode::mul_i32:
@@ -200,8 +190,8 @@ i32 OperandSize(OpCode op)
 
     case OpCode::minus_f64:
 
-    case OpCode::cast_int32_to_float64:
-    case OpCode::cast_float64_to_int32:
+    case OpCode::cast_i32_to_f64:
+    case OpCode::cast_f64_to_i32:
 
     case OpCode::return_i32:
     case OpCode::return_f64:
@@ -210,9 +200,9 @@ i32 OperandSize(OpCode op)
     case OpCode::push_i32_1byte:
         return 1;
     case OpCode::push_i32_2byte:
-    case OpCode::push_i32:
-    case OpCode::push_f64:
-    case OpCode::push_string:
+    case OpCode::push_constant_i32:
+    case OpCode::push_constant_f64:
+    case OpCode::push_constant_string:
     case OpCode::push_function:
 
     case OpCode::push_static_i32:
@@ -231,10 +221,6 @@ i32 OperandSize(OpCode op)
     case OpCode::pop_stack_f64:
     case OpCode::pop_stack_string:
 
-    case OpCode::push_constant_i32:
-    case OpCode::push_constant_f64:
-    case OpCode::push_constant_string:
-
     case OpCode::jump:
     case OpCode::jump_if_true:
     case OpCode::jump_if_false:
@@ -242,7 +228,7 @@ i32 OperandSize(OpCode op)
 
     default:
         wcout << L"not supported Operand Size: " << endl;
-        wcout << opcode_to_wstring(op) << endl;
+        wcout << OpCodeToString(op) << endl;
         throw L"not supported Operand Size: ";
 	}
 }

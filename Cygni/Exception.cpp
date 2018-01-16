@@ -64,3 +64,23 @@ FileNotFoundException::FileNotFoundException(std::wstring message)
     : Exception(message)
 {
 }
+
+NameDefinedException::NameDefinedException()
+    : Exception(L"name is defined in the scope.")
+{
+}
+
+NameDefinedException::NameDefinedException(std::wstring name)
+    : Exception(L"name '" + name + L"' is defined in the scope.")
+{
+}
+
+NameNotDefinedException::NameNotDefinedException()
+    : Exception(L"name is not defined in the scope.")
+{
+}
+
+NameNotDefinedException::NameNotDefinedException(std::wstring name)
+    : Exception(L"name '" + name + L"' is not defined in the scope.")
+{
+}

@@ -1,7 +1,6 @@
 #ifndef BYTECODEGENERATOR_H
 #define BYTECODEGENERATOR_H
 
-#include "DebugInfo.h"
 #include "Function.h"
 #include "OpCode.h"
 #include "PrimitiveType.h"
@@ -15,12 +14,10 @@ class ByteCodeGenerator : public Visitor
 {
 public:
     ByteCode* code;
-	DebugInfo& debugInfo;
-	LocationRecord& record;
     vector<Function> functions;
     ByteCode globalCode;
 
-    ByteCodeGenerator(DebugInfo& debugInfo, LocationRecord& record);
+    ByteCodeGenerator();
 
 	void Visit(UnaryExpression* node) override;
 	void Visit(BinaryExpression* node) override;

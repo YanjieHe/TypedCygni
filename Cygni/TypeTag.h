@@ -24,6 +24,6 @@ enum class TypeTag
 	Any
 };
 
-wstring type_tag_to_wstring(TypeTag tag);
+wstring TypeTagToString(TypeTag tag);
 
-#endif // TYPETAG_H 
+#endif // TYPETAG_H

@@ -1,26 +1,27 @@
 #ifndef DISASSEMBLY_H
 #define DISASSEMBLY_H
 
-#include "BinaryFileReader.h"
+#include "Decoder.h"
 #include "PrimitiveType.h"
 #include <string>
 #include <vector>
-
 using std::string;
 using std::vector;
 
 class Disassembly
 {
 public:
-    BinaryStreamReader reader;
-    Disassembly(vector<byte>& stream);
+    Decoder& decoder;
+    Disassembly(Decoder& decoder);
 
 	void ReadConstantPool();
     void ReadAll();
 
 private:
-    void ReadCode();
-    void ReadFunction();
+    void ReadCode(ByteCode code);
+    void ReadFunctions();
+    void ReadOneFunction();
+    void ReadOneOperation();
 
     i32 ReadUShort(u32 offset);
     i32 ReadInt32(u32 offset);

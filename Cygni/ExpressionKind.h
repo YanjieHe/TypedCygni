@@ -34,8 +34,6 @@ enum class ExpressionKind
     Constant,
     Block,
     Parameter,
-    VariableDefinition,
-    FunctionDefinition,
     Conditional,
     Unit,
     While,
@@ -53,6 +51,6 @@ enum class ExpressionKind
     Import
 };
 
-wstring expression_kind_to_wstring(ExpressionKind kind);
+wstring ExpressionKindToString(ExpressionKind kind);
 
 #endif // EXPRESSIONKIND_H

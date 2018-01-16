@@ -1,20 +1,10 @@
-#ifndef BINARYFILEREADER_H
-#define BINARYFILEREADER_H
-
+#ifndef BINARYSTREAMREADER_H
+#define BINARYSTREAMREADER_H
 #include "PrimitiveType.h"
 #include <string>
 #include <vector>
-using std::string;
 using std::vector;
 using std::wstring;
-class BinaryFileReader
-{
-public:
-    string path;
-    BinaryFileReader(string path);
-    vector<byte> ReadAll();
-};
-
 class BinaryStreamReader
 {
 public:
@@ -31,4 +21,5 @@ public:
     wstring ReadString();
     bool IsEof();
 };
-#endif // BINARYFILEREADER_H
+
+#endif // BINARYSTREAMREADER_H

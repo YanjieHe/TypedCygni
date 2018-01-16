@@ -3,8 +3,7 @@
 using std::make_shared;
 using std::static_pointer_cast;
 
-Parser::Parser(vector<Token>& tokens, DebugInfo& debugInfo)
-    : tokens{tokens}, tokens_pointer{0}, debugInfo{debugInfo}
+Parser::Parser(vector<Token>& tokens) : tokens{tokens}, tokens_pointer{0}
 {
 }
 
@@ -64,15 +63,15 @@ void Parser::Match(TokenKind kind)
 	else
 	{
 		throw SyntaxException(Line(), Column(),
-                              L"expecting " + token_kind_to_wstring(kind) +
+                              L"expecting " + TokenKindToString(kind) +
                                   L", unexpected " +
-                                  token_kind_to_wstring(Current().kind));
+                                  TokenKindToString(Current().kind));
 	}
 }
 
-inline void Parser::Record(Position position, ExpressionPtr expression)
+void Parser::Record(Position position, ExpressionPtr expression)
 {
-    debugInfo.Record(position, expression);
+    expression->position = position;
 }
 
 ExpressionPtr Parser::Block()
@@ -407,7 +406,7 @@ ExpressionPtr Parser::Factor()
 	{
 		throw SyntaxException(Line(), Column(),
                               L"syntax error: " +
-                                  token_kind_to_wstring(Current().kind));
+                                  TokenKindToString(Current().kind));
 	}
 }
 

@@ -1,77 +1,62 @@
 #include "Disassembly.h"
+#include "BinaryStreamReader.h"
 #include "Exception.h"
 #include "OpCode.h"
 #include <fstream>
 #include <iostream>
-
 using namespace std;
 
-Disassembly::Disassembly(vector<byte>& stream) : reader(stream)
+Disassembly::Disassembly(Decoder& decoder) : decoder{decoder}
 {
 }
 
 void Disassembly::ReadAll()
 {
-    ReadFunction();
-    ReadCode();
+    ReadFunctions();
+    ReadCode(decoder.topCode);
 }
 
-void Disassembly::ReadCode()
+void Disassembly::ReadCode(ByteCode code)
 {
+    vector<byte> vec = code.ToVector();
+    BinaryStreamReader reader(vec);
     while (!reader.IsEof())
 	{
         OpCode op = static_cast<OpCode>(reader.Read());
-		if (op == OpCode::function_end)
-        {
-			wcout << L"*** end of function ***" << endl << endl;
-            return;
-		}
-		else if (OperandSize(op) == 0)
+        if (OperandSize(op) == 0)
 		{
-            wcout << opcode_to_wstring(op) << endl;
+            wcout << OpCodeToString(op) << endl;
 		}
 		else if (OperandSize(op) == 1)
 		{
-			wcout << opcode_to_wstring(op) << L"  ";
+			wcout << OpCodeToString(op) << L"  ";
             wcout << L"byte: " << reader.Read() << endl;
 		}
 		else if (OperandSize(op) == 2)
 		{
-			wcout << opcode_to_wstring(op) << L"  ";
+			wcout << OpCodeToString(op) << L"  ";
             wcout << L"ushort: " << reader.ReadUShort() << endl;
 		}
 		else
 		{
-            wcout << L"not implemented opcode: " + opcode_to_wstring(op)
-                  << endl;
-			throw L"not implemented opcode: " + opcode_to_wstring(op);
+            wcout << L"not implemented opcode: " + OpCodeToString(op) << endl;
+			throw L"not implemented opcode: " + OpCodeToString(op);
 		}
 	}
 }
 
-void Disassembly::ReadFunction()
+void Disassembly::ReadFunctions()
 {
-    while (!reader.IsEof())
-	{
-        OpCode op = static_cast<OpCode>(reader.Peek());
-		if (op == OpCode::function_begin)
-        {
-            reader.Read();
-            wcout << endl << L"*** begin of function ***" << endl;
-
-            wstring name = reader.ReadString();
-            i32 args_size = reader.ReadUShort();
-            i32 stack = reader.ReadUShort();
-            i32 locals = stack - args_size;
-            wcout << name << endl;
-			wcout << L"args_size: " << args_size << endl;
-			wcout << L"stack: " << stack << endl;
-            wcout << L"locals: " << locals << endl;
-            ReadCode();
-		}
-		else
-		{
-            ReadCode();
-		}
-	}
+    for (Function& f : decoder.functions)
+    {
+        wstring name = f.name;
+        i32 args_size = f.parametersSize;
+        i32 stack = f.frameSize;
+        i32 locals = stack - args_size;
+        wcout << name << endl;
+        wcout << L"args_size: " << args_size << endl;
+        wcout << L"stack: " << stack << endl;
+        wcout << L"locals: " << locals << endl;
+        ReadCode(f.code);
+    }
 }

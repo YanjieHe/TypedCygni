@@ -24,7 +24,7 @@ class Scope
 public:
 	map<wstring, int> table;
     Scope();
-	bool Define(wstring name);
+    void Define(wstring name);
 	virtual Location Find(wstring name) = 0;
 	int Size();
     virtual ~Scope();

@@ -61,6 +61,6 @@ enum class TokenKind
     Eof
 };
 
-std::wstring token_kind_to_wstring(TokenKind kind);
+std::wstring TokenKindToString(TokenKind kind);
 
 #endif // TOKENKIND_H

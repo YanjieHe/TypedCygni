@@ -1,21 +1,20 @@
 #include "Scope.h"
-
+#include "Exception.h"
 Scope::Scope()
 {
 	this->table = map<wstring, int>();
 }
 
-bool Scope::Define(wstring name)
+void Scope::Define(wstring name)
 {
     int n = static_cast<int>(table.size());
-	if (HasKey(name))
+    if (HasKey(name))
 	{
-		return false;
+        throw NameDefinedException(name);
 	}
 	else
 	{
 		table.insert(map<wstring, int>::value_type(name, n));
-		return true;
 	}
 }
 
@@ -46,7 +45,7 @@ Location GlobalScope::Find(wstring name)
 	}
 	else
 	{
-		return Location();
+        throw NameNotDefinedException(name);
 	}
 }
 

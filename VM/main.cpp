@@ -1,5 +1,5 @@
-#include "Any.h"
 #include "Test.h"
+#include "Value.h"
 #include <array>
 #include <iostream>
 #include <locale>
@@ -11,8 +11,8 @@ int main()
 {
 	locale loc("");
 	locale::global(loc);
-    TestDisassembly("factorial.bin");
-    TestDecoderReadFile("factorial.bin");
+    TestDisassembly("fib.bin");
+    TestDecoderReadFile("fib.bin");
 
 	return 0;
 }

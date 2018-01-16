@@ -15,33 +15,28 @@ enum class OpCode
     push_f64_0,
     push_f64_1,
 
-	push_i32,
-	push_f64,
-	push_string,
-	push_null,
+    push_constant_i32,
+    push_constant_f64,
+    push_constant_string,
+    push_null,
 
     push_static_i32,
     push_static_f64,
     push_static_string,
 
-    push_stack_i32,
-    push_stack_f64,
-    push_stack_string,
-
     pop_static_i32,
     pop_static_f64,
     pop_static_string,
+
+    push_stack_i32,
+    push_stack_f64,
+    push_stack_string,
 
     pop_stack_i32,
     pop_stack_f64,
     pop_stack_string,
 
-    push_constant_i32,
-    push_constant_f64,
-    push_constant_string,
-
-    function_begin,
-    function_end,
+    push_function,
 
     add_i32,
     sub_i32,
@@ -76,8 +71,8 @@ enum class OpCode
     minus_i32,
     minus_f64,
 
-    cast_int32_to_float64,
-    cast_float64_to_int32,
+    cast_i32_to_f64,
+    cast_f64_to_i32,
 
     jump,
     jump_if_true,
@@ -86,7 +81,6 @@ enum class OpCode
     return_i32,
     return_f64,
 
-    push_function,
     invoke,
 
     push_array_i32,
@@ -102,13 +96,14 @@ enum class OpCode
     new_array_literal_f64,
     new_array_literal_object,
 
-	constant_i32,
-	constant_i64,
-	constant_f64,
-	constant_string
+    constant_pool_i32,
+    constant_pool_i64,
+    constant_pool_f64,
+    constant_pool_string,
+    function_info
 };
 
-wstring opcode_to_wstring(OpCode code);
+wstring OpCodeToString(OpCode code);
 
 i32 OperandSize(OpCode op);
 

@@ -5,11 +5,7 @@
 
 using std::string;
 
-void TestByteCode();
-
-void TestDecoder();
-
 void TestDecoderReadFile(string binaryFile);
 
 void TestDisassembly(string binaryFile);
-#endif // TEST_H 
+#endif // TEST_H

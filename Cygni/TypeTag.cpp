@@ -1,6 +1,6 @@
 #include "TypeTag.h"
 
-wstring type_tag_to_wstring(TypeTag tag)
+wstring TypeTagToString(TypeTag tag)
 {
 	switch (tag)
 	{

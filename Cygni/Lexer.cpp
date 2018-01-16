@@ -67,7 +67,7 @@ inline wchar_t Lexer::Read()
 
 inline bool Lexer::IsEof()
 {
-	return Peek() == -1;
+    return Peek() == EOF;
 }
 
 void Lexer::Consume()
