@@ -71,7 +71,7 @@ public class Parser {
         int startLine = look().line;
         int startCol = look().col;
         Node x = or();
-        if (x instanceof Name && look().tag == Tag.Assign) {
+        if (look().tag == Tag.Assign) {
             Token t = match(Tag.Assign);
             Node y = or();
             return new Assign(startLine, startCol, look().line, look().col, x, y);
@@ -198,22 +198,27 @@ public class Parser {
 
     private Node postfix() throws ParserException {
         Node x = factor();
-        while (look().tag == Tag.LeftParenthesis) {
+        while (look().tag == Tag.LeftParenthesis || look().tag == Tag.LeftBracket) {
             int startLine = look().line;
             int startCol = look().col;
-            ArrayList<Node> arguments = new ArrayList<Node>();
-            match(Tag.LeftParenthesis);
-            if (look().tag == Tag.RightParenthesis) {
-                match(Tag.RightParenthesis);
-                x = new Call(startLine, startCol, look().line, look().col, x, arguments);
-            } else {
-                arguments.add(or());
-                while (!eof() && look().tag != Tag.RightParenthesis) {
-                    match(Tag.Comma);
+            if (look().tag == Tag.LeftParenthesis) {
+                ArrayList<Node> arguments = new ArrayList<Node>();
+                match(Tag.LeftParenthesis);
+                if (look().tag == Tag.RightParenthesis) {
+                    match(Tag.RightParenthesis);
+                    x = new Call(startLine, startCol, look().line, look().col, x, arguments);
+                } else {
                     arguments.add(or());
+                    while (!eof() && look().tag != Tag.RightParenthesis) {
+                        match(Tag.Comma);
+                        arguments.add(or());
+                    }
+                    match(Tag.RightParenthesis);
+                    x = new Call(startLine, startCol, look().line, look().col, x, arguments);
                 }
-                match(Tag.RightParenthesis);
-                x = new Call(startLine, startCol, look().line, look().col, x, arguments);
+            } else if (look().tag == Tag.LeftBracket) {
+                ArrayList<Type> types = parseTypeArguments();
+                x = new Specialize(startLine, startCol, look().line, look().col, x, types);
             }
         }
         return x;
@@ -225,12 +230,24 @@ public class Parser {
             Node x = or();
             match(Tag.RightParenthesis);
             return x;
-        } else if (look().tag == Tag.Integer || look().tag == Tag.Float) {
+        } else if (look().tag == Tag.Integer || look().tag == Tag.Float || look().tag == Tag.String) {
             Object v = look().value;
             int startLine = look().line;
             int startCol = look().col;
             move();
             Node x = new Constant(startLine, startCol, look().line, look().col, v);
+            return x;
+        } else if (look().tag == Tag.True) {
+            int startLine = look().line;
+            int startCol = look().col;
+            move();
+            Node x = new Constant(startLine, startCol, look().line, look().col, true);
+            return x;
+        } else if (look().tag == Tag.False) {
+            int startLine = look().line;
+            int startCol = look().col;
+            move();
+            Node x = new Constant(startLine, startCol, look().line, look().col, false);
             return x;
         } else if (look().tag == Tag.Identifier) {
             String name = (String) look().value;
@@ -239,6 +256,8 @@ public class Parser {
             move();
             Node x = new Name(startLine, startCol, look().line, look().col, name);
             return x;
+        } else if (look().tag == Tag.LeftBracket) {
+            return initArray();
         } else {
             throw new ParserException(look().line, look().col, "factor " + look().tag);
         }
@@ -314,40 +333,19 @@ public class Parser {
         return new Parameter(name, type);
     }
 
-    private static HashMap<String, Type> basicTypes;
-
-    static {
-        basicTypes = new HashMap<String, Type>();
-        basicTypes.put("Int", Type.Int);
-        basicTypes.put("Float", Type.Float);
-        basicTypes.put("Long", Type.Long);
-        basicTypes.put("Double", Type.Double);
-        basicTypes.put("Bool", Type.Bool);
-        basicTypes.put("Char", Type.Char);
-        basicTypes.put("String", Type.String);
-        basicTypes.put("Unit", Type.Unit);
-    }
 
     private Type parseType() throws ParserException {
         String name = (String) match(Tag.Identifier).value;
-        if (look().tag == Tag.LessThan) {
-            match(Tag.LessThan);
-            ArrayList<Type> types = new ArrayList<Type>();
-            while (!eof() && look().tag != Tag.LessThan) {
-                types.add(parseType());
-            }
-            if (types.size() == 0 || eof()) {
-                throw new ParserException(look().line, look().col, "type");
+        if (look().tag == Tag.LeftBracket) {
+            ArrayList<Type> types = parseTypeArguments();
+            Type result = Type.makeType(name, types);
+            if (result == null) {
+                throw new ParserException(look().line, look().col, "type error");
             } else {
-                match(Tag.GreaterThan);
-                return new Type(name, types);
+                return result;
             }
         } else {
-            if (basicTypes.containsKey(name)) {
-                return basicTypes.get(name);
-            } else {
-                return new Type(name);
-            }
+            return Type.makePrimitiveType(name);
         }
     }
 
@@ -358,4 +356,37 @@ public class Parser {
         Node value = or();
         return new Return(startLine, startCol, look().line, look().col, value);
     }
+
+    private ArrayList<Type> parseTypeArguments() throws ParserException {
+        match(Tag.LeftBracket);
+        ArrayList<Type> types = new ArrayList<Type>();
+        while (!eof() && look().tag != Tag.RightBracket) {
+            types.add(parseType());
+        }
+        if (types.size() == 0 || eof()) {
+            throw new ParserException(look().line, look().col, "type");
+        } else {
+            match(Tag.RightBracket);
+            return types;
+        }
+    }
+
+    private Node initArray() throws ParserException {
+        int startLine = look().line;
+        int startCol = look().col;
+        match(Tag.LeftBracket);
+        ArrayList<Node> elements = new ArrayList<Node>();
+        if (look().tag == Tag.RightBracket) {
+            return new InitArray(startLine, startCol, look().line, look().col, elements);
+        } else {
+            elements.add(or());
+            while (!eof() && look().tag != Tag.RightBracket) {
+                match(Tag.Comma);
+                elements.add(or());
+            }
+            match(Tag.RightBracket);
+            return new InitArray(startLine, startCol, look().line, look().col, elements);
+        }
+    }
+
 }

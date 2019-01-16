@@ -26,6 +26,8 @@ public class AstJson {
             return visitReturn((Return) node);
         } else if (node instanceof Call) {
             return visitCall((Call) node);
+        } else if (node instanceof InitArray) {
+            return visitInitArray((InitArray) node);
         } else {
             return "(null: " + node + ")";
         }
@@ -95,5 +97,13 @@ public class AstJson {
         }
         return "{\"kind\": \"Call\", " + "\"function\": " + visit(node.function) +
                 ", \"argument\": [" + String.join(", ", items) + "]}";
+    }
+
+    public static String visitInitArray(InitArray node) {
+        String[] items = new String[node.elements.size()];
+        for (int i = 0; i < items.length; i++) {
+            items[i] = visit(node.elements.get(i));
+        }
+        return "{\"kind\": \"InitArray\", \"elements\": [" + String.join(", ", items) + "]}";
     }
 }

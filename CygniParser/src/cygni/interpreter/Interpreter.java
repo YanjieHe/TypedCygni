@@ -2,6 +2,8 @@ package cygni.interpreter;
 
 import cygni.ast.*;
 import cygni.Scope;
+import cygni.types.ArrayType;
+import cygni.types.LongType;
 
 
 public class Interpreter {
@@ -28,6 +30,10 @@ public class Interpreter {
             return evalReturn((Return) node, scope);
         } else if (node instanceof Var) {
             return evalVar((Var) node, scope);
+        } else if (node instanceof InitArray) {
+            return evalInitArray((InitArray) node, scope);
+        } else if (node instanceof Assign) {
+            return evalAssign((Assign) node, scope);
         } else {
             return null;
         }
@@ -79,7 +85,7 @@ public class Interpreter {
     }
 
     public Object evalCall(Call node, Scope scope) {
-        Function function = (Function) eval(node.function, scope);
+        Callable function = (Callable) eval(node.function, scope);
         Object[] arguments = new Object[node.arguments.size()];
         for (int i = 0; i < node.arguments.size(); i++) {
             arguments[i] = eval(node.arguments.get(i), scope);
@@ -134,5 +140,29 @@ public class Interpreter {
     public Object evalVar(Var node, Scope scope) {
         scope.putValue(node.name, eval(node.value, scope));
         return null;
+    }
+
+    public Object evalInitArray(InitArray node, Scope scope) {
+        Object[] objects = new Object[node.elements.size()];
+        for (int i = 0; i < objects.length; i++) {
+            objects[i] = eval(node.elements.get(i), scope);
+        }
+        return new Array(objects);
+    }
+
+    public Object evalAssign(Assign node, Scope scope) {
+        if (node.left instanceof Name) {
+            String name = ((Name) node.left).name;
+            scope.putValue(name, eval(node.value, scope));
+            return null;
+        } else if (node.left instanceof Call) {
+            Call call = (Call) node.left;
+            Array array = (Array) eval(call.function, scope);
+            Integer index = (Integer) eval(call.arguments.get(0), scope);
+            array.write(index, eval(node.value, scope));
+            return null;
+        } else {
+            return null;
+        }
     }
 }

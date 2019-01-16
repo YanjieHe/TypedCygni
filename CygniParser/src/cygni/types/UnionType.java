@@ -1,38 +1,64 @@
 package cygni.types;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 
+import static java.lang.String.join;
+
 public class UnionType extends Type {
-    public UnionType(ArrayList<Type> types) {
-        super("U", types);
+    public HashSet<Type> types;
+
+    public UnionType(HashSet<Type> types) {
+        super("U");
+        this.types = types;
     }
 
     public UnionType union(UnionType other) {
         HashSet<Type> set = new HashSet<Type>();
-        for (Type t : parameters) {
+        for (Type t : types) {
             set.add(t);
         }
-        for (Type t : other.parameters) {
+        for (Type t : other.types) {
             set.add(t);
         }
-        ArrayList<Type> types = new ArrayList<Type>();
-        for (Type t : set) {
-            types.add(t);
-        }
-        return new UnionType(types);
+        return new UnionType(set);
     }
 
     public UnionType addType(Type type) {
         HashSet<Type> set = new HashSet<Type>();
-        for (Type t : parameters) {
+        for (Type t : types) {
             set.add(t);
         }
         set.add(type);
-        ArrayList<Type> types = new ArrayList<Type>();
-        for (Type t : set) {
-            types.add(t);
+        return new UnionType(set);
+    }
+
+    @Override
+    public java.lang.String toString() {
+        String[] items = new String[types.size()];
+        int i = 0;
+        for (Type type : types) {
+            items[i] = type.toString();
+            i++;
         }
-        return new UnionType(types);
+        return name + "[" + join(", ", items) + "]";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof UnionType) {
+            UnionType other = (UnionType) obj;
+            if (types.size() == other.types.size()) {
+                for (Type type : types) {
+                    if (!other.types.contains(type)) {
+                        return false;
+                    }
+                }
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 }

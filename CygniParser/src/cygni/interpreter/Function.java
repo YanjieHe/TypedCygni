@@ -5,7 +5,7 @@ import cygni.Scope;
 
 import java.util.ArrayList;
 
-public class Function {
+public class Function implements Callable {
     public String name;
     public ArrayList<Parameter> parameters;
     public Scope parent;

@@ -5,6 +5,7 @@ import cygni.Scope;
 import cygni.exceptions.TypeException;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class TypeChecker {
 
@@ -33,9 +34,26 @@ public class TypeChecker {
             return checkCall((Call) node, scope);
         } else if (node instanceof Def) {
             return checkDef((Def) node, scope);
+        } else if (node instanceof Specialize) {
+            return checkSpecialize((Specialize) node, scope);
+        } else if (node instanceof InitArray) {
+            return checkInitArray((InitArray) node, scope);
         } else {
             throw new TypeException(node.startLine, node.startCol, node.endLine, node.endCol, "not supported ast node");
         }
+    }
+
+    public Type checkProgram(Program program, Scope scope) throws TypeException {
+        for (Node node : program.nodes) {
+            if (node instanceof Def) {
+                Def def = (Def) node;
+                registerDef(def, scope);
+            }
+        }
+        for (Node node : program.nodes) {
+            check(node, scope);
+        }
+        return Type.Unit;
     }
 
     private Type checkAssign(Assign node, Scope scope) throws TypeException {
@@ -54,6 +72,18 @@ public class TypeChecker {
                     throw new TypeException(node.startLine, node.startCol, node.endLine, node.endCol, "assign");
                 }
             }
+        } else if (node.left instanceof Call) {
+            Call call = (Call) node.left;
+            Type function = check(call.function, scope);
+            ArrayList<Type> arguments = checkArguments(call.arguments, scope);
+            if (function instanceof ArrayType && arguments.size() == 1 && arguments.get(0) instanceof IntType) {
+                return Type.Unit;
+            } else {
+                throw new TypeException(node.startLine, node.startCol, node.endLine, node.endCol, "cannot assign to array");
+            }
+        } else if (node.left instanceof InitArray) {
+            InitArray initArray = (InitArray) node.left;
+
         } else {
             throw new TypeException(node.startLine, node.startCol, node.endLine, node.endCol, "cannot assign");
         }
@@ -188,41 +218,100 @@ public class TypeChecker {
     private Type checkCall(Call node, Scope scope) throws TypeException {
         Type function = check(node.function, scope);
         if (function instanceof FunctionType) {
-            Type functionType = (FunctionType) function;
+            FunctionType functionType = (FunctionType) function;
             ArrayList<Type> argumentTypes = new ArrayList<Type>();
             for (Node arg : node.arguments) {
                 argumentTypes.add(check(arg, scope));
             }
-            if (functionType.parameters.size() == node.arguments.size() + 1) {
+            if (functionType.parametersType.size() == node.arguments.size()) {
                 for (int i = 0; i < node.arguments.size(); i++) {
-                    if (!functionType.parameters.get(i).equals(argumentTypes.get(i))) {
+                    if (!functionType.parametersType.get(i).equals(argumentTypes.get(i))) {
                         throw new TypeException(
                                 node.startLine, node.startCol, node.endLine, node.endCol, "argument " + (i + 1));
                     }
                 }
-                return functionType.parameters.get(functionType.parameters.size() - 1);
+                return functionType.returnType;
             } else {
                 throw new TypeException(
                         node.startLine, node.startCol, node.endLine, node.endCol, "wrong argument number");
+            }
+        } else if (function instanceof ArrayType) {
+            ArrayType arrayType = (ArrayType) function;
+            if (node.arguments.size() == 1) {
+                Type index = check(node.arguments.get(0), scope);
+                if (index instanceof IntType) {
+                    return arrayType.element;
+                } else {
+                    throw new TypeException(
+                            node.startLine, node.startCol, node.endLine, node.endCol, "index type must be 'Int' or 'Long'");
+                }
+            } else {
+                throw new TypeException(
+                        node.startLine, node.startCol, node.endLine, node.endCol, "wrong index number");
             }
         } else {
             throw new TypeException(node.startLine, node.startCol, node.endLine, node.endCol, "not callable");
         }
     }
 
-    private Type checkDef(Def node, Scope scope) throws TypeException {
-        Scope newScope = new Scope(scope);
+    private void registerDef(Def node, Scope scope) {
         ArrayList<Type> parameterTypes = new ArrayList<Type>();
         for (Parameter p : node.parameters) {
-            newScope.putType(p.name, p.type);
             parameterTypes.add(p.type);
         }
-        newScope.putType(node.name, new FunctionType(parameterTypes, node.returnType));
+        scope.putType(node.name, new FunctionType(parameterTypes, node.returnType));
+    }
+
+    private Type checkDef(Def node, Scope scope) throws TypeException {
+        Scope newScope = new Scope(scope);
+        for (Parameter p : node.parameters) {
+            newScope.putType(p.name, p.type);
+        }
         Type bodyReturnType = check(node.body, newScope);
-        if (bodyReturnType.equals(node.returnType)) {
+        if (node.returnType.equals(Type.Unit)) {
+            return Type.Unit;
+        } else if (bodyReturnType.equals(node.returnType)) {
             return Type.Unit;
         } else {
             throw new TypeException(node.startLine, node.startCol, node.endLine, node.endCol, "return type");
         }
+    }
+
+    private Type checkSpecialize(Specialize node, Scope scope) throws TypeException {
+        Type type = check(node.expression, scope);
+        if (type instanceof AllType) {
+            AllType all = (AllType) type;
+            if (all.parameters.size() == node.arguments.size()) {
+                return TypeSpecializer.specializeAll(all, node.arguments);
+            } else {
+                throw new TypeException(node.startLine, node.startCol, node.endLine, node.endCol, "type arguments size");
+            }
+        } else {
+            throw new TypeException(node.startLine, node.startCol, node.endLine, node.endCol, "requires generic type");
+        }
+    }
+
+    private Type checkInitArray(InitArray node, Scope scope) throws TypeException {
+        HashSet<Type> types = new HashSet<Type>();
+        Type t = null;
+        for (Node element : node.elements) {
+            t = check(element, scope);
+            types.add(t);
+        }
+        if (types.size() == 0) {
+            throw new TypeException(node.startLine, node.startCol, node.endLine, node.endCol, "cannot init 0 length array");
+        } else if (types.size() == 1) {
+            return new ArrayType(t);
+        } else {
+            return new ArrayType(new UnionType(types));
+        }
+    }
+
+    private ArrayList<Type> checkArguments(ArrayList<Node> arguments, Scope scope) throws TypeException {
+        ArrayList<Type> types = new ArrayList<Type>();
+        for (int i = 0; i < arguments.size(); i++) {
+            types.add(check(arguments.get(i), scope));
+        }
+        return types;
     }
 }

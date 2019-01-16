@@ -1,12 +1,12 @@
 package cygni.types;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
-import static java.lang.String.join;
 
 public class Type {
     public String name;
-    public ArrayList<Type> parameters;
 
     public static Type Int = new IntType();
     public static Type Float = new FloatType();
@@ -19,41 +19,18 @@ public class Type {
 
     public Type(String name) {
         this.name = name;
-        this.parameters = new ArrayList<Type>();
-    }
-
-    public Type(String name, ArrayList<Type> parameters) {
-        this.name = name;
-        this.parameters = parameters;
     }
 
     @Override
     public String toString() {
-        if (parameters.size() == 0) {
-            return name;
-        } else {
-            String[] items = new String[parameters.size()];
-            for (int i = 0; i < items.length; i++) {
-                items[i] = parameters.get(i).toString();
-            }
-            return name + "<" + join(", ", items) + ">";
-        }
+        return name;
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Type) {
             Type other = (Type) obj;
-            if (name.equals(other.name) && parameters.size() == other.parameters.size()) {
-                for (int i = 0; i < parameters.size(); i++) {
-                    if (!parameters.get(i).equals(other.parameters.get(i))) {
-                        return false;
-                    }
-                }
-                return true;
-            } else {
-                return false;
-            }
+            return name.equals(other.name);
         } else {
             return false;
         }
@@ -61,11 +38,7 @@ public class Type {
 
     @Override
     public int hashCode() {
-        int x = name.hashCode();
-        for (Type t : parameters) {
-            x = x ^ t.hashCode();
-        }
-        return x;
+        return name.hashCode();
     }
 
     public static Type union(Type x, Type y) {
@@ -83,11 +56,59 @@ public class Type {
             } else if (!(x instanceof UnionType) && y instanceof UnionType) {
                 return ((UnionType) y).addType(x);
             } else {
-                ArrayList<Type> types = new ArrayList<Type>();
+                HashSet<Type> types = new HashSet<Type>();
                 types.add(x);
                 types.add(y);
                 return new UnionType(types);
             }
         }
     }
+
+    private static HashMap<String, Type> basicTypes;
+
+    static {
+        basicTypes = new HashMap<String, Type>();
+        basicTypes.put("Int", Type.Int);
+        basicTypes.put("Float", Type.Float);
+        basicTypes.put("Long", Type.Long);
+        basicTypes.put("Double", Type.Double);
+        basicTypes.put("Bool", Type.Bool);
+        basicTypes.put("Char", Type.Char);
+        basicTypes.put("String", Type.String);
+        basicTypes.put("Unit", Type.Unit);
+    }
+
+    public static Type makeBasicType(String name) {
+        return basicTypes.get(name);
+    }
+
+    public static Type makePrimitiveType(String name) {
+        if (basicTypes.containsKey(name)) {
+            return makeBasicType(name);
+        } else {
+            return new Type(name);
+        }
+    }
+
+    public static Type makeType(String name, ArrayList<Type> types) {
+        if (name.equals("U")) {
+            HashSet<Type> set = new HashSet<Type>();
+            for (Type type : types) {
+                set.add(type);
+            }
+            return new UnionType(set);
+        } else if (name.equals("Function")) {
+            return FunctionType.fromTypeList(types);
+        } else if (name.equals("Array")) {
+            if (types.size() == 1) {
+                return new ArrayType(types.get(0));
+            } else {
+                return null;
+            }
+        } else {
+            // TO DO: assert types size == 1
+            return makeBasicType(name);
+        }
+    }
+
 }
