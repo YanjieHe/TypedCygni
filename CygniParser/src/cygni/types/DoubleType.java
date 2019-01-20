@@ -1,6 +1,6 @@
 package cygni.types;
 
-public class DoubleType extends Type {
+public class DoubleType extends TypeLeaf {
     public DoubleType() {
         super("Double");
     }

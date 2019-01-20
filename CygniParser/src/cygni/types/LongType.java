@@ -1,6 +1,6 @@
 package cygni.types;
 
-public class LongType extends Type {
+public class LongType extends TypeLeaf {
     public LongType() {
         super("Long");
     }

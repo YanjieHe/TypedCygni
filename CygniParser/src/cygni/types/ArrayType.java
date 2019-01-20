@@ -1,25 +1,14 @@
 package cygni.types;
 
-public class ArrayType extends Type {
-    public Type element;
+import java.util.ArrayList;
 
+public class ArrayType extends TypeConstructor {
     public ArrayType(Type element) {
-        super("Array");
-        this.element = element;
+        super("Array", new ArrayList<Type>());
+        types.add(element);
     }
 
-    @Override
-    public java.lang.String toString() {
-        return name + "[" + element.toString() + "]";
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof ArrayType) {
-            ArrayType other = (ArrayType) obj;
-            return this.element.equals(other.element);
-        } else {
-            return false;
-        }
+    public ArrayType(ArrayList<Type> types) {
+        super("Array", types);
     }
 }

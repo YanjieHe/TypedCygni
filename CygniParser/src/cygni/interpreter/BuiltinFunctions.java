@@ -1,5 +1,10 @@
 package cygni.interpreter;
 
+import cygni.types.BoolType;
+import cygni.types.DoubleType;
+import cygni.types.IntType;
+import cygni.types.Type;
+
 public class BuiltinFunctions {
     public static Object add(Object x, Object y) {
         if (x instanceof Integer && y instanceof Integer) {
@@ -98,6 +103,37 @@ public class BuiltinFunctions {
             return ((Double) x).doubleValue() != ((Double) y).doubleValue();
         } else {
             return null;
+        }
+    }
+
+    public static <T, R> R[] convertArray(T[] input) {
+        @SuppressWarnings("unchecked")
+        R[] items = (R[]) new Object[input.length];
+        for (int i = 0; i < input.length; i++) {
+            items[i] = (R) input[i];
+        }
+        return items;
+    }
+
+    public static class InitGenericArray implements Callable {
+        public Type element;
+
+        public InitGenericArray(Type element) {
+            this.element = element;
+        }
+
+
+        @Override
+        public Object invoke(Object[] arguments) {
+            if (element instanceof IntType) {
+                return BuiltinFunctions.<Object, Integer>convertArray(arguments);
+            } else if (element instanceof BoolType) {
+                return BuiltinFunctions.<Object, Boolean>convertArray(arguments);
+            } else if (element instanceof DoubleType) {
+                return BuiltinFunctions.<Object, Double>convertArray(arguments);
+            } else {
+                return arguments;
+            }
         }
     }
 

@@ -1,6 +1,6 @@
 package cygni.types;
 
-public class FloatType extends Type {
+public class FloatType extends TypeLeaf {
     public FloatType() {
         super("Float");
     }

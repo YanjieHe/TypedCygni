@@ -10,6 +10,7 @@ import cygni.parser.Parser;
 import cygni.ast.*;
 import cygni.types.*;
 import cygni.util.AstJson;
+import cygni.util.JsonUtil;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -36,9 +37,7 @@ public class Main {
     }
 
     public static Type makeGenericArrayType() {
-        ArrayList<TypeParameter> parameters = new ArrayList<TypeParameter>();
-        parameters.add(new TypeParameter("A"));
-        return new AllType(parameters, new ArrayType(new TypeParameter("A")));
+        return new ArrayType(new UnknownType("A"));
     }
 
     public static String objectToString(Object object) {
@@ -56,19 +55,22 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            String fileName = "C:\\Users\\HeYan\\Documents\\MyCode\\Cygni\\test.txt";
+            String fileName = "C:\\Users\\HeYan\\Documents\\MyCode\\Cygni\\factorial.txt";
             Lexer lexer = new Lexer(readFile(fileName));
             ArrayList<Token> tokens = lexer.readAll();
             Parser parser = new Parser(fileName, tokens);
             Program program = parser.program();
             TypeChecker checker = new TypeChecker();
-            checker.checkProgram(program, new Scope());
-            Interpreter interpreter = new Interpreter();
-            Object result = null;
+
             Scope scope = new Scope();
             scope.putType("Array", makeGenericArrayType());
+            scope.putValue("Array", makeGenericArrayType());
+
+            checker.checkProgram(program, scope);
+            Interpreter interpreter = new Interpreter();
+            Object result = null;
+            out.println(AstJson.toString(program));
             for (Node node : program.nodes) {
-//                out.println(AstJson.visit(node));
                 result = interpreter.eval(node, scope);
             }
             out.println(objectToString(result));

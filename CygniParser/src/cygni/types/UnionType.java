@@ -4,11 +4,11 @@ import java.util.HashSet;
 
 import static java.lang.String.join;
 
-public class UnionType extends Type {
+public class UnionType {
     public HashSet<Type> types;
 
     public UnionType(HashSet<Type> types) {
-        super("U");
+//        super("U");
         this.types = types;
     }
 
@@ -32,16 +32,16 @@ public class UnionType extends Type {
         return new UnionType(set);
     }
 
-    @Override
-    public java.lang.String toString() {
-        String[] items = new String[types.size()];
-        int i = 0;
-        for (Type type : types) {
-            items[i] = type.toString();
-            i++;
-        }
-        return name + "[" + join(", ", items) + "]";
-    }
+//    @Override
+//    public java.lang.String toString() {
+//        String[] items = new String[types.size()];
+//        int i = 0;
+//        for (Type type : types) {
+//            items[i] = type.toString();
+//            i++;
+//        }
+//        return name + "[" + join(", ", items) + "]";
+//    }
 
     @Override
     public boolean equals(Object obj) {

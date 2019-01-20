@@ -2,8 +2,15 @@ package cygni.util;
 
 import cygni.ast.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class AstJson {
-    public static String visit(Node node) {
+    public static String toString(Program program) {
+        return JsonUtil.toString(makeList(program.nodes));
+    }
+
+    public static Object visit(Node node) {
         if (node instanceof BinaryOp) {
             return visitBinary((BinaryOp) node);
         } else if (node instanceof UnaryOp) {
@@ -33,77 +40,92 @@ public class AstJson {
         }
     }
 
-    public static String visitBinary(BinaryOp node) {
-        String left = visit(node.left);
-        String right = visit(node.right);
-        return "{\"kind\": \"" + node.kind + "\", \"left\": " + left + ", \"right\": " + right + "}";
+    public static HashMap<String, Object> makeMap(String key0, Object value0) {
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        map.put(key0, value0);
+        return map;
     }
 
-    public static String visitUnary(UnaryOp node) {
-        String operand = visit(node.operand);
-        return "{\"kind\": \"" + node.kind + "\", \"operand\": " + operand + "}";
+    public static HashMap<String, Object> makeMap(String key0, Object value0, String key1, Object value1) {
+        HashMap<String, Object> map = makeMap(key0, value0);
+        map.put(key1, value1);
+        return map;
     }
 
-    public static String visitName(Name node) {
-        return "{\"kind\": \"Name\", \"name\": \"" + node.name + "\"}";
+    public static HashMap<String, Object> makeMap(String key0, Object value0, String key1, Object value1, String key2, Object value2) {
+        HashMap<String, Object> map = makeMap(key0, value0, key1, value1);
+        map.put(key2, value2);
+        return map;
     }
 
-    public static String visitConstant(Constant node) {
-        return "{\"kind\": \"Constant\", \"value\": \"" + node.value.toString() + "\"}";
+    public static HashMap<String, Object> makeMap(String key0, Object value0, String key1, Object value1,
+                                                  String key2, Object value2, String key3, Object value3) {
+        HashMap<String, Object> map = makeMap(key0, value0, key1, value1, key2, value2);
+        map.put(key3, value3);
+        return map;
     }
 
-    public static String visitIfThen(IfThen node) {
-        return "{\"kind\": \"IfThen\", " + "\"condition\": " + visit(node.condition) + ", \"ifTrue\": "
-                + visit(node.ifTrue) + "}";
-    }
-
-    public static String visitIfElse(IfElse node) {
-        return "{\"kind\": \"IfElse\", " + "\"condition\": " + visit(node.condition) + ", \"ifTrue\": " + visit(node.ifTrue)
-                + ", \"ifFalse\": " + visit(node.ifFalse) + "}";
-    }
-
-    public static String visitBlock(Block node) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("{\"kind\": \"block\", \"nodes\": [");
-        boolean first = true;
-        for (Node n : node.nodes) {
-            if (first) {
-                first = false;
-            } else {
-                builder.append(",");
-            }
-            builder.append(visit(n));
+    public static ArrayList<Object> makeList(ArrayList<Node> nodes) {
+        ArrayList<Object> objects = new ArrayList<Object>();
+        for (Node node : nodes) {
+            objects.add(visit(node));
         }
-        builder.append("]}");
-        return builder.toString();
+        return objects;
     }
 
-    public static String visitAssign(Assign node) {
-        return "{\"kind\": \"Assign\", " + "\"left\": " + visit(node.left) + ", \"value\": " + visit(node.value) + "}";
+    public static Object visitBinary(BinaryOp node) {
+        Object left = visit(node.left);
+        Object right = visit(node.right);
+        return makeMap("kind", node.kind,
+                "left", left, "right", right);
     }
 
-    public static String visitDef(Def node) {
-        return "{\"kind\": \"Def\", \"name\": \"" + node.name + "\", \"body\": " + visit(node.body) + "}";
+    public static Object visitUnary(UnaryOp node) {
+        Object operand = visit(node.operand);
+        return makeMap("kind", node.kind, "operand", operand);
     }
 
-    public static String visitReturn(Return node) {
-        return "{\"kind\": \"Return\", \"value\": " + visit(node.value) + "}";
+    public static Object visitName(Name node) {
+        return makeMap("kind", "Name", "name", node.name);
     }
 
-    public static String visitCall(Call node) {
-        String[] items = new String[node.arguments.size()];
-        for (int i = 0; i < items.length; i++) {
-            items[i] = visit(node.arguments.get(i));
-        }
-        return "{\"kind\": \"Call\", " + "\"function\": " + visit(node.function) +
-                ", \"argument\": [" + String.join(", ", items) + "]}";
+    public static Object visitConstant(Constant node) {
+        return makeMap("kind", "Constant", "value", node.value.toString());
     }
 
-    public static String visitInitArray(InitArray node) {
-        String[] items = new String[node.elements.size()];
-        for (int i = 0; i < items.length; i++) {
-            items[i] = visit(node.elements.get(i));
-        }
-        return "{\"kind\": \"InitArray\", \"elements\": [" + String.join(", ", items) + "]}";
+    public static Object visitIfThen(IfThen node) {
+        return makeMap("kind", "IfThen", "condition", visit(node.condition),
+                "ifTrue", visit(node.ifTrue));
+    }
+
+    public static Object visitIfElse(IfElse node) {
+        return makeMap("kind", "IfElse", "condition", visit(node.condition),
+                "ifTrue", visit(node.ifTrue), "ifFalse", visit(node.ifFalse));
+    }
+
+    public static Object visitBlock(Block node) {
+        return makeMap("kind", "Block", "nodes", makeList(node.nodes));
+    }
+
+    public static Object visitAssign(Assign node) {
+        return makeMap("kind", "Assign", "left", visit(node.left), "value", visit(node.value));
+    }
+
+    public static Object visitDef(Def node) {
+        return makeMap("kind", "Def", "name", node.name, "body", visit(node.body));
+    }
+
+    public static Object visitReturn(Return node) {
+        return makeMap("kind", "Return", "value", visit(node.value));
+    }
+
+    public static Object visitCall(Call node) {
+        return makeMap("kind", "Call",
+                "function", visit(node.function), "argument", makeList(node.arguments));
+    }
+
+    public static Object visitInitArray(InitArray node) {
+        return makeMap("kind", "InitArray",
+                "elements", makeList(node.elements));
     }
 }

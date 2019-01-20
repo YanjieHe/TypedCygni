@@ -2,8 +2,8 @@ package cygni.interpreter;
 
 import cygni.ast.*;
 import cygni.Scope;
-import cygni.types.ArrayType;
-import cygni.types.LongType;
+import cygni.exceptions.TypeException;
+import cygni.types.TypeConstructor;
 
 
 public class Interpreter {
@@ -34,6 +34,8 @@ public class Interpreter {
             return evalInitArray((InitArray) node, scope);
         } else if (node instanceof Assign) {
             return evalAssign((Assign) node, scope);
+        } else if (node instanceof Specialize) {
+            return evalSpecialize((Specialize) node, scope);
         } else {
             return null;
         }
@@ -162,6 +164,21 @@ public class Interpreter {
             array.write(index, eval(node.value, scope));
             return null;
         } else {
+            return null;
+        }
+    }
+
+    public Object evalSpecialize(Specialize node, Scope scope) {
+        TypeConstructor typeConstructor = (TypeConstructor) eval(node.expression, scope);
+        try {
+            typeConstructor = typeConstructor.substitute(node.startLine, node.startCol, node.endLine, node.endCol, node.arguments);
+            if (typeConstructor.name.equals("Array")) {
+                return new BuiltinFunctions.InitGenericArray(node.arguments.get(0));
+            } else {
+                return null;
+            }
+        } catch (TypeException ex) {
+            System.out.println("type exception");
             return null;
         }
     }
