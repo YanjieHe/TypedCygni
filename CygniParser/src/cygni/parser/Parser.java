@@ -62,6 +62,8 @@ public class Parser {
             return def();
         } else if (look().tag == Tag.Return) {
             return parseReturn();
+        } else if (look().tag == Tag.While) {
+            return parseWhile();
         } else {
             return assign();
         }
@@ -310,6 +312,10 @@ public class Parser {
         int startCol = look().col;
         match(Tag.Def);
         String name = (String) match(Tag.Identifier).value;
+        ArrayList<UnknownType> unknownTypes = new ArrayList<UnknownType>();
+        if (look().tag == Tag.LeftBracket) {
+            unknownTypes = parseGenericTypesDef();
+        }
         match(Tag.LeftParenthesis);
         ArrayList<Parameter> parameters = new ArrayList<Parameter>();
         if (look().tag != Tag.RightParenthesis) {
@@ -323,7 +329,7 @@ public class Parser {
         match(Tag.Colon);
         Type returnType = parseType();
         Node body = block();
-        return new Def(startLine, startCol, look().line, look().col, name, parameters, returnType, body);
+        return new Def(startLine, startCol, look().line, look().col, name, parameters, returnType, body, unknownTypes);
     }
 
     private Parameter parameter() throws ParserException {
@@ -360,15 +366,13 @@ public class Parser {
     private ArrayList<Type> parseTypeArguments() throws ParserException {
         match(Tag.LeftBracket);
         ArrayList<Type> types = new ArrayList<Type>();
+        types.add(parseType());
         while (!eof() && look().tag != Tag.RightBracket) {
+            match(Tag.Comma);
             types.add(parseType());
         }
-        if (types.size() == 0 || eof()) {
-            throw new ParserException(look().line, look().col, "type");
-        } else {
-            match(Tag.RightBracket);
-            return types;
-        }
+        match(Tag.RightBracket);
+        return types;
     }
 
     private Node initArray() throws ParserException {
@@ -387,6 +391,30 @@ public class Parser {
             match(Tag.RightBracket);
             return new InitArray(startLine, startCol, look().line, look().col, elements);
         }
+    }
+
+    private ArrayList<UnknownType> parseGenericTypesDef() throws ParserException {
+        match(Tag.LeftBracket);
+        ArrayList<UnknownType> unknownTypes = new ArrayList<UnknownType>();
+        unknownTypes.add(parseOneGenericTypeDef());
+        while (!eof() && look().tag != Tag.RightBracket) {
+            match(Tag.Comma);
+            unknownTypes.add(parseOneGenericTypeDef());
+        }
+        match(Tag.RightBracket);
+        return unknownTypes;
+    }
+
+    private UnknownType parseOneGenericTypeDef() throws ParserException {
+        String name = (String) match(Tag.Identifier).value;
+        return new UnknownType(name);
+    }
+
+    private While parseWhile() throws ParserException {
+        Token token = match(Tag.While);
+        Node condition = or();
+        Node body = block();
+        return new While(token.line, token.col, look().line, look().col, condition, body);
     }
 
 }

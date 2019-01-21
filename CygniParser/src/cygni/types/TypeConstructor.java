@@ -1,5 +1,6 @@
 package cygni.types;
 
+import cygni.Scope;
 import cygni.exceptions.TypeException;
 
 import java.util.ArrayList;
@@ -46,20 +47,12 @@ public class TypeConstructor extends Type {
         return name.hashCode();
     }
 
-    public TypeConstructor substitute(int startLine, int startCol, int endLine, int endCol, ArrayList<Type> arguments) throws TypeException {
+    @Override
+    public Type substitute(Scope scope) {
         ArrayList<Type> result = new ArrayList<Type>();
-        if (types.size() == arguments.size()) {
-            for (int i = 0; i < arguments.size(); i++) {
-                if (types.get(i) instanceof UnknownType) {
-                    UnknownType unknownType = (UnknownType) types.get(i);
-                    result.add(new KnownType(unknownType.name, unknownType, arguments.get(i)));
-                } else {
-                    throw new TypeException(startLine, startCol, endLine, endCol, "type argument(" + (i + 1) + ") do not mach");
-                }
-            }
-            return new TypeConstructor(name, result);
-        } else {
-            throw new TypeException(startLine, startCol, endLine, endCol, "type arguments size does not match");
+        for (Type type : types) {
+            result.add(type.substitute(scope));
         }
+        return new TypeConstructor(name, result);
     }
 }

@@ -20,6 +20,8 @@ public class Token {
         keywords.put("true", Tag.True);
         keywords.put("false", Tag.False);
         keywords.put("while", Tag.While);
+        keywords.put("class", Tag.Class);
+        keywords.put("private", Tag.Private);
     }
 
     public Token(int line, int col, Tag tag, Object value) {

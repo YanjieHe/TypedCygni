@@ -71,4 +71,26 @@ public class Scope {
         Object value = lookup(name, "value");
         return value;
     }
+
+    public boolean putValueIfDefined(String name, Object value) {
+        if (table.containsKey(name)) {
+            HashMap<String, Object> map = table.get(name);
+            if (map.containsKey("value")) {
+                map.put("value", value);
+                return true;
+            } else {
+                if (parent == null) {
+                    return false;
+                } else {
+                    return parent.putValueIfDefined(name, value);
+                }
+            }
+        } else {
+            if (parent == null) {
+                return false;
+            } else {
+                return parent.putValueIfDefined(name, value);
+            }
+        }
+    }
 }

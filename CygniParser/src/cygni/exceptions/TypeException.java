@@ -20,10 +20,10 @@ public class TypeException extends Exception {
     @Override
     public String getMessage() {
         String[] items = new String[4];
-        items[0] = Integer.toString(startLine);
-        items[1] = Integer.toString(startCol);
-        items[2] = Integer.toString(endLine);
-        items[3] = Integer.toString(endCol);
+        items[0] = Integer.toString(startLine + 1);
+        items[1] = Integer.toString(startCol + 1);
+        items[2] = Integer.toString(endLine + 1);
+        items[3] = Integer.toString(endCol + 1);
         return "(" + String.join(", ", items) + "): " + message;
     }
 }

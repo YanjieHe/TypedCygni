@@ -52,6 +52,13 @@ public enum Tag {
     Return,
 
     Import,
+    Uses,
+
+    LowerBound,
+    UpperBound,
+
+    Class,
+    Private,
 
     Eof
 }

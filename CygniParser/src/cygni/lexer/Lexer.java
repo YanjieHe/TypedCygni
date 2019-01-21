@@ -39,6 +39,8 @@ public class Lexer {
         operators.put(";", Tag.Semicolon);
         operators.put("=", Tag.Assign);
         operators.put("->", Tag.RightArrow);
+        operators.put("<:", Tag.UpperBound);
+        operators.put(":>", Tag.LowerBound);
     }
 
     public Lexer(String code) {

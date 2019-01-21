@@ -1,5 +1,7 @@
 package cygni.types;
 
+import cygni.Scope;
+
 public class TypeLeaf extends Type {
     public String name;
 
@@ -27,4 +29,13 @@ public class TypeLeaf extends Type {
         return name.hashCode();
     }
 
+    @Override
+    public Type substitute(Scope scope) {
+        Type result = scope.lookUpType(name);
+        if (result == null) {
+            return this;
+        } else {
+            return result;
+        }
+    }
 }

@@ -5,7 +5,6 @@ import cygni.Scope;
 import cygni.exceptions.TypeException;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 public class TypeChecker {
 
@@ -36,6 +35,8 @@ public class TypeChecker {
             return checkDef((Def) node, scope);
         } else if (node instanceof Specialize) {
             return checkSpecialize((Specialize) node, scope);
+        } else if (node instanceof While) {
+            return checkWhile((While) node, scope);
         } else {
             throw new TypeException(node.startLine, node.startCol, node.endLine, node.endCol, "not supported ast node");
         }
@@ -75,7 +76,12 @@ public class TypeChecker {
             Type function = check(call.function, scope);
             ArrayList<Type> arguments = checkArguments(call.arguments, scope);
             if (function instanceof ArrayType && arguments.size() == 1 && arguments.get(0) instanceof IntType) {
-                return Type.Unit;
+                ArrayType arrayType = (ArrayType) function;
+                if (arrayType.types.get(0).equals(value)) {
+                    return Type.Unit;
+                } else {
+                    throw new TypeException(node.startLine, node.startCol, node.endLine, node.endCol, "array element type does not match");
+                }
             } else {
                 throw new TypeException(node.startLine, node.startCol, node.endLine, node.endCol, "cannot assign to array");
             }
@@ -152,10 +158,18 @@ public class TypeChecker {
     private Type checkConstant(Constant node, Scope scope) throws TypeException {
         if (node.value instanceof Integer) {
             return Type.Int;
+        } else if (node.value instanceof Long) {
+            return Type.Long;
+        } else if (node.value instanceof Float) {
+            return Type.Float;
         } else if (node.value instanceof Double) {
             return Type.Double;
+        } else if (node.value instanceof Character) {
+            return Type.Char;
         } else if (node.value instanceof String) {
             return Type.String;
+        } else if (node.value instanceof Boolean) {
+            return Type.Bool;
         } else {
             throw new TypeException(node.startLine, node.startCol, node.endLine, node.endCol, node.value.toString());
         }
@@ -192,6 +206,13 @@ public class TypeChecker {
     }
 
     private Type checkBlock(Block node, Scope scope) throws TypeException {
+        scope = new Scope(scope);
+        for (Node n : node.nodes) {
+            if (n instanceof Def) {
+                Def def = (Def) n;
+                registerDef(def, scope);
+            }
+        }
         Type result = Type.Unit;
         for (Node n : node.nodes) {
             result = check(n, scope);
@@ -222,7 +243,7 @@ public class TypeChecker {
                 return functionType.getReturnType();
             } else {
                 throw new TypeException(
-                        node.startLine, node.startCol, node.endLine, node.endCol, "wrong argument(s) for calling");
+                        node.startLine, node.startCol, node.endLine, node.endCol, "wrong argument type for calling");
             }
         } else if (function instanceof ArrayType) {
             ArrayType arrayType = (ArrayType) function;
@@ -248,7 +269,11 @@ public class TypeChecker {
         for (Parameter p : node.parameters) {
             parameterTypes.add(p.type);
         }
-        scope.putType(node.name, FunctionType.create(parameterTypes, node.returnType));
+        if (node.unknownTypes.size() == 0) {
+            scope.putType(node.name, FunctionType.create(parameterTypes, node.returnType));
+        } else {
+            scope.putType(node.name, FunctionType.create(parameterTypes, node.returnType, node.unknownTypes));
+        }
     }
 
     private Type checkDef(Def node, Scope scope) throws TypeException {
@@ -268,9 +293,15 @@ public class TypeChecker {
 
     private Type checkSpecialize(Specialize node, Scope scope) throws TypeException {
         Type type = check(node.expression, scope);
-        if (type instanceof TypeConstructor) {
-            TypeConstructor typeConstructor = (TypeConstructor) type;
-            return typeConstructor.substitute(node.startLine, node.startCol, node.endLine, node.endCol, node.arguments);
+        if (type instanceof FunctionType) {
+            FunctionType functionType = (FunctionType) type;
+            scope = new Scope(scope);
+            for (int i = 0; i < node.arguments.size(); i++) {
+                scope.putType(functionType.unknownTypes.get(i).name, node.arguments.get(i));
+            }
+            FunctionType result = (FunctionType) functionType.substitute(scope);
+            System.out.println("Function: " + result.toString());
+            return result;
         } else {
             throw new TypeException(node.startLine, node.startCol, node.endLine, node.endCol, "requires generic type");
         }
@@ -298,5 +329,15 @@ public class TypeChecker {
             types.add(check(arguments.get(i), scope));
         }
         return types;
+    }
+
+    private Type checkWhile(While node, Scope scope) throws TypeException {
+        Type condition = check(node.condition, scope);
+        if (condition instanceof BoolType) {
+            check(node.body, scope);
+            return Type.Unit;
+        } else {
+            throw new TypeException(node.startLine, node.startCol, node.endLine, node.endCol, "the type of condition in while statement must be boolean");
+        }
     }
 }

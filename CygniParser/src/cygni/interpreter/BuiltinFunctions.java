@@ -115,25 +115,16 @@ public class BuiltinFunctions {
         return items;
     }
 
-    public static class InitGenericArray implements Callable {
-        public Type element;
+    public static class MakeArray implements Callable {
 
-        public InitGenericArray(Type element) {
-            this.element = element;
+        public MakeArray() {
+
         }
 
 
         @Override
         public Object invoke(Object[] arguments) {
-            if (element instanceof IntType) {
-                return BuiltinFunctions.<Object, Integer>convertArray(arguments);
-            } else if (element instanceof BoolType) {
-                return BuiltinFunctions.<Object, Boolean>convertArray(arguments);
-            } else if (element instanceof DoubleType) {
-                return BuiltinFunctions.<Object, Double>convertArray(arguments);
-            } else {
-                return arguments;
-            }
+            return new Array(new Object[(Integer) arguments[0]]);
         }
     }
 

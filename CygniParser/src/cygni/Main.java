@@ -28,6 +28,7 @@ public class Main {
             String line;
             while ((line = br.readLine()) != null) {
                 builder.append(line);
+                builder.append('\n');
             }
             return builder.toString();
         } catch (IOException ex) {
@@ -53,23 +54,37 @@ public class Main {
         }
     }
 
+    public static <T> ArrayList<T> list(T... items) {
+        ArrayList<T> arrayList = new ArrayList<>();
+        for (T item : items) {
+            arrayList.add(item);
+        }
+        return arrayList;
+    }
+
     public static void main(String[] args) {
         try {
-            String fileName = "C:\\Users\\HeYan\\Documents\\MyCode\\Cygni\\factorial.txt";
+            String fileName = "C:\\Users\\HeYan\\Documents\\MyCode\\Cygni\\test.txt";
             Lexer lexer = new Lexer(readFile(fileName));
             ArrayList<Token> tokens = lexer.readAll();
+            for (Token token : tokens) {
+                out.println(token);
+            }
             Parser parser = new Parser(fileName, tokens);
             Program program = parser.program();
+            out.println(AstJson.toString(program));
             TypeChecker checker = new TypeChecker();
 
             Scope scope = new Scope();
             scope.putType("Array", makeGenericArrayType());
-            scope.putValue("Array", makeGenericArrayType());
-
+            scope.putType("MakeArray", new FunctionType(
+                    list(
+                            new TypeLeaf("Int"),
+                            new ArrayType(new TypeLeaf("T"))), list(new UnknownType("T"))));
+            scope.putValue("MakeArray", new BuiltinFunctions.MakeArray());
             checker.checkProgram(program, scope);
             Interpreter interpreter = new Interpreter();
             Object result = null;
-            out.println(AstJson.toString(program));
             for (Node node : program.nodes) {
                 result = interpreter.eval(node, scope);
             }

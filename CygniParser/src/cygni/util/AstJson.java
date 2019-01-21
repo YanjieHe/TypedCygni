@@ -35,6 +35,10 @@ public class AstJson {
             return visitCall((Call) node);
         } else if (node instanceof InitArray) {
             return visitInitArray((InitArray) node);
+        } else if (node instanceof While) {
+            return visitWhile((While) node);
+        } else if (node instanceof Var) {
+            return visitVar((Var) node);
         } else {
             return "(null: " + node + ")";
         }
@@ -62,6 +66,14 @@ public class AstJson {
                                                   String key2, Object value2, String key3, Object value3) {
         HashMap<String, Object> map = makeMap(key0, value0, key1, value1, key2, value2);
         map.put(key3, value3);
+        return map;
+    }
+
+    public static HashMap<String, Object> makeMap(String key0, Object value0, String key1, Object value1,
+                                                  String key2, Object value2, String key3, Object value3,
+                                                  String key4, Object value4) {
+        HashMap<String, Object> map = makeMap(key0, value0, key1, value1, key2, value2, key3, value3);
+        map.put(key4, value4);
         return map;
     }
 
@@ -112,7 +124,11 @@ public class AstJson {
     }
 
     public static Object visitDef(Def node) {
-        return makeMap("kind", "Def", "name", node.name, "body", visit(node.body));
+        return makeMap("kind", "Def",
+                "name", node.name,
+                "type-parameters", node.unknownTypes,
+                "parameters", node.parameters,
+                "body", visit(node.body));
     }
 
     public static Object visitReturn(Return node) {
@@ -127,5 +143,14 @@ public class AstJson {
     public static Object visitInitArray(InitArray node) {
         return makeMap("kind", "InitArray",
                 "elements", makeList(node.elements));
+    }
+
+    public static Object visitWhile(While node) {
+        return makeMap("kind", "While", "condition", visit(node.condition),
+                "body", visit(node.body));
+    }
+
+    public static Object visitVar(Var node) {
+        return makeMap("kind", "Var", "name", node.name, "value", visit(node.value));
     }
 }

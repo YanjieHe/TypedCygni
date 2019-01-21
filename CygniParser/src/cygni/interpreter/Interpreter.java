@@ -2,8 +2,6 @@ package cygni.interpreter;
 
 import cygni.ast.*;
 import cygni.Scope;
-import cygni.exceptions.TypeException;
-import cygni.types.TypeConstructor;
 
 
 public class Interpreter {
@@ -36,6 +34,8 @@ public class Interpreter {
             return evalAssign((Assign) node, scope);
         } else if (node instanceof Specialize) {
             return evalSpecialize((Specialize) node, scope);
+        } else if (node instanceof While) {
+            return evalWhile((While) node, scope);
         } else {
             return null;
         }
@@ -70,8 +70,12 @@ public class Interpreter {
     }
 
     public Object evalUnary(UnaryOp node, Scope scope) {
-        Object value = eval(node, scope);
-        if (node.kind == UnaryOpKind.Not) {
+        Object value = eval(node.operand, scope);
+        if (node.kind == UnaryOpKind.UnaryPlus) {
+            return ((Integer) value);
+        } else if (node.kind == UnaryOpKind.Negate) {
+            return -((Integer) value);
+        } else if (node.kind == UnaryOpKind.Not) {
             return !((Boolean) value);
         } else {
             return null;
@@ -155,7 +159,8 @@ public class Interpreter {
     public Object evalAssign(Assign node, Scope scope) {
         if (node.left instanceof Name) {
             String name = ((Name) node.left).name;
-            scope.putValue(name, eval(node.value, scope));
+            // TO DO: check whether the variable is defined.
+            scope.putValueIfDefined(name, eval(node.value, scope));
             return null;
         } else if (node.left instanceof Call) {
             Call call = (Call) node.left;
@@ -169,17 +174,13 @@ public class Interpreter {
     }
 
     public Object evalSpecialize(Specialize node, Scope scope) {
-        TypeConstructor typeConstructor = (TypeConstructor) eval(node.expression, scope);
-        try {
-            typeConstructor = typeConstructor.substitute(node.startLine, node.startCol, node.endLine, node.endCol, node.arguments);
-            if (typeConstructor.name.equals("Array")) {
-                return new BuiltinFunctions.InitGenericArray(node.arguments.get(0));
-            } else {
-                return null;
-            }
-        } catch (TypeException ex) {
-            System.out.println("type exception");
-            return null;
+        return eval(node.expression, scope);
+    }
+
+    public Object evalWhile(While node, Scope scope) {
+        while ((Boolean) eval(node.condition, scope)) {
+            eval(node.body, scope);
         }
+        return null;
     }
 }

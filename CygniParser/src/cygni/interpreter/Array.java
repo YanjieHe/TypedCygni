@@ -19,7 +19,11 @@ public class Array implements Callable {
     public String toString() {
         String[] items = new String[objects.length];
         for (int i = 0; i < items.length; i++) {
-            items[i] = objects[i].toString();
+            if (objects[i] == null) {
+                items[i] = "";
+            } else {
+                items[i] = objects[i].toString();
+            }
         }
         return "[" + String.join(", ", items) + "]";
     }

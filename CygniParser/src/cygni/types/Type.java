@@ -1,5 +1,7 @@
 package cygni.types;
 
+import cygni.Scope;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -84,7 +86,7 @@ public abstract class Type {
 //            }
 //            return new UnionType(set);
 //        } else
-            if (name.equals("Function")) {
+        if (name.equals("Function")) {
             return new FunctionType(types);
         } else if (name.equals("Array")) {
             if (types.size() == 1) {
@@ -98,4 +100,5 @@ public abstract class Type {
         }
     }
 
+    public abstract Type substitute(Scope scope);
 }
