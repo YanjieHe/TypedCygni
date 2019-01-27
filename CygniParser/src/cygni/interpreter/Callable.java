@@ -1,5 +1,7 @@
 package cygni.interpreter;
 
+import cygni.exceptions.RuntimeException;
+
 public interface Callable {
-    Object invoke(Object[] arguments);
+    CygObject invoke(CygObject[] arguments) throws RuntimeException;
 }

@@ -1,25 +1,18 @@
 package cygni.ast;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
-import cygni.Scope;
+public class Module extends Node {
+    public String path;
+    public String moduleName;
+    public ArrayList<String> names;
+    public ArrayList<Node> nodes;
 
-public class Module {
-    public HashMap<String, Module> subModules;
-    public HashMap<String, Program> programs;
-    public HashMap<String, Scope> symbolTables;
-
-    public Module() {
-        this.subModules = new HashMap<String, Module>();
-        this.programs = new HashMap<String, Program>();
-        this.symbolTables = new HashMap<String, Scope>();
-    }
-
-    public void addProgram(String name, Program program) {
-        this.programs.put(name, program);
-    }
-
-    public void addModule(String name, Module module) {
-        this.subModules.put(name, module);
+    public Module(int startLine, int startCol, int endLine, int endCol, String path, String moduleName, ArrayList<String> names, ArrayList<Node> nodes) {
+        super(startLine, startCol, endLine, endCol);
+        this.path = path;
+        this.moduleName = moduleName;
+        this.names = names;
+        this.nodes = nodes;
     }
 }

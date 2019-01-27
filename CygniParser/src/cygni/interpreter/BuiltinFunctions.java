@@ -1,106 +1,101 @@
 package cygni.interpreter;
 
-import cygni.types.BoolType;
-import cygni.types.DoubleType;
-import cygni.types.IntType;
-import cygni.types.Type;
-
 public class BuiltinFunctions {
-    public static Object add(Object x, Object y) {
-        if (x instanceof Integer && y instanceof Integer) {
-            return ((Integer) x).intValue() + ((Integer) y).intValue();
-        } else if (x instanceof Double && y instanceof Double) {
-            return ((Double) x).doubleValue() + ((Double) y).doubleValue();
+    public static CygObject add(CygObject x, CygObject y) {
+        if (x instanceof CygInt && y instanceof CygInt) {
+            return new CygInt(((CygInt) x).intValue() + ((CygInt) y).intValue());
+        } else if (x instanceof CygDouble && y instanceof CygDouble) {
+            return new CygDouble(((CygDouble) x).doubleValue() + ((CygDouble) y).doubleValue());
         } else {
             return null;
         }
     }
 
-    public static Object subtract(Object x, Object y) {
-        if (x instanceof Integer && y instanceof Integer) {
-            return ((Integer) x).intValue() - ((Integer) y).intValue();
-        } else if (x instanceof Double && y instanceof Double) {
-            return ((Double) x).doubleValue() - ((Double) y).doubleValue();
+    public static CygObject subtract(CygObject x, CygObject y) {
+        if (x instanceof CygInt && y instanceof CygInt) {
+            return new CygInt(((CygInt) x).intValue() - ((CygInt) y).intValue());
+        } else if (x instanceof CygDouble && y instanceof CygDouble) {
+            return new CygDouble(((CygDouble) x).doubleValue() - ((CygDouble) y).doubleValue());
         } else {
             return null;
         }
     }
 
-    public static Object multiply(Object x, Object y) {
-        if (x instanceof Integer && y instanceof Integer) {
-            return ((Integer) x).intValue() * ((Integer) y).intValue();
-        } else if (x instanceof Double && y instanceof Double) {
-            return ((Double) x).doubleValue() * ((Double) y).doubleValue();
+    public static CygObject multiply(CygObject x, CygObject y) {
+        if (x instanceof CygInt && y instanceof CygInt) {
+            return new CygInt(((CygInt) x).intValue() * ((CygInt) y).intValue());
+        } else if (x instanceof CygDouble && y instanceof CygDouble) {
+            return new CygDouble(((CygDouble) x).doubleValue() * ((CygDouble) y).doubleValue());
         } else {
             return null;
         }
     }
 
-    public static Object divide(Object x, Object y) {
-        if (x instanceof Integer && y instanceof Integer) {
-            return ((Integer) x).intValue() / ((Integer) y).intValue();
-        } else if (x instanceof Double && y instanceof Double) {
-            return ((Double) x).doubleValue() / ((Double) y).doubleValue();
+    public static CygObject divide(CygObject x, CygObject y) {
+        if (x instanceof CygInt && y instanceof CygInt) {
+            return new CygInt(((CygInt) x).intValue() / ((CygInt) y).intValue());
+        } else if (x instanceof CygDouble && y instanceof CygDouble) {
+            return new CygDouble(((CygDouble) x).doubleValue() / ((CygDouble) y).doubleValue());
         } else {
             return null;
         }
     }
 
-    public static Object greaterThan(Object x, Object y) {
-        if (x instanceof Integer && y instanceof Integer) {
-            return ((Integer) x).intValue() > ((Integer) y).intValue();
-        } else if (x instanceof Double && y instanceof Double) {
-            return ((Double) x).doubleValue() > ((Double) y).doubleValue();
+    public static CygObject greaterThan(CygObject x, CygObject y) {
+        if (x instanceof CygInt && y instanceof CygInt) {
+            return new CygBool(((CygInt) x).intValue() > ((CygInt) y).intValue());
+        } else if (x instanceof CygDouble && y instanceof CygDouble) {
+            return new CygBool(((CygDouble) x).doubleValue() > ((CygDouble) y).doubleValue());
         } else {
             return null;
         }
     }
 
-    public static Object lessThan(Object x, Object y) {
-        if (x instanceof Integer && y instanceof Integer) {
-            return ((Integer) x).intValue() < ((Integer) y).intValue();
-        } else if (x instanceof Double && y instanceof Double) {
-            return ((Double) x).doubleValue() < ((Double) y).doubleValue();
+    public static CygObject lessThan(CygObject x, CygObject y) {
+        if (x instanceof CygInt && y instanceof CygInt) {
+            return new CygBool(((CygInt) x).intValue() < ((CygInt) y).intValue());
+        } else if (x instanceof CygDouble && y instanceof CygDouble) {
+            return new CygBool(((CygDouble) x).doubleValue() < ((CygDouble) y).doubleValue());
         } else {
             return null;
         }
     }
 
-    public static Object greaterThanOrEqual(Object x, Object y) {
-        if (x instanceof Integer && y instanceof Integer) {
-            return ((Integer) x).intValue() >= ((Integer) y).intValue();
-        } else if (x instanceof Double && y instanceof Double) {
-            return ((Double) x).doubleValue() >= ((Double) y).doubleValue();
+    public static CygObject greaterThanOrEqual(CygObject x, CygObject y) {
+        if (x instanceof CygInt && y instanceof CygInt) {
+            return new CygBool(((CygInt) x).intValue() >= ((CygInt) y).intValue());
+        } else if (x instanceof CygDouble && y instanceof CygDouble) {
+            return new CygBool(((CygDouble) x).doubleValue() >= ((CygDouble) y).doubleValue());
         } else {
             return null;
         }
     }
 
-    public static Object lessThanOrEqual(Object x, Object y) {
-        if (x instanceof Integer && y instanceof Integer) {
-            return ((Integer) x).intValue() <= ((Integer) y).intValue();
-        } else if (x instanceof Double && y instanceof Double) {
-            return ((Double) x).doubleValue() <= ((Double) y).doubleValue();
+    public static CygObject lessThanOrEqual(CygObject x, CygObject y) {
+        if (x instanceof CygInt && y instanceof CygInt) {
+            return new CygBool(((CygInt) x).intValue() <= ((CygInt) y).intValue());
+        } else if (x instanceof CygDouble && y instanceof CygDouble) {
+            return new CygBool(((CygDouble) x).doubleValue() <= ((CygDouble) y).doubleValue());
         } else {
             return null;
         }
     }
 
-    public static Object equal(Object x, Object y) {
-        if (x instanceof Integer && y instanceof Integer) {
-            return ((Integer) x).intValue() == ((Integer) y).intValue();
-        } else if (x instanceof Double && y instanceof Double) {
-            return ((Double) x).doubleValue() == ((Double) y).doubleValue();
+    public static CygObject equal(CygObject x, CygObject y) {
+        if (x instanceof CygInt && y instanceof CygInt) {
+            return new CygBool(((CygInt) x).intValue() == ((CygInt) y).intValue());
+        } else if (x instanceof CygDouble && y instanceof CygDouble) {
+            return new CygBool(((CygDouble) x).doubleValue() == ((CygDouble) y).doubleValue());
         } else {
             return null;
         }
     }
 
-    public static Object notEqual(Object x, Object y) {
-        if (x instanceof Integer && y instanceof Integer) {
-            return ((Integer) x).intValue() != ((Integer) y).intValue();
-        } else if (x instanceof Double && y instanceof Double) {
-            return ((Double) x).doubleValue() != ((Double) y).doubleValue();
+    public static CygObject notEqual(CygObject x, CygObject y) {
+        if (x instanceof CygInt && y instanceof CygInt) {
+            return new CygBool(((CygInt) x).intValue() != ((CygInt) y).intValue());
+        } else if (x instanceof CygDouble && y instanceof CygDouble) {
+            return new CygBool(((CygDouble) x).doubleValue() != ((CygDouble) y).doubleValue());
         } else {
             return null;
         }
@@ -108,14 +103,14 @@ public class BuiltinFunctions {
 
     public static <T, R> R[] convertArray(T[] input) {
         @SuppressWarnings("unchecked")
-        R[] items = (R[]) new Object[input.length];
+        R[] items = (R[]) new CygObject[input.length];
         for (int i = 0; i < input.length; i++) {
             items[i] = (R) input[i];
         }
         return items;
     }
 
-    public static class MakeArray implements Callable {
+    public static class MakeArray extends CygObject implements Callable {
 
         public MakeArray() {
 
@@ -123,8 +118,8 @@ public class BuiltinFunctions {
 
 
         @Override
-        public Object invoke(Object[] arguments) {
-            return new Array(new Object[(Integer) arguments[0]]);
+        public CygObject invoke(CygObject[] arguments) {
+            return new CygArray(new CygObject[((CygInt) arguments[0]).intValue()]);
         }
     }
 

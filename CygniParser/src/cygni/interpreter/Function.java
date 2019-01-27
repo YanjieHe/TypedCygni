@@ -2,10 +2,11 @@ package cygni.interpreter;
 
 import cygni.ast.*;
 import cygni.Scope;
+import cygni.exceptions.RuntimeException;
 
 import java.util.ArrayList;
 
-public class Function implements Callable {
+public class Function extends CygObject implements Callable {
     public String name;
     public ArrayList<Parameter> parameters;
     public Scope parent;
@@ -18,7 +19,8 @@ public class Function implements Callable {
         this.body = body;
     }
 
-    public Object invoke(Object[] arguments) {
+    @Override
+    public CygObject invoke(CygObject[] arguments) throws RuntimeException {
         Scope newScope = new Scope(parent);
         for (int i = 0; i < parameters.size(); i++) {
             newScope.putValue(parameters.get(i).name, arguments[i]);

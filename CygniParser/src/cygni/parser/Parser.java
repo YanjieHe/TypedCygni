@@ -1,5 +1,6 @@
 package cygni.parser;
 
+import cygni.ast.Module;
 import cygni.lexer.Tag;
 import cygni.lexer.Token;
 import cygni.exceptions.ParserException;
@@ -7,7 +8,6 @@ import cygni.ast.*;
 import cygni.types.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Parser {
     private ArrayList<Token> tokens;
@@ -20,14 +20,27 @@ public class Parser {
         this.path = path;
     }
 
-    public Program program() throws ParserException {
+    public Module module() throws ParserException {
         int startLine = look().line;
         int startCol = look().col;
+        String moduleName;
+        ArrayList<String> names = new ArrayList<>();
+        if (look().tag == Tag.Module) {
+            match(Tag.Module);
+            moduleName = (String) match(Tag.Identifier).value;
+            match(Tag.LeftParenthesis);
+            while (!eof() && look().tag != Tag.RightParenthesis) {
+                names.add((String) match(Tag.Identifier).value);
+            }
+            match(Tag.RightParenthesis);
+        } else {
+            moduleName = "(default)";
+        }
         ArrayList<Node> nodes = new ArrayList<Node>();
         while (!eof()) {
             nodes.add(statement());
         }
-        return new Program(startLine, startCol, look().line, look().col, path, nodes);
+        return new Module(startLine, startCol, look().line, look().col, path, moduleName, names, nodes);
     }
 
     private boolean eof() {
@@ -417,4 +430,34 @@ public class Parser {
         return new While(token.line, token.col, look().line, look().col, condition, body);
     }
 
+    private DefClass defClass() throws ParserException {
+        match(Tag.Class);
+        String name = (String) match(Tag.Identifier).value;
+        ArrayList<UnknownType> unknownTypes;
+        if (look().tag == Tag.LeftBracket) {
+            unknownTypes = parseGenericTypesDef();
+        } else {
+            unknownTypes = new ArrayList<>();
+        }
+        ArrayList<DefClass.Field> fields = new ArrayList<>();
+        ArrayList<DefClass.Method> methods = new ArrayList<>();
+        match(Tag.LeftBrace);
+        while (!eof() && look().tag != Tag.RightBrace) {
+            DefClass.Access access;
+            if (look().tag == Tag.Private) {
+                access = DefClass.Access.Private;
+            } else if (look().tag == Tag.Protected) {
+                access = DefClass.Access.Protected;
+            } else {
+                access = DefClass.Access.Public;
+            }
+
+            if (look().tag == Tag.Var) {
+                match(Tag.Var);
+                String varName = (String) match(Tag.Identifier).value;
+                match(Tag.Colon);
+                Type
+            }
+        }
+    }
 }

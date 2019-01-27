@@ -93,4 +93,23 @@ public class Scope {
             }
         }
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("[");
+        for (String key : table.keySet()) {
+            builder.append("(");
+            builder.append(key);
+            builder.append(" -> ");
+            builder.append(table.get(key).toString());
+            builder.append(")");
+        }
+        builder.append("]");
+        if (parent == null) {
+            return builder.toString();
+        } else {
+            return parent.toString() + builder.toString();
+        }
+    }
 }

@@ -1,9 +1,9 @@
 package tests;
 
+import cygni.ast.Module;
 import cygni.exceptions.ParserException;
 import cygni.lexer.*;
 import cygni.parser.*;
-import cygni.ast.*;
 import cygni.util.*;
 import org.junit.Test;
 
@@ -20,9 +20,9 @@ public class ParserTest {
         ArrayList<Token> tokens = parseCode(code);
         Parser parser = new Parser(code, tokens);
         try {
-            Program program = parser.program();
+            Module module = parser.module();
             assertEquals("{\"kind\": \"Add\", \"left\": {\"kind\": \"Name\", \"name\": \"a\"}, \"right\": {\"kind\": \"Multiply\", \"left\": {\"kind\": \"Name\", \"name\": \"b\"}, \"right\": {\"kind\": \"Constant\", \"value\": \"3.2\"}}}",
-                    AstJson.visit(program.nodes.get(0)));
+                    AstJson.visit(module.nodes.get(0)));
         } catch (ParserException ex) {
             out.println(ex);
             assertTrue(ex.message, false);
@@ -35,9 +35,9 @@ public class ParserTest {
         ArrayList<Token> tokens = parseCode("if a == 0 { b = 1 } else { b = 2 }");
         Parser parser = new Parser(code, tokens);
         try {
-            Program program = parser.program();
+            Module module = parser.module();
             assertEquals("{\"kind\": \"IfElse\", \"condition\": {\"kind\": \"Equal\", \"left\": {\"kind\": \"Name\", \"name\": \"a\"}, \"right\": {\"kind\": \"Constant\", \"value\": \"0\"}}, \"ifTrue\": {\"kind\": \"block\", \"nodes\": [{\"kind\": \"Assign\", \"left\": {\"kind\": \"Name\", \"name\": \"b\"}, \"value\": {\"kind\": \"Constant\", \"value\": \"1\"}}]}, \"ifFalse\": {\"kind\": \"block\", \"nodes\": [{\"kind\": \"Assign\", \"left\": {\"kind\": \"Name\", \"name\": \"b\"}, \"value\": {\"kind\": \"Constant\", \"value\": \"2\"}}]}}",
-                    AstJson.visit(program.nodes.get(0)));
+                    AstJson.visit(module.nodes.get(0)));
         } catch (ParserException ex) {
             out.println("(" + ex.line + ", " + ex.col + "): " + ex.message);
             assertTrue(ex.message, false);
@@ -50,8 +50,8 @@ public class ParserTest {
         ArrayList<Token> tokens = parseCode(code);
         Parser parser = new Parser(code, tokens);
         try {
-            Program program = parser.program();
-            out.println(AstJson.visit(program.nodes.get(0)));
+            Module module = parser.module();
+            out.println(AstJson.visit(module.nodes.get(0)));
         } catch (ParserException ex) {
             out.println("(" + ex.line + ", " + ex.col + "): " + ex.message);
             assertTrue(ex.message, false);

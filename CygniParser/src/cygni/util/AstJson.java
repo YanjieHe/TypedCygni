@@ -1,13 +1,14 @@
 package cygni.util;
 
 import cygni.ast.*;
+import cygni.ast.Module;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class AstJson {
-    public static String toString(Program program) {
-        return JsonUtil.toString(makeList(program.nodes));
+    public static String toString(Module module) {
+        return JsonUtil.toString(makeList(module.nodes));
     }
 
     public static Object visit(Node node) {

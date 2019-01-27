@@ -11,6 +11,7 @@ public class Def extends Node {
     public Type returnType;
     public Node body;
     public ArrayList<UnknownType> unknownTypes;
+    public ArrayList<Type> exits;
 
     public Def(int startLine, int startCol, int endLine, int endCol,
                String name, ArrayList<Parameter> parameters, Type returnType, Node body, ArrayList<UnknownType> unknownTypes) {
@@ -20,6 +21,10 @@ public class Def extends Node {
         this.returnType = returnType;
         this.body = body;
         this.unknownTypes = unknownTypes;
+        this.exits = new ArrayList<>();
     }
 
+    public void addExit(Type exit) {
+        this.exits.add(exit);
+    }
 }

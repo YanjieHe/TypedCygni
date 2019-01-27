@@ -1,6 +1,6 @@
 package cygni;
 
-import cygni.ast.Program;
+import cygni.ast.Module;
 import cygni.exceptions.LexicalException;
 import cygni.exceptions.ParserException;
 import cygni.exceptions.TypeException;
@@ -10,7 +10,6 @@ import cygni.parser.Parser;
 import cygni.ast.*;
 import cygni.types.*;
 import cygni.util.AstJson;
-import cygni.util.JsonUtil;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -71,8 +70,8 @@ public class Main {
                 out.println(token);
             }
             Parser parser = new Parser(fileName, tokens);
-            Program program = parser.program();
-            out.println(AstJson.toString(program));
+            Module module = parser.module();
+            out.println(AstJson.toString(module));
             TypeChecker checker = new TypeChecker();
 
             Scope scope = new Scope();
@@ -82,10 +81,10 @@ public class Main {
                             new TypeLeaf("Int"),
                             new ArrayType(new TypeLeaf("T"))), list(new UnknownType("T"))));
             scope.putValue("MakeArray", new BuiltinFunctions.MakeArray());
-            checker.checkProgram(program, scope);
+            checker.checkProgram(module, scope);
             Interpreter interpreter = new Interpreter();
             Object result = null;
-            for (Node node : program.nodes) {
+            for (Node node : module.nodes) {
                 result = interpreter.eval(node, scope);
             }
             out.println(objectToString(result));

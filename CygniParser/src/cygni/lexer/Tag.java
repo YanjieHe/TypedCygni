@@ -59,6 +59,7 @@ public enum Tag {
 
     Class,
     Private,
-
+    Protected,
+    Module,
     Eof
 }

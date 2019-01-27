@@ -1,12 +1,11 @@
 package tests;
 
+import cygni.ast.Module;
 import cygni.exceptions.ParserException;
 import cygni.exceptions.TypeException;
 import cygni.lexer.*;
 import cygni.parser.*;
-import cygni.ast.*;
 import cygni.types.TypeChecker;
-import cygni.util.*;
 import cygni.Scope;
 import org.junit.Test;
 
@@ -24,11 +23,11 @@ public class TypeCheckerTest {
         ArrayList<Token> tokens = parseCode(code);
         Parser parser = new Parser(code, tokens);
         try {
-            Program program = parser.program();
+            Module module = parser.module();
             TypeChecker typeChecker = new TypeChecker();
             Scope scope = new Scope();
             try {
-                typeChecker.check(program.nodes.get(0), scope);
+                typeChecker.check(module.nodes.get(0), scope);
             } catch (TypeException ex) {
                 out.println("(" + ex.startLine + ", " + ex.startCol + ", "
                         + ex.endLine + ", " + ex.endCol + "): " + ex.message);

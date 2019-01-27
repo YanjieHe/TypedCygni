@@ -2,10 +2,11 @@ package cygni.interpreter;
 
 import cygni.ast.*;
 import cygni.Scope;
+import cygni.exceptions.RuntimeException;
 
 
 public class Interpreter {
-    public Object eval(Node node, Scope scope) {
+    public CygObject eval(Node node, Scope scope) throws RuntimeException {
         if (node instanceof BinaryOp) {
             return evalBinary((BinaryOp) node, scope);
         } else if (node instanceof UnaryOp) {
@@ -37,13 +38,13 @@ public class Interpreter {
         } else if (node instanceof While) {
             return evalWhile((While) node, scope);
         } else {
-            return null;
+            throw new RuntimeException("unsupported node");
         }
     }
 
-    public Object evalBinary(BinaryOp node, Scope scope) {
-        Object lvalue = eval(node.left, scope);
-        Object rvalue = eval(node.right, scope);
+    public CygObject evalBinary(BinaryOp node, Scope scope) throws RuntimeException {
+        CygObject lvalue = eval(node.left, scope);
+        CygObject rvalue = eval(node.right, scope);
         if (node.kind == BinaryOpKind.Add) {
             return BuiltinFunctions.add(lvalue, rvalue);
         } else if (node.kind == BinaryOpKind.Subtract) {
@@ -65,122 +66,138 @@ public class Interpreter {
         } else if (node.kind == BinaryOpKind.NotEqual) {
             return BuiltinFunctions.notEqual(lvalue, rvalue);
         } else {
-            return null;
+            throw new RuntimeException("unsupported binary operation");
         }
     }
 
-    public Object evalUnary(UnaryOp node, Scope scope) {
-        Object value = eval(node.operand, scope);
+    public CygObject evalUnary(UnaryOp node, Scope scope) throws RuntimeException {
+        CygObject value = eval(node.operand, scope);
         if (node.kind == UnaryOpKind.UnaryPlus) {
-            return ((Integer) value);
+            return value;
         } else if (node.kind == UnaryOpKind.Negate) {
-            return -((Integer) value);
+            if (value instanceof CygInt) {
+                return new CygInt(-((CygInt) value).intValue());
+            } else {
+                return new CygDouble(-((CygDouble) value).doubleValue());
+            }
         } else if (node.kind == UnaryOpKind.Not) {
-            return !((Boolean) value);
+            return new CygBool(!((CygBool) value).booleanValue());
         } else {
-            return null;
+            throw new RuntimeException("unsupported unary operation");
         }
     }
 
-    public Object evalBlock(Block node, Scope scope) {
-        Object result = null;
+    public CygObject evalBlock(Block node, Scope scope) throws RuntimeException {
+        CygObject result = CygObject.Unit;
         for (Node n : node.nodes) {
             result = eval(n, scope);
         }
         return result;
     }
 
-    public Object evalCall(Call node, Scope scope) {
+    public CygObject evalCall(Call node, Scope scope) throws RuntimeException {
         Callable function = (Callable) eval(node.function, scope);
-        Object[] arguments = new Object[node.arguments.size()];
+        CygObject[] arguments = new CygObject[node.arguments.size()];
         for (int i = 0; i < node.arguments.size(); i++) {
             arguments[i] = eval(node.arguments.get(i), scope);
         }
         return function.invoke(arguments);
     }
 
-    public Object evalConstant(Constant node, Scope scope) {
-        return node.value;
-    }
-
-    public Object evalDef(Def node, Scope scope) {
-        Function function = new Function(node.name, node.parameters, scope, node.body);
-        scope.putValue(node.name, function);
-        return null;
-    }
-
-    public Object evalIfThen(IfThen node, Scope scope) {
-        Object condition = eval(node.condition, scope);
-        if (condition instanceof Boolean) {
-            if (((Boolean) condition)) {
-                return eval(node.ifTrue, scope);
-            } else {
-                return null;
-            }
+    public CygObject evalConstant(Constant node, Scope scope) throws RuntimeException {
+        if (node.value instanceof Integer) {
+            return new CygInt(((Integer) node.value).intValue());
+        } else if (node.value instanceof Double) {
+            return new CygDouble(((Double) node.value).doubleValue());
+        } else if (node.value instanceof Boolean) {
+            return new CygBool(((Boolean) node.value).booleanValue());
         } else {
-            return null;
+            throw new RuntimeException("not supported constant type");
         }
     }
 
-    public Object evalIfElse(IfElse node, Scope scope) {
-        Object condition = eval(node.condition, scope);
-        if (condition instanceof Boolean) {
-            if (((Boolean) condition)) {
+    public CygObject evalDef(Def node, Scope scope) throws RuntimeException {
+        Function function = new Function(node.name, node.parameters, scope, node.body);
+        scope.putValue(node.name, function);
+        return CygObject.Unit;
+    }
+
+    public CygObject evalIfThen(IfThen node, Scope scope) throws RuntimeException {
+        CygObject condition = eval(node.condition, scope);
+        if (condition instanceof CygBool) {
+            if (((CygBool) condition).booleanValue()) {
+                return eval(node.ifTrue, scope);
+            } else {
+                return CygObject.Unit;
+            }
+        } else {
+            return CygObject.Unit;
+        }
+    }
+
+    public CygObject evalIfElse(IfElse node, Scope scope) throws RuntimeException {
+        CygObject condition = eval(node.condition, scope);
+        if (condition instanceof CygBool) {
+            if (((CygBool) condition).booleanValue()) {
                 return eval(node.ifTrue, scope);
             } else {
                 return eval(node.ifFalse, scope);
             }
         } else {
-            return null;
+            return CygObject.Unit;
         }
     }
 
-    public Object evalName(Name node, Scope scope) {
-        return scope.lookUpValue(node.name);
+    public CygObject evalName(Name node, Scope scope) {
+        return (CygObject) scope.lookUpValue(node.name);
     }
 
-    public Object evalReturn(Return node, Scope scope) {
+    public CygObject evalReturn(Return node, Scope scope) throws RuntimeException {
         return eval(node.value, scope);
     }
 
-    public Object evalVar(Var node, Scope scope) {
+    public CygObject evalVar(Var node, Scope scope) throws RuntimeException {
         scope.putValue(node.name, eval(node.value, scope));
-        return null;
+        return CygObject.Unit;
     }
 
-    public Object evalInitArray(InitArray node, Scope scope) {
-        Object[] objects = new Object[node.elements.size()];
+    public CygObject evalInitArray(InitArray node, Scope scope) throws RuntimeException {
+        CygObject[] objects = new CygObject[node.elements.size()];
         for (int i = 0; i < objects.length; i++) {
             objects[i] = eval(node.elements.get(i), scope);
         }
-        return new Array(objects);
+        return new CygArray(objects);
     }
 
-    public Object evalAssign(Assign node, Scope scope) {
+    public CygObject evalAssign(Assign node, Scope scope) throws RuntimeException {
         if (node.left instanceof Name) {
             String name = ((Name) node.left).name;
+            CygObject value = eval(node.value, scope);
             // TO DO: check whether the variable is defined.
-            scope.putValueIfDefined(name, eval(node.value, scope));
-            return null;
+            if (scope.putValueIfDefined(name, value)) {
+                return CygObject.Unit;
+            } else {
+                throw new RuntimeException("'" + name + "' is not defined");
+            }
         } else if (node.left instanceof Call) {
             Call call = (Call) node.left;
-            Array array = (Array) eval(call.function, scope);
-            Integer index = (Integer) eval(call.arguments.get(0), scope);
-            array.write(index, eval(node.value, scope));
-            return null;
+            CygArray array = (CygArray) eval(call.function, scope);
+            CygInt index = (CygInt) eval(call.arguments.get(0), scope);
+            array.write(index.intValue(), eval(node.value, scope));
+            return CygObject.Unit;
         } else {
-            return null;
+            return CygObject.Unit;
         }
     }
 
-    public Object evalSpecialize(Specialize node, Scope scope) {
+    public CygObject evalSpecialize(Specialize node, Scope scope) throws RuntimeException {
         return eval(node.expression, scope);
     }
 
-    public Object evalWhile(While node, Scope scope) {
-        while ((Boolean) eval(node.condition, scope)) {
+    public CygObject evalWhile(While node, Scope scope) throws RuntimeException {
+        while (((CygBool) eval(node.condition, scope)).booleanValue()) {
             eval(node.body, scope);
         }
-        return null;
+        return CygObject.Unit;
     }
 }

@@ -22,6 +22,8 @@ public class Token {
         keywords.put("while", Tag.While);
         keywords.put("class", Tag.Class);
         keywords.put("private", Tag.Private);
+        keywords.put("module", Tag.Module);
+        keywords.put("protected", Tag.Protected);
     }
 
     public Token(int line, int col, Tag tag, Object value) {

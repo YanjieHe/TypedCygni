@@ -2,6 +2,7 @@ package cygni.types;
 
 import cygni.ast.*;
 import cygni.Scope;
+import cygni.ast.Module;
 import cygni.exceptions.TypeException;
 
 import java.util.ArrayList;
@@ -42,14 +43,14 @@ public class TypeChecker {
         }
     }
 
-    public Type checkProgram(Program program, Scope scope) throws TypeException {
-        for (Node node : program.nodes) {
+    public Type checkProgram(Module module, Scope scope) throws TypeException {
+        for (Node node : module.nodes) {
             if (node instanceof Def) {
                 Def def = (Def) node;
                 registerDef(def, scope);
             }
         }
-        for (Node node : program.nodes) {
+        for (Node node : module.nodes) {
             check(node, scope);
         }
         return Type.Unit;
@@ -228,6 +229,8 @@ public class TypeChecker {
 
     private Type checkReturn(Return node, Scope scope) throws TypeException {
         Type value = check(node.value, scope);
+        Def def = (Def) scope.lookUpValue("*SELF_FUNCTION*");
+        def.addExit(value);
         return value;
     }
 
@@ -281,13 +284,17 @@ public class TypeChecker {
         for (Parameter p : node.parameters) {
             newScope.putType(p.name, p.type);
         }
+        newScope.putValue("*SELF_FUNCTION*", node);
         Type bodyReturnType = check(node.body, newScope);
         if (node.returnType.equals(Type.Unit)) {
             return Type.Unit;
-        } else if (bodyReturnType.equals(node.returnType)) {
-            return Type.Unit;
         } else {
-            throw new TypeException(node.startLine, node.startCol, node.endLine, node.endCol, "return type");
+            for (Type exit : node.exits) {
+                if (!exit.equals(node.returnType)) {
+                    throw new TypeException(node.startLine, node.startCol, node.endLine, node.endCol, "return type");
+                }
+            }
+            return Type.Unit;
         }
     }
 

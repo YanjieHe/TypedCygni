@@ -1,17 +1,18 @@
 package cygni.interpreter;
 
-public class Array implements Callable {
-    public Object[] objects;
+public class CygArray extends CygObject implements Callable {
+    public CygObject[] objects;
 
-    public Array(Object[] objects) {
+    public CygArray(CygObject[] objects) {
         this.objects = objects;
     }
 
-    public Object invoke(Object[] arguments) {
-        return objects[(Integer) arguments[0]];
+    @Override
+    public CygObject invoke(CygObject[] arguments) throws RuntimeException {
+        return objects[((CygInt) arguments[0]).intValue()];
     }
 
-    public void write(int index, Object value) {
+    public void write(int index, CygObject value) {
         objects[index] = value;
     }
 
