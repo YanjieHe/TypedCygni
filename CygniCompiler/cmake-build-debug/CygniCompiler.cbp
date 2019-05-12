@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="CygniCompiler"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="msvc8"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\cmake-build-debug\Makefile VERBOSE=1 all"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="CygniCompiler">
+				<Option output="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug/CygniCompiler.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="msvc8"/>
+				<Compiler>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\ATLMFC\include"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\NETFXSDK\4.6.1\include\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17763.0\ucrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17763.0\shared"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17763.0\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17763.0\winrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17763.0\cppwinrt"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\cmake-build-debug\Makefile VERBOSE=1 CygniCompiler"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="CygniCompiler/fast">
+				<Option output="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug/CygniCompiler.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="msvc8"/>
+				<Compiler>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\ATLMFC\include"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\NETFXSDK\4.6.1\include\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17763.0\ucrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17763.0\shared"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17763.0\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17763.0\winrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17763.0\cppwinrt"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\cmake-build-debug\Makefile VERBOSE=1 CygniCompiler/fast"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\cmake-build-debug\Makefile VERBOSE=1 edit_cache"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\cmake-build-debug\Makefile VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Any.hpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Ast.cpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Ast.hpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Compiler.cpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Compiler.hpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Encoding.cpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Encoding.hpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Endian.hpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/File.cpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/File.hpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Lexer.cpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Lexer.hpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Optional.hpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Parser.cpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Parser.hpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Predef.cpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Predef.hpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Scope.cpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Scope.hpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/String.hpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Token.cpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Token.hpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Type.cpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Type.hpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/TypeChecker.cpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/TypeChecker.hpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/main.cpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/JSON.cpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/JSON.hpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestEndian.cpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestEndian.hpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestLexer.cpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestLexer.hpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestParser.cpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestParser.hpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestString.cpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestString.hpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestTypeChecker.cpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestTypeChecker.hpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

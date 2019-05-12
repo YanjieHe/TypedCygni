@@ -1,0 +1,121 @@
+#ifndef PARSER_HPP
+#define PARSER_HPP
+
+#include <vector>
+#include "Token.hpp"
+#include "Encoding.hpp"
+#include "Ast.hpp"
+#include "Type.hpp"
+#include <iostream>
+#include "Predef.hpp"
+
+using std::cout;
+using std::endl;
+
+class ParserException : std::exception
+{
+public:
+    int line;
+    int column;
+    String message;
+
+    ParserException(int line, int column, String message);
+};
+
+class Parser
+{
+private:
+    Vector<Token> tokens;
+    String path;
+    int offset;
+public:
+    Parser(String path, Vector<Token> tokens);
+
+    Program ParseProgram();
+
+    bool IsEof()
+    {
+        return Look().tag == Tag::Eof;
+    }
+
+    Token &Look()
+    {
+        return tokens[offset];
+    }
+
+    void Move()
+    {
+        offset++;
+    }
+
+    Token Match(Tag tag)
+    {
+        if (tag == Look().tag)
+        {
+            Token t = Look();
+            Move();
+            return t;
+        }
+        else
+        {
+            String message =
+                    String("expecting '") + TagToString(tag) + String("', got '") + TagToString(Look().tag) + "'";
+            throw ParserException(Look().line, Look().column, message);
+        }
+    }
+
+    inline Position GetPos(Token &token)
+    {
+        return {token.line, token.column, Look().line, Look().column};
+    }
+
+
+    Ptr<Ast> Statement();
+
+    Ptr<Ast> ParseAssign();
+
+    Ptr<Ast> ParseOr();
+
+    Ptr<Ast> ParseAnd();
+
+    Ptr<Ast> ParseEquality();
+
+    Ptr<Ast> ParseRelation();
+
+    Ptr<Ast> ParseExpr();
+
+    Ptr<Ast> ParseTerm();
+
+    Ptr<Ast> ParseUnary();
+
+    Ptr<Ast> ParsePostfix();
+
+    Ptr<Ast> ParseFactor();
+
+    Ptr<Ast> ParseBlock();
+
+    Ptr<Ast> IfStatement();
+
+    Ptr<Var> ParseVar();
+
+    Ptr<Var> ParseVarDeclaration();
+
+    Ptr<Def> ParseDef();
+
+    Parameter ParseParameter();
+
+    Ptr<Type> ParseType();
+
+    Ptr<Ast> ParseReturn();
+
+    Vector<Ptr<Type>> ParseTypeArguments();
+
+    Ptr<While> ParseWhile();
+
+    Ptr<DefClass> ParseDefClass();
+
+    Ptr<DefModule> ParseDefModule();
+};
+
+
+#endif // PARSER_HPP

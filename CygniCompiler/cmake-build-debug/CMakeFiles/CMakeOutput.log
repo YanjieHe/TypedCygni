@@ -1,0 +1,549 @@
+The system is: Windows - 10.0.17134 - AMD64
+Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+Compiler: C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.16.27023/bin/Hostx86/x86/cl.exe 
+Build flags: 
+Id flags:  
+
+The output was:
+0
+Microsoft (R) C/C++ Optimizing Compiler Version 19.16.27024.1 for x86
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+CMakeCCompilerId.c
+Microsoft (R) Incremental Linker Version 14.16.27024.1
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+/out:CMakeCCompilerId.exe 
+CMakeCCompilerId.obj 
+
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CMakeCCompilerId.exe"
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CMakeCCompilerId.obj"
+
+The C compiler identification is MSVC, found in "C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug/CMakeFiles/3.13.1/CompilerIdC/CMakeCCompilerId.exe"
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+Compiler: C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.16.27023/bin/Hostx86/x86/cl.exe 
+Build flags: 
+Id flags:  
+
+The output was:
+0
+Microsoft (R) C/C++ Optimizing Compiler Version 19.16.27024.1 for x86
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+CMakeCXXCompilerId.cpp
+Microsoft (R) Incremental Linker Version 14.16.27024.1
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+/out:CMakeCXXCompilerId.exe 
+CMakeCXXCompilerId.obj 
+
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CMakeCXXCompilerId.exe"
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CMakeCXXCompilerId.obj"
+
+The CXX compiler identification is MSVC, found in "C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug/CMakeFiles/3.13.1/CompilerIdCXX/CMakeCXXCompilerId.exe"
+
+Determining if the C compiler works passed with the following output:
+Change Dir: C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"nmake" "/nologo" "cmTC_85941\fast"
+	"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\bin\HostX86\x86\nmake.exe" -f CMakeFiles\cmTC_85941.dir\build.make /nologo -L                  CMakeFiles\cmTC_85941.dir\build
+Building C object CMakeFiles/cmTC_85941.dir/testCCompiler.c.obj
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe @C:\Users\HeYan\AppData\Local\Temp\nmF770.tmp
+testCCompiler.c
+Linking C executable cmTC_85941.exe
+	"C:\Program Files\JetBrains\CLion 2018.3.1\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_85941.dir --manifests  -- C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\link.exe /nologo @CMakeFiles\cmTC_85941.dir\objects1.rsp @C:\Users\HeYan\AppData\Local\Temp\nmF994.tmp
+
+
+Detecting C compiler ABI info compiled with the following output:
+Change Dir: C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"nmake" "/nologo" "cmTC_bcb24\fast"
+	"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\bin\HostX86\x86\nmake.exe" -f CMakeFiles\cmTC_bcb24.dir\build.make /nologo -L                  CMakeFiles\cmTC_bcb24.dir\build
+Building C object CMakeFiles/cmTC_bcb24.dir/CMakeCCompilerABI.c.obj
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe @C:\Users\HeYan\AppData\Local\Temp\nm1B.tmp
+CMakeCCompilerABI.c
+Linking C executable cmTC_bcb24.exe
+	"C:\Program Files\JetBrains\CLion 2018.3.1\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_bcb24.dir --manifests  -- C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\link.exe /nologo @CMakeFiles\cmTC_bcb24.dir\objects1.rsp @C:\Users\HeYan\AppData\Local\Temp\nm154.tmp
+
+
+
+
+Detecting C [] compiler features compiled with the following output:
+Change Dir: C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"nmake" "/nologo" "cmTC_2600d\fast"
+	"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\bin\HostX86\x86\nmake.exe" -f CMakeFiles\cmTC_2600d.dir\build.make /nologo -L                  CMakeFiles\cmTC_2600d.dir\build
+Building C object CMakeFiles/cmTC_2600d.dir/feature_tests.c.obj
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe @C:\Users\HeYan\AppData\Local\Temp\nm8E5.tmp
+feature_tests.c
+Linking C executable cmTC_2600d.exe
+	"C:\Program Files\JetBrains\CLion 2018.3.1\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_2600d.dir --manifests  -- C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\link.exe /nologo @CMakeFiles\cmTC_2600d.dir\objects1.rsp @C:\Users\HeYan\AppData\Local\Temp\nm943.tmp
+
+
+    Feature record: C_FEATURE:1c_function_prototypes
+    Feature record: C_FEATURE:1c_variadic_macros
+Determining if the CXX compiler works passed with the following output:
+Change Dir: C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"nmake" "/nologo" "cmTC_e27ce\fast"
+	"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\bin\HostX86\x86\nmake.exe" -f CMakeFiles\cmTC_e27ce.dir\build.make /nologo -L                  CMakeFiles\cmTC_e27ce.dir\build
+Building CXX object CMakeFiles/cmTC_e27ce.dir/testCXXCompiler.cxx.obj
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe @C:\Users\HeYan\AppData\Local\Temp\nmEC1.tmp
+testCXXCompiler.cxx
+Linking CXX executable cmTC_e27ce.exe
+	"C:\Program Files\JetBrains\CLion 2018.3.1\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_e27ce.dir --manifests  -- C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\link.exe /nologo @CMakeFiles\cmTC_e27ce.dir\objects1.rsp @C:\Users\HeYan\AppData\Local\Temp\nmF2F.tmp
+
+
+Detecting CXX compiler ABI info compiled with the following output:
+Change Dir: C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"nmake" "/nologo" "cmTC_e6925\fast"
+	"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\bin\HostX86\x86\nmake.exe" -f CMakeFiles\cmTC_e6925.dir\build.make /nologo -L                  CMakeFiles\cmTC_e6925.dir\build
+Building CXX object CMakeFiles/cmTC_e6925.dir/CMakeCXXCompilerABI.cpp.obj
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe @C:\Users\HeYan\AppData\Local\Temp\nm1662.tmp
+CMakeCXXCompilerABI.cpp
+Linking CXX executable cmTC_e6925.exe
+	"C:\Program Files\JetBrains\CLion 2018.3.1\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_e6925.dir --manifests  -- C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\link.exe /nologo @CMakeFiles\cmTC_e6925.dir\objects1.rsp @C:\Users\HeYan\AppData\Local\Temp\nm16E0.tmp
+
+
+
+
+Detecting CXX [] compiler features compiled with the following output:
+Change Dir: C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"nmake" "/nologo" "cmTC_f4028\fast"
+	"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\bin\HostX86\x86\nmake.exe" -f CMakeFiles\cmTC_f4028.dir\build.make /nologo -L                  CMakeFiles\cmTC_f4028.dir\build
+Building CXX object CMakeFiles/cmTC_f4028.dir/feature_tests.cxx.obj
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe @C:\Users\HeYan\AppData\Local\Temp\nm1CAB.tmp
+feature_tests.cxx
+Linking CXX executable cmTC_f4028.exe
+	"C:\Program Files\JetBrains\CLion 2018.3.1\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_f4028.dir --manifests  -- C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\link.exe /nologo @CMakeFiles\cmTC_f4028.dir\objects1.rsp @C:\Users\HeYan\AppData\Local\Temp\nm1D1A.tmp
+
+
+    Feature record: CXX_FEATURE:1cxx_aggregate_default_initializers
+    Feature record: CXX_FEATURE:1cxx_alias_templates
+    Feature record: CXX_FEATURE:1cxx_alignas
+    Feature record: CXX_FEATURE:1cxx_alignof
+    Feature record: CXX_FEATURE:1cxx_attributes
+    Feature record: CXX_FEATURE:1cxx_attribute_deprecated
+    Feature record: CXX_FEATURE:1cxx_auto_type
+    Feature record: CXX_FEATURE:1cxx_binary_literals
+    Feature record: CXX_FEATURE:1cxx_constexpr
+    Feature record: CXX_FEATURE:1cxx_contextual_conversions
+    Feature record: CXX_FEATURE:1cxx_decltype
+    Feature record: CXX_FEATURE:1cxx_decltype_auto
+    Feature record: CXX_FEATURE:1cxx_decltype_incomplete_return_types
+    Feature record: CXX_FEATURE:1cxx_default_function_template_args
+    Feature record: CXX_FEATURE:1cxx_defaulted_functions
+    Feature record: CXX_FEATURE:1cxx_defaulted_move_initializers
+    Feature record: CXX_FEATURE:1cxx_delegating_constructors
+    Feature record: CXX_FEATURE:1cxx_deleted_functions
+    Feature record: CXX_FEATURE:1cxx_digit_separators
+    Feature record: CXX_FEATURE:1cxx_enum_forward_declarations
+    Feature record: CXX_FEATURE:1cxx_explicit_conversions
+    Feature record: CXX_FEATURE:1cxx_extended_friend_declarations
+    Feature record: CXX_FEATURE:1cxx_extern_templates
+    Feature record: CXX_FEATURE:1cxx_final
+    Feature record: CXX_FEATURE:1cxx_func_identifier
+    Feature record: CXX_FEATURE:1cxx_generalized_initializers
+    Feature record: CXX_FEATURE:1cxx_generic_lambdas
+    Feature record: CXX_FEATURE:1cxx_inheriting_constructors
+    Feature record: CXX_FEATURE:1cxx_inline_namespaces
+    Feature record: CXX_FEATURE:1cxx_lambdas
+    Feature record: CXX_FEATURE:1cxx_lambda_init_captures
+    Feature record: CXX_FEATURE:1cxx_local_type_template_args
+    Feature record: CXX_FEATURE:1cxx_long_long_type
+    Feature record: CXX_FEATURE:1cxx_noexcept
+    Feature record: CXX_FEATURE:1cxx_nonstatic_member_init
+    Feature record: CXX_FEATURE:1cxx_nullptr
+    Feature record: CXX_FEATURE:1cxx_override
+    Feature record: CXX_FEATURE:1cxx_range_for
+    Feature record: CXX_FEATURE:1cxx_raw_string_literals
+    Feature record: CXX_FEATURE:1cxx_reference_qualified_functions
+    Feature record: CXX_FEATURE:1cxx_return_type_deduction
+    Feature record: CXX_FEATURE:1cxx_right_angle_brackets
+    Feature record: CXX_FEATURE:1cxx_rvalue_references
+    Feature record: CXX_FEATURE:1cxx_sizeof_member
+    Feature record: CXX_FEATURE:1cxx_static_assert
+    Feature record: CXX_FEATURE:1cxx_strong_enums
+    Feature record: CXX_FEATURE:1cxx_template_template_parameters
+    Feature record: CXX_FEATURE:1cxx_thread_local
+    Feature record: CXX_FEATURE:1cxx_trailing_return_types
+    Feature record: CXX_FEATURE:1cxx_unicode_literals
+    Feature record: CXX_FEATURE:1cxx_uniform_initialization
+    Feature record: CXX_FEATURE:1cxx_unrestricted_unions
+    Feature record: CXX_FEATURE:1cxx_user_literals
+    Feature record: CXX_FEATURE:1cxx_variable_templates
+    Feature record: CXX_FEATURE:1cxx_variadic_macros
+    Feature record: CXX_FEATURE:1cxx_variadic_templates
+The system is: Windows - 10.0.17134 - AMD64
+Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+Compiler: C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.16.27023/bin/Hostx86/x86/cl.exe 
+Build flags: /DWIN32;/D_WINDOWS;/W3
+Id flags:  
+
+The output was:
+0
+Microsoft (R) C/C++ Optimizing Compiler Version 19.16.27024.1 for x86
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+CMakeCCompilerId.c
+Microsoft (R) Incremental Linker Version 14.16.27024.1
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+/out:CMakeCCompilerId.exe 
+CMakeCCompilerId.obj 
+
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CMakeCCompilerId.exe"
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CMakeCCompilerId.obj"
+
+The C compiler identification is MSVC, found in "C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug/CMakeFiles/3.13.2/CompilerIdC/CMakeCCompilerId.exe"
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+Compiler: C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.16.27023/bin/Hostx86/x86/cl.exe 
+Build flags: /DWIN32;/D_WINDOWS;/W3;/GR;/EHsc
+Id flags:  
+
+The output was:
+0
+Microsoft (R) C/C++ Optimizing Compiler Version 19.16.27024.1 for x86
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+CMakeCXXCompilerId.cpp
+Microsoft (R) Incremental Linker Version 14.16.27024.1
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+/out:CMakeCXXCompilerId.exe 
+CMakeCXXCompilerId.obj 
+
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CMakeCXXCompilerId.exe"
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CMakeCXXCompilerId.obj"
+
+The CXX compiler identification is MSVC, found in "C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug/CMakeFiles/3.13.2/CompilerIdCXX/CMakeCXXCompilerId.exe"
+
+Determining if the C compiler works passed with the following output:
+Change Dir: C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"nmake" "/nologo" "cmTC_aa033\fast"
+	"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\bin\HostX86\x86\nmake.exe" -f CMakeFiles\cmTC_aa033.dir\build.make /nologo -L                  CMakeFiles\cmTC_aa033.dir\build
+Building C object CMakeFiles/cmTC_aa033.dir/testCCompiler.c.obj
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe @C:\Users\HeYan\AppData\Local\Temp\nm1FAA.tmp
+testCCompiler.c
+Linking C executable cmTC_aa033.exe
+	"C:\Program Files\JetBrains\CLion 2018.3.1\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_aa033.dir --manifests  -- C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\link.exe /nologo @CMakeFiles\cmTC_aa033.dir\objects1.rsp @C:\Users\HeYan\AppData\Local\Temp\nm2112.tmp
+
+
+Detecting C compiler ABI info compiled with the following output:
+Change Dir: C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"nmake" "/nologo" "cmTC_0e366\fast"
+	"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\bin\HostX86\x86\nmake.exe" -f CMakeFiles\cmTC_0e366.dir\build.make /nologo -L                  CMakeFiles\cmTC_0e366.dir\build
+Building C object CMakeFiles/cmTC_0e366.dir/CMakeCCompilerABI.c.obj
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe @C:\Users\HeYan\AppData\Local\Temp\nm25D4.tmp
+CMakeCCompilerABI.c
+Linking C executable cmTC_0e366.exe
+	"C:\Program Files\JetBrains\CLion 2018.3.1\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_0e366.dir --manifests  -- C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\link.exe /nologo @CMakeFiles\cmTC_0e366.dir\objects1.rsp @C:\Users\HeYan\AppData\Local\Temp\nm2661.tmp
+
+
+
+
+Detecting C [] compiler features compiled with the following output:
+Change Dir: C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"nmake" "/nologo" "cmTC_d9deb\fast"
+	"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\bin\HostX86\x86\nmake.exe" -f CMakeFiles\cmTC_d9deb.dir\build.make /nologo -L                  CMakeFiles\cmTC_d9deb.dir\build
+Building C object CMakeFiles/cmTC_d9deb.dir/feature_tests.c.obj
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe @C:\Users\HeYan\AppData\Local\Temp\nm2CD9.tmp
+feature_tests.c
+Linking C executable cmTC_d9deb.exe
+	"C:\Program Files\JetBrains\CLion 2018.3.1\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_d9deb.dir --manifests  -- C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\link.exe /nologo @CMakeFiles\cmTC_d9deb.dir\objects1.rsp @C:\Users\HeYan\AppData\Local\Temp\nm2D66.tmp
+
+
+    Feature record: C_FEATURE:1c_function_prototypes
+    Feature record: C_FEATURE:1c_variadic_macros
+Determining if the CXX compiler works passed with the following output:
+Change Dir: C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"nmake" "/nologo" "cmTC_2d525\fast"
+	"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\bin\HostX86\x86\nmake.exe" -f CMakeFiles\cmTC_2d525.dir\build.make /nologo -L                  CMakeFiles\cmTC_2d525.dir\build
+Building CXX object CMakeFiles/cmTC_2d525.dir/testCXXCompiler.cxx.obj
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe @C:\Users\HeYan\AppData\Local\Temp\nm35F1.tmp
+testCXXCompiler.cxx
+Linking CXX executable cmTC_2d525.exe
+	"C:\Program Files\JetBrains\CLion 2018.3.1\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_2d525.dir --manifests  -- C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\link.exe /nologo @CMakeFiles\cmTC_2d525.dir\objects1.rsp @C:\Users\HeYan\AppData\Local\Temp\nm36DC.tmp
+
+
+Detecting CXX compiler ABI info compiled with the following output:
+Change Dir: C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"nmake" "/nologo" "cmTC_3f05a\fast"
+	"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\bin\HostX86\x86\nmake.exe" -f CMakeFiles\cmTC_3f05a.dir\build.make /nologo -L                  CMakeFiles\cmTC_3f05a.dir\build
+Building CXX object CMakeFiles/cmTC_3f05a.dir/CMakeCXXCompilerABI.cpp.obj
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe @C:\Users\HeYan\AppData\Local\Temp\nm3F19.tmp
+CMakeCXXCompilerABI.cpp
+Linking CXX executable cmTC_3f05a.exe
+	"C:\Program Files\JetBrains\CLion 2018.3.1\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_3f05a.dir --manifests  -- C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\link.exe /nologo @CMakeFiles\cmTC_3f05a.dir\objects1.rsp @C:\Users\HeYan\AppData\Local\Temp\nm3FD5.tmp
+
+
+
+
+Detecting CXX [] compiler features compiled with the following output:
+Change Dir: C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"nmake" "/nologo" "cmTC_820d8\fast"
+	"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\bin\HostX86\x86\nmake.exe" -f CMakeFiles\cmTC_820d8.dir\build.make /nologo -L                  CMakeFiles\cmTC_820d8.dir\build
+Building CXX object CMakeFiles/cmTC_820d8.dir/feature_tests.cxx.obj
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe @C:\Users\HeYan\AppData\Local\Temp\nm46BA.tmp
+feature_tests.cxx
+Linking CXX executable cmTC_820d8.exe
+	"C:\Program Files\JetBrains\CLion 2018.3.1\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_820d8.dir --manifests  -- C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\link.exe /nologo @CMakeFiles\cmTC_820d8.dir\objects1.rsp @C:\Users\HeYan\AppData\Local\Temp\nm47E4.tmp
+
+
+    Feature record: CXX_FEATURE:1cxx_aggregate_default_initializers
+    Feature record: CXX_FEATURE:1cxx_alias_templates
+    Feature record: CXX_FEATURE:1cxx_alignas
+    Feature record: CXX_FEATURE:1cxx_alignof
+    Feature record: CXX_FEATURE:1cxx_attributes
+    Feature record: CXX_FEATURE:1cxx_attribute_deprecated
+    Feature record: CXX_FEATURE:1cxx_auto_type
+    Feature record: CXX_FEATURE:1cxx_binary_literals
+    Feature record: CXX_FEATURE:1cxx_constexpr
+    Feature record: CXX_FEATURE:1cxx_contextual_conversions
+    Feature record: CXX_FEATURE:1cxx_decltype
+    Feature record: CXX_FEATURE:1cxx_decltype_auto
+    Feature record: CXX_FEATURE:1cxx_decltype_incomplete_return_types
+    Feature record: CXX_FEATURE:1cxx_default_function_template_args
+    Feature record: CXX_FEATURE:1cxx_defaulted_functions
+    Feature record: CXX_FEATURE:1cxx_defaulted_move_initializers
+    Feature record: CXX_FEATURE:1cxx_delegating_constructors
+    Feature record: CXX_FEATURE:1cxx_deleted_functions
+    Feature record: CXX_FEATURE:1cxx_digit_separators
+    Feature record: CXX_FEATURE:1cxx_enum_forward_declarations
+    Feature record: CXX_FEATURE:1cxx_explicit_conversions
+    Feature record: CXX_FEATURE:1cxx_extended_friend_declarations
+    Feature record: CXX_FEATURE:1cxx_extern_templates
+    Feature record: CXX_FEATURE:1cxx_final
+    Feature record: CXX_FEATURE:1cxx_func_identifier
+    Feature record: CXX_FEATURE:1cxx_generalized_initializers
+    Feature record: CXX_FEATURE:1cxx_generic_lambdas
+    Feature record: CXX_FEATURE:1cxx_inheriting_constructors
+    Feature record: CXX_FEATURE:1cxx_inline_namespaces
+    Feature record: CXX_FEATURE:1cxx_lambdas
+    Feature record: CXX_FEATURE:1cxx_lambda_init_captures
+    Feature record: CXX_FEATURE:1cxx_local_type_template_args
+    Feature record: CXX_FEATURE:1cxx_long_long_type
+    Feature record: CXX_FEATURE:1cxx_noexcept
+    Feature record: CXX_FEATURE:1cxx_nonstatic_member_init
+    Feature record: CXX_FEATURE:1cxx_nullptr
+    Feature record: CXX_FEATURE:1cxx_override
+    Feature record: CXX_FEATURE:1cxx_range_for
+    Feature record: CXX_FEATURE:1cxx_raw_string_literals
+    Feature record: CXX_FEATURE:1cxx_reference_qualified_functions
+    Feature record: CXX_FEATURE:1cxx_return_type_deduction
+    Feature record: CXX_FEATURE:1cxx_right_angle_brackets
+    Feature record: CXX_FEATURE:1cxx_rvalue_references
+    Feature record: CXX_FEATURE:1cxx_sizeof_member
+    Feature record: CXX_FEATURE:1cxx_static_assert
+    Feature record: CXX_FEATURE:1cxx_strong_enums
+    Feature record: CXX_FEATURE:1cxx_template_template_parameters
+    Feature record: CXX_FEATURE:1cxx_thread_local
+    Feature record: CXX_FEATURE:1cxx_trailing_return_types
+    Feature record: CXX_FEATURE:1cxx_unicode_literals
+    Feature record: CXX_FEATURE:1cxx_uniform_initialization
+    Feature record: CXX_FEATURE:1cxx_unrestricted_unions
+    Feature record: CXX_FEATURE:1cxx_user_literals
+    Feature record: CXX_FEATURE:1cxx_variable_templates
+    Feature record: CXX_FEATURE:1cxx_variadic_macros
+    Feature record: CXX_FEATURE:1cxx_variadic_templates
+The system is: Windows - 10.0.17134 - AMD64
+Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+Compiler: C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.16.27023/bin/Hostx86/x86/cl.exe 
+Build flags: /DWIN32;/D_WINDOWS;/W3
+Id flags:  
+
+The output was:
+0
+Microsoft (R) C/C++ Optimizing Compiler Version 19.16.27024.1 for x86
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+CMakeCCompilerId.c
+Microsoft (R) Incremental Linker Version 14.16.27024.1
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+/out:CMakeCCompilerId.exe 
+CMakeCCompilerId.obj 
+
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CMakeCCompilerId.exe"
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CMakeCCompilerId.obj"
+
+The C compiler identification is MSVC, found in "C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug/CMakeFiles/3.14.2/CompilerIdC/CMakeCCompilerId.exe"
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+Compiler: C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.16.27023/bin/Hostx86/x86/cl.exe 
+Build flags: /DWIN32;/D_WINDOWS;/W3;/GR;/EHsc
+Id flags:  
+
+The output was:
+0
+Microsoft (R) C/C++ Optimizing Compiler Version 19.16.27024.1 for x86
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+CMakeCXXCompilerId.cpp
+Microsoft (R) Incremental Linker Version 14.16.27024.1
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+/out:CMakeCXXCompilerId.exe 
+CMakeCXXCompilerId.obj 
+
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CMakeCXXCompilerId.exe"
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CMakeCXXCompilerId.obj"
+
+The CXX compiler identification is MSVC, found in "C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug/CMakeFiles/3.14.2/CompilerIdCXX/CMakeCXXCompilerId.exe"
+
+Determining if the C compiler works passed with the following output:
+Change Dir: C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):nmake /nologo cmTC_d35ab\fast 
+	"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\bin\HostX86\x86\nmake.exe" -f CMakeFiles\cmTC_d35ab.dir\build.make /nologo -L                  CMakeFiles\cmTC_d35ab.dir\build
+Building C object CMakeFiles/cmTC_d35ab.dir/testCCompiler.c.obj
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe @C:\Users\HeYan\AppData\Local\Temp\nm60EB.tmp
+testCCompiler.c
+Linking C executable cmTC_d35ab.exe
+	"C:\Program Files\JetBrains\CLion 2018.3.1\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_d35ab.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100177~1.0\x86\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100177~1.0\x86\mt.exe --manifests  -- C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\link.exe /nologo @CMakeFiles\cmTC_d35ab.dir\objects1.rsp @C:\Users\HeYan\AppData\Local\Temp\nm62A2.tmp
+
+
+Detecting C compiler ABI info compiled with the following output:
+Change Dir: C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):nmake /nologo cmTC_8b5d5\fast 
+	"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\bin\HostX86\x86\nmake.exe" -f CMakeFiles\cmTC_8b5d5.dir\build.make /nologo -L                  CMakeFiles\cmTC_8b5d5.dir\build
+Building C object CMakeFiles/cmTC_8b5d5.dir/CMakeCCompilerABI.c.obj
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe @C:\Users\HeYan\AppData\Local\Temp\nm6987.tmp
+CMakeCCompilerABI.c
+Linking C executable cmTC_8b5d5.exe
+	"C:\Program Files\JetBrains\CLion 2018.3.1\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_8b5d5.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100177~1.0\x86\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100177~1.0\x86\mt.exe --manifests  -- C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\link.exe /nologo @CMakeFiles\cmTC_8b5d5.dir\objects1.rsp @C:\Users\HeYan\AppData\Local\Temp\nm6A24.tmp
+
+
+
+
+Detecting C [] compiler features compiled with the following output:
+Change Dir: C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):nmake /nologo cmTC_ec13c\fast 
+	"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\bin\HostX86\x86\nmake.exe" -f CMakeFiles\cmTC_ec13c.dir\build.make /nologo -L                  CMakeFiles\cmTC_ec13c.dir\build
+Building C object CMakeFiles/cmTC_ec13c.dir/feature_tests.c.obj
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe @C:\Users\HeYan\AppData\Local\Temp\nm71D4.tmp
+feature_tests.c
+Linking C executable cmTC_ec13c.exe
+	"C:\Program Files\JetBrains\CLion 2018.3.1\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_ec13c.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100177~1.0\x86\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100177~1.0\x86\mt.exe --manifests  -- C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\link.exe /nologo @CMakeFiles\cmTC_ec13c.dir\objects1.rsp @C:\Users\HeYan\AppData\Local\Temp\nm72A0.tmp
+
+
+    Feature record: C_FEATURE:1c_function_prototypes
+    Feature record: C_FEATURE:1c_variadic_macros
+Determining if the CXX compiler works passed with the following output:
+Change Dir: C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):nmake /nologo cmTC_26c2f\fast 
+	"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\bin\HostX86\x86\nmake.exe" -f CMakeFiles\cmTC_26c2f.dir\build.make /nologo -L                  CMakeFiles\cmTC_26c2f.dir\build
+Building CXX object CMakeFiles/cmTC_26c2f.dir/testCXXCompiler.cxx.obj
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe @C:\Users\HeYan\AppData\Local\Temp\nm7704.tmp
+testCXXCompiler.cxx
+Linking CXX executable cmTC_26c2f.exe
+	"C:\Program Files\JetBrains\CLion 2018.3.1\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_26c2f.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100177~1.0\x86\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100177~1.0\x86\mt.exe --manifests  -- C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\link.exe /nologo @CMakeFiles\cmTC_26c2f.dir\objects1.rsp @C:\Users\HeYan\AppData\Local\Temp\nm7782.tmp
+
+
+Detecting CXX compiler ABI info compiled with the following output:
+Change Dir: C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):nmake /nologo cmTC_70d76\fast 
+	"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\bin\HostX86\x86\nmake.exe" -f CMakeFiles\cmTC_70d76.dir\build.make /nologo -L                  CMakeFiles\cmTC_70d76.dir\build
+Building CXX object CMakeFiles/cmTC_70d76.dir/CMakeCXXCompilerABI.cpp.obj
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe @C:\Users\HeYan\AppData\Local\Temp\nm7B69.tmp
+CMakeCXXCompilerABI.cpp
+Linking CXX executable cmTC_70d76.exe
+	"C:\Program Files\JetBrains\CLion 2018.3.1\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_70d76.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100177~1.0\x86\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100177~1.0\x86\mt.exe --manifests  -- C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\link.exe /nologo @CMakeFiles\cmTC_70d76.dir\objects1.rsp @C:\Users\HeYan\AppData\Local\Temp\nm7BF6.tmp
+
+
+
+
+Detecting CXX [] compiler features compiled with the following output:
+Change Dir: C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):nmake /nologo cmTC_40ff4\fast 
+	"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\bin\HostX86\x86\nmake.exe" -f CMakeFiles\cmTC_40ff4.dir\build.make /nologo -L                  CMakeFiles\cmTC_40ff4.dir\build
+Building CXX object CMakeFiles/cmTC_40ff4.dir/feature_tests.cxx.obj
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe @C:\Users\HeYan\AppData\Local\Temp\nm80D7.tmp
+feature_tests.cxx
+Linking CXX executable cmTC_40ff4.exe
+	"C:\Program Files\JetBrains\CLion 2018.3.1\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_40ff4.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100177~1.0\x86\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100177~1.0\x86\mt.exe --manifests  -- C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\link.exe /nologo @CMakeFiles\cmTC_40ff4.dir\objects1.rsp @C:\Users\HeYan\AppData\Local\Temp\nm8136.tmp
+
+
+    Feature record: CXX_FEATURE:1cxx_aggregate_default_initializers
+    Feature record: CXX_FEATURE:1cxx_alias_templates
+    Feature record: CXX_FEATURE:1cxx_alignas
+    Feature record: CXX_FEATURE:1cxx_alignof
+    Feature record: CXX_FEATURE:1cxx_attributes
+    Feature record: CXX_FEATURE:1cxx_attribute_deprecated
+    Feature record: CXX_FEATURE:1cxx_auto_type
+    Feature record: CXX_FEATURE:1cxx_binary_literals
+    Feature record: CXX_FEATURE:1cxx_constexpr
+    Feature record: CXX_FEATURE:1cxx_contextual_conversions
+    Feature record: CXX_FEATURE:1cxx_decltype
+    Feature record: CXX_FEATURE:1cxx_decltype_auto
+    Feature record: CXX_FEATURE:1cxx_decltype_incomplete_return_types
+    Feature record: CXX_FEATURE:1cxx_default_function_template_args
+    Feature record: CXX_FEATURE:1cxx_defaulted_functions
+    Feature record: CXX_FEATURE:1cxx_defaulted_move_initializers
+    Feature record: CXX_FEATURE:1cxx_delegating_constructors
+    Feature record: CXX_FEATURE:1cxx_deleted_functions
+    Feature record: CXX_FEATURE:1cxx_digit_separators
+    Feature record: CXX_FEATURE:1cxx_enum_forward_declarations
+    Feature record: CXX_FEATURE:1cxx_explicit_conversions
+    Feature record: CXX_FEATURE:1cxx_extended_friend_declarations
+    Feature record: CXX_FEATURE:1cxx_extern_templates
+    Feature record: CXX_FEATURE:1cxx_final
+    Feature record: CXX_FEATURE:1cxx_func_identifier
+    Feature record: CXX_FEATURE:1cxx_generalized_initializers
+    Feature record: CXX_FEATURE:1cxx_generic_lambdas
+    Feature record: CXX_FEATURE:1cxx_inheriting_constructors
+    Feature record: CXX_FEATURE:1cxx_inline_namespaces
+    Feature record: CXX_FEATURE:1cxx_lambdas
+    Feature record: CXX_FEATURE:1cxx_lambda_init_captures
+    Feature record: CXX_FEATURE:1cxx_local_type_template_args
+    Feature record: CXX_FEATURE:1cxx_long_long_type
+    Feature record: CXX_FEATURE:1cxx_noexcept
+    Feature record: CXX_FEATURE:1cxx_nonstatic_member_init
+    Feature record: CXX_FEATURE:1cxx_nullptr
+    Feature record: CXX_FEATURE:1cxx_override
+    Feature record: CXX_FEATURE:1cxx_range_for
+    Feature record: CXX_FEATURE:1cxx_raw_string_literals
+    Feature record: CXX_FEATURE:1cxx_reference_qualified_functions
+    Feature record: CXX_FEATURE:1cxx_return_type_deduction
+    Feature record: CXX_FEATURE:1cxx_right_angle_brackets
+    Feature record: CXX_FEATURE:1cxx_rvalue_references
+    Feature record: CXX_FEATURE:1cxx_sizeof_member
+    Feature record: CXX_FEATURE:1cxx_static_assert
+    Feature record: CXX_FEATURE:1cxx_strong_enums
+    Feature record: CXX_FEATURE:1cxx_template_template_parameters
+    Feature record: CXX_FEATURE:1cxx_thread_local
+    Feature record: CXX_FEATURE:1cxx_trailing_return_types
+    Feature record: CXX_FEATURE:1cxx_unicode_literals
+    Feature record: CXX_FEATURE:1cxx_uniform_initialization
+    Feature record: CXX_FEATURE:1cxx_unrestricted_unions
+    Feature record: CXX_FEATURE:1cxx_user_literals
+    Feature record: CXX_FEATURE:1cxx_variable_templates
+    Feature record: CXX_FEATURE:1cxx_variadic_macros
+    Feature record: CXX_FEATURE:1cxx_variadic_templates

@@ -1,0 +1,3 @@
+C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug/CMakeFiles/CygniCompiler.dir
+C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/cmake-build-debug/CMakeFiles/rebuild_cache.dir
