@@ -59,17 +59,30 @@ module Program
 	- flags: ACCESS_PUBLIC
 	- code:
 		locals = 1, args_size = 1
+		
 		0: PUSH_STACK_INT 0
+		
 		3: PUSH_CONSTANT_INT 0
+		
 		6: EQ_INT
+		
 		7: JUMP_IF_FALSE 14
+		
 		10: PUSH_CONSTANT_INT 1
+		
 		13: RETURN_INT
+		
 		14: PUSH_STACK_INT 0
+		
 		17: PUSH_STACK_INT 0
+		
 		20: PUSH_CONSTANT_INT 2
+		
 		23: SUB_INT
+		
 		24: INVOKE 0 0
+		
 		29: MUL_INT
+		
 		30: RETURN_INT
 		
