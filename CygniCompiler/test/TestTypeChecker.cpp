@@ -81,15 +81,15 @@ void TestTypeChecker::Test1()
     }
     catch (ParserException &ex)
     {
-        cout << ex.line << ", " << ex.column << ": " << ex.message << endl;
+        cout << ex.line << ", " << ex.column << ": " << ex.Message() << endl;
     }
     catch (TypeException &ex)
     {
-        cout << ex.position.ToString() << ": " << ex.message << endl;
+        cout << ex.position.ToString() << ": " << ex.Message() << endl;
     }
 }
 
-void TestTypeChecker::OutputTypeRecord(std::string path, const HashMap<int, Ptr<Value>> &typeRecord)
+void TestTypeChecker::OutputTypeRecord(const std::string& path, const HashMap<int, Ptr<Value>> &typeRecord)
 {
     std::ofstream stream(path);
     for (const auto &item: typeRecord)

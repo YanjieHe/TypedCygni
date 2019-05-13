@@ -20,10 +20,7 @@ class String
 private:
     std::basic_string<Char> characters;
 public:
-    String()
-    {
-
-    }
+    String() = default;
 
     String(const char *s) : characters(utf16(s))
     {
@@ -236,6 +233,12 @@ public:
             }
             return result;
         }
+    }
+
+    std::string ToCppString()
+    {
+        auto utf8String = Encoding::Utf16ToUtf8(characters);
+        return std::string(utf8String.begin(), utf8String.end());
     }
 };
 

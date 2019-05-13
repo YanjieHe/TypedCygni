@@ -5,27 +5,18 @@
 #include "Ast.hpp"
 #include "Predef.hpp"
 #include "Scope.hpp"
-#include <iostream>
+#include "Exception.hpp"
 
-using std::cout;
-using std::endl;
-
-class TypeException : std::exception
+class TypeException : public Exception
 {
 public:
     Position position;
-    String message;
 
     TypeException(Position position, String message)
-            : position{position}, message{std::move(message)}
+            : Exception(std::move(message)), position{position}
     {
-
+        AddInfo("position", position.ToString());
     }
-};
-
-class NotSupportedException : std::exception
-{
-
 };
 
 class TypeChecker
@@ -113,7 +104,7 @@ public:
             case Kind::DefModule:
                 return record(CheckModule(Cast<DefModule>(node), scope));
         }
-        throw NotSupportedException();
+        throw NotImplementedException();
     }
 
     template<Kind kind>
@@ -213,6 +204,8 @@ public:
                 return Value::CharValue;
             case Constant::ConstantType::StringType:
                 return Value::StringValue;
+            default:
+                throw NotImplementedException();
         }
     }
 

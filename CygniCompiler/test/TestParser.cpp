@@ -194,7 +194,7 @@ void TestParser::Test2()
         stream.close();
     } catch (ParserException &ex)
     {
-        cout << ex.line << ", " << ex.column << ": " << ex.message << endl;
+        cout << ex.line << ", " << ex.column << ": " << ex.Message() << endl;
     }
 }
 
@@ -234,7 +234,7 @@ void TestParser::Test3()
         stream.close();
     } catch (ParserException &ex)
     {
-        cout << ex.line << ", " << ex.column << ": " << ex.message << endl;
+        cout << ex.line << ", " << ex.column << ": " << ex.Message() << endl;
     }
 }
 

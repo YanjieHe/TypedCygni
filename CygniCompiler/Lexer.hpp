@@ -4,16 +4,7 @@
 #include <vector>
 #include "Token.hpp"
 #include "Encoding.hpp"
-
-class LexicalException : std::exception
-{
-public:
-    int line;
-    int column;
-    String message;
-
-    LexicalException(int line, int column, String message);
-};
+#include "Exception.hpp"
 
 class Lexer
 {

@@ -41,4 +41,15 @@ using Vector = std::vector<T>;
 template<typename TKey, typename TValue>
 using HashMap = std::unordered_map<TKey, TValue>;
 
+template<class _This, class... _Rest>
+using Tuple = std::tuple<_This, _Rest...>;
+
+template<class... _Types>
+constexpr std::tuple<std::_Unrefwrap_t<_Types>...> tuple(_Types &&... _Args)
+{
+    return std::make_tuple(_Args...);
+}
+
+using std::tie;
+
 #endif //PREDEF_HPP

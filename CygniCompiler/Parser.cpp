@@ -1,12 +1,5 @@
 #include "Parser.hpp"
 
-ParserException::ParserException(int line, int column, String message)
-        : line{line}, column{column}, message{std::move(message)}
-{
-
-}
-
-
 Parser::Parser(String path, Vector<Token> tokens)
         : path{std::move(path)}, tokens{std::move(tokens)}, offset{0}
 {

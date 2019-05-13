@@ -400,6 +400,63 @@ CMakeFiles\CygniCompiler.dir\test\TestEndian.cpp.s: cmake_force
  /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoNUL /FAs /FaCMakeFiles\CygniCompiler.dir\test\TestEndian.cpp.s /c C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\test\TestEndian.cpp
 <<
 
+CMakeFiles\CygniCompiler.dir\Locator.cpp.obj: CMakeFiles\CygniCompiler.dir\flags.make
+CMakeFiles\CygniCompiler.dir\Locator.cpp.obj: ..\Locator.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/CygniCompiler.dir/Locator.cpp.obj"
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe @<<
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoCMakeFiles\CygniCompiler.dir\Locator.cpp.obj /FdCMakeFiles\CygniCompiler.dir\ /FS -c C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\Locator.cpp
+<<
+
+CMakeFiles\CygniCompiler.dir\Locator.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/CygniCompiler.dir/Locator.cpp.i"
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe > CMakeFiles\CygniCompiler.dir\Locator.cpp.i @<<
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\Locator.cpp
+<<
+
+CMakeFiles\CygniCompiler.dir\Locator.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/CygniCompiler.dir/Locator.cpp.s"
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe @<<
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoNUL /FAs /FaCMakeFiles\CygniCompiler.dir\Locator.cpp.s /c C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\Locator.cpp
+<<
+
+CMakeFiles\CygniCompiler.dir\Exception.cpp.obj: CMakeFiles\CygniCompiler.dir\flags.make
+CMakeFiles\CygniCompiler.dir\Exception.cpp.obj: ..\Exception.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object CMakeFiles/CygniCompiler.dir/Exception.cpp.obj"
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe @<<
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoCMakeFiles\CygniCompiler.dir\Exception.cpp.obj /FdCMakeFiles\CygniCompiler.dir\ /FS -c C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\Exception.cpp
+<<
+
+CMakeFiles\CygniCompiler.dir\Exception.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/CygniCompiler.dir/Exception.cpp.i"
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe > CMakeFiles\CygniCompiler.dir\Exception.cpp.i @<<
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\Exception.cpp
+<<
+
+CMakeFiles\CygniCompiler.dir\Exception.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/CygniCompiler.dir/Exception.cpp.s"
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe @<<
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoNUL /FAs /FaCMakeFiles\CygniCompiler.dir\Exception.cpp.s /c C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\Exception.cpp
+<<
+
+CMakeFiles\CygniCompiler.dir\test\TestLocator.cpp.obj: CMakeFiles\CygniCompiler.dir\flags.make
+CMakeFiles\CygniCompiler.dir\test\TestLocator.cpp.obj: ..\test\TestLocator.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object CMakeFiles/CygniCompiler.dir/test/TestLocator.cpp.obj"
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe @<<
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoCMakeFiles\CygniCompiler.dir\test\TestLocator.cpp.obj /FdCMakeFiles\CygniCompiler.dir\ /FS -c C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\test\TestLocator.cpp
+<<
+
+CMakeFiles\CygniCompiler.dir\test\TestLocator.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/CygniCompiler.dir/test/TestLocator.cpp.i"
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe > CMakeFiles\CygniCompiler.dir\test\TestLocator.cpp.i @<<
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\test\TestLocator.cpp
+<<
+
+CMakeFiles\CygniCompiler.dir\test\TestLocator.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/CygniCompiler.dir/test/TestLocator.cpp.s"
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe @<<
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoNUL /FAs /FaCMakeFiles\CygniCompiler.dir\test\TestLocator.cpp.s /c C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\test\TestLocator.cpp
+<<
+
 # Object files for target CygniCompiler
 CygniCompiler_OBJECTS = \
 "CMakeFiles\CygniCompiler.dir\main.cpp.obj" \
@@ -419,7 +476,10 @@ CygniCompiler_OBJECTS = \
 "CMakeFiles\CygniCompiler.dir\File.cpp.obj" \
 "CMakeFiles\CygniCompiler.dir\test\TestTypeChecker.cpp.obj" \
 "CMakeFiles\CygniCompiler.dir\Compiler.cpp.obj" \
-"CMakeFiles\CygniCompiler.dir\test\TestEndian.cpp.obj"
+"CMakeFiles\CygniCompiler.dir\test\TestEndian.cpp.obj" \
+"CMakeFiles\CygniCompiler.dir\Locator.cpp.obj" \
+"CMakeFiles\CygniCompiler.dir\Exception.cpp.obj" \
+"CMakeFiles\CygniCompiler.dir\test\TestLocator.cpp.obj"
 
 # External object files for target CygniCompiler
 CygniCompiler_EXTERNAL_OBJECTS =
@@ -442,9 +502,12 @@ CygniCompiler.exe: CMakeFiles\CygniCompiler.dir\File.cpp.obj
 CygniCompiler.exe: CMakeFiles\CygniCompiler.dir\test\TestTypeChecker.cpp.obj
 CygniCompiler.exe: CMakeFiles\CygniCompiler.dir\Compiler.cpp.obj
 CygniCompiler.exe: CMakeFiles\CygniCompiler.dir\test\TestEndian.cpp.obj
+CygniCompiler.exe: CMakeFiles\CygniCompiler.dir\Locator.cpp.obj
+CygniCompiler.exe: CMakeFiles\CygniCompiler.dir\Exception.cpp.obj
+CygniCompiler.exe: CMakeFiles\CygniCompiler.dir\test\TestLocator.cpp.obj
 CygniCompiler.exe: CMakeFiles\CygniCompiler.dir\build.make
 CygniCompiler.exe: CMakeFiles\CygniCompiler.dir\objects1.rsp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Linking CXX executable CygniCompiler.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Linking CXX executable CygniCompiler.exe"
 	"C:\Program Files\JetBrains\CLion 2018.3.1\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\CygniCompiler.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100177~1.0\x86\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100177~1.0\x86\mt.exe --manifests  -- C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\link.exe /nologo @CMakeFiles\CygniCompiler.dir\objects1.rsp @<<
  /out:CygniCompiler.exe /implib:CygniCompiler.lib /pdb:C:\Users\HeYan\Documents\MyCode\C++\CygniCompiler\cmake-build-debug\CygniCompiler.pdb /version:0.0  /machine:X86 /debug /INCREMENTAL /subsystem:console kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib 
 <<

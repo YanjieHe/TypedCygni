@@ -1,4 +1,5 @@
 #include "Scope.hpp"
+#include "Exception.hpp"
 
 Scope::Scope(Ptr<Scope> parent) : parent{std::move(parent)}
 {
@@ -27,7 +28,7 @@ void Scope::Put(const String &name, const String &key, const Any &value)
     {
         if (values[name].find(key) != values[name].end())
         {
-            throw NameAlreadyExists();
+            throw ArgumentException("ArgumentException: An item with the same key has already been added.");
         }
         else
         {

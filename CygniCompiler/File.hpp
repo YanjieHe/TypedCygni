@@ -1,13 +1,12 @@
 #ifndef FILE_HPP
 #define FILE_HPP
 
-
 #include "String.hpp"
 
 class File
 {
 public:
-    static String ReadFile(const char *path);
+    static String ReadFile(String path);
 };
 
 

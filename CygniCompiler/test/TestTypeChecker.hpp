@@ -1,5 +1,5 @@
-#ifndef TESTTYPECHECKER_HPP
-#define TESTTYPECHECKER_HPP
+#ifndef TEST_TYPE_CHECKER_HPP
+#define TEST_TYPE_CHECKER_HPP
 
 #include "../TypeChecker.hpp"
 
@@ -9,8 +9,8 @@ namespace TestTypeChecker
 
     Ptr<Scope> InitializeBasicTypes();
 
-    void OutputTypeRecord(std::string path, const HashMap<int, Ptr<Value>> &typeRecord);
+    void OutputTypeRecord(const std::string &path, const HashMap<int, Ptr<Value>> &typeRecord);
 
     void Test1();
 }
-#endif //TESTTYPECHECKER_HPP
+#endif //TEST_TYPE_CHECKER_HPP

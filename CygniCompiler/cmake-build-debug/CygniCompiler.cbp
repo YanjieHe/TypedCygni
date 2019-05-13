@@ -108,6 +108,12 @@
 		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Endian.hpp">
 			<Option target="CygniCompiler"/>
 		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Exception.cpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Exception.hpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
 		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/File.cpp">
 			<Option target="CygniCompiler"/>
 		</Unit>
@@ -118,6 +124,12 @@
 			<Option target="CygniCompiler"/>
 		</Unit>
 		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Lexer.hpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Locator.cpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Locator.hpp">
 			<Option target="CygniCompiler"/>
 		</Unit>
 		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Optional.hpp">
@@ -181,6 +193,12 @@
 			<Option target="CygniCompiler"/>
 		</Unit>
 		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestLexer.hpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestLocator.cpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestLocator.hpp">
 			<Option target="CygniCompiler"/>
 		</Unit>
 		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestParser.cpp">

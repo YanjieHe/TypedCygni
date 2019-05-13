@@ -8,6 +8,7 @@
 #include "test/TestString.hpp"
 #include "test/TestEndian.hpp"
 #include "test/TestTypeChecker.hpp"
+#include "test/TestLocator.hpp"
 
 using namespace std;
 
@@ -19,5 +20,6 @@ int main(int argc, char **argv)
     TestLexer::TestAll();
     TestParser::TestAll();
     TestTypeChecker::TestAll();
+    TestLocator::TestAll();
     return 0;
 }

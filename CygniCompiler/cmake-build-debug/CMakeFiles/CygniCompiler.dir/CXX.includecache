@@ -36,6 +36,14 @@ string
 cstdint
 -
 
+C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Exception.hpp
+exception
+-
+String.hpp
+C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/String.hpp
+Predef.hpp
+C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Predef.hpp
+
 C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/File.hpp
 String.hpp
 C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/String.hpp
@@ -47,6 +55,16 @@ Token.hpp
 C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Token.hpp
 Encoding.hpp
 C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Encoding.hpp
+Exception.hpp
+C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Exception.hpp
+
+C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Locator.hpp
+Ast.hpp
+C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Ast.hpp
+Scope.hpp
+C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Scope.hpp
+Exception.hpp
+C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Exception.hpp
 
 C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Optional.hpp
 type_traits
@@ -67,6 +85,8 @@ iostream
 -
 Predef.hpp
 C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Predef.hpp
+Exception.hpp
+C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Exception.hpp
 
 C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Predef.hpp
 memory
@@ -123,8 +143,8 @@ Predef.hpp
 C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Predef.hpp
 Scope.hpp
 C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Scope.hpp
-iostream
--
+Exception.hpp
+C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Exception.hpp
 
 C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/JSON.hpp
 utility
@@ -138,15 +158,11 @@ iostream
 fstream
 -
 
-C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestParser.hpp
-../Parser.hpp
-C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Parser.hpp
+C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestLocator.cpp
 fstream
 -
-JSON.hpp
-C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/JSON.hpp
-
-C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestTypeChecker.cpp
+TestLocator.hpp
+C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestLocator.hpp
 TestTypeChecker.hpp
 C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestTypeChecker.hpp
 ../Lexer.hpp
@@ -155,12 +171,20 @@ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Lexer.hpp
 C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/File.hpp
 ../Parser.hpp
 C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Parser.hpp
+../Locator.hpp
+C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Locator.hpp
 TestParser.hpp
 C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestParser.hpp
-iostream
--
+
+C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestLocator.hpp
+
+C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestParser.hpp
+../Parser.hpp
+C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Parser.hpp
 fstream
 -
+JSON.hpp
+C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/JSON.hpp
 
 C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestTypeChecker.hpp
 ../TypeChecker.hpp

@@ -205,6 +205,33 @@ Encoding.cpp.s:
 	$(MAKE) -f CMakeFiles\CygniCompiler.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\CygniCompiler.dir\Encoding.cpp.s
 .PHONY : Encoding.cpp.s
 
+Exception.obj: Exception.cpp.obj
+
+.PHONY : Exception.obj
+
+# target to build an object file
+Exception.cpp.obj:
+	$(MAKE) -f CMakeFiles\CygniCompiler.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\CygniCompiler.dir\Exception.cpp.obj
+.PHONY : Exception.cpp.obj
+
+Exception.i: Exception.cpp.i
+
+.PHONY : Exception.i
+
+# target to preprocess a source file
+Exception.cpp.i:
+	$(MAKE) -f CMakeFiles\CygniCompiler.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\CygniCompiler.dir\Exception.cpp.i
+.PHONY : Exception.cpp.i
+
+Exception.s: Exception.cpp.s
+
+.PHONY : Exception.s
+
+# target to generate assembly for a file
+Exception.cpp.s:
+	$(MAKE) -f CMakeFiles\CygniCompiler.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\CygniCompiler.dir\Exception.cpp.s
+.PHONY : Exception.cpp.s
+
 File.obj: File.cpp.obj
 
 .PHONY : File.obj
@@ -258,6 +285,33 @@ Lexer.s: Lexer.cpp.s
 Lexer.cpp.s:
 	$(MAKE) -f CMakeFiles\CygniCompiler.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\CygniCompiler.dir\Lexer.cpp.s
 .PHONY : Lexer.cpp.s
+
+Locator.obj: Locator.cpp.obj
+
+.PHONY : Locator.obj
+
+# target to build an object file
+Locator.cpp.obj:
+	$(MAKE) -f CMakeFiles\CygniCompiler.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\CygniCompiler.dir\Locator.cpp.obj
+.PHONY : Locator.cpp.obj
+
+Locator.i: Locator.cpp.i
+
+.PHONY : Locator.i
+
+# target to preprocess a source file
+Locator.cpp.i:
+	$(MAKE) -f CMakeFiles\CygniCompiler.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\CygniCompiler.dir\Locator.cpp.i
+.PHONY : Locator.cpp.i
+
+Locator.s: Locator.cpp.s
+
+.PHONY : Locator.s
+
+# target to generate assembly for a file
+Locator.cpp.s:
+	$(MAKE) -f CMakeFiles\CygniCompiler.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\CygniCompiler.dir\Locator.cpp.s
+.PHONY : Locator.cpp.s
 
 Parser.obj: Parser.cpp.obj
 
@@ -529,6 +583,33 @@ test\TestLexer.cpp.s:
 	$(MAKE) -f CMakeFiles\CygniCompiler.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\CygniCompiler.dir\test\TestLexer.cpp.s
 .PHONY : test\TestLexer.cpp.s
 
+test\TestLocator.obj: test\TestLocator.cpp.obj
+
+.PHONY : test\TestLocator.obj
+
+# target to build an object file
+test\TestLocator.cpp.obj:
+	$(MAKE) -f CMakeFiles\CygniCompiler.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\CygniCompiler.dir\test\TestLocator.cpp.obj
+.PHONY : test\TestLocator.cpp.obj
+
+test\TestLocator.i: test\TestLocator.cpp.i
+
+.PHONY : test\TestLocator.i
+
+# target to preprocess a source file
+test\TestLocator.cpp.i:
+	$(MAKE) -f CMakeFiles\CygniCompiler.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\CygniCompiler.dir\test\TestLocator.cpp.i
+.PHONY : test\TestLocator.cpp.i
+
+test\TestLocator.s: test\TestLocator.cpp.s
+
+.PHONY : test\TestLocator.s
+
+# target to generate assembly for a file
+test\TestLocator.cpp.s:
+	$(MAKE) -f CMakeFiles\CygniCompiler.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\CygniCompiler.dir\test\TestLocator.cpp.s
+.PHONY : test\TestLocator.cpp.s
+
 test\TestParser.obj: test\TestParser.cpp.obj
 
 .PHONY : test\TestParser.obj
@@ -628,12 +709,18 @@ help:
 	@echo ... Encoding.obj
 	@echo ... Encoding.i
 	@echo ... Encoding.s
+	@echo ... Exception.obj
+	@echo ... Exception.i
+	@echo ... Exception.s
 	@echo ... File.obj
 	@echo ... File.i
 	@echo ... File.s
 	@echo ... Lexer.obj
 	@echo ... Lexer.i
 	@echo ... Lexer.s
+	@echo ... Locator.obj
+	@echo ... Locator.i
+	@echo ... Locator.s
 	@echo ... Parser.obj
 	@echo ... Parser.i
 	@echo ... Parser.s
@@ -664,6 +751,9 @@ help:
 	@echo ... test/TestLexer.obj
 	@echo ... test/TestLexer.i
 	@echo ... test/TestLexer.s
+	@echo ... test/TestLocator.obj
+	@echo ... test/TestLocator.i
+	@echo ... test/TestLocator.s
 	@echo ... test/TestParser.obj
 	@echo ... test/TestParser.i
 	@echo ... test/TestParser.s

@@ -8,19 +8,10 @@
 #include "Type.hpp"
 #include <iostream>
 #include "Predef.hpp"
+#include "Exception.hpp"
 
 using std::cout;
 using std::endl;
-
-class ParserException : std::exception
-{
-public:
-    int line;
-    int column;
-    String message;
-
-    ParserException(int line, int column, String message);
-};
 
 class Parser
 {

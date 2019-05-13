@@ -247,9 +247,3 @@ void Lexer::SkipWhitespaces()
         Forward();
     }
 }
-
-LexicalException::LexicalException(int line, int column, String message) : line{line}, column{column},
-                                                                           message{std::move(message)}
-{
-
-}

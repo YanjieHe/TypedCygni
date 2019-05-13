@@ -6,11 +6,6 @@
 #include "Any.hpp"
 #include "Optional.hpp"
 
-class NameAlreadyExists : std::exception
-{
-
-};
-
 class Scope
 {
 public:

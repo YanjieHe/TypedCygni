@@ -21,13 +21,13 @@ Ast::Ast(Kind kind, Position position)
 }
 
 IfThen::IfThen(Position position, Ptr<Ast> condition, Ptr<Ast> ifTrue)
-        : Ast(Kind::IfThen, position), condition{condition}, ifTrue{ifTrue}
+        : Ast(Kind::IfThen, position), condition{std::move(condition)}, ifTrue{std::move(ifTrue)}
 {
 
 }
 
 IfElse::IfElse(Position position, Ptr<Ast> condition, Ptr<Ast> ifTrue, Ptr<Ast> ifFalse)
-        : Ast(Kind::IfElse, position), condition{condition}, ifTrue{ifTrue}, ifFalse{ifFalse}
+        : Ast(Kind::IfElse, position), condition{std::move(condition)}, ifTrue{std::move(ifTrue)}, ifFalse{std::move(ifFalse)}
 {
 
 }
@@ -40,7 +40,7 @@ Constant::Constant(Position position, Constant::ConstantType constantType,
 }
 
 Block::Block(Position position, Vector<Ptr<Ast>> expressions)
-        : Ast(Kind::Block, position), expressions{expressions}
+        : Ast(Kind::Block, position), expressions{std::move(expressions)}
 {
 
 }
@@ -52,19 +52,19 @@ Name::Name(Position position, String name)
 }
 
 Return::Return(Position position, Ptr<Ast> value)
-        : Ast(Kind::Return, position), value{value}
+        : Ast(Kind::Return, position), value{std::move(value)}
 {
 
 }
 
 While::While(Position position, Ptr<Ast> condition, Ptr<Ast> body)
-        : Ast(Kind::While, position), condition{condition}, body{body}
+        : Ast(Kind::While, position), condition{std::move(condition)}, body{std::move(body)}
 {
 
 }
 
 Call::Call(Position position, Ptr<Ast> function, Vector<Ptr<Ast>> arguments)
-        : Ast(Kind::Call, position), function{function}, arguments{arguments}
+        : Ast(Kind::Call, position), function{std::move(function)}, arguments{std::move(arguments)}
 {
 
 }
@@ -77,13 +77,13 @@ Var::Var(Position position, String name, Optional<Ptr<Type>> type, Optional<Ptr<
 }
 
 Parameter::Parameter(String name, Ptr<Type> type)
-        : name{name}, type{type}
+        : name{std::move(name)}, type{std::move(type)}
 {
 
 }
 
 Def::Def(Position position, String name, Vector<Parameter> parameters, Ptr<Type> type, Ptr<Ast> body)
-        : Ast(Kind::Def, position), name{name}, parameters{parameters}, type{type}, body{body},
+        : Ast(Kind::Def, position), name{std::move(name)}, parameters{std::move(parameters)}, type{std::move(type)}, body{std::move(body)},
           access{Access::Local}
 {
 
@@ -103,13 +103,13 @@ Ptr<Type> Def::MakeFunctionType(Vector<Parameter> parameters, Ptr<Type> returnTy
 }
 
 DefClass::DefClass(Position position, String name, Vector<Ptr<Var>> fields, Vector<Ptr<Def>> methods)
-        : Ast(Kind::DefClass, position), name{name}, fields{fields}, methods{methods}
+        : Ast(Kind::DefClass, position), name{std::move(name)}, fields{std::move(fields)}, methods{std::move(methods)}
 {
 
 }
 
 Program::Program(String path, Vector<Ptr<DefClass>> classes, Vector<Ptr<DefModule>> modules)
-        : path{path}, classes{classes}, modules{modules}
+        : path{std::move(path)}, classes{std::move(classes)}, modules{std::move(modules)}
 {
 
 }
@@ -181,7 +181,7 @@ String KindToString(Kind kind)
 }
 
 DefModule::DefModule(Position position, String name, Vector<Ptr<Var>> fields, Vector<Ptr<Def>> methods)
-        : Ast(Kind::DefModule, position), name{name}, fields{fields}, methods{methods}
+        : Ast(Kind::DefModule, position), name{std::move(name)}, fields{std::move(fields)}, methods{std::move(methods)}
 {
 
 }
