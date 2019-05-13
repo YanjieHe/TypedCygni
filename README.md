@@ -24,3 +24,22 @@ The compiler is able to make type check and type inference, then generates the b
 
 - RETURN_INT
 - INVOKE
+
+## Example Code
+
+```
+module Program
+{
+	def Factorial(n: Int): Int
+	{
+		if (n == 0)
+		{
+			return 1
+		}
+		else
+		{
+			return n * Factorial(n - 1)
+		}
+	}
+}
+```
