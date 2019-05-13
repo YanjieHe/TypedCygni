@@ -5,6 +5,8 @@ The compiler is able to make type check and type inference, then generates the b
 
 # Instruction Set
 - PUSH_CONSTANT_INT
+- PUSH_STACK_INT
+
 - ADD_INT
 - SUB_INT
 - MUL_INT
