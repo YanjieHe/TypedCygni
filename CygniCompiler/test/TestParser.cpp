@@ -201,7 +201,6 @@ void TestParser::Test2()
 Ptr<JsonObject> TestParser::TypeToJson(const Ptr<Type> &type)
 {
     auto map = New<JsonMap>();
-    map->Add("name", New<JsonValue>(type->name));
     auto array = New<JsonArray>();
     if (!type->IsLeaf())
     {
@@ -214,6 +213,7 @@ Ptr<JsonObject> TestParser::TypeToJson(const Ptr<Type> &type)
     }
     else
     {
+        map->Add("name", New<JsonValue>(Cast<TypeLeaf>(type)->name));
         map->Add("kind", New<JsonValue>("Type Leaf"));
     }
     return map;

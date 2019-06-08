@@ -9,6 +9,7 @@
 #include "test/TestEndian.hpp"
 #include "test/TestTypeChecker.hpp"
 #include "test/TestLocator.hpp"
+#include "test/TestCompiler.hpp"
 
 using namespace std;
 
@@ -21,5 +22,6 @@ int main(int argc, char **argv)
     TestParser::TestAll();
     TestTypeChecker::TestAll();
     TestLocator::TestAll();
+    TestCompiler::TestAll();
     return 0;
 }

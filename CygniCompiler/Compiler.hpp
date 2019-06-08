@@ -4,11 +4,14 @@
 #include "Ast.hpp"
 #include "Predef.hpp"
 #include "TypeChecker.hpp"
+#include "Location.hpp"
+#include "Endian.hpp"
 
 using Byte = uint8_t;
 
 enum class Op
 {
+    PUSH_STACK_INT,
     PUSH_CONSTANT_INT,
     ADD_INT,
     SUB_INT,
@@ -51,10 +54,26 @@ private:
     HashMap<Kind, Vector<Rule>> rules;
 public:
     const HashMap<int, Ptr<Value>> &typeRecord;
+    const HashMap<int, Location> &locations;
 
-    explicit Compiler(const HashMap<int, Ptr<Value>> &typeRecord) : typeRecord{typeRecord}
+    Compiler(const HashMap<int, Ptr<Value>> &typeRecord, const HashMap<int, Location> &locations)
+            : typeRecord{typeRecord}, locations{locations}
     {
         Register();
+    }
+
+    Vector<Byte> Compile(const Program &program)
+    {
+        Vector<Byte> code;
+        for (const auto &module: program.modules)
+        {
+            CompileNode(module, code);
+        }
+        for (const auto &_class: program.classes)
+        {
+            CompileNode(_class, code);
+        }
+        return code;
     }
 
     void CompileNode(const Ptr<Ast> &node, Vector<Byte> &code)
@@ -98,8 +117,10 @@ public:
             case Kind::IfElse:
                 break;
             case Kind::Constant:
+                CompileConstant(Cast<Constant>(node), code);
                 break;
             case Kind::Block:
+                CompileBlock(Cast<Block>(node), code);
                 break;
             case Kind::Name:
                 break;
@@ -108,6 +129,7 @@ public:
             case Kind::Var:
                 break;
             case Kind::Def:
+                CompileDef(Cast<Def>(node), code);
                 break;
             case Kind::Assign:
                 break;
@@ -118,7 +140,10 @@ public:
             case Kind::DefClass:
                 break;
             case Kind::DefModule:
+                CompileModule(Cast<DefModule>(node), code);
                 break;
+            default:
+                throw NotImplementedException();
         }
     }
 
@@ -161,6 +186,72 @@ public:
         throw NotSupportedException();
     }
 
+    void CompileConstant(const Ptr<Constant> &node, Vector<Byte> &code)
+    {
+        int index = locations.at(node->id).Index();
+        Op op = Match(node->kind, {TypeOf(node)});
+        code.push_back(static_cast<Byte>(op));
+        EmitUInt16(code, index);
+    }
+
+    void CompileBlock(const Ptr<Block> &node, Vector<Byte> &code)
+    {
+        for (const auto &exp: node->expressions)
+        {
+            CompileNode(exp, code);
+        }
+    }
+
+    void CompileModule(const Ptr<DefModule> &node, Vector<Byte> &code)
+    {
+        EmitString(code, node->name);
+        EmitUInt16(code, locations.at(node->id).Index());
+        EmitUInt16(code, node->fields.size());
+        EmitUInt16(code, node->methods.size());
+        for (const auto &field: node->fields)
+        {
+            CompileNode(field, code);
+        }
+        for (const auto &method: node->methods)
+        {
+            CompileNode(method, code);
+        }
+    }
+
+    void CompileDef(const Ptr<Def> &node, Vector<Byte> &code)
+    {
+        EmitString(code, node->name);
+        EmitUInt16(code, locations.at(node->id).Index());
+        EmitUInt16(code, node->parameters.size());
+        CompileNode(node->body, code);
+    }
+
+    void EmitUInt16(Vector<Byte> &code, int number)
+    {
+        Byte *bytes = Endian::UInt16ToBytes(static_cast<uint16_t>(number));
+        code.push_back(bytes[0]);
+        code.push_back(bytes[1]);
+    }
+
+    void EmitInt32(Vector<Byte> &code, int32_t number)
+    {
+        Byte *bytes = Endian::Int32ToBytes(number);
+        for (int i = 0; i < 4; i++)
+        {
+            code.push_back(bytes[i]);
+        }
+    }
+
+    void EmitString(Vector<Byte> &code, String s)
+    {
+        EmitInt32(code, s.size());
+        auto cppString = s.ToCppString();
+        for (const auto &c: cppString)
+        {
+            code.push_back(static_cast<Byte>(c));
+        }
+    }
+
     void Register()
     {
         rules.insert({Kind::Add, {
@@ -198,6 +289,9 @@ public:
         }});
         rules.insert({Kind::Return, {
                 {{Value::IntValue}, Op::RETURN_INT}
+        }});
+        rules.insert({Kind::Constant, {
+                {{Value::IntValue}, Op::PUSH_CONSTANT_INT}
         }});
     }
 };

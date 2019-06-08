@@ -17,7 +17,7 @@ Ptr<Scope> TestTypeChecker::InitializeBasicTypes()
 {
     auto Function = [](const Vector<Ptr<Value>> &args)
     {
-        return New<ValueList>("Function", args);
+        return New<ValueList>(New<ValueLeaf>("Function"), args);
     };
     auto intValue = Value::IntValue;
     auto floatValue = Value::FloatValue;
@@ -56,6 +56,12 @@ Ptr<Scope> TestTypeChecker::InitializeBasicTypes()
     {
         scope->Put(item.first, "Operator", item.second);
     }
+    scope->Put("Int", "Type", New<TypeLeaf>("Int"));
+    scope->Put("Float", "Type", New<TypeLeaf>("Float"));
+    scope->Put("Long", "Type", New<TypeLeaf>("Long"));
+    scope->Put("Double", "Type", New<TypeLeaf>("Double"));
+    scope->Put("Bool", "Type", New<TypeLeaf>("Bool"));
+    scope->Put("Function", "Type", New<TypeLeaf>("Function"));
     return scope;
 }
 
@@ -87,9 +93,13 @@ void TestTypeChecker::Test1()
     {
         cout << ex.position.ToString() << ": " << ex.Message() << endl;
     }
+    catch (KeyNotFoundException &ex)
+    {
+        cout << ex.Message() << endl;
+    }
 }
 
-void TestTypeChecker::OutputTypeRecord(const std::string& path, const HashMap<int, Ptr<Value>> &typeRecord)
+void TestTypeChecker::OutputTypeRecord(const std::string &path, const HashMap<int, Ptr<Value>> &typeRecord)
 {
     std::ofstream stream(path);
     for (const auto &item: typeRecord)

@@ -126,6 +126,12 @@
 		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Lexer.hpp">
 			<Option target="CygniCompiler"/>
 		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Location.cpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Location.hpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
 		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Locator.cpp">
 			<Option target="CygniCompiler"/>
 		</Unit>
@@ -181,6 +187,12 @@
 			<Option target="CygniCompiler"/>
 		</Unit>
 		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/JSON.hpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestCompiler.cpp">
+			<Option target="CygniCompiler"/>
+		</Unit>
+		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestCompiler.hpp">
 			<Option target="CygniCompiler"/>
 		</Unit>
 		<Unit filename="C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestEndian.cpp">

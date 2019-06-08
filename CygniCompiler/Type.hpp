@@ -12,12 +12,6 @@
 class Type
 {
 public:
-    String name;
-
-    explicit Type(String name) : name{std::move(name)}
-    {
-
-    }
 
     virtual bool IsLeaf() = 0;
 
@@ -27,7 +21,9 @@ public:
 class TypeLeaf : public Type
 {
 public:
-    explicit TypeLeaf(String name) : Type(std::move(name))
+    String name;
+
+    explicit TypeLeaf(String name) : name{std::move(name)}
     {
 
     }
@@ -53,10 +49,11 @@ public:
 class TypeList : public Type
 {
 public:
+    Ptr<Type> typeConstructor;
     Vector<Ptr<Type>> parameters;
 
-    TypeList(String name, Vector<Ptr<Type>> parameters)
-            : Type(std::move(name)), parameters{std::move(parameters)}
+    TypeList(Ptr<Type> typeConstructor, Vector<Ptr<Type>> parameters)
+            : typeConstructor{std::move(typeConstructor)}, parameters{std::move(parameters)}
     {
 
     }
@@ -75,7 +72,7 @@ public:
         else
         {
             auto list = Cast<TypeList>(other);
-            if (name == list->name)
+            if (typeConstructor->Equals(list->typeConstructor))
             {
                 auto comparator = [](const Ptr<Type> &x, const Ptr<Type> &y) -> bool
                 {
@@ -96,13 +93,6 @@ public:
 class Value
 {
 public:
-    String name;
-
-    explicit Value(String name) noexcept : name{std::move(name)}
-    {
-
-    }
-
     virtual bool IsLeaf() = 0;
 
     virtual bool Equals(const Ptr<Value> &other) = 0;
@@ -123,7 +113,9 @@ public:
 class ValueLeaf : public Value
 {
 public:
-    explicit ValueLeaf(String name) noexcept : Value(std::move(name))
+    String name;
+
+    explicit ValueLeaf(String name) noexcept
     {
 
     }
@@ -154,10 +146,11 @@ public:
 class ValueList : public Value
 {
 public:
+    Ptr<Value> typeConstructor;
     Vector<Ptr<Value>> values;
 
-    ValueList(String name, Vector<Ptr<Value>> values)
-            : Value(std::move(name)), values{std::move(values)}
+    ValueList(Ptr<Value> typeConstructor, Vector<Ptr<Value>> values)
+            : typeConstructor{typeConstructor}, values{std::move(values)}
     {
 
     }
@@ -176,7 +169,7 @@ public:
         else
         {
             auto list = Cast<ValueList>(other);
-            if (name == list->name)
+            if (typeConstructor->Equals(list->typeConstructor))
             {
                 auto comparator = [](const Ptr<Value> &x, const Ptr<Value> &y) -> bool
                 {
@@ -200,8 +193,9 @@ public:
         {
             items.push_back(value->ToString());
         }
-        return name + "[" + String::Join(",", items.begin(), items.end()) + "]";
+        return typeConstructor->ToString() + "[" + String::Join(", ", items.begin(), items.end()) + "]";
     }
+
 };
 
 class ClassType

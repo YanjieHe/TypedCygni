@@ -4,46 +4,7 @@
 #include "Ast.hpp"
 #include "Scope.hpp"
 #include "Exception.hpp"
-
-enum class LocationKind
-{
-    Global,
-    Class,
-    Module,
-    Function
-};
-
-class Location
-{
-public:
-    LocationKind locationKind;
-    int index;
-
-    Location() = default;
-
-    Location(LocationKind locationKind, int index)
-            : locationKind{locationKind}, index{index}
-    {
-
-    }
-
-    String ToString() const
-    {
-        switch (locationKind)
-        {
-            case LocationKind::Global:
-                return String("Global, ") + String::ToString(index);
-            case LocationKind::Class:
-                return String("Class, ") + String::ToString(index);
-            case LocationKind::Module:
-                return String("Module, ") + String::ToString(index);
-            case LocationKind::Function:
-                return String("Function, ") + String::ToString(index);
-            default:
-                throw NotImplementedException();
-        }
-    }
-};
+#include "Location.hpp"
 
 class Locator
 {
@@ -54,16 +15,12 @@ public:
     {
         scope->Put("Counter", "Module", New<Vector<Ptr<DefModule>>>());
         scope->Put("Counter", "Class", New<Vector<Ptr<DefClass>>>());
-        std::cout << "register modules" << std::endl;
         RegisterModules(program.modules, scope);
-        std::cout << "register classes" << std::endl;
         RegisterClasses(program.classes, scope);
-        std::cout << "locate modules" << std::endl;
         for (const auto &module:program.modules)
         {
             Locate(module, scope);
         }
-        std::cout << "locate classes" << std::endl;
         for (const auto &_class: program.classes)
         {
             Locate(_class, scope);
@@ -145,6 +102,7 @@ public:
                 LocateVar(Cast<Var>(node), scope);
                 break;
             case Kind::Def:
+                LocateDef(Cast<Def>(node), scope);
                 break;
             case Kind::Assign:
                 break;
@@ -285,7 +243,10 @@ public:
             scope->Put(node->name, "Identifier", location);
 
             auto newScope = New<Scope>(scope);
-            newScope->Put("**Scope**", "Variable", tuple<Ptr<Ast>, Ptr<Vector<Ptr<Var>>>>(node, {}));
+            newScope->Put("**Scope**", "Variable",
+                          tuple<Ptr<Ast>, Ptr<Vector<Ptr<Var>>>>(node, New<Vector<Ptr<Var>>>()));
+            newScope->Put("**Scope**", "Constant",
+                          tuple<Ptr<Ast>, Ptr<Vector<Ptr<Constant>>>>(node, New<Vector<Ptr<Constant>>>()));
             Ptr<Vector<Parameter>> parameterList = New<Vector<Parameter>>();
             for (const auto &parameter: node->parameters)
             {
@@ -303,6 +264,8 @@ public:
 
     void LocateModule(const Ptr<DefModule> &node, const Ptr<Scope> &scope)
     {
+        scope->Put("**Scope**", "Variable", tuple<Ptr<Ast>, Ptr<Vector<Ptr<Var>>>>(node, New<Vector<Ptr<Var>>>()));
+        scope->Put("**Scope**", "Function", tuple<Ptr<Ast>, Ptr<Vector<Ptr<Def>>>>(node, New<Vector<Ptr<Def>>>()));
         for (const auto &field: node->fields)
         {
             Locate(field, scope);
@@ -315,6 +278,8 @@ public:
 
     void LocateClass(const Ptr<DefClass> &node, const Ptr<Scope> &scope)
     {
+        scope->Put("**Scope**", "Variable", tuple<Ptr<Ast>, Ptr<Vector<Ptr<Var>>>>(node, New<Vector<Ptr<Var>>>()));
+        scope->Put("**Scope**", "Function", tuple<Ptr<Ast>, Ptr<Vector<Ptr<Def>>>>(node, New<Vector<Ptr<Def>>>()));
         for (const auto &field: node->fields)
         {
             Locate(field, scope);
@@ -362,24 +327,17 @@ public:
         auto result = scope->Lookup("Counter", "Module");
         if (result)
         {
-            std::cout << "successfully found module" << std::endl;
             auto nodes = (*result).AnyCast<Ptr<Vector<Ptr<DefModule>>>>();
-            std::cout << "register modules" << std::endl;
             for (const auto &module: modules)
             {
                 int index = AddNode(nodes, module);
-                std::cout << "index = " << index << std::endl;
                 Location location{LocationKind::Global, index};
                 scope->Put(module->name, "Identifier", location);
-                std::cout << "module name = " << module->name << std::endl;
                 locations.insert({module->id, location});
-                std::cout << "record location: " << location.ToString() << std::endl;
                 auto newScope = New<Scope>(scope);
                 newScope->Put("Counter", "FieldDefinitions", New<Vector<Ptr<Var>>>());
                 newScope->Put("Counter", "FunctionDefinitions", New<Vector<Ptr<Def>>>());
-                std::cout << "register fields" << std::endl;
                 RegisterFields(module->fields, newScope, LocationKind::Module);
-                std::cout << "register methods" << std::endl;
                 RegisterMethods(module->methods, newScope, LocationKind::Module);
             }
         }

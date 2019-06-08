@@ -15,7 +15,9 @@ CMakeFiles/CygniCompiler.dir/Compiler.cpp.obj
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Compiler.cpp
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Compiler.hpp
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Encoding.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Endian.hpp
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Exception.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Location.hpp
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Optional.hpp
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Predef.hpp
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Scope.hpp
@@ -46,11 +48,19 @@ CMakeFiles/CygniCompiler.dir/Lexer.cpp.obj
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Predef.hpp
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/String.hpp
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Token.hpp
+CMakeFiles/CygniCompiler.dir/Location.cpp.obj
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Encoding.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Exception.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Location.cpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Location.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Predef.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/String.hpp
 CMakeFiles/CygniCompiler.dir/Locator.cpp.obj
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Any.hpp
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Ast.hpp
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Encoding.hpp
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Exception.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Location.hpp
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Locator.cpp
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Locator.hpp
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Optional.hpp
@@ -120,6 +130,7 @@ CMakeFiles/CygniCompiler.dir/main.cpp.obj
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/TypeChecker.hpp
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/main.cpp
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/JSON.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestCompiler.hpp
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestEndian.hpp
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestLexer.hpp
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestLocator.hpp
@@ -132,6 +143,30 @@ CMakeFiles/CygniCompiler.dir/test/JSON.cpp.obj
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/String.hpp
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/JSON.cpp
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/JSON.hpp
+CMakeFiles/CygniCompiler.dir/test/TestCompiler.cpp.obj
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Any.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Ast.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Compiler.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Encoding.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Endian.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Exception.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/File.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Lexer.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Location.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Locator.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Optional.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Parser.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Predef.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Scope.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/String.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Token.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Type.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/TypeChecker.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/JSON.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestCompiler.cpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestCompiler.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestParser.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestTypeChecker.hpp
 CMakeFiles/CygniCompiler.dir/test/TestEndian.cpp.obj
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Endian.hpp
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/test/TestEndian.cpp
@@ -153,6 +188,7 @@ CMakeFiles/CygniCompiler.dir/test/TestLocator.cpp.obj
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Exception.hpp
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/File.hpp
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Lexer.hpp
+ C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Location.hpp
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Locator.hpp
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Optional.hpp
  C:/Users/HeYan/Documents/MyCode/C++/CygniCompiler/Parser.hpp

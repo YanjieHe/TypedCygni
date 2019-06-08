@@ -286,6 +286,33 @@ Lexer.cpp.s:
 	$(MAKE) -f CMakeFiles\CygniCompiler.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\CygniCompiler.dir\Lexer.cpp.s
 .PHONY : Lexer.cpp.s
 
+Location.obj: Location.cpp.obj
+
+.PHONY : Location.obj
+
+# target to build an object file
+Location.cpp.obj:
+	$(MAKE) -f CMakeFiles\CygniCompiler.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\CygniCompiler.dir\Location.cpp.obj
+.PHONY : Location.cpp.obj
+
+Location.i: Location.cpp.i
+
+.PHONY : Location.i
+
+# target to preprocess a source file
+Location.cpp.i:
+	$(MAKE) -f CMakeFiles\CygniCompiler.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\CygniCompiler.dir\Location.cpp.i
+.PHONY : Location.cpp.i
+
+Location.s: Location.cpp.s
+
+.PHONY : Location.s
+
+# target to generate assembly for a file
+Location.cpp.s:
+	$(MAKE) -f CMakeFiles\CygniCompiler.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\CygniCompiler.dir\Location.cpp.s
+.PHONY : Location.cpp.s
+
 Locator.obj: Locator.cpp.obj
 
 .PHONY : Locator.obj
@@ -529,6 +556,33 @@ test\JSON.cpp.s:
 	$(MAKE) -f CMakeFiles\CygniCompiler.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\CygniCompiler.dir\test\JSON.cpp.s
 .PHONY : test\JSON.cpp.s
 
+test\TestCompiler.obj: test\TestCompiler.cpp.obj
+
+.PHONY : test\TestCompiler.obj
+
+# target to build an object file
+test\TestCompiler.cpp.obj:
+	$(MAKE) -f CMakeFiles\CygniCompiler.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.obj
+.PHONY : test\TestCompiler.cpp.obj
+
+test\TestCompiler.i: test\TestCompiler.cpp.i
+
+.PHONY : test\TestCompiler.i
+
+# target to preprocess a source file
+test\TestCompiler.cpp.i:
+	$(MAKE) -f CMakeFiles\CygniCompiler.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.i
+.PHONY : test\TestCompiler.cpp.i
+
+test\TestCompiler.s: test\TestCompiler.cpp.s
+
+.PHONY : test\TestCompiler.s
+
+# target to generate assembly for a file
+test\TestCompiler.cpp.s:
+	$(MAKE) -f CMakeFiles\CygniCompiler.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.s
+.PHONY : test\TestCompiler.cpp.s
+
 test\TestEndian.obj: test\TestEndian.cpp.obj
 
 .PHONY : test\TestEndian.obj
@@ -718,6 +772,9 @@ help:
 	@echo ... Lexer.obj
 	@echo ... Lexer.i
 	@echo ... Lexer.s
+	@echo ... Location.obj
+	@echo ... Location.i
+	@echo ... Location.s
 	@echo ... Locator.obj
 	@echo ... Locator.i
 	@echo ... Locator.s
@@ -745,6 +802,9 @@ help:
 	@echo ... test/JSON.obj
 	@echo ... test/JSON.i
 	@echo ... test/JSON.s
+	@echo ... test/TestCompiler.obj
+	@echo ... test/TestCompiler.i
+	@echo ... test/TestCompiler.s
 	@echo ... test/TestEndian.obj
 	@echo ... test/TestEndian.i
 	@echo ... test/TestEndian.s

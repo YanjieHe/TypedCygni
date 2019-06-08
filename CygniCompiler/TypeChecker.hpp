@@ -129,7 +129,7 @@ public:
         Optional<Any> result = scope->Lookup(binaryOperators[kind], "Operator");
         if (result)
         {
-            const Vector<Ptr<ValueList>> &functions = (*result).AnyCast<Vector<Ptr<ValueList>>>();
+            const auto &functions = (*result).AnyCast<Vector<Ptr<ValueList>>>();
             for (const auto &function: functions)
             {
                 if (MatchParameters(function, {leftValue, rightValue}))
@@ -182,7 +182,9 @@ public:
         {
             return x->Equals(y);
         };
-        return std::equal(function->values.begin(), function->values.end() - 1, arguments.begin(), arguments.end(),
+        return std::equal(function->values.begin(),
+                          function->values.end() - 1,
+                          arguments.begin(), arguments.end(),
                           comparator);
     }
 
@@ -274,10 +276,19 @@ public:
         // TO DO: search in the scope
         if (type->IsLeaf())
         {
-            return New<ValueLeaf>(Cast<TypeLeaf>(type)->name);
+            Optional<Any> result = scope->Lookup(Cast<TypeLeaf>(type)->name, "Type");
+            if (result)
+            {
+                return New<ValueLeaf>((*result).AnyCast<Ptr<TypeLeaf>>()->name);
+            }
+            else
+            {
+                throw KeyNotFoundException();
+            }
         }
         else
         {
+            // TO DO
             auto list = Cast<TypeList>(type);
             Vector<Ptr<Value>> values;
             values.reserve(list->parameters.size());
@@ -285,20 +296,31 @@ public:
             {
                 values.push_back(CheckType(parameter, scope));
             }
-            return New<ValueList>(list->name, values);
+            return New<ValueList>(CheckType(list->typeConstructor, scope), values);
         }
     }
 
     Ptr<Value> CheckCall(const Ptr<Call> &node, const Ptr<Scope> &scope)
     {
         auto function = Check(node->function, scope);
+        auto IsFunction = [](const Ptr<Value> &value)
+        {
+            if (value->IsLeaf())
+            {
+                return Cast<ValueLeaf>(value)->name == "Function";
+            }
+            else
+            {
+                return false;
+            }
+        };
         Vector<Ptr<Value>> arguments;
         arguments.reserve(node->arguments.size());
         for (const auto &arg: node->arguments)
         {
             arguments.push_back(Check(arg, scope));
         }
-        if (!(function->IsLeaf()) && function->name == "Function")
+        if (IsFunction(function))
         {
             if (MatchParameters(Cast<ValueList>(function), arguments))
             {
@@ -332,7 +354,18 @@ public:
     Ptr<Value> CheckIfThen(const Ptr<IfThen> &node, const Ptr<Scope> &scope)
     {
         auto condition = Check(node->condition, scope);
-        if (condition->IsLeaf() && condition->name == "Bool")
+        auto IsBoolean = [](const Ptr<Value> &value)
+        {
+            if (value->IsLeaf())
+            {
+                return Cast<ValueLeaf>(value)->name == "Bool";
+            }
+            else
+            {
+                return false;
+            }
+        };
+        if (IsBoolean(condition))
         {
             Check(node->ifTrue, scope);
             return Value::UnitValue;
@@ -346,7 +379,18 @@ public:
     Ptr<Value> CheckIfElse(const Ptr<IfElse> &node, const Ptr<Scope> &scope)
     {
         auto condition = Check(node->condition, scope);
-        if (condition->IsLeaf() && condition->name == "Bool")
+        auto IsBoolean = [](const Ptr<Value> &value)
+        {
+            if (value->IsLeaf())
+            {
+                return Cast<ValueLeaf>(value)->name == "Bool";
+            }
+            else
+            {
+                return false;
+            }
+        };
+        if (IsBoolean(condition))
         {
             Check(node->ifTrue, scope);
             Check(node->ifFalse, scope);

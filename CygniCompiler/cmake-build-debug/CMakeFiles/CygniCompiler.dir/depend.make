@@ -14,7 +14,9 @@ CMakeFiles\CygniCompiler.dir\Compiler.cpp.obj: ..\Ast.hpp
 CMakeFiles\CygniCompiler.dir\Compiler.cpp.obj: ..\Compiler.cpp
 CMakeFiles\CygniCompiler.dir\Compiler.cpp.obj: ..\Compiler.hpp
 CMakeFiles\CygniCompiler.dir\Compiler.cpp.obj: ..\Encoding.hpp
+CMakeFiles\CygniCompiler.dir\Compiler.cpp.obj: ..\Endian.hpp
 CMakeFiles\CygniCompiler.dir\Compiler.cpp.obj: ..\Exception.hpp
+CMakeFiles\CygniCompiler.dir\Compiler.cpp.obj: ..\Location.hpp
 CMakeFiles\CygniCompiler.dir\Compiler.cpp.obj: ..\Optional.hpp
 CMakeFiles\CygniCompiler.dir\Compiler.cpp.obj: ..\Predef.hpp
 CMakeFiles\CygniCompiler.dir\Compiler.cpp.obj: ..\Scope.hpp
@@ -46,10 +48,18 @@ CMakeFiles\CygniCompiler.dir\Lexer.cpp.obj: ..\Predef.hpp
 CMakeFiles\CygniCompiler.dir\Lexer.cpp.obj: ..\String.hpp
 CMakeFiles\CygniCompiler.dir\Lexer.cpp.obj: ..\Token.hpp
 
+CMakeFiles\CygniCompiler.dir\Location.cpp.obj: ..\Encoding.hpp
+CMakeFiles\CygniCompiler.dir\Location.cpp.obj: ..\Exception.hpp
+CMakeFiles\CygniCompiler.dir\Location.cpp.obj: ..\Location.cpp
+CMakeFiles\CygniCompiler.dir\Location.cpp.obj: ..\Location.hpp
+CMakeFiles\CygniCompiler.dir\Location.cpp.obj: ..\Predef.hpp
+CMakeFiles\CygniCompiler.dir\Location.cpp.obj: ..\String.hpp
+
 CMakeFiles\CygniCompiler.dir\Locator.cpp.obj: ..\Any.hpp
 CMakeFiles\CygniCompiler.dir\Locator.cpp.obj: ..\Ast.hpp
 CMakeFiles\CygniCompiler.dir\Locator.cpp.obj: ..\Encoding.hpp
 CMakeFiles\CygniCompiler.dir\Locator.cpp.obj: ..\Exception.hpp
+CMakeFiles\CygniCompiler.dir\Locator.cpp.obj: ..\Location.hpp
 CMakeFiles\CygniCompiler.dir\Locator.cpp.obj: ..\Locator.cpp
 CMakeFiles\CygniCompiler.dir\Locator.cpp.obj: ..\Locator.hpp
 CMakeFiles\CygniCompiler.dir\Locator.cpp.obj: ..\Optional.hpp
@@ -119,6 +129,7 @@ CMakeFiles\CygniCompiler.dir\main.cpp.obj: ..\Type.hpp
 CMakeFiles\CygniCompiler.dir\main.cpp.obj: ..\TypeChecker.hpp
 CMakeFiles\CygniCompiler.dir\main.cpp.obj: ..\main.cpp
 CMakeFiles\CygniCompiler.dir\main.cpp.obj: ..\test\JSON.hpp
+CMakeFiles\CygniCompiler.dir\main.cpp.obj: ..\test\TestCompiler.hpp
 CMakeFiles\CygniCompiler.dir\main.cpp.obj: ..\test\TestEndian.hpp
 CMakeFiles\CygniCompiler.dir\main.cpp.obj: ..\test\TestLexer.hpp
 CMakeFiles\CygniCompiler.dir\main.cpp.obj: ..\test\TestLocator.hpp
@@ -131,6 +142,30 @@ CMakeFiles\CygniCompiler.dir\test\JSON.cpp.obj: ..\Predef.hpp
 CMakeFiles\CygniCompiler.dir\test\JSON.cpp.obj: ..\String.hpp
 CMakeFiles\CygniCompiler.dir\test\JSON.cpp.obj: ..\test\JSON.cpp
 CMakeFiles\CygniCompiler.dir\test\JSON.cpp.obj: ..\test\JSON.hpp
+
+CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.obj: ..\Any.hpp
+CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.obj: ..\Ast.hpp
+CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.obj: ..\Compiler.hpp
+CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.obj: ..\Encoding.hpp
+CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.obj: ..\Endian.hpp
+CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.obj: ..\Exception.hpp
+CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.obj: ..\File.hpp
+CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.obj: ..\Lexer.hpp
+CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.obj: ..\Location.hpp
+CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.obj: ..\Locator.hpp
+CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.obj: ..\Optional.hpp
+CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.obj: ..\Parser.hpp
+CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.obj: ..\Predef.hpp
+CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.obj: ..\Scope.hpp
+CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.obj: ..\String.hpp
+CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.obj: ..\Token.hpp
+CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.obj: ..\Type.hpp
+CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.obj: ..\TypeChecker.hpp
+CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.obj: ..\test\JSON.hpp
+CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.obj: ..\test\TestCompiler.cpp
+CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.obj: ..\test\TestCompiler.hpp
+CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.obj: ..\test\TestParser.hpp
+CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.obj: ..\test\TestTypeChecker.hpp
 
 CMakeFiles\CygniCompiler.dir\test\TestEndian.cpp.obj: ..\Endian.hpp
 CMakeFiles\CygniCompiler.dir\test\TestEndian.cpp.obj: ..\test\TestEndian.cpp
@@ -152,6 +187,7 @@ CMakeFiles\CygniCompiler.dir\test\TestLocator.cpp.obj: ..\Encoding.hpp
 CMakeFiles\CygniCompiler.dir\test\TestLocator.cpp.obj: ..\Exception.hpp
 CMakeFiles\CygniCompiler.dir\test\TestLocator.cpp.obj: ..\File.hpp
 CMakeFiles\CygniCompiler.dir\test\TestLocator.cpp.obj: ..\Lexer.hpp
+CMakeFiles\CygniCompiler.dir\test\TestLocator.cpp.obj: ..\Location.hpp
 CMakeFiles\CygniCompiler.dir\test\TestLocator.cpp.obj: ..\Locator.hpp
 CMakeFiles\CygniCompiler.dir\test\TestLocator.cpp.obj: ..\Optional.hpp
 CMakeFiles\CygniCompiler.dir\test\TestLocator.cpp.obj: ..\Parser.hpp

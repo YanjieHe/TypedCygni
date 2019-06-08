@@ -27,7 +27,8 @@ IfThen::IfThen(Position position, Ptr<Ast> condition, Ptr<Ast> ifTrue)
 }
 
 IfElse::IfElse(Position position, Ptr<Ast> condition, Ptr<Ast> ifTrue, Ptr<Ast> ifFalse)
-        : Ast(Kind::IfElse, position), condition{std::move(condition)}, ifTrue{std::move(ifTrue)}, ifFalse{std::move(ifFalse)}
+        : Ast(Kind::IfElse, position), condition{std::move(condition)}, ifTrue{std::move(ifTrue)},
+          ifFalse{std::move(ifFalse)}
 {
 
 }
@@ -83,7 +84,8 @@ Parameter::Parameter(String name, Ptr<Type> type)
 }
 
 Def::Def(Position position, String name, Vector<Parameter> parameters, Ptr<Type> type, Ptr<Ast> body)
-        : Ast(Kind::Def, position), name{std::move(name)}, parameters{std::move(parameters)}, type{std::move(type)}, body{std::move(body)},
+        : Ast(Kind::Def, position), name{std::move(name)}, parameters{std::move(parameters)}, type{std::move(type)},
+          body{std::move(body)},
           access{Access::Local}
 {
 
@@ -99,7 +101,7 @@ Ptr<Type> Def::MakeFunctionType(Vector<Parameter> parameters, Ptr<Type> returnTy
                        return p.type;
                    });
     types.back() = std::move(returnType);
-    return New<TypeList>("Function", types);
+    return New<TypeList>(New<TypeLeaf>("Function"), types);
 }
 
 DefClass::DefClass(Position position, String name, Vector<Ptr<Var>> fields, Vector<Ptr<Def>> methods)

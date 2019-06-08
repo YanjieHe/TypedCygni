@@ -25,29 +25,20 @@ Program Parser::ParseProgram()
 
 Ptr<Ast> Parser::Statement()
 {
-    if (Look().tag == Tag::If)
+    switch (Look().tag)
     {
-        return IfStatement();
-    }
-    else if (Look().tag == Tag::Var)
-    {
-        return ParseVar();
-    }
-    else if (Look().tag == Tag::Def)
-    {
-        return ParseDef();
-    }
-    else if (Look().tag == Tag::Return)
-    {
-        return ParseReturn();
-    }
-    else if (Look().tag == Tag::While)
-    {
-        return ParseWhile();
-    }
-    else
-    {
-        return ParseAssign();
+        case Tag::If:
+            return IfStatement();
+        case Tag::Var:
+            return ParseVar();
+        case Tag::Def:
+            return ParseDef();
+        case Tag::Return:
+            return ParseReturn();
+        case Tag::While:
+            return ParseWhile();
+        default:
+            return ParseAssign();
     }
 }
 
@@ -430,7 +421,7 @@ Ptr<Type> Parser::ParseType()
     if (Look().tag == Tag::LeftBracket)
     {
         Vector<Ptr<Type>> types = ParseTypeArguments();
-        auto result = New<TypeList>(name, types);
+        auto result = New<TypeList>(New<TypeLeaf>(name), types);
         if (result)
         {
             throw ParserException(Look().line, Look().column, "type error");
