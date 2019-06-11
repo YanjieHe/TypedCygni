@@ -1,3 +1,7 @@
+#include <utility>
+
+#include <utility>
+
 #ifndef TYPE_HPP
 #define TYPE_HPP
 
@@ -151,7 +155,8 @@ class ArrayType : public Type
 public:
     Ptr<Type> element;
 
-    explicit ArrayType(const Ptr<Type> &element) : element{element}
+    explicit ArrayType(Ptr<Type> element)
+            : element{std::move(element)}
     {
 
     }
@@ -186,17 +191,54 @@ public:
     Vector<Ptr<Type>> parameters;
     Ptr<Type> returnType;
 
-    FunctionType(const Vector<Ptr<Type>> &parameters, const Ptr<Type> &returnType) : parameters{parameters},
-                                                                                     returnType{returnType}
+    FunctionType(Vector<Ptr<Type>> parameters, Ptr<Type> returnType)
+            : parameters{std::move(parameters)},
+              returnType{std::move(returnType)}
     {
 
     }
+
+    TypeCode GetTypeCode() override
+    {
+        return TypeCode::FUNCTION;
+    }
+
+    bool Equals(const Ptr<Type> &other) override
+    {
+        if (other->GetTypeCode() == TypeCode::FUNCTION)
+        {
+            auto function = Cast<FunctionType>(other);
+            auto compare = [](const Ptr<Type> &x, const Ptr<Type> &y)
+            {
+                return x->Equals(y);
+            };
+            if (parameters.size() == function->parameters.size())
+            {
+                return std::equal(parameters.begin(), parameters.end(), function->parameters.begin(),
+                                  function->parameters.end(), compare)
+                       && returnType->Equals(function->returnType);
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    String ToString() override
+    {
+        auto items = Enumerate::Map(parameters, [](const Ptr<Type> &t)
+        {
+            return t->ToString();
+        });
+        return "(" + String::Join(", ", items.begin(), items.end()) + ") => " + returnType->ToString();
+    }
 };
 
-class ObjectType : public Type
-{
-    
-};
 
 class Value
 {
@@ -223,7 +265,7 @@ class ValueLeaf : public Value
 public:
     String name;
 
-    explicit ValueLeaf(String name) noexcept
+    explicit ValueLeaf(String name):name{name} noexcept
     {
 
     }
@@ -313,7 +355,8 @@ public:
     HashMap<String, Ptr<Type>> fields;
     HashMap<String, Ptr<Type>> methods;
 
-    explicit ClassType(String className) : className{std::move(className)}
+    explicit ClassType(String className)
+            : className{std::move(className)}
     {
 
     }
@@ -336,7 +379,8 @@ public:
     HashMap<String, Ptr<Value>> fields;
     HashMap<String, Ptr<Value>> methods;
 
-    explicit ClassValue(String className) : className{std::move(className)}
+    explicit ClassValue(String className)
+            : className{std::move(className)}
     {
 
     }

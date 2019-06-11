@@ -52,4 +52,20 @@ constexpr std::tuple<std::_Unrefwrap_t<_Types>...> tuple(_Types &&... _Args)
 
 using std::tie;
 
+class Enumerate
+{
+public:
+    template<typename Selector, typename T>
+    static auto Map(const Vector<T> &input, Selector selector)
+    {
+        Vector<decltype(selector(input.front()))> result;
+        result.reserve(input.size());
+        for (const auto &item: input)
+        {
+            result.push_back(selector(item));
+        }
+        return result;
+    }
+};
+
 #endif //PREDEF_HPP
