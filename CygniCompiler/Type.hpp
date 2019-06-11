@@ -1,17 +1,8 @@
-#include <utility>
-
-#include <utility>
-
 #ifndef TYPE_HPP
 #define TYPE_HPP
 
 #include "String.hpp"
 #include "Predef.hpp"
-
-/*
- * Type Leaf: Int, Float, Bool, Car, Rectangle, ...
- * Type List: Function[Int, Int, Int], List[Double]
- */
 
 enum class TypeCode
 {
@@ -19,6 +10,7 @@ enum class TypeCode
     FLOAT,
     LONG,
     DOUBLE,
+    CHAR,
     STRING,
     BOOL,
     ARRAY,
@@ -109,6 +101,25 @@ public:
     String ToString() override
     {
         return "Double";
+    }
+};
+
+class CharType : public Type
+{
+public:
+    TypeCode GetTypeCode() override
+    {
+        return TypeCode::CHAR;
+    }
+
+    bool Equals(const Ptr<Type> &other) override
+    {
+        return other->GetTypeCode() == TypeCode::CHAR;
+    }
+
+    String ToString() override
+    {
+        return "Char";
     }
 };
 
@@ -235,51 +246,192 @@ public:
         {
             return t->ToString();
         });
-        return "(" + String::Join(", ", items.begin(), items.end()) + ") => " + returnType->ToString();
+        items.push_back(returnType->ToString());
+        return "Function[" + String::Join(", ", items.begin(), items.end()) + "]";
     }
 };
 
+enum class ValueCode
+{
+    INT,
+    FLOAT,
+    LONG,
+    DOUBLE,
+    CHAR,
+    STRING,
+    BOOL,
+    ARRAY,
+    FUNCTION,
+    OBJECT
+};
 
 class Value
 {
 public:
-    virtual bool IsLeaf() = 0;
+
+    virtual ValueCode GetValueCode() = 0;
 
     virtual bool Equals(const Ptr<Value> &other) = 0;
 
     virtual String ToString() = 0;
-
-    static Ptr<Value> IntValue;
-    static Ptr<Value> FloatValue;
-    static Ptr<Value> LongValue;
-    static Ptr<Value> DoubleValue;
-    static Ptr<Value> BoolValue;
-    static Ptr<Value> CharValue;
-    static Ptr<Value> StringValue;
-    static Ptr<Value> UnitValue;
-
 };
 
-class ValueLeaf : public Value
+class IntValue : public Value
 {
 public:
-    String name;
 
-    explicit ValueLeaf(String name):name{name} noexcept
+    ValueCode GetValueCode() override
     {
-
-    }
-
-    bool IsLeaf() override
-    {
-        return true;
+        return ValueCode::INT;
     }
 
     bool Equals(const Ptr<Value> &other) override
     {
-        if (other->IsLeaf())
+        return other->GetValueCode() == ValueCode::INT;
+    }
+
+    String ToString() override
+    {
+        return "Int";
+    }
+};
+
+class FloatValue : public Value
+{
+public:
+    ValueCode GetValueCode() override
+    {
+        return ValueCode::FLOAT;
+    }
+
+    bool Equals(const Ptr<Value> &other) override
+    {
+        return other->GetValueCode() == ValueCode::FLOAT;
+    }
+
+    String ToString() override
+    {
+        return "Float";
+    }
+};
+
+class LongValue : public Value
+{
+public:
+    ValueCode GetValueCode() override
+    {
+        return ValueCode::LONG;
+    }
+
+    bool Equals(const Ptr<Value> &other) override
+    {
+        return other->GetValueCode() == ValueCode::LONG;
+    }
+
+    String ToString() override
+    {
+        return "Long";
+    }
+};
+
+class DoubleValue : public Value
+{
+public:
+    ValueCode GetValueCode() override
+    {
+        return ValueCode::DOUBLE;
+    }
+
+    bool Equals(const Ptr<Value> &other) override
+    {
+        return other->GetValueCode() == ValueCode::DOUBLE;
+    }
+
+    String ToString() override
+    {
+        return "Double";
+    }
+};
+
+class BoolValue : public Value
+{
+public:
+    ValueCode GetValueCode() override
+    {
+        return ValueCode::BOOL;
+    }
+
+    bool Equals(const Ptr<Value> &other) override
+    {
+        return other->GetValueCode() == ValueCode::BOOL;
+    }
+
+    String ToString() override
+    {
+        return "Bool";
+    }
+};
+
+class CharValue : public Value
+{
+public:
+    ValueCode GetValueCode() override
+    {
+        return ValueCode::CHAR;
+    }
+
+    bool Equals(const Ptr<Value> &other) override
+    {
+        return other->GetValueCode() == ValueCode::CHAR;
+    }
+
+    String ToString() override
+    {
+        return "Char";
+    }
+};
+
+class StringValue : public Value
+{
+public:
+    ValueCode GetValueCode() override
+    {
+        return ValueCode::STRING;
+    }
+
+    bool Equals(const Ptr<Value> &other) override
+    {
+        return other->GetValueCode() == ValueCode::STRING;
+    }
+
+    String ToString() override
+    {
+        return "String";
+    }
+};
+
+class ArrayValue : public Value
+{
+public:
+    Ptr<Value> element;
+
+    explicit ArrayValue(Ptr<Value> element)
+            : element{std::move(element)}
+    {
+
+    }
+
+    ValueCode GetValueCode() override
+    {
+        return ValueCode::ARRAY;
+    }
+
+    bool Equals(const Ptr<Value> &other) override
+    {
+        if (other->GetValueCode() == ValueCode::ARRAY)
         {
-            return name == Cast<ValueLeaf>(other)->name;
+            auto array = Cast<ArrayValue>(other);
+            return element->Equals(array->element);
         }
         else
         {
@@ -289,110 +441,62 @@ public:
 
     String ToString() override
     {
-        return name;
+        return "Array[" + element->ToString() + "]";
     }
 };
 
-class ValueList : public Value
+class FunctionValue : public Value
 {
 public:
-    Ptr<Value> typeConstructor;
-    Vector<Ptr<Value>> values;
+    Vector<Ptr<Value>> parameters;
+    Ptr<Value> returnValue;
 
-    ValueList(Ptr<Value> typeConstructor, Vector<Ptr<Value>> values)
-            : typeConstructor{typeConstructor}, values{std::move(values)}
+    FunctionValue(Vector<Ptr<Value>> parameters, Ptr<Value> returnValue)
+            : parameters{std::move(parameters)},
+              returnValue{std::move(returnValue)}
     {
 
     }
 
-    bool IsLeaf() override
+    ValueCode GetValueCode() override
     {
-        return false;
+        return ValueCode::FUNCTION;
     }
 
     bool Equals(const Ptr<Value> &other) override
     {
-        if (other->IsLeaf())
+        if (other->GetValueCode() == ValueCode::FUNCTION)
         {
-            return false;
-        }
-        else
-        {
-            auto list = Cast<ValueList>(other);
-            if (typeConstructor->Equals(list->typeConstructor))
+            auto function = Cast<FunctionValue>(other);
+            auto compare = [](const Ptr<Value> &x, const Ptr<Value> &y)
             {
-                auto comparator = [](const Ptr<Value> &x, const Ptr<Value> &y) -> bool
-                {
-                    return x->Equals(y);
-                };
-                return std::equal(values.begin(), values.end(), list->values.begin(),
-                                  list->values.end(), comparator);
+                return x->Equals(y);
+            };
+            if (parameters.size() == function->parameters.size())
+            {
+                return std::equal(parameters.begin(), parameters.end(), function->parameters.begin(),
+                                  function->parameters.end(), compare)
+                       && returnValue->Equals(function->returnValue);
             }
             else
             {
                 return false;
             }
         }
+        else
+        {
+            return false;
+        }
     }
 
     String ToString() override
     {
-        Vector<String> items;
-        items.reserve(values.size());
-        for (const auto &value: values)
+        auto items = Enumerate::Map(parameters, [](const Ptr<Value> &t)
         {
-            items.push_back(value->ToString());
-        }
-        return typeConstructor->ToString() + "[" + String::Join(", ", items.begin(), items.end()) + "]";
-    }
-
-};
-
-class ClassType
-{
-public:
-    String className;
-    HashMap<String, Ptr<Type>> fields;
-    HashMap<String, Ptr<Type>> methods;
-
-    explicit ClassType(String className)
-            : className{std::move(className)}
-    {
-
-    }
-
-    void AddField(const String &name, const Ptr<Type> &type)
-    {
-        this->fields.insert({name, type});
-    }
-
-    void AddMethod(const String &name, const Ptr<Type> &type)
-    {
-        this->methods.insert({name, type});
-    }
-};
-
-class ClassValue
-{
-public:
-    String className;
-    HashMap<String, Ptr<Value>> fields;
-    HashMap<String, Ptr<Value>> methods;
-
-    explicit ClassValue(String className)
-            : className{std::move(className)}
-    {
-
-    }
-
-    void AddField(const String &name, const Ptr<Value> &value)
-    {
-        this->fields.insert({name, value});
-    }
-
-    void AddMethod(const String &name, const Ptr<Value> &value)
-    {
-        this->methods.insert({name, value});
+            return t->ToString();
+        });
+        items.push_back(returnValue->ToString());
+        return "Function[" + String::Join(", ", items.begin(), items.end()) + "]";
     }
 };
 

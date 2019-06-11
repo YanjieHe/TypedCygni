@@ -15,29 +15,29 @@ void TestTypeChecker::TestAll()
 
 Ptr<Scope> TestTypeChecker::InitializeBasicTypes()
 {
-    auto Function = [](const Vector<Ptr<Value>> &args)
+    auto Function = [](const Vector<Ptr<Value>> &parameters, const Ptr<Value> &returnValue)
     {
-        return New<ValueList>(New<ValueLeaf>("Function"), args);
+        return New<FunctionValue>(parameters, returnValue);
     };
-    auto intValue = Value::IntValue;
-    auto floatValue = Value::FloatValue;
-    auto longValue = Value::LongValue;
-    auto doubleValue = Value::DoubleValue;
-    auto boolValue = Value::BoolValue;
-    auto numberComputation = Vector<Ptr<ValueList>>{
-            Function({intValue, intValue, intValue}),
-            Function({floatValue, floatValue, floatValue}),
-            Function({longValue, longValue, longValue}),
-            Function({doubleValue, doubleValue, doubleValue})
+    auto intValue = New<IntValue>();
+    auto floatValue = New<FloatValue>();
+    auto longValue = New<LongValue>();
+    auto doubleValue = New<DoubleValue>();
+    auto boolValue = New<BoolValue>();
+    auto numberComputation = Vector<Ptr<FunctionValue>>{
+            Function({intValue, intValue}, intValue),
+            Function({floatValue, floatValue}, floatValue),
+            Function({longValue, longValue}, longValue),
+            Function({doubleValue, doubleValue}, doubleValue)
     };
 
-    auto comparision = Vector<Ptr<ValueList>>{
-            Function({intValue, intValue, boolValue}),
-            Function({floatValue, floatValue, boolValue}),
-            Function({longValue, longValue, boolValue}),
-            Function({doubleValue, doubleValue, boolValue}),
+    auto comparision = Vector<Ptr<FunctionValue>>{
+            Function({intValue, intValue}, boolValue),
+            Function({floatValue, floatValue}, boolValue),
+            Function({longValue, longValue}, boolValue),
+            Function({doubleValue, doubleValue}, boolValue),
     };
-    HashMap<String, Vector<Ptr<ValueList>>> operators = {
+    HashMap<String, Vector<Ptr<FunctionValue>>> operators = {
             {"+",  numberComputation},
             {"-",  numberComputation},
             {"*",  numberComputation},
@@ -56,12 +56,11 @@ Ptr<Scope> TestTypeChecker::InitializeBasicTypes()
     {
         scope->Put(item.first, "Operator", item.second);
     }
-    scope->Put("Int", "Type", New<TypeLeaf>("Int"));
-    scope->Put("Float", "Type", New<TypeLeaf>("Float"));
-    scope->Put("Long", "Type", New<TypeLeaf>("Long"));
-    scope->Put("Double", "Type", New<TypeLeaf>("Double"));
-    scope->Put("Bool", "Type", New<TypeLeaf>("Bool"));
-    scope->Put("Function", "Type", New<TypeLeaf>("Function"));
+    scope->Put("Int", "Type", New<IntType>());
+    scope->Put("Float", "Type", New<FloatType>());
+    scope->Put("Long", "Type", New<LongType>());
+    scope->Put("Double", "Type", New<DoubleType>());
+    scope->Put("Bool", "Type", New<BoolType>());
     return scope;
 }
 
