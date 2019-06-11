@@ -9,85 +9,193 @@
  * Type List: Function[Int, Int, Int], List[Double]
  */
 
+enum class TypeCode
+{
+    INT,
+    FLOAT,
+    LONG,
+    DOUBLE,
+    STRING,
+    BOOL,
+    ARRAY,
+    FUNCTION,
+    OBJECT
+};
+
 class Type
 {
 public:
-
-    virtual bool IsLeaf() = 0;
+    virtual TypeCode GetTypeCode() = 0;
 
     virtual bool Equals(const Ptr<Type> &other) = 0;
+
+    virtual String ToString() = 0;
 };
 
-class TypeLeaf : public Type
+class IntType : public Type
 {
 public:
-    String name;
-
-    explicit TypeLeaf(String name) : name{std::move(name)}
+    TypeCode GetTypeCode() override
     {
-
-    }
-
-    bool IsLeaf() override
-    {
-        return true;
+        return TypeCode::INT;
     }
 
     bool Equals(const Ptr<Type> &other) override
     {
-        if (other->IsLeaf())
+        return other->GetTypeCode() == TypeCode::INT;
+    }
+
+    String ToString() override
+    {
+        return "Int";
+    }
+};
+
+class FloatType : public Type
+{
+public:
+    TypeCode GetTypeCode() override
+    {
+        return TypeCode::FLOAT;
+    }
+
+    bool Equals(const Ptr<Type> &other) override
+    {
+        return other->GetTypeCode() == TypeCode::FLOAT;
+    }
+
+    String ToString() override
+    {
+        return "FLOAT";
+    }
+};
+
+class LongType : public Type
+{
+public:
+    TypeCode GetTypeCode() override
+    {
+        return TypeCode::LONG;
+    }
+
+    bool Equals(const Ptr<Type> &other) override
+    {
+        return other->GetTypeCode() == TypeCode::LONG;
+    }
+
+    String ToString() override
+    {
+        return "Long";
+    }
+};
+
+class DoubleType : public Type
+{
+public:
+    TypeCode GetTypeCode() override
+    {
+        return TypeCode::DOUBLE;
+    }
+
+    bool Equals(const Ptr<Type> &other) override
+    {
+        return other->GetTypeCode() == TypeCode::DOUBLE;
+    }
+
+    String ToString() override
+    {
+        return "Double";
+    }
+};
+
+class StringType : public Type
+{
+public:
+    TypeCode GetTypeCode() override
+    {
+        return TypeCode::STRING;
+    }
+
+    bool Equals(const Ptr<Type> &other) override
+    {
+        return other->GetTypeCode() == TypeCode::STRING;
+    }
+
+    String ToString() override
+    {
+        return "String";
+    }
+};
+
+class BoolType : public Type
+{
+public:
+    TypeCode GetTypeCode() override
+    {
+        return TypeCode::BOOL;
+    }
+
+    bool Equals(const Ptr<Type> &other) override
+    {
+        return other->GetTypeCode() == TypeCode::BOOL;
+    }
+
+    String ToString() override
+    {
+        return "Bool";
+    }
+};
+
+class ArrayType : public Type
+{
+public:
+    Ptr<Type> element;
+
+    explicit ArrayType(const Ptr<Type> &element) : element{element}
+    {
+
+    }
+
+    TypeCode GetTypeCode() override
+    {
+        return TypeCode::ARRAY;
+    }
+
+    bool Equals(const Ptr<Type> &other) override
+    {
+        if (other->GetTypeCode() == TypeCode::ARRAY)
         {
-            return name == Cast<TypeLeaf>(other)->name;
+            auto array = Cast<ArrayType>(other);
+            return element->Equals(array->element);
         }
         else
         {
             return false;
         }
     }
+
+    String ToString() override
+    {
+        return "Array[" + element->ToString() + "]";
+    }
 };
 
-class TypeList : public Type
+class FunctionType : public Type
 {
 public:
-    Ptr<Type> typeConstructor;
     Vector<Ptr<Type>> parameters;
+    Ptr<Type> returnType;
 
-    TypeList(Ptr<Type> typeConstructor, Vector<Ptr<Type>> parameters)
-            : typeConstructor{std::move(typeConstructor)}, parameters{std::move(parameters)}
+    FunctionType(const Vector<Ptr<Type>> &parameters, const Ptr<Type> &returnType) : parameters{parameters},
+                                                                                     returnType{returnType}
     {
 
     }
+};
 
-    bool IsLeaf() override
-    {
-        return false;
-    }
-
-    bool Equals(const Ptr<Type> &other) override
-    {
-        if (other->IsLeaf())
-        {
-            return false;
-        }
-        else
-        {
-            auto list = Cast<TypeList>(other);
-            if (typeConstructor->Equals(list->typeConstructor))
-            {
-                auto comparator = [](const Ptr<Type> &x, const Ptr<Type> &y) -> bool
-                {
-                    return x->Equals(y);
-                };
-                return std::equal(parameters.begin(), parameters.end(), list->parameters.begin(),
-                                  list->parameters.end(),
-                                  comparator);
-            }
-            else
-            {
-                return false;
-            }
-        }
-    }
+class ObjectType : public Type
+{
+    
 };
 
 class Value
