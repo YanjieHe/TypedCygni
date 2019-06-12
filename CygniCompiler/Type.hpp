@@ -6,6 +6,7 @@
 
 enum class TypeCode
 {
+    VOID,
     INT,
     FLOAT,
     LONG,
@@ -26,6 +27,25 @@ public:
     virtual bool Equals(const Ptr<Type> &other) = 0;
 
     virtual String ToString() = 0;
+};
+
+class VoidType : public Type
+{
+public:
+    TypeCode GetTypeCode() override
+    {
+        return TypeCode::VOID;
+    }
+
+    bool Equals(const Ptr<Type> &other) override
+    {
+        return other->GetTypeCode() == TypeCode::VOID;
+    }
+
+    String ToString() override
+    {
+        return "Void";
+    }
 };
 
 class IntType : public Type
@@ -253,6 +273,7 @@ public:
 
 enum class ValueCode
 {
+    VOID,
     INT,
     FLOAT,
     LONG,
@@ -274,6 +295,25 @@ public:
     virtual bool Equals(const Ptr<Value> &other) = 0;
 
     virtual String ToString() = 0;
+};
+
+class VoidValue : public Value
+{
+public:
+    ValueCode GetValueCode() override
+    {
+        return ValueCode::VOID;
+    }
+
+    bool Equals(const Ptr<Value> &other) override
+    {
+        return other->GetValueCode() == ValueCode::VOID;
+    }
+
+    String ToString() override
+    {
+        return "Void";
+    }
 };
 
 class IntValue : public Value

@@ -107,4 +107,3 @@ void TestTypeChecker::OutputTypeRecord(const std::string &path, const HashMap<in
     }
     stream.close();
 }
-
