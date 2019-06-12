@@ -11,27 +11,78 @@ using Byte = uint8_t;
 
 enum class Op
 {
-    PUSH_STACK_INT,
-    PUSH_CONSTANT_INT,
-    ADD_INT,
-    SUB_INT,
-    MUL_INT,
-    DIV_INT,
-    MOD_INT,
+    PUSH_NULL,
+    PUSH_CONSTANT,
+    PUSH_INT_MINUS_ONE,
+    PUSH_INT_1BYTE,
+    PUSH_INT_2BYTE,
 
-    GT_INT,
-    LT_INT,
-    GE_INT,
-    LE_INT,
-    EQ_INT,
-    NE_INT,
+    PUSH_STACK,
+    POP_STACK,
+
+    ADD,
+    SUB,
+    MUL,
+    DIV,
+    MOD,
+    GT,
+    LT,
+    GE,
+    LE,
+    EQ,
+    NE,
+
+    POP,
+    DUPLICATE,
+
+    CALL,
+    NATIVE_CALL,
+    TAIL_CALL,
+
+    PUSH_ARRAY_ELEMENT,
+    POP_ARRAY_ELEMENT,
+
+    PUSH_FIELD,
+    POP_FIELD,
+
+    PUSH_STATIC,
+    POP_STATIC,
+
+    PUSH_CHARACTER_IN_STRING,
+
+    BIT_AND,
+    BIT_OR,
+    BIT_XOR,
+
+    CAST,
+    UP_CAST,
+    DOWN_CAST,
+
+    PUSH_METHOD,
+    PUSH_STATIC_METHOD,
+
+    NEW,
+    NEW_ARRAY,
+
+    SUPER,
+    INSTANCE_OF,
+
+    THROW,
+    RETHROW,
 
     JUMP,
     JUMP_IF_TRUE,
     JUMP_IF_FALSE,
 
-    RETURN_INT,
-    INVOKE
+    RETURN
+};
+
+enum class OpTypeCode
+{
+    INT,
+    FLOAT,
+    LONG,
+    DOUBLE
 };
 
 class Compiler
@@ -254,45 +305,45 @@ public:
 
     void Register()
     {
-        rules.insert({Kind::Add, {
-                {{Value::IntValue, Value::IntValue}, Op::ADD_INT}
-        }});
-        rules.insert({Kind::Subtract, {
-                {{Value::IntValue, Value::IntValue}, Op::SUB_INT}
-        }});
-        rules.insert({Kind::Multiply, {
-                {{Value::IntValue, Value::IntValue}, Op::MUL_INT}
-        }});
-        rules.insert({Kind::Divide, {
-                {{Value::IntValue, Value::IntValue}, Op::DIV_INT}
-        }});
-        rules.insert({Kind::Modulo, {
-                {{Value::IntValue, Value::IntValue}, Op::MOD_INT}
-        }});
-        rules.insert({Kind::GreaterThan, {
-                {{Value::IntValue, Value::IntValue}, Op::GT_INT}
-        }});
-        rules.insert({Kind::LessThan, {
-                {{Value::IntValue, Value::IntValue}, Op::LT_INT}
-        }});
-        rules.insert({Kind::GreaterThanOrEqual, {
-                {{Value::IntValue, Value::IntValue}, Op::GE_INT}
-        }});
-        rules.insert({Kind::LessThanOrEqual, {
-                {{Value::IntValue, Value::IntValue}, Op::LE_INT}
-        }});
-        rules.insert({Kind::Equal, {
-                {{Value::IntValue, Value::IntValue}, Op::EQ_INT}
-        }});
-        rules.insert({Kind::NotEqual, {
-                {{Value::IntValue, Value::IntValue}, Op::NE_INT}
-        }});
-        rules.insert({Kind::Return, {
-                {{Value::IntValue}, Op::RETURN_INT}
-        }});
-        rules.insert({Kind::Constant, {
-                {{Value::IntValue}, Op::PUSH_CONSTANT_INT}
-        }});
+//        rules.insert({Kind::Add, {
+//                {{Value::INT, Value::INT}, Op::ADD_INT}
+//        }});
+//        rules.insert({Kind::Subtract, {
+//                {{Value::INT, Value::INT}, Op::SUB_INT}
+//        }});
+//        rules.insert({Kind::Multiply, {
+//                {{Value::INT, Value::INT}, Op::MUL_INT}
+//        }});
+//        rules.insert({Kind::Divide, {
+//                {{Value::INT, Value::INT}, Op::DIV_INT}
+//        }});
+//        rules.insert({Kind::Modulo, {
+//                {{Value::INT, Value::INT}, Op::MOD_INT}
+//        }});
+//        rules.insert({Kind::GreaterThan, {
+//                {{Value::INT, Value::INT}, Op::GT_INT}
+//        }});
+//        rules.insert({Kind::LessThan, {
+//                {{Value::INT, Value::INT}, Op::LT_INT}
+//        }});
+//        rules.insert({Kind::GreaterThanOrEqual, {
+//                {{Value::INT, Value::INT}, Op::GE_INT}
+//        }});
+//        rules.insert({Kind::LessThanOrEqual, {
+//                {{Value::INT, Value::INT}, Op::LE_INT}
+//        }});
+//        rules.insert({Kind::Equal, {
+//                {{Value::INT, Value::INT}, Op::EQ_INT}
+//        }});
+//        rules.insert({Kind::NotEqual, {
+//                {{Value::INT, Value::INT}, Op::NE_INT}
+//        }});
+//        rules.insert({Kind::Return, {
+//                {{Value::INT}, Op::RETURN_INT}
+//        }});
+//        rules.insert({Kind::Constant, {
+//                {{Value::INT}, Op::PUSH_CONSTANT_INT}
+//        }});
     }
 };
 

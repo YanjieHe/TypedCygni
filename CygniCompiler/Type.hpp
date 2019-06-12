@@ -295,6 +295,15 @@ public:
     virtual bool Equals(const Ptr<Value> &other) = 0;
 
     virtual String ToString() = 0;
+
+    static Ptr<Value> VOID;
+    static Ptr<Value> INT;
+    static Ptr<Value> FLOAT;
+    static Ptr<Value> LONG;
+    static Ptr<Value> DOUBLE;
+    static Ptr<Value> CHAR;
+    static Ptr<Value> STRING;
+    static Ptr<Value> BOOL;
 };
 
 class VoidValue : public Value
