@@ -8,9 +8,11 @@
 
 class Scope
 {
-public:
+private:
     Ptr<Scope> parent;
     HashMap<String, HashMap<String, Any>> values;
+
+public:
 
     Scope() = default;
 
@@ -20,6 +22,7 @@ public:
 
     void Put(const String &name, const String &key, const Any &value);
 
+    const Ptr<Scope> &Parent();
 };
 
 #endif //SCOPE_HPP

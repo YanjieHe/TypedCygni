@@ -24,12 +24,12 @@ public:
 
     Program ParseProgram();
 
-    bool IsEof()
+    bool IsEof() const
     {
         return Look().tag == Tag::Eof;
     }
 
-    Token &Look()
+    const Token &Look() const
     {
         return tokens[offset];
     }
@@ -55,7 +55,7 @@ public:
         }
     }
 
-    inline Position GetPos(Token &token)
+    inline Position GetPos(const Token &token) const
     {
         return {token.line, token.column, Look().line, Look().column};
     }
@@ -95,11 +95,11 @@ public:
 
     Parameter ParseParameter();
 
-    Ptr<Type> ParseType();
+    Ptr<TypeExpression> ParseType();
 
     Ptr<Ast> ParseReturn();
 
-    Vector<Ptr<Type>> ParseTypeArguments();
+    Vector<Ptr<TypeExpression>> ParseTypeArguments();
 
     Ptr<While> ParseWhile();
 

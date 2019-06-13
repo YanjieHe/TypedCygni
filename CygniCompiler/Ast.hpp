@@ -40,7 +40,8 @@ enum class Kind
     Call,
     While,
     DefClass,
-    DefModule
+    DefModule,
+    TypeExpr
 };
 
 class Position
@@ -200,6 +201,17 @@ public:
     Call(Position position, Ptr<Ast> function, Vector<Ptr<Ast>> arguments);
 };
 
+class TypeExpression : public Ast
+{
+public:
+    String name;
+    Vector<Ptr<TypeExpression>> parameters;
+
+    TypeExpression(Position position, String name);
+
+    TypeExpression(Position position, String name, Vector<Ptr<TypeExpression>> parameters);
+};
+
 enum class Access
 {
     Local, // for local variables and functions
@@ -212,20 +224,20 @@ class Var : public Ast
 {
 public:
     String name;
-    Optional<Ptr<Type>> type;
+    Optional<Ptr<TypeExpression>> type;
     Optional<Ptr<Ast>> value;
     Access access;
 
-    Var(Position position, String name, Optional<Ptr<Type>> type, Optional<Ptr<Ast>> value);
+    Var(Position position, String name, Optional<Ptr<TypeExpression>> type, Optional<Ptr<Ast>> value);
 };
 
 class Parameter
 {
 public:
     String name;
-    Ptr<Type> type;
+    Ptr<TypeExpression> type;
 
-    Parameter(String name, Ptr<Type> type);
+    Parameter(String name, Ptr<TypeExpression> type);
 };
 
 class Def : public Ast
@@ -233,13 +245,13 @@ class Def : public Ast
 public:
     String name;
     Vector<Parameter> parameters;
-    Ptr<Type> type;
+    Ptr<TypeExpression> type;
     Ptr<Ast> body;
     Access access;
 
     Def(Position position, String name, Vector<Parameter> parameters, Ptr<Type> type, Ptr<Ast> body);
 
-    static Ptr<Type> MakeFunctionType(Vector<Parameter> parameters, Ptr<Type> returnType);
+    static Ptr<TypeExpression> MakeFunctionType(Vector<Parameter> parameters, Ptr<TypeExpression> returnType);
 };
 
 class DefClass : public Ast

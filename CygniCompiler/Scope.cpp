@@ -56,3 +56,8 @@ void Scope::Put(const String &name, const String &key, const Any &value)
         values[name].insert({key, value});
     }
 }
+
+const Ptr<Scope> &Scope::Parent()
+{
+    return parent;
+}

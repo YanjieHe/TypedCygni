@@ -70,20 +70,20 @@ Call::Call(Position position, Ptr<Ast> function, Vector<Ptr<Ast>> arguments)
 
 }
 
-Var::Var(Position position, String name, Optional<Ptr<Type>> type, Optional<Ptr<Ast>> value)
+Var::Var(Position position, String name, Optional<Ptr<TypeExpression>> type, Optional<Ptr<Ast>> value)
         : Ast(Kind::Var, position), name{std::move(name)}, type{std::move(type)}, value{std::move(value)},
           access{Access::Local}
 {
 
 }
 
-Parameter::Parameter(String name, Ptr<Type> type)
+Parameter::Parameter(String name, Ptr<TypeExpression> type)
         : name{std::move(name)}, type{std::move(type)}
 {
 
 }
 
-Def::Def(Position position, String name, Vector<Parameter> parameters, Ptr<Type> type, Ptr<Ast> body)
+Def::Def(Position position, String name, Vector<Parameter> parameters, Ptr<TypeExpression> type, Ptr<Ast> body)
         : Ast(Kind::Def, position), name{std::move(name)}, parameters{std::move(parameters)}, type{std::move(type)},
           body{std::move(body)},
           access{Access::Local}
@@ -91,7 +91,7 @@ Def::Def(Position position, String name, Vector<Parameter> parameters, Ptr<Type>
 
 }
 
-Ptr<Type> Def::MakeFunctionType(Vector<Parameter> parameters, Ptr<Type> returnType)
+Ptr<TypeExpression> Def::MakeFunctionType(Vector<Parameter> parameters, Ptr<TypeExpression> returnType)
 {
     Vector<Ptr<Type>> types;
     types.resize(parameters.size() + 1);
@@ -101,7 +101,7 @@ Ptr<Type> Def::MakeFunctionType(Vector<Parameter> parameters, Ptr<Type> returnTy
                        return p.type;
                    });
     types.back() = std::move(returnType);
-    return New<TypeList>(New<TypeLeaf>("Function"), types);
+    return New<TypeExpression>(New<TypeExpression>("Function"), types);
 }
 
 DefClass::DefClass(Position position, String name, Vector<Ptr<Var>> fields, Vector<Ptr<Def>> methods)
@@ -184,6 +184,19 @@ String KindToString(Kind kind)
 
 DefModule::DefModule(Position position, String name, Vector<Ptr<Var>> fields, Vector<Ptr<Def>> methods)
         : Ast(Kind::DefModule, position), name{std::move(name)}, fields{std::move(fields)}, methods{std::move(methods)}
+{
+
+}
+
+TypeExpression::TypeExpression(Position position, String name)
+        : Ast(Kind::TypeExpr, position), name{std::move(name)}
+{
+
+}
+
+TypeExpression::TypeExpression(Position position, String name, Vector<Ptr<TypeExpression>> parameters)
+        : Ast(Kind::TypeExpr, position), name{std::move(name)}, parameters{std::move(parameters)
+}
 {
 
 }

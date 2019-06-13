@@ -254,28 +254,26 @@ Ptr<Ast> Parser::ParseFactor()
         Match(Tag::RightParenthesis);
         return x;
     }
-    else if (Look().tag == Tag::Integer
-             || Look().tag == Tag::Float
-             || Look().tag == Tag::String)
+    else if (Look().tag == Tag::Integer)
     {
-        Tag tag = Look().tag;
         String v = Look().text;
         auto &start = Look();
         Move();
-        Ptr<Ast> x;
-        if (tag == Tag::Integer)
-        {
-            x = New<Constant>(GetPos(start), Constant::ConstantType::Int32Type, v);
-        }
-        else if (tag == Tag::Float)
-        {
-            x = New<Constant>(GetPos(start), Constant::ConstantType::FloatType, v);
-        }
-        else
-        {
-            x = New<Constant>(GetPos(start), Constant::ConstantType::StringType, v);
-        }
-        return x;
+        return New<Constant>(GetPos(start), Constant::ConstantType::Int32Type, v);
+    }
+    else if (Look().tag == Tag::Float)
+    {
+        String v = Look().text;
+        auto &start = Look();
+        Move();
+        return New<Constant>(GetPos(start), Constant::ConstantType::FloatType, v);
+    }
+    else if (Look().tag == Tag::String)
+    {
+        String v = Look().text;
+        auto &start = Look();
+        Move();
+        return New<Constant>(GetPos(start), Constant::ConstantType::StringType, v);
     }
     else if (Look().tag == Tag::True)
     {
@@ -352,7 +350,7 @@ Ptr<Var> Parser::ParseVar()
     if (Look().tag == Tag::Colon)
     {
         Match(Tag::Colon);
-        auto type = Optional<Ptr<Type>>(ParseType());
+        auto type = Optional<Ptr<TypeExpression>>(ParseType());
         if (Look().tag == Tag::Assign)
         {
             Match(Tag::Assign);
@@ -378,7 +376,7 @@ Ptr<Var> Parser::ParseVarDeclaration()
     Match(Tag::Var);
     Token t = Match(Tag::Identifier);
     Match(Tag::Colon);
-    auto type = Optional<Ptr<Type>>(ParseType());
+    auto type = Optional<Ptr<TypeExpression>>(ParseType());
     return New<Var>(GetPos(start), t.text, type, Optional<Ptr<Ast>>());
 }
 
@@ -415,13 +413,13 @@ Parameter Parser::ParseParameter()
     return Parameter(name, type);
 }
 
-Ptr<Type> Parser::ParseType()
+Ptr<TypeExpression> Parser::ParseType()
 {
     String name = Match(Tag::Identifier).text;
     if (Look().tag == Tag::LeftBracket)
     {
-        Vector<Ptr<Type>> types = ParseTypeArguments();
-        auto result = New<TypeList>(New<TypeLeaf>(name), types);
+        Vector<Ptr<TypeExpression>> types = ParseTypeArguments();
+        auto result = New<TypeExpression>(New<TypeExpression>(name), types);
         if (result)
         {
             throw ParserException(Look().line, Look().column, "type error");
@@ -433,7 +431,7 @@ Ptr<Type> Parser::ParseType()
     }
     else
     {
-        return New<TypeLeaf>(name);
+        return New<TypeExpression>(name);
     }
 }
 
@@ -445,10 +443,10 @@ Ptr<Ast> Parser::ParseReturn()
     return New<Return>(GetPos(start), value);
 }
 
-Vector<Ptr<Type>> Parser::ParseTypeArguments()
+Vector<Ptr<TypeExpression>> Parser::ParseTypeArguments()
 {
     Match(Tag::LeftBracket);
-    Vector<Ptr<Type>> types;
+    Vector<Ptr<TypeExpression>> types;
     types.push_back(ParseType());
     while (!IsEof() && Look().tag != Tag::RightBracket)
     {
