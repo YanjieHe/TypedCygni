@@ -22,7 +22,7 @@ public:
 class TypeChecker
 {
 public:
-    HashMap<int, Ptr<Value>> typeRecord;
+    HashMap<int, Ptr<Type>> typeRecord;
 
     void CheckProgram(const Program &program, const Ptr<Scope> &scope)
     {
@@ -36,12 +36,12 @@ public:
         }
     }
 
-    Ptr<Value> Check(const Ptr<Ast> &node, const Ptr<Scope> &scope)
+    Ptr<Type> Check(const Ptr<Ast> &node, const Ptr<Scope> &scope)
     {
-        auto record = [this, node](const Ptr<Value> &value) -> Ptr<Value>
+        auto record = [this, node](const Ptr<Type> &type) -> Ptr<Type>
         {
-            this->typeRecord.insert({node->id, value});
-            return value;
+            this->typeRecord.insert({node->id, type});
+            return type;
         };
         switch (node->kind)
         {
@@ -103,12 +103,14 @@ public:
                 break;
             case Kind::DefModule:
                 return record(CheckModule(Cast<DefModule>(node), scope));
+            case Kind::TypeExpr:
+                throw NotImplementedException();
         }
         throw NotImplementedException();
     }
 
     template<Kind kind>
-    Ptr<Value> CheckBinaryArithmetic(Ptr<Binary<kind>> node, const Ptr<Scope> &scope)
+    Ptr<Type> CheckBinaryArithmetic(Ptr<Binary<kind>> node, const Ptr<Scope> &scope)
     {
         static HashMap<Kind, String> binaryOperators = {
                 {Kind::Add,                "+"},
@@ -124,17 +126,17 @@ public:
                 {Kind::NotEqual,           "!="},
         };
 
-        auto leftValue = Check(node->left, scope);
-        auto rightValue = Check(node->right, scope);
+        auto leftType = Check(node->left, scope);
+        auto rightType = Check(node->right, scope);
         Optional<Any> result = scope->Lookup(binaryOperators[kind], "Operator");
         if (result)
         {
-            const auto &functions = (*result).AnyCast<Vector<Ptr<ValueList>>>();
+            const auto &functions = (*result).AnyCast<Vector<Ptr<FunctionType>>>();
             for (const auto &function: functions)
             {
-                if (MatchParameters(function, {leftValue, rightValue}))
+                if (MatchParameters(function, {leftType, rightType}))
                 {
-                    return function->values.back();
+                    return function->returnType;
                 }
             }
             throw TypeException(node->position, String("arithmetic type '") + KindToString(kind) + String("'"));
@@ -147,7 +149,7 @@ public:
     }
 
     template<Kind kind>
-    Ptr<Value> CheckUnaryArithmetic(Ptr<Unary<kind>> node, const Ptr<Scope> &scope)
+    Ptr<Type> CheckUnaryArithmetic(Ptr<Unary<kind>> node, const Ptr<Scope> &scope)
     {
         static HashMap<Kind, String> unaryOperators = {
                 {Kind::UnaryPlus,  "+"},
@@ -155,17 +157,17 @@ public:
                 {Kind::Not,        "not"}
         };
 
-        auto operandValue = Check(node->operand, scope);
+        auto operandType = Check(node->operand, scope);
         auto opChar = unaryOperators[kind];
         Optional<Any> result = scope->Lookup(unaryOperators[kind], "Operator");
         if (result)
         {
-            Vector<Ptr<ValueList>> functions = (*result).AnyCast<Vector<Ptr<ValueList>>>();
+            const auto &functions = (*result).AnyCast<Vector<Ptr<FunctionType>>>();
             for (const auto &function: functions)
             {
-                if (MatchParameters(function, {operandValue}))
+                if (MatchParameters(function, {operandType}))
                 {
-                    return function->values.back();
+                    return function->returnType;
                 }
             }
             throw TypeException(node->position, String("arithmetic type '") + KindToString(kind) + String("'"));
@@ -176,56 +178,57 @@ public:
         }
     }
 
-    static bool MatchParameters(const Ptr<ValueList> &function, const Vector<Ptr<Value>> &arguments)
+    static bool MatchParameters(const Ptr<FunctionType> &function, const Vector<Ptr<Type>> &arguments)
     {
-        auto comparator = [](const Ptr<Value> &x, const Ptr<Value> &y) -> bool
+        auto comparator = [](const Ptr<Type> &x, const Ptr<Type> &y) -> bool
         {
             return x->Equals(y);
         };
-        return std::equal(function->values.begin(),
-                          function->values.end() - 1,
+        return std::equal(function->parameters.begin(),
+                          function->parameters.end(),
                           arguments.begin(), arguments.end(),
                           comparator);
     }
 
-    Ptr<Value> CheckConstant(const Ptr<Constant> &node)
+    static Ptr<Type> CheckConstant(const Ptr<Constant> &node)
     {
         switch (node->constantType)
         {
             case Constant::ConstantType::Int32Type:
-                return Value::IntValue;
+                return Type::INT;
             case Constant::ConstantType::Int64Type:
-                return Value::LongValue;
+                return Type::LONG;
             case Constant::ConstantType::FloatType:
-                return Value::FloatValue;
+                return Type::FLOAT;
             case Constant::ConstantType::DoubleType:
-                return Value::DoubleValue;
+                return Type::DOUBLE;
             case Constant::ConstantType::BooleanType:
-                return Value::BoolValue;
+                return Type::BOOL;
             case Constant::ConstantType::CharType:
-                return Value::CharValue;
+                return Type::CHAR;
             case Constant::ConstantType::StringType:
-                return Value::StringValue;
+                return Type::STRING;
             default:
                 throw NotImplementedException();
         }
     }
 
-    Ptr<Value> CheckBlock(const Ptr<Block> &node, const Ptr<Scope> &scope)
+    Ptr<Type> CheckBlock(const Ptr<Block> &node, const Ptr<Scope> &scope)
     {
-        for (const Ptr<Ast> &expression: node->expressions)
+        Ptr<Type> result = Type::VOID;
+        for (const auto &expression: node->expressions)
         {
-            Check(expression, scope);
+            result = Check(expression, scope);
         }
-        return Value::UnitValue;
+        return result;
     }
 
-    Ptr<Value> CheckName(const Ptr<Name> &node, const Ptr<Scope> &scope)
+    static Ptr<Type> CheckName(const Ptr<Name> &node, const Ptr<Scope> &scope)
     {
         Optional<Any> result = scope->Lookup(node->name, "Identifier");
         if (result)
         {
-            return (*result).AnyCast<Ptr<Value>>();
+            return (*result).AnyCast<Ptr<Type>>();
         }
         else
         {
@@ -233,7 +236,55 @@ public:
         }
     }
 
-    Ptr<Value> CheckVar(const Ptr<Var> &node, const Ptr<Scope> &scope)
+    Ptr<Type> ParseTypeExpression(const Ptr<TypeExpression> &expression, const Ptr<Scope> &scope)
+    {
+        Optional<Any> result = scope->Lookup(expression->name, "Type");
+        if (result)
+        {
+            Ptr<Type> type = (*result).AnyCast<Ptr<Type>>();
+            Vector<Ptr<Type>> parameters = Enumerate::Map(expression->parameters,
+                                                          [this, &scope](const Ptr<TypeExpression> &exp)
+                                                          {
+                                                              return ParseTypeExpression(exp, scope);
+                                                          });
+            if (expression->parameters.empty())
+            {
+                return type;
+            }
+            else if (type->GetTypeCode() == TypeCode::FUNCTION)
+            {
+                auto functionType = Cast<FunctionType>(type);
+                Vector<Ptr<Type>> functionParams = functionType->parameters;
+                functionParams.push_back(functionType->returnType);
+                auto comparator = [](const Ptr<Type> &x, const Ptr<Type> &y) -> bool
+                {
+                    return x->Equals(y);
+                };
+                if (std::equal(functionParams.begin(),
+                               functionParams.end(),
+                               parameters.begin(), parameters.end(),
+                               comparator))
+                {
+                    return functionType;
+                }
+                else
+                {
+                    throw TypeException(expression->position, "Type not match");
+                }
+            }
+            else
+            {
+                // Generic Classes
+                throw NotImplementedException();
+            }
+        }
+        else
+        {
+            throw TypeException(expression->position, "type not declared");
+        }
+    }
+
+    Ptr<Type> CheckVar(const Ptr<Var> &node, const Ptr<Scope> &scope)
     {
         if (node->value)
         {
@@ -244,7 +295,7 @@ public:
                 if (value->Equals(declaration))
                 {
                     scope->Put(node->name, "Identifier", value);
-                    return Value::UnitValue;
+                    return Type::UnitType;
                 }
                 else
                 {
@@ -253,7 +304,7 @@ public:
             }
             else
             {
-                return Value::UnitValue;
+                return Type::UnitType;
             }
         }
         else
@@ -262,7 +313,7 @@ public:
             {
                 auto declaration = CheckType(*(node->type), scope);
                 scope->Put(node->name, "Identifier", declaration);
-                return Value::UnitValue;
+                return Type::UnitType;
             }
             else
             {
@@ -271,7 +322,7 @@ public:
         }
     }
 
-    Ptr<Value> CheckType(const Ptr<Type> &type, const Ptr<Scope> &scope)
+    Ptr<Type> CheckType(const Ptr<Type> &type, const Ptr<Scope> &scope)
     {
         // TO DO: search in the scope
         if (type->IsLeaf())
@@ -279,7 +330,7 @@ public:
             Optional<Any> result = scope->Lookup(Cast<TypeLeaf>(type)->name, "Type");
             if (result)
             {
-                return New<ValueLeaf>((*result).AnyCast<Ptr<TypeLeaf>>()->name);
+                return New<TypeLeaf>((*result).AnyCast<Ptr<TypeLeaf>>()->name);
             }
             else
             {
@@ -290,31 +341,31 @@ public:
         {
             // TO DO
             auto list = Cast<TypeList>(type);
-            Vector<Ptr<Value>> values;
+            Vector<Ptr<Type>> values;
             values.reserve(list->parameters.size());
             for (const auto &parameter: list->parameters)
             {
                 values.push_back(CheckType(parameter, scope));
             }
-            return New<ValueList>(CheckType(list->typeConstructor, scope), values);
+            return New<TypeList>(CheckType(list->typeConstructor, scope), values);
         }
     }
 
-    Ptr<Value> CheckCall(const Ptr<Call> &node, const Ptr<Scope> &scope)
+    Ptr<Type> CheckCall(const Ptr<Call> &node, const Ptr<Scope> &scope)
     {
         auto function = Check(node->function, scope);
-        auto IsFunction = [](const Ptr<Value> &value)
+        auto IsFunction = [](const Ptr<Type> &value)
         {
-            if (value->IsLeaf())
+            if (value->GetTypeCode() == TypeCode::FUNCTION)
             {
-                return Cast<ValueLeaf>(value)->name == "Function";
+                return Cast<FunctionType>(value)->name == "Function";
             }
             else
             {
                 return false;
             }
         };
-        Vector<Ptr<Value>> arguments;
+        Vector<Ptr<Type>> arguments;
         arguments.reserve(node->arguments.size());
         for (const auto &arg: node->arguments)
         {
@@ -322,9 +373,9 @@ public:
         }
         if (IsFunction(function))
         {
-            if (MatchParameters(Cast<ValueList>(function), arguments))
+            if (MatchParameters(Cast<TypeList>(function), arguments))
             {
-                return Cast<ValueList>(function)->values.back();
+                return Cast<TypeList>(function)->values.back();
             }
             else
             {
@@ -337,7 +388,7 @@ public:
         }
     }
 
-    Ptr<Value> CheckModule(const Ptr<DefModule> &node, const Ptr<Scope> &scope)
+    Ptr<Type> CheckModule(const Ptr<DefModule> &node, const Ptr<Scope> &scope)
     {
         scope->Put(node->name, "Identifier", New<TypeLeaf>(node->name));
         for (const auto &field: node->fields)
@@ -348,17 +399,17 @@ public:
         {
             Check(method, scope);
         }
-        return Value::UnitValue;
+        return Type::UnitType;
     }
 
-    Ptr<Value> CheckIfThen(const Ptr<IfThen> &node, const Ptr<Scope> &scope)
+    Ptr<Type> CheckIfThen(const Ptr<IfThen> &node, const Ptr<Scope> &scope)
     {
         auto condition = Check(node->condition, scope);
-        auto IsBoolean = [](const Ptr<Value> &value)
+        auto IsBoolean = [](const Ptr<Type> &value)
         {
             if (value->IsLeaf())
             {
-                return Cast<ValueLeaf>(value)->name == "Bool";
+                return Cast<TypeLeaf>(value)->name == "Bool";
             }
             else
             {
@@ -368,7 +419,7 @@ public:
         if (IsBoolean(condition))
         {
             Check(node->ifTrue, scope);
-            return Value::UnitValue;
+            return Type::UnitType;
         }
         else
         {
@@ -376,14 +427,14 @@ public:
         }
     }
 
-    Ptr<Value> CheckIfElse(const Ptr<IfElse> &node, const Ptr<Scope> &scope)
+    Ptr<Type> CheckIfElse(const Ptr<IfElse> &node, const Ptr<Scope> &scope)
     {
         auto condition = Check(node->condition, scope);
-        auto IsBoolean = [](const Ptr<Value> &value)
+        auto IsBoolean = [](const Ptr<Type> &value)
         {
             if (value->IsLeaf())
             {
-                return Cast<ValueLeaf>(value)->name == "Bool";
+                return Cast<TypeLeaf>(value)->name == "Bool";
             }
             else
             {
@@ -394,7 +445,7 @@ public:
         {
             Check(node->ifTrue, scope);
             Check(node->ifFalse, scope);
-            return Value::UnitValue;
+            return Type::UnitType;
         }
         else
         {
@@ -402,13 +453,13 @@ public:
         }
     }
 
-    Ptr<Value> CheckReturn(const Ptr<Return> &node, const Ptr<Scope> &scope)
+    Ptr<Type> CheckReturn(const Ptr<Return> &node, const Ptr<Scope> &scope)
     {
         auto value = Check(node->value, scope);
         Optional<Any> result = scope->Lookup("**Function**", "Type");
         if (result)
         {
-            auto function = Cast<ValueList>((*result).AnyCast<Ptr<Value>>());
+            auto function = Cast<TypeList>((*result).AnyCast<Ptr<Type>>());
             if (value->Equals(function->values.back()))
             {
                 return value;
@@ -424,18 +475,18 @@ public:
         }
     }
 
-    Ptr<Value> CheckDef(const Ptr<Def> &node, Ptr<Scope> scope)
+    Ptr<Type> CheckDef(const Ptr<Def> &node, Ptr<Scope> scope)
     {
-        auto functionValue = CheckType(node->type, scope);
-        scope->Put(node->name, "Identifier", functionValue);
+        auto functionType = CheckType(node->type, scope);
+        scope->Put(node->name, "Identifier", functionType);
         auto functionScope = New<Scope>(scope);
-        functionScope->Put("**Function**", "Type", functionValue);
+        functionScope->Put("**Function**", "Type", functionType);
         for (const auto &parameter: node->parameters)
         {
             functionScope->Put(parameter.name, "Identifier", CheckType(parameter.type, functionScope));
         }
         Check(node->body, functionScope);
-        return Value::UnitValue;
+        return Type::UnitType;
     }
 };
 
