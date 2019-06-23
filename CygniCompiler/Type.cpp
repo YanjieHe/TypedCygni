@@ -1,5 +1,6 @@
 #include "Type.hpp"
 
+Ptr<Type> Type::ANY = New<AnyType>();
 Ptr<Type> Type::VOID = New<VoidType>();
 Ptr<Type> Type::INT = New<IntType>();
 Ptr<Type> Type::FLOAT = New<FloatType>();

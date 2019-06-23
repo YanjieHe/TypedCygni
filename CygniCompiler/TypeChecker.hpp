@@ -104,7 +104,7 @@ public:
             case Kind::DefModule:
                 return record(CheckModule(Cast<DefModule>(node), scope));
             case Kind::TypeExpr:
-                throw NotImplementedException();
+                return record(CheckTypeExpression(Cast<TypeExpression>(node), scope));
         }
         throw NotImplementedException();
     }
@@ -236,7 +236,7 @@ public:
         }
     }
 
-    Ptr<Type> ParseTypeExpression(const Ptr<TypeExpression> &expression, const Ptr<Scope> &scope)
+    Ptr<Type> CheckTypeExpression(const Ptr<TypeExpression> &expression, const Ptr<Scope> &scope)
     {
         Optional<Any> result = scope->Lookup(expression->name, "Type");
         if (result)
@@ -245,7 +245,7 @@ public:
             Vector<Ptr<Type>> parameters = Enumerate::Map(expression->parameters,
                                                           [this, &scope](const Ptr<TypeExpression> &exp)
                                                           {
-                                                              return ParseTypeExpression(exp, scope);
+                                                              return Check(exp, scope);
                                                           });
             if (expression->parameters.empty())
             {
@@ -291,11 +291,11 @@ public:
             auto value = Check(*(node->value), scope);
             if (node->type)
             {
-                auto declaration = CheckType(*(node->type), scope);
+                auto declaration = Check(*(node->type), scope);
                 if (value->Equals(declaration))
                 {
                     scope->Put(node->name, "Identifier", value);
-                    return Type::UnitType;
+                    return Type::VOID;
                 }
                 else
                 {
@@ -304,16 +304,16 @@ public:
             }
             else
             {
-                return Type::UnitType;
+                return Type::VOID;
             }
         }
         else
         {
             if (node->type)
             {
-                auto declaration = CheckType(*(node->type), scope);
+                auto declaration = Check(*(node->type), scope);
                 scope->Put(node->name, "Identifier", declaration);
-                return Type::UnitType;
+                return Type::VOID;
             }
             else
             {
@@ -322,60 +322,20 @@ public:
         }
     }
 
-    Ptr<Type> CheckType(const Ptr<Type> &type, const Ptr<Scope> &scope)
-    {
-        // TO DO: search in the scope
-        if (type->IsLeaf())
-        {
-            Optional<Any> result = scope->Lookup(Cast<TypeLeaf>(type)->name, "Type");
-            if (result)
-            {
-                return New<TypeLeaf>((*result).AnyCast<Ptr<TypeLeaf>>()->name);
-            }
-            else
-            {
-                throw KeyNotFoundException();
-            }
-        }
-        else
-        {
-            // TO DO
-            auto list = Cast<TypeList>(type);
-            Vector<Ptr<Type>> values;
-            values.reserve(list->parameters.size());
-            for (const auto &parameter: list->parameters)
-            {
-                values.push_back(CheckType(parameter, scope));
-            }
-            return New<TypeList>(CheckType(list->typeConstructor, scope), values);
-        }
-    }
-
     Ptr<Type> CheckCall(const Ptr<Call> &node, const Ptr<Scope> &scope)
     {
         auto function = Check(node->function, scope);
-        auto IsFunction = [](const Ptr<Type> &value)
-        {
-            if (value->GetTypeCode() == TypeCode::FUNCTION)
-            {
-                return Cast<FunctionType>(value)->name == "Function";
-            }
-            else
-            {
-                return false;
-            }
-        };
         Vector<Ptr<Type>> arguments;
         arguments.reserve(node->arguments.size());
         for (const auto &arg: node->arguments)
         {
             arguments.push_back(Check(arg, scope));
         }
-        if (IsFunction(function))
+        if (function->GetTypeCode() == TypeCode::FUNCTION)
         {
-            if (MatchParameters(Cast<TypeList>(function), arguments))
+            if (MatchParameters(Cast<FunctionType>(function), arguments))
             {
-                return Cast<TypeList>(function)->values.back();
+                return Cast<FunctionType>(function)->returnType;
             }
             else
             {
@@ -390,7 +350,16 @@ public:
 
     Ptr<Type> CheckModule(const Ptr<DefModule> &node, const Ptr<Scope> &scope)
     {
-        scope->Put(node->name, "Identifier", New<TypeLeaf>(node->name));
+        auto fieldTypes = Enumerate::Map(node->fields, [this, &scope](const Ptr<Var>& var)
+        {
+            return Check(*(var->type), scope);
+        });
+        auto methodTypes = Enumerate::Map(node->methods, [this, &scope](const Ptr<Def>& def)
+        {
+            return Check(def->type, scope);
+        });
+        Ptr<ObjectType> module = New<ObjectType>(fieldTypes, methodTypes);
+        scope->Put(node->name, "**Module**", module);
         for (const auto &field: node->fields)
         {
             Check(field, scope);
@@ -399,27 +368,16 @@ public:
         {
             Check(method, scope);
         }
-        return Type::UnitType;
+        return Type::VOID;
     }
 
     Ptr<Type> CheckIfThen(const Ptr<IfThen> &node, const Ptr<Scope> &scope)
     {
         auto condition = Check(node->condition, scope);
-        auto IsBoolean = [](const Ptr<Type> &value)
-        {
-            if (value->IsLeaf())
-            {
-                return Cast<TypeLeaf>(value)->name == "Bool";
-            }
-            else
-            {
-                return false;
-            }
-        };
-        if (IsBoolean(condition))
+        if (condition->GetTypeCode() == TypeCode::BOOL)
         {
             Check(node->ifTrue, scope);
-            return Type::UnitType;
+            return Type::VOID;
         }
         else
         {
@@ -430,22 +388,11 @@ public:
     Ptr<Type> CheckIfElse(const Ptr<IfElse> &node, const Ptr<Scope> &scope)
     {
         auto condition = Check(node->condition, scope);
-        auto IsBoolean = [](const Ptr<Type> &value)
-        {
-            if (value->IsLeaf())
-            {
-                return Cast<TypeLeaf>(value)->name == "Bool";
-            }
-            else
-            {
-                return false;
-            }
-        };
-        if (IsBoolean(condition))
+        if (condition->GetTypeCode() == TypeCode::BOOL)
         {
             Check(node->ifTrue, scope);
             Check(node->ifFalse, scope);
-            return Type::UnitType;
+            return Type::VOID;
         }
         else
         {
@@ -459,8 +406,8 @@ public:
         Optional<Any> result = scope->Lookup("**Function**", "Type");
         if (result)
         {
-            auto function = Cast<TypeList>((*result).AnyCast<Ptr<Type>>());
-            if (value->Equals(function->values.back()))
+            auto function = Cast<FunctionType>((*result).AnyCast<Ptr<Type>>());
+            if (value->Equals(function->returnType))
             {
                 return value;
             }
@@ -477,16 +424,16 @@ public:
 
     Ptr<Type> CheckDef(const Ptr<Def> &node, Ptr<Scope> scope)
     {
-        auto functionType = CheckType(node->type, scope);
+        auto functionType = Check(node->type, scope);
         scope->Put(node->name, "Identifier", functionType);
         auto functionScope = New<Scope>(scope);
         functionScope->Put("**Function**", "Type", functionType);
         for (const auto &parameter: node->parameters)
         {
-            functionScope->Put(parameter.name, "Identifier", CheckType(parameter.type, functionScope));
+            functionScope->Put(parameter.name, "Identifier", Check(parameter.type, functionScope));
         }
         Check(node->body, functionScope);
-        return Type::UnitType;
+        return Type::VOID;
     }
 };
 

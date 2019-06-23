@@ -7,6 +7,7 @@
 enum class TypeCode
 {
     VOID,
+    ANY,
     INT,
     FLOAT,
     LONG,
@@ -28,6 +29,7 @@ public:
 
     virtual String ToString() = 0;
 
+    static Ptr<Type> ANY;
     static Ptr<Type> VOID;
     static Ptr<Type> INT;
     static Ptr<Type> FLOAT;
@@ -55,6 +57,25 @@ public:
     String ToString() override
     {
         return "Void";
+    }
+};
+
+class AnyType: public Type
+{
+public:
+    TypeCode GetTypeCode() override
+    {
+        return TypeCode::ANY;
+    }
+
+    bool Equals(const Ptr<Type>& other) override
+    {
+        return other->GetTypeCode() == TypeCode::ANY;
+    }
+
+    String ToString() override
+    {
+        return "Any";
     }
 };
 
@@ -278,6 +299,90 @@ public:
         });
         items.push_back(returnType->ToString());
         return "Function[" + String::Join(", ", items.begin(), items.end()) + "]";
+    }
+};
+
+class ObjectType: public Type
+{
+public:
+    HashMap<String, Ptr<Type>> fields;
+    HashMap<String, Ptr<Type>> methods;
+
+    ObjectType(HashMap<String, Ptr<Type>> fields, HashMap<String, Ptr<Type>> methods)
+        : fields{fields}, methods{methods}
+    {
+        
+    }
+
+    TypeCode GetTypeCode() override
+    {
+        return TypeCode::OBJECT;
+    }
+
+    bool Equals(const Ptr<Type>& other) override
+    {
+        if (other->GetTypeCode() == TypeCode::OBJECT)
+        {
+            auto object = Cast<ObjectType>(other);
+            if(fields.size() == object->fields.size())
+            {
+                for(const auto& pair: object->fields)
+                {
+                    const String& key = pair.first;
+                    bool found = fields.find(key) != fields.end();
+                    if(found && fields[key]->Equals(object->fields[key]))
+                    {
+                        // pass
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                for(const auto& pair: object->methods)
+                {
+                    const String& key = pair.first;
+                    bool found = methods.find(key) != methods.end();
+                    if(found && methods[key]->Equals(object->methods[key]))
+                    {
+                        // pass
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+            
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    String ToString() override
+    {
+        Vector<String> items;
+        for(const auto& pair: fields)
+        {
+            const String& key = pair.first;
+            const String& value = pair.second->ToString();
+            items.push_back(key + ": " + value);
+        }
+        
+        for(const auto& pair: methods)
+        {
+            const String& key = pair.first;
+            const String& value = pair.second->ToString();
+            items.push_back(key + ": " + value);
+        }
+        return "Object[" + String::Join(", ", items.begin(), items.end()) + "]";
     }
 };
 
