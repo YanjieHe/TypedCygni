@@ -2,6 +2,7 @@
     "files.associations": {
         "system_error": "cpp",
         "typeindex": "cpp",
-        "xlocale": "cpp"
+        "xlocale": "cpp",
+        "memory": "cpp"
     }
 }

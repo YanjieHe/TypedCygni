@@ -7,6 +7,14 @@
 #include "Scope.hpp"
 #include "Exception.hpp"
 
+/*
+Scope:
+    **Operator**: Vector<Ptr<FunctionType>>
+    **Identifier**: Ptr<Type>
+    **Function**: Ptr<FunctionType>
+    **Type**: Ptr<Type>
+*/
+
 class TypeException : public Exception
 {
 public:
@@ -128,7 +136,7 @@ public:
 
         auto leftType = Check(node->left, scope);
         auto rightType = Check(node->right, scope);
-        Optional<Any> result = scope->Lookup(binaryOperators[kind], "Operator");
+        Optional<Any> result = scope->Lookup(binaryOperators[kind], "**Operator**");
         if (result)
         {
             const auto &functions = (*result).AnyCast<Vector<Ptr<FunctionType>>>();
@@ -159,7 +167,7 @@ public:
 
         auto operandType = Check(node->operand, scope);
         auto opChar = unaryOperators[kind];
-        Optional<Any> result = scope->Lookup(unaryOperators[kind], "Operator");
+        Optional<Any> result = scope->Lookup(unaryOperators[kind], "**Operator**");
         if (result)
         {
             const auto &functions = (*result).AnyCast<Vector<Ptr<FunctionType>>>();
@@ -225,7 +233,7 @@ public:
 
     static Ptr<Type> CheckName(const Ptr<Name> &node, const Ptr<Scope> &scope)
     {
-        Optional<Any> result = scope->Lookup(node->name, "Identifier");
+        Optional<Any> result = scope->Lookup(node->name, "**Identifier**");
         if (result)
         {
             return (*result).AnyCast<Ptr<Type>>();
@@ -238,7 +246,7 @@ public:
 
     Ptr<Type> CheckTypeExpression(const Ptr<TypeExpression> &expression, const Ptr<Scope> &scope)
     {
-        Optional<Any> result = scope->Lookup(expression->name, "Type");
+        Optional<Any> result = scope->Lookup(expression->name, "**Type**");
         if (result)
         {
             Ptr<Type> type = (*result).AnyCast<Ptr<Type>>();
@@ -358,8 +366,8 @@ public:
         {
             return Check(def->type, scope);
         });
-        Ptr<ObjectType> module = New<ObjectType>(fieldTypes, methodTypes);
-        scope->Put(node->name, "**Module**", module);
+        auto module = New<ModuleType>(fieldTypes, methodTypes);
+        scope->Put(node->name, "**Identifier**", module);
         for (const auto &field: node->fields)
         {
             Check(field, scope);

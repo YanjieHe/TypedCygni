@@ -17,6 +17,7 @@ enum class TypeCode
     BOOL,
     ARRAY,
     FUNCTION,
+    MODULE,
     OBJECT
 };
 
@@ -299,6 +300,90 @@ public:
         });
         items.push_back(returnType->ToString());
         return "Function[" + String::Join(", ", items.begin(), items.end()) + "]";
+    }
+};
+
+class ModuleType: public Type
+{
+public:
+    HashMap<String, Ptr<Type>> fields;
+    HashMap<String, Ptr<Type>> methods;
+
+    ModuleType(HashMap<String, Ptr<Type>> fields, HashMap<String, Ptr<Type>> methods)
+        : fields{fields}, methods{methods}
+    {
+        
+    }
+
+    TypeCode GetTypeCode() override
+    {
+        return TypeCode::MODULE;
+    }
+
+    bool Equals(const Ptr<Type>& other) override
+    {
+        if (other->GetTypeCode() == TypeCode::MODULE)
+        {
+            auto module = Cast<ModuleType>(other);
+            if(fields.size() == module->fields.size())
+            {
+                for(const auto& pair: module->fields)
+                {
+                    const String& key = pair.first;
+                    bool found = fields.find(key) != fields.end();
+                    if(found && fields[key]->Equals(module->fields[key]))
+                    {
+                        // pass
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                for(const auto& pair: module->methods)
+                {
+                    const String& key = pair.first;
+                    bool found = methods.find(key) != methods.end();
+                    if(found && methods[key]->Equals(module->methods[key]))
+                    {
+                        // pass
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+            
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    String ToString() override
+    {
+        Vector<String> items;
+        for(const auto& pair: fields)
+        {
+            const String& key = pair.first;
+            const String& value = pair.second->ToString();
+            items.push_back(key + ": " + value);
+        }
+        
+        for(const auto& pair: methods)
+        {
+            const String& key = pair.first;
+            const String& value = pair.second->ToString();
+            items.push_back(key + ": " + value);
+        }
+        return "Object[" + String::Join(", ", items.begin(), items.end()) + "]";
     }
 };
 
