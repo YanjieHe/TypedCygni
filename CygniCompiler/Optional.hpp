@@ -66,7 +66,6 @@ public:
     explicit operator bool() const
     {
         return IsInit();
-
     }
 
     T &operator*()
