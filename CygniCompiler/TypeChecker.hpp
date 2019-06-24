@@ -302,8 +302,8 @@ public:
                 auto declaration = Check(*(node->type), scope);
                 if (value->Equals(declaration))
                 {
-                    scope->Put(node->name, "Identifier", value);
-                    return Type::VOID;
+                    scope->Put(node->name, "**Identifier**", value);
+                    return declaration;
                 }
                 else
                 {
@@ -312,7 +312,8 @@ public:
             }
             else
             {
-                return Type::VOID;
+                scope->Put(node->name, "**Identifier**", value);
+                return value;
             }
         }
         else
@@ -320,8 +321,8 @@ public:
             if (node->type)
             {
                 auto declaration = Check(*(node->type), scope);
-                scope->Put(node->name, "Identifier", declaration);
-                return Type::VOID;
+                scope->Put(node->name, "**Identifier**", declaration);
+                return declaration;
             }
             else
             {
@@ -411,7 +412,7 @@ public:
     Ptr<Type> CheckReturn(const Ptr<Return> &node, const Ptr<Scope> &scope)
     {
         auto value = Check(node->value, scope);
-        Optional<Any> result = scope->Lookup("**Function**", "Type");
+        Optional<Any> result = scope->Lookup("**Function**", "**Type**");
         if (result)
         {
             auto function = Cast<FunctionType>((*result).AnyCast<Ptr<Type>>());
@@ -433,12 +434,13 @@ public:
     Ptr<Type> CheckDef(const Ptr<Def> &node, Ptr<Scope> scope)
     {
         auto functionType = Check(node->type, scope);
-        scope->Put(node->name, "Identifier", functionType);
         auto functionScope = New<Scope>(scope);
-        functionScope->Put("**Function**", "Type", functionType);
+        scope->Put(node->name, "**Identifier**", functionType);
+        functionScope->Put("**Function**", "**Type**", functionType);
+
         for (const auto &parameter: node->parameters)
         {
-            functionScope->Put(parameter.name, "Identifier", Check(parameter.type, functionScope));
+            functionScope->Put(parameter.name, "**Identifier**", Check(parameter.type, functionScope));
         }
         Check(node->body, functionScope);
         return Type::VOID;
