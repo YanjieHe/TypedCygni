@@ -15,29 +15,29 @@ void TestTypeChecker::TestAll()
 
 Ptr<Scope> TestTypeChecker::InitializeBasicTypes()
 {
-    auto Function = [](const Vector<Ptr<Value>> &parameters, const Ptr<Value> &returnValue)
+    auto Function = [](const Vector<Ptr<Type>> &parameters, const Ptr<Type> &returnValue)
     {
-        return New<FunctionValue>(parameters, returnValue);
+        return New<FunctionType>(parameters, returnValue);
     };
-    auto intValue = New<IntValue>();
-    auto floatValue = New<FloatValue>();
-    auto longValue = New<LongValue>();
-    auto doubleValue = New<DoubleValue>();
-    auto boolValue = New<BoolValue>();
-    auto numberComputation = Vector<Ptr<FunctionValue>>{
+    auto intValue = New<IntType>();
+    auto floatValue = New<FloatType>();
+    auto longValue = New<LongType>();
+    auto doubleValue = New<DoubleType>();
+    auto boolValue = New<BoolType>();
+    auto numberComputation = Vector<Ptr<FunctionType>>{
             Function({intValue, intValue}, intValue),
             Function({floatValue, floatValue}, floatValue),
             Function({longValue, longValue}, longValue),
             Function({doubleValue, doubleValue}, doubleValue)
     };
 
-    auto comparision = Vector<Ptr<FunctionValue>>{
+    auto comparision = Vector<Ptr<FunctionType>>{
             Function({intValue, intValue}, boolValue),
             Function({floatValue, floatValue}, boolValue),
             Function({longValue, longValue}, boolValue),
             Function({doubleValue, doubleValue}, boolValue),
     };
-    HashMap<String, Vector<Ptr<FunctionValue>>> operators = {
+    HashMap<String, Vector<Ptr<FunctionType>>> operators = {
             {"+",  numberComputation},
             {"-",  numberComputation},
             {"*",  numberComputation},
@@ -54,7 +54,7 @@ Ptr<Scope> TestTypeChecker::InitializeBasicTypes()
     auto scope = New<Scope>();
     for (const auto &item: operators)
     {
-        scope->Put(item.first, "Operator", item.second);
+        scope->Put(item.first, "**Operator**", item.second);
     }
     scope->Put("Int", "Type", New<IntType>());
     scope->Put("Float", "Type", New<FloatType>());
