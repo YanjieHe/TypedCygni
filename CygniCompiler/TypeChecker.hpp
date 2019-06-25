@@ -246,6 +246,19 @@ public:
 
     Ptr<Type> CheckTypeExpression(const Ptr<TypeExpression> &expression, const Ptr<Scope> &scope)
     {
+        if(expression->name == "Function"){
+            Vector<Ptr<Type>> parameters;
+            if(expression->parameters.empty()) {
+                throw TypeException(expression->position, "parameters count do not match");
+            }
+            int n = expression->parameters.size();
+            for(int i = 0 ; i < n - 1; i++) {
+                const auto& p = expression->parameters.at(i);
+                parameters.push_back(CheckTypeExpression(p, scope));
+            }
+            auto returnType = CheckTypeExpression(expression->parameters.back(), scope);
+            return New<FunctionType>(parameters, returnType);
+        }
         Optional<Any> result = scope->Lookup(expression->name, "**Type**");
         if (result)
         {

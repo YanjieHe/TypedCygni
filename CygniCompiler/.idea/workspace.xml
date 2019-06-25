@@ -12,17 +12,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="636a139e-8d19-4687-b57e-2160c250861a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Ast.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Ast.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Ast.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Ast.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Compiler.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Compiler.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Parser.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Parser.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TypeChecker.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/TypeChecker.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CygniCompiler.dir/depend.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CygniCompiler.dir/depend.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/TestParser.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/test/TestParser.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/TestParser.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/test/TestParser.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/TestTypeChecker.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/test/TestTypeChecker.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/TestTypeChecker.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/test/TestTypeChecker.hpp" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -247,12 +237,12 @@
       <workItem from="1560255992277" duration="14539000" />
       <workItem from="1560435264000" duration="842000" />
       <workItem from="1561165007987" duration="2830000" />
-      <workItem from="1561417631855" duration="1521000" />
+      <workItem from="1561417631855" duration="2624000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="184055000" />
+    <option name="totallyTimeSpent" value="185158000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
