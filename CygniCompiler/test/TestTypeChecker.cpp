@@ -56,11 +56,11 @@ Ptr<Scope> TestTypeChecker::InitializeBasicTypes()
     {
         scope->Put(item.first, "**Operator**", item.second);
     }
-    scope->Put("Int", "Type", New<IntType>());
-    scope->Put("Float", "Type", New<FloatType>());
-    scope->Put("Long", "Type", New<LongType>());
-    scope->Put("Double", "Type", New<DoubleType>());
-    scope->Put("Bool", "Type", New<BoolType>());
+    scope->Put("Int", "**Type**", New<IntType>());
+    scope->Put("Float", "**Type**", New<FloatType>());
+    scope->Put("Long", "**Type**", New<LongType>());
+    scope->Put("Double", "**Type**", New<DoubleType>());
+    scope->Put("Bool", "**Type**", New<BoolType>());
     return scope;
 }
 
@@ -98,7 +98,7 @@ void TestTypeChecker::Test1()
     }
 }
 
-void TestTypeChecker::OutputTypeRecord(const std::string &path, const HashMap<int, Ptr<Value>> &typeRecord)
+void TestTypeChecker::OutputTypeRecord(const std::string &path, const HashMap<int, Ptr<Type>> &typeRecord)
 {
     std::ofstream stream(path);
     for (const auto &item: typeRecord)

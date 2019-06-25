@@ -91,9 +91,9 @@ Def::Def(Position position, String name, Vector<Parameter> parameters, Ptr<TypeE
 
 }
 
-Ptr<TypeExpression> Def::MakeFunctionType(Vector<Parameter> parameters, Ptr<TypeExpression> returnType)
+Ptr<TypeExpression> Def::MakeFunctionType(Position position, Vector<Parameter> parameters, Ptr<TypeExpression> returnType)
 {
-    Vector<Ptr<Type>> types;
+    Vector<Ptr<TypeExpression>> types;
     types.resize(parameters.size() + 1);
     std::transform(parameters.begin(), parameters.end(),
                    types.begin(), [](const Parameter &p)
@@ -101,7 +101,7 @@ Ptr<TypeExpression> Def::MakeFunctionType(Vector<Parameter> parameters, Ptr<Type
                        return p.type;
                    });
     types.back() = std::move(returnType);
-    return New<TypeExpression>(New<TypeExpression>("Function"), types);
+    return New<TypeExpression>(position, "Function", types);
 }
 
 DefClass::DefClass(Position position, String name, Vector<Ptr<Var>> fields, Vector<Ptr<Def>> methods)

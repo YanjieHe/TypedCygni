@@ -249,9 +249,9 @@ public:
     Ptr<Ast> body;
     Access access;
 
-    Def(Position position, String name, Vector<Parameter> parameters, Ptr<Type> type, Ptr<Ast> body);
+    Def(Position position, String name, Vector<Parameter> parameters, Ptr<TypeExpression> type, Ptr<Ast> body);
 
-    static Ptr<TypeExpression> MakeFunctionType(Vector<Parameter> parameters, Ptr<TypeExpression> returnType);
+    static Ptr<TypeExpression> MakeFunctionType(Position position, Vector<Parameter> parameters, Ptr<TypeExpression> returnType);
 };
 
 class DefClass : public Ast

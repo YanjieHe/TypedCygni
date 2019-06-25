@@ -198,14 +198,14 @@ void TestParser::Test2()
     }
 }
 
-Ptr<JsonObject> TestParser::TypeToJson(const Ptr<Type> &type)
+Ptr<JsonObject> TestParser::TypeToJson(const Ptr<TypeExpression> &type)
 {
     auto map = New<JsonMap>();
     auto array = New<JsonArray>();
-    if (!type->IsLeaf())
+    if (!(type->parameters.empty()))
     {
         map->Add("kind", New<JsonValue>("Type List"));
-        for (const auto &item: Cast<TypeList>(type)->parameters)
+        for (const auto &item: type->parameters)
         {
             array->items.push_back(TypeToJson(item));
         }
@@ -213,7 +213,7 @@ Ptr<JsonObject> TestParser::TypeToJson(const Ptr<Type> &type)
     }
     else
     {
-        map->Add("name", New<JsonValue>(Cast<TypeLeaf>(type)->name));
+        map->Add("name", New<JsonValue>(type->name));
         map->Add("kind", New<JsonValue>("Type Leaf"));
     }
     return map;

@@ -9,7 +9,7 @@ namespace TestTypeChecker
 
     Ptr<Scope> InitializeBasicTypes();
 
-    void OutputTypeRecord(const std::string &path, const HashMap<int, Ptr<Value>> &typeRecord);
+    void OutputTypeRecord(const std::string &path, const HashMap<int, Ptr<Type>> &typeRecord);
 
     void Test1();
 }

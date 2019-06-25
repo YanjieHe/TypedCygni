@@ -92,11 +92,11 @@ private:
     class Rule
     {
     public:
-        Vector<Ptr<Value>> values;
+        Vector<Ptr<Type>> types;
         Op instruction;
 
-        Rule(Vector<Ptr<Value>> values, Op instruction)
-                : values{std::move(values)}, instruction{instruction}
+        Rule(Vector<Ptr<Type>> types, Op instruction)
+                : types{std::move(types)}, instruction{instruction}
         {
 
         }
@@ -104,10 +104,10 @@ private:
 
     HashMap<Kind, Vector<Rule>> rules;
 public:
-    const HashMap<int, Ptr<Value>> &typeRecord;
+    const HashMap<int, Ptr<Type>> &typeRecord;
     const HashMap<int, Location> &locations;
 
-    Compiler(const HashMap<int, Ptr<Value>> &typeRecord, const HashMap<int, Location> &locations)
+    Compiler(const HashMap<int, Ptr<Type>> &typeRecord, const HashMap<int, Location> &locations)
             : typeRecord{typeRecord}, locations{locations}
     {
         Register();
@@ -198,7 +198,7 @@ public:
         }
     }
 
-    const Ptr<Value> &TypeOf(const Ptr<Ast> &node) const
+    const Ptr<Type> &TypeOf(const Ptr<Ast> &node) const
     {
         return typeRecord.at(node->id);
     }
@@ -221,15 +221,15 @@ public:
         code.push_back(static_cast<Byte>(op));
     }
 
-    Op Match(Kind kind, const Vector<Ptr<Value>> &values)
+    Op Match(Kind kind, const Vector<Ptr<Type>> &values)
     {
-        auto comparator = [](const Ptr<Value> &x, const Ptr<Value> &y) -> bool
+        auto comparator = [](const Ptr<Type> &x, const Ptr<Type> &y) -> bool
         {
             return x->Equals(y);
         };
         for (const auto &items: rules.at(kind))
         {
-            if (std::equal(items.values.begin(), items.values.end(), values.begin(), values.end(), comparator))
+            if (std::equal(items.types.begin(), items.types.end(), values.begin(), values.end(), comparator))
             {
                 return items.instruction;
             }

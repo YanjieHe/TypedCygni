@@ -359,15 +359,17 @@ public:
 
     Ptr<Type> CheckModule(const Ptr<DefModule> &node, const Ptr<Scope> &scope)
     {
-        auto fieldTypes = Enumerate::Map(node->fields, [this, &scope](const Ptr<Var>& var)
+        HashMap<String, Ptr<Type>> fields;
+        HashMap<String, Ptr<Type>> methods;
+        for (const Ptr<Var> &var: node->fields)
         {
-            return Check(*(var->type), scope);
-        });
-        auto methodTypes = Enumerate::Map(node->methods, [this, &scope](const Ptr<Def>& def)
+            fields.insert({var->name, Check(*(var->type), scope)});
+        }
+        for (const Ptr<Def> &def: node->methods)
         {
-            return Check(def->type, scope);
-        });
-        auto module = New<ModuleType>(fieldTypes, methodTypes);
+            methods.insert({def->name, Check(def->type, scope)});
+        }
+        auto module = New<ModuleType>(fields, methods);
         scope->Put(node->name, "**Identifier**", module);
         for (const auto &field: node->fields)
         {

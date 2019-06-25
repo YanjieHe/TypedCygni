@@ -366,7 +366,7 @@ Ptr<Var> Parser::ParseVar()
     {
         Match(Tag::Assign);
         auto value = Optional<Ptr<Ast>>(ParseOr());
-        return New<Var>(GetPos(start), t.text, Optional<Ptr<Type>>(), value);
+        return New<Var>(GetPos(start), t.text, Optional<Ptr<TypeExpression>>(), value);
     }
 }
 
@@ -402,7 +402,7 @@ Ptr<Def> Parser::ParseDef()
     auto returnType = ParseType();
     Ptr<Ast> body = ParseBlock();
     return New<Def>(GetPos(start), name, parameters,
-                    Def::MakeFunctionType(parameters, returnType), body);
+                    Def::MakeFunctionType(GetPos(start), parameters, returnType), body);
 }
 
 Parameter Parser::ParseParameter()
@@ -418,8 +418,10 @@ Ptr<TypeExpression> Parser::ParseType()
     String name = Match(Tag::Identifier).text;
     if (Look().tag == Tag::LeftBracket)
     {
+        Match(Tag::LeftBracket);
+        const auto &token = Look();
         Vector<Ptr<TypeExpression>> types = ParseTypeArguments();
-        auto result = New<TypeExpression>(New<TypeExpression>(name), types);
+        auto result = New<TypeExpression>(GetPos(token), name, types);
         if (result)
         {
             throw ParserException(Look().line, Look().column, "type error");
@@ -431,7 +433,7 @@ Ptr<TypeExpression> Parser::ParseType()
     }
     else
     {
-        return New<TypeExpression>(name);
+        return New<TypeExpression>(GetPos(Look()), name);
     }
 }
 

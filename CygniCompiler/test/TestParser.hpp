@@ -20,7 +20,7 @@ namespace TestParser
 
     Ptr<JsonObject> TreeToJson(const Ptr<Ast> &node);
 
-    Ptr<JsonObject> TypeToJson(const Ptr<Type> &type);
+    Ptr<JsonObject> TypeToJson(const Ptr<TypeExpression> &type);
 
     Ptr<JsonObject> ProgramToJson(const Program &program);
 
