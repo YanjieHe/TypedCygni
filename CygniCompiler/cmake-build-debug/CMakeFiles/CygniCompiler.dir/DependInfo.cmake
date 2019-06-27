@@ -12,7 +12,6 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "C:/Users/HeYan/Documents/GitHub/TypedCygni/CygniCompiler/Lexer.cpp" "C:/Users/HeYan/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/CygniCompiler.dir/Lexer.cpp.obj"
   "C:/Users/HeYan/Documents/GitHub/TypedCygni/CygniCompiler/Location.cpp" "C:/Users/HeYan/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/CygniCompiler.dir/Location.cpp.obj"
   "C:/Users/HeYan/Documents/GitHub/TypedCygni/CygniCompiler/Locator.cpp" "C:/Users/HeYan/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/CygniCompiler.dir/Locator.cpp.obj"
-  "C:/Users/HeYan/Documents/GitHub/TypedCygni/CygniCompiler/Object.cpp" "C:/Users/HeYan/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/CygniCompiler.dir/Object.cpp.obj"
   "C:/Users/HeYan/Documents/GitHub/TypedCygni/CygniCompiler/Parser.cpp" "C:/Users/HeYan/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/CygniCompiler.dir/Parser.cpp.obj"
   "C:/Users/HeYan/Documents/GitHub/TypedCygni/CygniCompiler/Predef.cpp" "C:/Users/HeYan/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/CygniCompiler.dir/Predef.cpp.obj"
   "C:/Users/HeYan/Documents/GitHub/TypedCygni/CygniCompiler/Scope.cpp" "C:/Users/HeYan/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/CygniCompiler.dir/Scope.cpp.obj"

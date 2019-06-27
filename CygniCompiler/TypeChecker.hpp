@@ -137,11 +137,11 @@ public:
 
         auto leftType = Check(node->left, scope);
         auto rightType = Check(node->right, scope);
-        Optional<Any> result = scope->Lookup(binaryOperators[kind], "**Operator**");
+        Optional<Ptr<void>> result = scope->Lookup(binaryOperators[kind], "**Operator**");
         if (result)
         {
-            const auto &functions = (*result).AnyCast<Vector<Ptr<FunctionType>>>();
-            for (const auto &function: functions)
+            auto functions = Cast<Vector<Ptr<FunctionType>>>(*result);
+            for (const auto &function: *functions)
             {
                 if (MatchParameters(function, {leftType, rightType}))
                 {
@@ -168,11 +168,11 @@ public:
 
         auto operandType = Check(node->operand, scope);
         auto opChar = unaryOperators[kind];
-        Optional<Any> result = scope->Lookup(unaryOperators[kind], "**Operator**");
+        auto result = scope->Lookup(unaryOperators[kind], "**Operator**");
         if (result)
         {
-            const auto &functions = (*result).AnyCast<Vector<Ptr<FunctionType>>>();
-            for (const auto &function: functions)
+            auto functions = Cast<Vector<Ptr<FunctionType>>>(*result);
+            for (const auto &function: *functions)
             {
                 if (MatchParameters(function, {operandType}))
                 {
@@ -234,10 +234,10 @@ public:
 
     static Ptr<Type> CheckName(const Ptr<Name> &node, const Ptr<Scope> &scope)
     {
-        Optional<Any> result = scope->Lookup(node->name, "**Identifier**");
+        auto result = scope->Lookup(node->name, "**Identifier**");
         if (result)
         {
-            return (*result).AnyCast<Ptr<Type>>();
+            return Cast<Type>(*result);
         }
         else
         {
@@ -266,11 +266,11 @@ public:
         else
         {
             std::cout << 1 << std::endl;
-            Optional<Any> result = scope->Lookup(expression->name, "**Type**");
+            auto result = scope->Lookup(expression->name, "**Type**");
             if (result)
             {
                 std::cout << 2 << std::endl;
-                Ptr<Type> type = (*result).AnyCast<Ptr<Type>>();
+                auto type = Cast<Type>(*result);
                 std::cout << 3 << std::endl;
                 Vector<Ptr<Type>> parameters = Enumerate::Map(expression->parameters,
                                                               [this, &scope](const Ptr<TypeExpression> &exp)
@@ -438,10 +438,10 @@ public:
     Ptr<Type> CheckReturn(const Ptr<Return> &node, const Ptr<Scope> &scope)
     {
         auto value = Check(node->value, scope);
-        Optional<Any> result = scope->Lookup("**Function**", "**Type**");
+       auto result = scope->Lookup("**Function**", "**Type**");
         if (result)
         {
-            auto function = Cast<FunctionType>((*result).AnyCast<Ptr<Type>>());
+            auto function = Cast<FunctionType>(*result);
             if (value->Equals(function->returnType))
             {
                 return value;

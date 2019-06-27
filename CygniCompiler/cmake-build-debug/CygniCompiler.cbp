@@ -138,12 +138,6 @@
 		<Unit filename="C:/Users/HeYan/Documents/GitHub/TypedCygni/CygniCompiler/Locator.hpp">
 			<Option target="CygniCompiler"/>
 		</Unit>
-		<Unit filename="C:/Users/HeYan/Documents/GitHub/TypedCygni/CygniCompiler/Object.cpp">
-			<Option target="CygniCompiler"/>
-		</Unit>
-		<Unit filename="C:/Users/HeYan/Documents/GitHub/TypedCygni/CygniCompiler/Object.hpp">
-			<Option target="CygniCompiler"/>
-		</Unit>
 		<Unit filename="C:/Users/HeYan/Documents/GitHub/TypedCygni/CygniCompiler/Optional.hpp">
 			<Option target="CygniCompiler"/>
 		</Unit>

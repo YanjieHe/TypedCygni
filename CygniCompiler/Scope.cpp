@@ -7,7 +7,7 @@ Scope::Scope(Ptr<Scope> parent)
 
 }
 
-Optional<Any> Scope::Lookup(const String &name, const String &key)
+Optional<Ptr<void>> Scope::Lookup(const String &name, const String &key)
 {
     auto tryLookupParent = [this](const String &name, const String &key)
     {
@@ -17,14 +17,14 @@ Optional<Any> Scope::Lookup(const String &name, const String &key)
         }
         else
         {
-            return Optional<Any>();
+            return Optional<Ptr<void>>();
         }
     };
     if (values.find(name) != values.end()) // found name
     {
         if (values[name].find(key) != values[name].end()) // found key
         {
-            return Optional<Any>(values[name][key]);
+            return Optional<Ptr<void>>(values[name][key]);
         }
         else
         {
@@ -37,7 +37,7 @@ Optional<Any> Scope::Lookup(const String &name, const String &key)
     }
 }
 
-void Scope::Put(const String &name, const String &key, const Any &value)
+void Scope::Put(const String &name, const String &key, const Ptr<void> &value)
 {
     if (values.find(name) != values.end()) // found name
     {
@@ -52,7 +52,7 @@ void Scope::Put(const String &name, const String &key, const Any &value)
     }
     else
     {
-        values.insert({name, HashMap<String, Any>()}); // create key first
+        values.insert({name, HashMap<String, Ptr<void>>()}); // create key first
         values[name].insert({key, value});
     }
 }

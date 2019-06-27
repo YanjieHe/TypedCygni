@@ -10,7 +10,7 @@ class Scope
 {
 private:
     Ptr<Scope> parent;
-    HashMap<String, HashMap<String, Any>> values;
+    HashMap<String, HashMap<String, Ptr<void>>> values;
 
 public:
 
@@ -18,9 +18,9 @@ public:
 
     explicit Scope(Ptr<Scope> parent);
 
-    Optional<Any> Lookup(const String &name, const String &key);
+    Optional<Ptr<void>> Lookup(const String &name, const String &key);
 
-    void Put(const String &name, const String &key, const Any &value);
+    void Put(const String &name, const String &key, const Ptr<void> &value);
 
     const Ptr<Scope> &Parent();
 };

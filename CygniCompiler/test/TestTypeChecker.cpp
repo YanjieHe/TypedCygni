@@ -54,7 +54,7 @@ Ptr<Scope> TestTypeChecker::InitializeBasicTypes()
     auto scope = New<Scope>();
     for (const auto &item: operators)
     {
-        scope->Put(item.first, "**Operator**", item.second);
+        scope->Put(item.first, "**Operator**", New<Vector<Ptr<FunctionType>>>(item.second));
     }
     scope->Put("Int", "**Type**", New<IntType>());
     scope->Put("Float", "**Type**", New<FloatType>());
