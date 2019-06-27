@@ -495,6 +495,25 @@ CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.s: cmake_force
  /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoNUL /FAs /FaCMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.s /c C:\Users\HeYan\Documents\GitHub\TypedCygni\CygniCompiler\test\TestCompiler.cpp
 <<
 
+CMakeFiles\CygniCompiler.dir\Object.cpp.obj: CMakeFiles\CygniCompiler.dir\flags.make
+CMakeFiles\CygniCompiler.dir\Object.cpp.obj: ..\Object.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\HeYan\Documents\GitHub\TypedCygni\CygniCompiler\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building CXX object CMakeFiles/CygniCompiler.dir/Object.cpp.obj"
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe @<<
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoCMakeFiles\CygniCompiler.dir\Object.cpp.obj /FdCMakeFiles\CygniCompiler.dir\ /FS -c C:\Users\HeYan\Documents\GitHub\TypedCygni\CygniCompiler\Object.cpp
+<<
+
+CMakeFiles\CygniCompiler.dir\Object.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/CygniCompiler.dir/Object.cpp.i"
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe > CMakeFiles\CygniCompiler.dir\Object.cpp.i @<<
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\HeYan\Documents\GitHub\TypedCygni\CygniCompiler\Object.cpp
+<<
+
+CMakeFiles\CygniCompiler.dir\Object.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/CygniCompiler.dir/Object.cpp.s"
+	C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\cl.exe @<<
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoNUL /FAs /FaCMakeFiles\CygniCompiler.dir\Object.cpp.s /c C:\Users\HeYan\Documents\GitHub\TypedCygni\CygniCompiler\Object.cpp
+<<
+
 # Object files for target CygniCompiler
 CygniCompiler_OBJECTS = \
 "CMakeFiles\CygniCompiler.dir\main.cpp.obj" \
@@ -519,7 +538,8 @@ CygniCompiler_OBJECTS = \
 "CMakeFiles\CygniCompiler.dir\Exception.cpp.obj" \
 "CMakeFiles\CygniCompiler.dir\test\TestLocator.cpp.obj" \
 "CMakeFiles\CygniCompiler.dir\Location.cpp.obj" \
-"CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.obj"
+"CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.obj" \
+"CMakeFiles\CygniCompiler.dir\Object.cpp.obj"
 
 # External object files for target CygniCompiler
 CygniCompiler_EXTERNAL_OBJECTS =
@@ -547,9 +567,10 @@ CygniCompiler.exe: CMakeFiles\CygniCompiler.dir\Exception.cpp.obj
 CygniCompiler.exe: CMakeFiles\CygniCompiler.dir\test\TestLocator.cpp.obj
 CygniCompiler.exe: CMakeFiles\CygniCompiler.dir\Location.cpp.obj
 CygniCompiler.exe: CMakeFiles\CygniCompiler.dir\test\TestCompiler.cpp.obj
+CygniCompiler.exe: CMakeFiles\CygniCompiler.dir\Object.cpp.obj
 CygniCompiler.exe: CMakeFiles\CygniCompiler.dir\build.make
 CygniCompiler.exe: CMakeFiles\CygniCompiler.dir\objects1.rsp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\Users\HeYan\Documents\GitHub\TypedCygni\CygniCompiler\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Linking CXX executable CygniCompiler.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\Users\HeYan\Documents\GitHub\TypedCygni\CygniCompiler\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Linking CXX executable CygniCompiler.exe"
 	"C:\Program Files\JetBrains\CLion 2018.3.1\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\CygniCompiler.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100177~1.0\x86\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100177~1.0\x86\mt.exe --manifests  -- C:\PROGRA~2\MICROS~1\2017\COMMUN~1\VC\Tools\MSVC\1416~1.270\bin\Hostx86\x86\link.exe /nologo @CMakeFiles\CygniCompiler.dir\objects1.rsp @<<
  /out:CygniCompiler.exe /implib:CygniCompiler.lib /pdb:C:\Users\HeYan\Documents\GitHub\TypedCygni\CygniCompiler\cmake-build-debug\CygniCompiler.pdb /version:0.0  /machine:X86 /debug /INCREMENTAL /subsystem:console kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib 
 <<

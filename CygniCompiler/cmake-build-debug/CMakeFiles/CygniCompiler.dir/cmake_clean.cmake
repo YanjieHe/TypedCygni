@@ -22,6 +22,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/CygniCompiler.dir/test/TestLocator.cpp.obj"
   "CMakeFiles/CygniCompiler.dir/Location.cpp.obj"
   "CMakeFiles/CygniCompiler.dir/test/TestCompiler.cpp.obj"
+  "CMakeFiles/CygniCompiler.dir/Object.cpp.obj"
   "CygniCompiler.pdb"
   "CygniCompiler.exe"
   "CygniCompiler.exe.manifest"

@@ -340,6 +340,33 @@ Locator.cpp.s:
 	$(MAKE) -f CMakeFiles\CygniCompiler.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\CygniCompiler.dir\Locator.cpp.s
 .PHONY : Locator.cpp.s
 
+Object.obj: Object.cpp.obj
+
+.PHONY : Object.obj
+
+# target to build an object file
+Object.cpp.obj:
+	$(MAKE) -f CMakeFiles\CygniCompiler.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\CygniCompiler.dir\Object.cpp.obj
+.PHONY : Object.cpp.obj
+
+Object.i: Object.cpp.i
+
+.PHONY : Object.i
+
+# target to preprocess a source file
+Object.cpp.i:
+	$(MAKE) -f CMakeFiles\CygniCompiler.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\CygniCompiler.dir\Object.cpp.i
+.PHONY : Object.cpp.i
+
+Object.s: Object.cpp.s
+
+.PHONY : Object.s
+
+# target to generate assembly for a file
+Object.cpp.s:
+	$(MAKE) -f CMakeFiles\CygniCompiler.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\CygniCompiler.dir\Object.cpp.s
+.PHONY : Object.cpp.s
+
 Parser.obj: Parser.cpp.obj
 
 .PHONY : Parser.obj
@@ -778,6 +805,9 @@ help:
 	@echo ... Locator.obj
 	@echo ... Locator.i
 	@echo ... Locator.s
+	@echo ... Object.obj
+	@echo ... Object.i
+	@echo ... Object.s
 	@echo ... Parser.obj
 	@echo ... Parser.i
 	@echo ... Parser.s
