@@ -91,7 +91,8 @@ Def::Def(Position position, String name, Vector<Parameter> parameters, Ptr<TypeE
 
 }
 
-Ptr<TypeExpression> Def::MakeFunctionType(Position position, Vector<Parameter> parameters, Ptr<TypeExpression> returnType)
+Ptr<TypeExpression>
+Def::MakeFunctionType(Position position, Vector<Parameter> parameters, Ptr<TypeExpression> returnType)
 {
     Vector<Ptr<TypeExpression>> types;
     types.resize(parameters.size() + 1);
@@ -176,9 +177,10 @@ String KindToString(Kind kind)
             return "While";
         case Kind::DefModule:
             return "DefModule";
-        default:
         case Kind::DefClass:
             return "DefClass";
+        case Kind::TypeExpr:
+            return "TypeExpr";
     }
 }
 

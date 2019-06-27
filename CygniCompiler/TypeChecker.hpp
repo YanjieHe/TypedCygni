@@ -51,6 +51,7 @@ public:
             this->typeRecord.insert({node->id, type});
             return type;
         };
+        std::cout << KindToString(node->kind) << std::endl;
         switch (node->kind)
         {
             case Kind::Add:
@@ -246,62 +247,72 @@ public:
 
     Ptr<Type> CheckTypeExpression(const Ptr<TypeExpression> &expression, const Ptr<Scope> &scope)
     {
-        if(expression->name == "Function"){
+        if (expression->name == "Function")
+        {
             Vector<Ptr<Type>> parameters;
-            if(expression->parameters.empty()) {
+            if (expression->parameters.empty())
+            {
                 throw TypeException(expression->position, "parameters count do not match");
             }
             int n = expression->parameters.size();
-            for(int i = 0 ; i < n - 1; i++) {
-                const auto& p = expression->parameters.at(i);
+            for (int i = 0; i < n - 1; i++)
+            {
+                const auto &p = expression->parameters.at(i);
                 parameters.push_back(CheckTypeExpression(p, scope));
             }
             auto returnType = CheckTypeExpression(expression->parameters.back(), scope);
             return New<FunctionType>(parameters, returnType);
         }
-        Optional<Any> result = scope->Lookup(expression->name, "**Type**");
-        if (result)
+        else
         {
-            Ptr<Type> type = (*result).AnyCast<Ptr<Type>>();
-            Vector<Ptr<Type>> parameters = Enumerate::Map(expression->parameters,
-                                                          [this, &scope](const Ptr<TypeExpression> &exp)
-                                                          {
-                                                              return Check(exp, scope);
-                                                          });
-            if (expression->parameters.empty())
+            std::cout << 1 << std::endl;
+            Optional<Any> result = scope->Lookup(expression->name, "**Type**");
+            if (result)
             {
-                return type;
-            }
-            else if (type->GetTypeCode() == TypeCode::FUNCTION)
-            {
-                auto functionType = Cast<FunctionType>(type);
-                Vector<Ptr<Type>> functionParams = functionType->parameters;
-                functionParams.push_back(functionType->returnType);
-                auto comparator = [](const Ptr<Type> &x, const Ptr<Type> &y) -> bool
+                std::cout << 2 << std::endl;
+                Ptr<Type> type = (*result).AnyCast<Ptr<Type>>();
+                std::cout << 3 << std::endl;
+                Vector<Ptr<Type>> parameters = Enumerate::Map(expression->parameters,
+                                                              [this, &scope](const Ptr<TypeExpression> &exp)
+                                                              {
+                                                                  return Check(exp, scope);
+                                                              });
+                std::cout << 4 << std::endl;
+                if (expression->parameters.empty())
                 {
-                    return x->Equals(y);
-                };
-                if (std::equal(functionParams.begin(),
-                               functionParams.end(),
-                               parameters.begin(), parameters.end(),
-                               comparator))
+                    return type;
+                }
+                else if (type->GetTypeCode() == TypeCode::FUNCTION)
                 {
-                    return functionType;
+                    auto functionType = Cast<FunctionType>(type);
+                    Vector<Ptr<Type>> functionParams = functionType->parameters;
+                    functionParams.push_back(functionType->returnType);
+                    auto comparator = [](const Ptr<Type> &x, const Ptr<Type> &y) -> bool
+                    {
+                        return x->Equals(y);
+                    };
+                    if (std::equal(functionParams.begin(),
+                                   functionParams.end(),
+                                   parameters.begin(), parameters.end(),
+                                   comparator))
+                    {
+                        return functionType;
+                    }
+                    else
+                    {
+                        throw TypeException(expression->position, "Type not match");
+                    }
                 }
                 else
                 {
-                    throw TypeException(expression->position, "Type not match");
+                    // Generic Classes
+                    throw NotImplementedException();
                 }
             }
             else
             {
-                // Generic Classes
-                throw NotImplementedException();
+                throw TypeException(expression->position, "type not declared");
             }
-        }
-        else
-        {
-            throw TypeException(expression->position, "type not declared");
         }
     }
 
