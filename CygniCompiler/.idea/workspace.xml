@@ -12,8 +12,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="636a139e-8d19-4687-b57e-2160c250861a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/Ast.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Ast.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TypeChecker.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/TypeChecker.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CygniCompiler.dir/CXX.includecache" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CygniCompiler.dir/CXX.includecache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CygniCompiler.dir/Locator.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CygniCompiler.dir/Locator.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CygniCompiler.dir/Scope.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CygniCompiler.dir/Scope.cpp.obj" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -43,8 +44,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Any.hpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="315">
-              <caret line="43" column="11" lean-forward="true" selection-start-line="39" selection-start-column="10" selection-end-line="43" selection-end-column="11" />
+            <state relative-caret-position="231">
+              <caret line="39" selection-start-line="39" selection-end-line="43" selection-end-column="9" />
               <folding>
                 <element signature="e#33#52#0" expanded="true" />
               </folding>
@@ -291,12 +292,12 @@
       <workItem from="1560435264000" duration="842000" />
       <workItem from="1561165007987" duration="2830000" />
       <workItem from="1561417631855" duration="2624000" />
-      <workItem from="1561590852977" duration="3225000" />
+      <workItem from="1561590852977" duration="3270000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="188383000" />
+    <option name="totallyTimeSpent" value="188428000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -743,16 +744,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/TypeChecker.hpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="253">
-          <caret line="272" column="47" selection-start-line="272" selection-start-column="47" selection-end-line="272" selection-end-column="47" />
-          <folding>
-            <element signature="e#51#70#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Ast.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="218">
@@ -774,10 +765,20 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/TypeChecker.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="253">
+          <caret line="272" column="47" selection-start-line="272" selection-start-column="47" selection-end-line="272" selection-end-column="47" />
+          <folding>
+            <element signature="e#51#70#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Any.hpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="43" column="11" lean-forward="true" selection-start-line="39" selection-start-column="10" selection-end-line="43" selection-end-column="11" />
+        <state relative-caret-position="231">
+          <caret line="39" selection-start-line="39" selection-end-line="43" selection-end-column="9" />
           <folding>
             <element signature="e#33#52#0" expanded="true" />
           </folding>

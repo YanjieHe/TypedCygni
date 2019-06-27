@@ -37,11 +37,11 @@ public:
     template<class U>
     U &AnyCast()
     {
-//        if (!Is<U>())
-//        {
-//            std::cout << "can not cast " << typeid(U).name() << " to " << m_tpIndex.name() << std::endl;
-//            throw std::bad_cast();
-//        }
+        if (!Is<U>())
+        {
+            std::cout << "can not cast " << typeid(U).name() << " to " << m_tpIndex.name() << std::endl;
+            throw std::bad_cast();
+        }
 
         auto derived = dynamic_cast<Derived <U> *> (m_ptr.get());
         return derived->m_value;

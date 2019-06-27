@@ -82,6 +82,10 @@ C:/Users/HeYan/Documents/GitHub/TypedCygni/CygniCompiler/Location.hpp
 String.hpp
 C:/Users/HeYan/Documents/GitHub/TypedCygni/CygniCompiler/String.hpp
 
+C:/Users/HeYan/Documents/GitHub/TypedCygni/CygniCompiler/Locator.cpp
+Locator.hpp
+C:/Users/HeYan/Documents/GitHub/TypedCygni/CygniCompiler/Locator.hpp
+
 C:/Users/HeYan/Documents/GitHub/TypedCygni/CygniCompiler/Locator.hpp
 Ast.hpp
 C:/Users/HeYan/Documents/GitHub/TypedCygni/CygniCompiler/Ast.hpp
@@ -127,6 +131,12 @@ iostream
 -
 Encoding.hpp
 C:/Users/HeYan/Documents/GitHub/TypedCygni/CygniCompiler/Encoding.hpp
+
+C:/Users/HeYan/Documents/GitHub/TypedCygni/CygniCompiler/Scope.cpp
+Scope.hpp
+C:/Users/HeYan/Documents/GitHub/TypedCygni/CygniCompiler/Scope.hpp
+Exception.hpp
+C:/Users/HeYan/Documents/GitHub/TypedCygni/CygniCompiler/Exception.hpp
 
 C:/Users/HeYan/Documents/GitHub/TypedCygni/CygniCompiler/Scope.hpp
 String.hpp
