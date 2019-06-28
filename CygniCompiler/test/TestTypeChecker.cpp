@@ -78,7 +78,7 @@ void TestTypeChecker::Test1()
         typeChecker.CheckProgram(program, scope);
         cout << "type checking finished" << endl;
         OutputTypeRecord("code3-types.txt", typeChecker.typeRecord);
-        std::ofstream stream("ast-test3.txt");
+        std::ofstream stream("ast-test3.json");
         auto json = TestParser::ProgramToJson(program);
         cout << __FUNCTION__ << ": successfully convert ast to json" << endl;
         JsonToFile(json, stream);

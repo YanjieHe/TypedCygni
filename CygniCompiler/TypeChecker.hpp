@@ -51,7 +51,6 @@ public:
             this->typeRecord.insert({node->id, type});
             return type;
         };
-        std::cout << KindToString(node->kind) << std::endl;
         switch (node->kind)
         {
             case Kind::Add:
@@ -265,19 +264,15 @@ public:
         }
         else
         {
-            std::cout << 1 << std::endl;
             auto result = scope->Lookup(expression->name, "**Type**");
             if (result)
             {
-                std::cout << 2 << std::endl;
                 auto type = Cast<Type>(*result);
-                std::cout << 3 << std::endl;
                 Vector<Ptr<Type>> parameters = Enumerate::Map(expression->parameters,
                                                               [this, &scope](const Ptr<TypeExpression> &exp)
                                                               {
                                                                   return Check(exp, scope);
                                                               });
-                std::cout << 4 << std::endl;
                 if (expression->parameters.empty())
                 {
                     return type;
