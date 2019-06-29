@@ -11,6 +11,8 @@
  *     **Location**: Ptr<Location>
  *     **Counter**, **Module**: Ptr<Vector<Ptr<DefModule>>>
  *     **Counter**, **Class**: Ptr<Vector<Ptr<DefClass>>>
+ *     **Counter**, **Variable**: Ptr<Vector<Ptr<Var>>>
+ *     **Counter**, **Function**: Ptr<Vector<Ptr<Def>>>
  */
 
 class Locator
@@ -123,7 +125,7 @@ public:
             case Kind::DefModule:
                 LocateModule(Cast<DefModule>(node), scope);
                 break;
-            default:
+            case Kind::TypeExpr:
                 throw NotImplementedException();
         }
     }
@@ -307,18 +309,18 @@ public:
 
     void RegisterClasses(const Vector<Ptr<DefClass>> &classes, Ptr<Scope> scope)
     {
-        auto result = scope->Lookup("Counter", "Class");
+        auto result = scope->Lookup("**Counter**", "**Class**");
         if (result)
         {
-            auto &nodes = (*result).AnyCast<Ptr<Vector<Ptr<DefClass>>>>();
+            auto nodes = Cast<Vector<Ptr<DefClass>>>(*result);
             for (const auto &_class: classes)
             {
                 int index = AddNode(nodes, _class);
                 Location location{LocationKind::Global, index};
-                scope->Put(_class->name, "Identifier", location);
+                scope->Put(_class->name, "**Location**", New<Location>(location));
                 auto newScope = New<Scope>(scope);
-                newScope->Put("Counter", "FieldDefinitions", New<Vector<Ptr<Var>>>());
-                newScope->Put("Counter", "FunctionDefinitions", New<Vector<Ptr<Def>>>());
+                newScope->Put("**Counter**", "**Variable**", New<Vector<Ptr<Var>>>());
+                newScope->Put("**Counter**", "**Function**", New<Vector<Ptr<Def>>>());
                 RegisterFields(_class->fields, newScope, LocationKind::Class);
                 RegisterMethods(_class->methods, newScope, LocationKind::Class);
             }
@@ -342,8 +344,8 @@ public:
                 scope->Put(module->name, "**Location**", New<Location>(location));
                 locations.insert({module->id, location});
                 auto newScope = New<Scope>(scope);
-                newScope->Put("Counter", "FieldDefinitions", New<Vector<Ptr<Var>>>());
-                newScope->Put("Counter", "FunctionDefinitions", New<Vector<Ptr<Def>>>());
+                newScope->Put("**Counter**", "**Variable**", New<Vector<Ptr<Var>>>());
+                newScope->Put("**Counter**", "**Function**", New<Vector<Ptr<Def>>>());
                 RegisterFields(module->fields, newScope, LocationKind::Module);
                 RegisterMethods(module->methods, newScope, LocationKind::Module);
             }
@@ -356,15 +358,15 @@ public:
 
     void RegisterFields(const Vector<Ptr<Var>> &fieldDefs, const Ptr<Scope> &scope, LocationKind locationKind)
     {
-        auto result = scope->Lookup("Counter", "FieldDefinitions");
+        auto result = scope->Lookup("**Counter**", "**Variable**");
         if (result)
         {
-            auto &nodes = (*result).AnyCast<Ptr<Vector<Ptr<Var>>>>();
+            auto nodes = Cast<Vector<Ptr<Var>>>(*result);
             for (const auto &definition: fieldDefs)
             {
                 int index = AddNode(nodes, definition);
                 Location location{locationKind, index};
-                scope->Put(definition->name, "Identifier", location);
+                scope->Put(definition->name, "**Location**", New<Location>(location));
             }
         }
         else
@@ -378,12 +380,12 @@ public:
         auto result = scope->Lookup("Counter", "FunctionDefinitions");
         if (result)
         {
-            auto &nodes = (*result).AnyCast<Ptr<Vector<Ptr<Def>>>>();
+            auto nodes = Cast<Vector<Ptr<Def>>>(*result);
             for (const auto &definition: functionDefs)
             {
                 int index = AddNode(nodes, definition);
                 Location location{locationKind, index};
-                scope->Put(definition->name, "Identifier", location);
+                scope->Put(definition->name, "**Location**", New<Location>(location));
             }
         }
         else
