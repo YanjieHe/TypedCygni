@@ -13,6 +13,7 @@
  *     **Counter**, **Class**: Ptr<Vector<Ptr<DefClass>>>
  *     **Counter**, **Variable**: Ptr<Vector<Ptr<Var>>>
  *     **Counter**, **Function**: Ptr<Vector<Ptr<Def>>>
+ *     **Scope**, **Constant**: Ptr<Tuple<Ptr<Ast>, Ptr<Vector<Ptr<Constant>>>>>
  */
 
 class Locator
@@ -173,12 +174,12 @@ public:
 
     void LocateConstant(const Ptr<Constant> &node, const Ptr<Scope> &scope)
     {
-        Optional<Any> result = scope->Lookup("**Scope**", "Constant");
+        auto result = scope->Lookup("**Scope**", "**Constant**");
         if (result)
         {
             Ptr<Vector<Ptr<Constant>>> constants;
             Ptr<Ast> scopeNode;
-            tie(scopeNode, constants) = (*result).AnyCast<Tuple<Ptr<Ast>, Ptr<Vector<Ptr<Constant>>>>>();
+            tie(scopeNode, constants) = *Cast<Tuple<Ptr<Ast>, Ptr<Vector<Ptr<Constant>>>>>(*result);
             int index = AddNode(constants, node);
             locations.insert({node->id, {AstKindToLocationKind(scopeNode->kind), index}});
         }
@@ -240,7 +241,7 @@ public:
 
     void LocateDef(const Ptr<Def> &node, const Ptr<Scope> &scope)
     {
-        Optional<Any> result = scope->Lookup("**Scope**", "Function");
+        auto result = scope->Lookup("**Scope**", "Function");
         if (result)
         {
             Ptr<Vector<Ptr<Def>>> functions;
