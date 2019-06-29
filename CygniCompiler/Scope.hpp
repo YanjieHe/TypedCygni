@@ -3,7 +3,6 @@
 
 #include "String.hpp"
 #include "Predef.hpp"
-#include "Any.hpp"
 #include "Optional.hpp"
 
 class Scope
