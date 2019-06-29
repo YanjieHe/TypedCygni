@@ -12,7 +12,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="636a139e-8d19-4687-b57e-2160c250861a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/Scope.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Scope.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Locator.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Locator.hpp" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -30,8 +30,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/TypeChecker.hpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="420">
-              <caret line="401" column="5" lean-forward="true" selection-start-line="401" selection-start-column="5" selection-end-line="401" selection-end-column="5" />
+            <state relative-caret-position="311">
+              <caret line="15" column="2" lean-forward="true" selection-start-line="15" selection-start-column="2" selection-end-line="15" selection-end-column="2" />
               <folding>
                 <element signature="e#51#70#0" expanded="true" />
                 <element signature="e#4333#4344#0" expanded="true" />
@@ -42,21 +42,13 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Scope.hpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="84">
-              <caret line="4" column="21" selection-start-line="4" selection-start-column="21" selection-end-line="4" selection-end-column="21" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Locator.hpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="211">
-              <caret line="379" column="15" lean-forward="true" selection-start-line="379" selection-start-column="15" selection-end-line="379" selection-end-column="15" />
+            <state relative-caret-position="252">
+              <caret line="336" column="63" selection-start-line="336" selection-start-column="63" selection-end-line="336" selection-end-column="63" />
               <folding>
                 <element signature="e#41#59#0" expanded="true" />
+                <element signature="e#9779#9800#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -191,11 +183,11 @@
         <option value="$PROJECT_DIR$/Any.hpp" />
         <option value="$PROJECT_DIR$/Object.hpp" />
         <option value="$PROJECT_DIR$/Scope.cpp" />
-        <option value="$PROJECT_DIR$/Locator.hpp" />
         <option value="$PROJECT_DIR$/test/TestLocator.cpp" />
         <option value="$PROJECT_DIR$/test/TestTypeChecker.cpp" />
         <option value="$PROJECT_DIR$/TypeChecker.hpp" />
         <option value="$PROJECT_DIR$/Scope.hpp" />
+        <option value="$PROJECT_DIR$/Locator.hpp" />
       </list>
     </option>
   </component>
@@ -287,12 +279,12 @@
       <workItem from="1560435264000" duration="842000" />
       <workItem from="1561165007987" duration="2830000" />
       <workItem from="1561417631855" duration="2624000" />
-      <workItem from="1561590852977" duration="6639000" />
+      <workItem from="1561590852977" duration="7915000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="191797000" />
+    <option name="totallyTimeSpent" value="193073000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -307,11 +299,11 @@
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.119936034" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.119936034" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info active="true" anchor="bottom" id="Find" order="1" visible="true" weight="0.32936078" />
+      <window_info anchor="bottom" id="Find" order="1" visible="true" weight="0.32936078" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.32936078" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
@@ -742,16 +734,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Locator.hpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="211">
-          <caret line="379" column="15" lean-forward="true" selection-start-line="379" selection-start-column="15" selection-end-line="379" selection-end-column="15" />
-          <folding>
-            <element signature="e#41#59#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/test/TestLocator.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="473">
@@ -762,10 +744,20 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Scope.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="337">
+          <caret line="22" lean-forward="true" selection-start-line="22" selection-end-line="22" />
+          <folding>
+            <element signature="e#37#58#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/TypeChecker.hpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
-          <caret line="401" column="5" lean-forward="true" selection-start-line="401" selection-start-column="5" selection-end-line="401" selection-end-column="5" />
+        <state relative-caret-position="311">
+          <caret line="15" column="2" lean-forward="true" selection-start-line="15" selection-start-column="2" selection-end-line="15" selection-end-column="2" />
           <folding>
             <element signature="e#51#70#0" expanded="true" />
             <element signature="e#4333#4344#0" expanded="true" />
@@ -774,10 +766,14 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Scope.hpp">
+    <entry file="file://$PROJECT_DIR$/Locator.hpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="84">
-          <caret line="4" column="21" selection-start-line="4" selection-start-column="21" selection-end-line="4" selection-end-column="21" />
+        <state relative-caret-position="252">
+          <caret line="336" column="63" selection-start-line="336" selection-start-column="63" selection-end-line="336" selection-end-column="63" />
+          <folding>
+            <element signature="e#41#59#0" expanded="true" />
+            <element signature="e#9779#9800#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
