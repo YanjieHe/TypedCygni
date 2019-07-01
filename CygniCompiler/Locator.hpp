@@ -17,6 +17,25 @@
  *     **Scioe**, **Parameter**: Ptr<Tuple<Ptr<Ast>, Ptr<Vector<Parameter>>>>
  */
 
+template<typename T>
+class NodeInfo
+{
+public:
+    Ptr<Ast> node;
+    Vector<T> values;
+
+    NodeInfo()
+    {
+
+    }
+
+    NodeInfo(Ptr<Ast> node, Vector<T> values)
+            : node{node}, values{values}
+    {
+
+    }
+};
+
 class Locator
 {
 public:
@@ -264,7 +283,8 @@ public:
                 AddNode(parameterList, parameter);
                 newScope->Put(parameter.name, "Identifier", New<Location>(Location{LocationKind::Function, index}));
             }
-            newScope->Put("**Scope**", "**Parameter**", New<Tuple<Ptr<Ast>, Ptr<Vector<Parameter>>>>(tuple(node, parameterList)));
+            newScope->Put("**Scope**", "**Parameter**",
+                          New<Tuple<Ptr<Ast>, Ptr<Vector<Parameter>>>>(tuple(node, parameterList)));
             Locate(node->body, newScope);
         }
         else
