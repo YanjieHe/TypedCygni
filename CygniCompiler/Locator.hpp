@@ -14,7 +14,7 @@
  *     **Counter**, **Variable**: Ptr<Vector<Ptr<Var>>>
  *     **Counter**, **Function**: Ptr<Vector<Ptr<Def>>>
  *     **Scope**, **Constant**: Ptr<Tuple<Ptr<Ast>, Ptr<Vector<Ptr<Constant>>>>>
- *     **Scioe**, **Parameter**: Ptr<Tuple<Ptr<Ast>, Ptr<Vector<Parameter>>>>
+ *     **Scope**, **Parameter**: Ptr<Tuple<Ptr<Ast>, Ptr<Vector<Parameter>>>>
  */
 
 template<typename T>
