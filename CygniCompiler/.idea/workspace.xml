@@ -12,7 +12,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="636a139e-8d19-4687-b57e-2160c250861a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Locator.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Locator.hpp" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
@@ -46,9 +45,10 @@
         <entry file="file://$PROJECT_DIR$/Locator.hpp">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="483">
-              <caret line="277" column="48" selection-start-line="277" selection-start-column="48" selection-end-line="277" selection-end-column="48" />
+              <caret line="35" column="5" selection-start-line="35" selection-start-column="5" selection-end-line="35" selection-end-column="5" />
               <folding>
                 <element signature="e#41#59#0" expanded="true" />
+                <element signature="e#584#596#0" expanded="true" />
                 <element signature="e#9779#9800#0" expanded="true" />
               </folding>
             </state>
@@ -294,12 +294,12 @@
       <workItem from="1560435264000" duration="842000" />
       <workItem from="1561165007987" duration="2830000" />
       <workItem from="1561417631855" duration="2624000" />
-      <workItem from="1561590852977" duration="10540000" />
+      <workItem from="1561590852977" duration="11288000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="195698000" />
+    <option name="totallyTimeSpent" value="196446000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -776,9 +776,10 @@
     <entry file="file://$PROJECT_DIR$/Locator.hpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="483">
-          <caret line="277" column="48" selection-start-line="277" selection-start-column="48" selection-end-line="277" selection-end-column="48" />
+          <caret line="35" column="5" selection-start-line="35" selection-start-column="5" selection-end-line="35" selection-end-column="5" />
           <folding>
             <element signature="e#41#59#0" expanded="true" />
+            <element signature="e#584#596#0" expanded="true" />
             <element signature="e#9779#9800#0" expanded="true" />
           </folding>
         </state>
