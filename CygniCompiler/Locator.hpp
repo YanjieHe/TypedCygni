@@ -14,6 +14,7 @@
  *     **Counter**, **Variable**: Ptr<Vector<Ptr<Var>>>
  *     **Counter**, **Function**: Ptr<Vector<Ptr<Def>>>
  *     **Scope**, **Constant**: Ptr<Tuple<Ptr<Ast>, Ptr<Vector<Ptr<Constant>>>>>
+ *     **Scioe**, **Parameter**: Ptr<Tuple<Ptr<Ast>, Ptr<Vector<Parameter>>>>
  */
 
 class Locator
@@ -199,11 +200,11 @@ public:
 
     void LocateName(const Ptr<Name> &node, const Ptr<Scope> &scope)
     {
-        Optional<Any> result = scope->Lookup(node->name, "Identifier");
+        auto result = scope->Lookup(node->name, "**Location**");
         if (result)
         {
-            Location location = (*result).AnyCast<Location>();
-            locations.insert({node->id, location});
+            Ptr<Location> location = Cast<Location>(*result);
+            locations.insert({node->id, *location});
         }
         else
         {
@@ -222,16 +223,16 @@ public:
         {
             Locate(*(node->value), scope);
         }
-        Optional<Any> result = scope->Lookup("**Scope**", "Variable");
+        auto result = scope->Lookup("**Scope**", "**Variable**");
         if (result)
         {
             Ptr<Vector<Ptr<Var>>> variables;
             Ptr<Ast> scopeNode;
-            tie(scopeNode, variables) = (*result).AnyCast<Tuple<Ptr<Ast>, Ptr<Vector<Ptr<Var>>>>>();
+            tie(scopeNode, variables) = *Cast<Tuple<Ptr<Ast>, Ptr<Vector<Ptr<Var>>>>>(*result);
             int index = AddNode(variables, node);
             Location location{AstKindToLocationKind(scopeNode->kind), index};
             locations.insert({node->id, location});
-            scope->Put(node->name, "Identifier", location);
+            scope->Put(node->name, "Identifier", New<Location>(location));
         }
         else
         {
@@ -241,29 +242,29 @@ public:
 
     void LocateDef(const Ptr<Def> &node, const Ptr<Scope> &scope)
     {
-        auto result = scope->Lookup("**Scope**", "Function");
+        auto result = scope->Lookup("**Scope**", "**Function**");
         if (result)
         {
             Ptr<Vector<Ptr<Def>>> functions;
             Ptr<Ast> scopeNode;
-            tie(scopeNode, functions) = (*result).AnyCast<Tuple<Ptr<Ast>, Ptr<Vector<Ptr<Def>>>>>();
+            tie(scopeNode, functions) = *Cast<Tuple<Ptr<Ast>, Ptr<Vector<Ptr<Def>>>>>(*result);
             int index = AddNode(functions, node);
             Location location{AstKindToLocationKind(scopeNode->kind), index};
             locations.insert({node->id, location});
-            scope->Put(node->name, "Identifier", location);
+            scope->Put(node->name, "Identifier", New<Location>(location));
 
             auto newScope = New<Scope>(scope);
-            newScope->Put("**Scope**", "Variable",
-                          tuple<Ptr<Ast>, Ptr<Vector<Ptr<Var>>>>(node, New<Vector<Ptr<Var>>>()));
-            newScope->Put("**Scope**", "Constant",
-                          tuple<Ptr<Ast>, Ptr<Vector<Ptr<Constant>>>>(node, New<Vector<Ptr<Constant>>>()));
+            newScope->Put("**Scope**", "**Variable**",
+                          New<Tuple<Ptr<Ast>, Ptr<Vector<Ptr<Var>>>>>(tuple(node, New<Vector<Ptr<Var>>>())));
+            newScope->Put("**Scope**", "**Constant**",
+                          New<Tuple<Ptr<Ast>, Ptr<Vector<Ptr<Constant>>>>>(tuple(node, New<Vector<Ptr<Constant>>>())));
             Ptr<Vector<Parameter>> parameterList = New<Vector<Parameter>>();
             for (const auto &parameter: node->parameters)
             {
                 AddNode(parameterList, parameter);
-                newScope->Put(parameter.name, "Identifier", Location{LocationKind::Function, index});
+                newScope->Put(parameter.name, "Identifier", New<Location>(Location{LocationKind::Function, index}));
             }
-            newScope->Put("**Scope**", "Parameter", tuple(node, parameterList));
+            newScope->Put("**Scope**", "**Parameter**", New<Tuple<Ptr<Ast>, Ptr<Vector<Parameter>>>>(tuple(node, parameterList)));
             Locate(node->body, newScope);
         }
         else
@@ -274,8 +275,8 @@ public:
 
     void LocateModule(const Ptr<DefModule> &node, const Ptr<Scope> &scope)
     {
-        scope->Put("**Scope**", "Variable", tuple<Ptr<Ast>, Ptr<Vector<Ptr<Var>>>>(node, New<Vector<Ptr<Var>>>()));
-        scope->Put("**Scope**", "Function", tuple<Ptr<Ast>, Ptr<Vector<Ptr<Def>>>>(node, New<Vector<Ptr<Def>>>()));
+        scope->Put("**Scope**", "**Variable**", tuple<Ptr<Ast>, Ptr<Vector<Ptr<Var>>>>(node, New<Vector<Ptr<Var>>>()));
+        scope->Put("**Scope**", "**Function**", tuple<Ptr<Ast>, Ptr<Vector<Ptr<Def>>>>(node, New<Vector<Ptr<Def>>>()));
         for (const auto &field: node->fields)
         {
             Locate(field, scope);
