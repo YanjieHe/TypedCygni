@@ -1,6 +1,7 @@
 {
     "modules": [
         {
+            "type": "Void",
             "methods": [
                 {
                     "type": {
@@ -17,25 +18,34 @@
                         "kind": "Type List"
                     },
                     "body": {
+                        "type": "Void",
                         "expressions": [
                             {
+                                "type": "Void",
                                 "if false": {
+                                    "type": "Int",
                                     "expressions": [
                                         {
+                                            "type": "Int",
                                             "value": {
+                                                "type": "Int",
                                                 "id": "63",
                                                 "kind": "Multiply",
                                                 "right": {
+                                                    "type": "Int",
                                                     "arguments": [
                                                         {
+                                                            "type": "Int",
                                                             "id": "61",
                                                             "kind": "Subtract",
                                                             "right": {
+                                                                "type": "Int",
                                                                 "id": "60",
                                                                 "constant": "1",
                                                                 "kind": "Constant"
                                                             },
                                                             "left": {
+                                                                "type": "Int",
                                                                 "name": "n",
                                                                 "kind": "Name",
                                                                 "id": "59"
@@ -43,6 +53,7 @@
                                                         }
                                                     ],
                                                     "function": {
+                                                        "type": "Function[Int, Int]",
                                                         "name": "Factorial",
                                                         "kind": "Name",
                                                         "id": "58"
@@ -51,6 +62,7 @@
                                                     "id": "62"
                                                 },
                                                 "left": {
+                                                    "type": "Int",
                                                     "name": "n",
                                                     "kind": "Name",
                                                     "id": "57"
@@ -64,9 +76,12 @@
                                     "id": "65"
                                 },
                                 "if true": {
+                                    "type": "Int",
                                     "expressions": [
                                         {
+                                            "type": "Int",
                                             "value": {
+                                                "type": "Int",
                                                 "id": "54",
                                                 "constant": "1",
                                                 "kind": "Constant"
@@ -80,14 +95,17 @@
                                 },
                                 "kind": "IfElse",
                                 "condition": {
+                                    "type": "Bool",
                                     "id": "53",
                                     "kind": "Equal",
                                     "right": {
+                                        "type": "Int",
                                         "id": "52",
                                         "constant": "0",
                                         "kind": "Constant"
                                     },
                                     "left": {
+                                        "type": "Int",
                                         "name": "n",
                                         "kind": "Name",
                                         "id": "51"

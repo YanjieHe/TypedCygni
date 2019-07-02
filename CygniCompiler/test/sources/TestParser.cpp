@@ -13,7 +13,7 @@ void TestParser::Test1()
     std::vector<Token> tokens = lexer.ReadAll();
     Parser parser(String(), tokens);
     auto tree = parser.ParseAssign();
-    std::ofstream stream("ast-test1.txt");
+    std::ofstream stream("test_output/ast-test1.txt");
     auto json = TreeToJson(tree);
     cout << __FUNCTION__ << ": successfully convert ast to json" << endl;
     JsonToFile(json, stream);

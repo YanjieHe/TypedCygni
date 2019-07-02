@@ -65,39 +65,39 @@ CMAKE_SOURCE_DIR = /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler
 CMAKE_BINARY_DIR = /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug
 
 #=============================================================================
-# Target rules for target CMakeFiles/VirtualMachine.dir
+# Target rules for target CMakeFiles/CygniCompiler.dir
 
 # All Build rule for target.
-CMakeFiles/VirtualMachine.dir/all:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/depend
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24 "Built target VirtualMachine"
-.PHONY : CMakeFiles/VirtualMachine.dir/all
+CMakeFiles/CygniCompiler.dir/all:
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/depend
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24 "Built target CygniCompiler"
+.PHONY : CMakeFiles/CygniCompiler.dir/all
 
 # Include target in all.
-all: CMakeFiles/VirtualMachine.dir/all
+all: CMakeFiles/CygniCompiler.dir/all
 
 .PHONY : all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/VirtualMachine.dir/rule: cmake_check_build_system
+CMakeFiles/CygniCompiler.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles 24
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/VirtualMachine.dir/all
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/CygniCompiler.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles 0
-.PHONY : CMakeFiles/VirtualMachine.dir/rule
+.PHONY : CMakeFiles/CygniCompiler.dir/rule
 
 # Convenience name for target.
-VirtualMachine: CMakeFiles/VirtualMachine.dir/rule
+CygniCompiler: CMakeFiles/CygniCompiler.dir/rule
 
-.PHONY : VirtualMachine
-
-# clean rule for target.
-CMakeFiles/VirtualMachine.dir/clean:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/clean
-.PHONY : CMakeFiles/VirtualMachine.dir/clean
+.PHONY : CygniCompiler
 
 # clean rule for target.
-clean: CMakeFiles/VirtualMachine.dir/clean
+CMakeFiles/CygniCompiler.dir/clean:
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/clean
+.PHONY : CMakeFiles/CygniCompiler.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/CygniCompiler.dir/clean
 
 .PHONY : clean
 

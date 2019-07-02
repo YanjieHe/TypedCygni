@@ -145,14 +145,14 @@ Type.hpp
 ../test/headers/JSON.hpp
 utility
 -
-String.hpp
-../test/headers/String.hpp
-Predef.hpp
-../test/headers/Predef.hpp
-iostream
--
 fstream
 -
+iostream
+-
+Predef.hpp
+../test/headers/Predef.hpp
+String.hpp
+../test/headers/String.hpp
 
 ../test/headers/TestParser.hpp
 Parser.hpp
@@ -165,6 +165,8 @@ JSON.hpp
 ../test/headers/TestTypeChecker.hpp
 TypeChecker.hpp
 ../test/headers/TypeChecker.hpp
+JSON.hpp
+../test/headers/JSON.hpp
 
 /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/TestTypeChecker.cpp
 TestTypeChecker.hpp

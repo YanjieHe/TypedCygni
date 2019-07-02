@@ -111,17 +111,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named VirtualMachine
+# Target rules for targets named CygniCompiler
 
 # Build rule for target.
-VirtualMachine: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 VirtualMachine
-.PHONY : VirtualMachine
+CygniCompiler: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 CygniCompiler
+.PHONY : CygniCompiler
 
 # fast build rule for target.
-VirtualMachine/fast:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/build
-.PHONY : VirtualMachine/fast
+CygniCompiler/fast:
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/build
+.PHONY : CygniCompiler/fast
 
 main.o: main.cpp.o
 
@@ -129,7 +129,7 @@ main.o: main.cpp.o
 
 # target to build an object file
 main.cpp.o:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/main.cpp.o
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/main.cpp.o
 .PHONY : main.cpp.o
 
 main.i: main.cpp.i
@@ -138,7 +138,7 @@ main.i: main.cpp.i
 
 # target to preprocess a source file
 main.cpp.i:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/main.cpp.i
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/main.cpp.i
 .PHONY : main.cpp.i
 
 main.s: main.cpp.s
@@ -147,7 +147,7 @@ main.s: main.cpp.s
 
 # target to generate assembly for a file
 main.cpp.s:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/main.cpp.s
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/main.cpp.s
 .PHONY : main.cpp.s
 
 src/sources/Ast.o: src/sources/Ast.cpp.o
@@ -156,7 +156,7 @@ src/sources/Ast.o: src/sources/Ast.cpp.o
 
 # target to build an object file
 src/sources/Ast.cpp.o:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Ast.cpp.o
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Ast.cpp.o
 .PHONY : src/sources/Ast.cpp.o
 
 src/sources/Ast.i: src/sources/Ast.cpp.i
@@ -165,7 +165,7 @@ src/sources/Ast.i: src/sources/Ast.cpp.i
 
 # target to preprocess a source file
 src/sources/Ast.cpp.i:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Ast.cpp.i
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Ast.cpp.i
 .PHONY : src/sources/Ast.cpp.i
 
 src/sources/Ast.s: src/sources/Ast.cpp.s
@@ -174,7 +174,7 @@ src/sources/Ast.s: src/sources/Ast.cpp.s
 
 # target to generate assembly for a file
 src/sources/Ast.cpp.s:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Ast.cpp.s
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Ast.cpp.s
 .PHONY : src/sources/Ast.cpp.s
 
 src/sources/Compiler.o: src/sources/Compiler.cpp.o
@@ -183,7 +183,7 @@ src/sources/Compiler.o: src/sources/Compiler.cpp.o
 
 # target to build an object file
 src/sources/Compiler.cpp.o:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Compiler.cpp.o
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Compiler.cpp.o
 .PHONY : src/sources/Compiler.cpp.o
 
 src/sources/Compiler.i: src/sources/Compiler.cpp.i
@@ -192,7 +192,7 @@ src/sources/Compiler.i: src/sources/Compiler.cpp.i
 
 # target to preprocess a source file
 src/sources/Compiler.cpp.i:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Compiler.cpp.i
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Compiler.cpp.i
 .PHONY : src/sources/Compiler.cpp.i
 
 src/sources/Compiler.s: src/sources/Compiler.cpp.s
@@ -201,7 +201,7 @@ src/sources/Compiler.s: src/sources/Compiler.cpp.s
 
 # target to generate assembly for a file
 src/sources/Compiler.cpp.s:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Compiler.cpp.s
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Compiler.cpp.s
 .PHONY : src/sources/Compiler.cpp.s
 
 src/sources/Encoding.o: src/sources/Encoding.cpp.o
@@ -210,7 +210,7 @@ src/sources/Encoding.o: src/sources/Encoding.cpp.o
 
 # target to build an object file
 src/sources/Encoding.cpp.o:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Encoding.cpp.o
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Encoding.cpp.o
 .PHONY : src/sources/Encoding.cpp.o
 
 src/sources/Encoding.i: src/sources/Encoding.cpp.i
@@ -219,7 +219,7 @@ src/sources/Encoding.i: src/sources/Encoding.cpp.i
 
 # target to preprocess a source file
 src/sources/Encoding.cpp.i:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Encoding.cpp.i
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Encoding.cpp.i
 .PHONY : src/sources/Encoding.cpp.i
 
 src/sources/Encoding.s: src/sources/Encoding.cpp.s
@@ -228,7 +228,7 @@ src/sources/Encoding.s: src/sources/Encoding.cpp.s
 
 # target to generate assembly for a file
 src/sources/Encoding.cpp.s:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Encoding.cpp.s
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Encoding.cpp.s
 .PHONY : src/sources/Encoding.cpp.s
 
 src/sources/Exception.o: src/sources/Exception.cpp.o
@@ -237,7 +237,7 @@ src/sources/Exception.o: src/sources/Exception.cpp.o
 
 # target to build an object file
 src/sources/Exception.cpp.o:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Exception.cpp.o
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Exception.cpp.o
 .PHONY : src/sources/Exception.cpp.o
 
 src/sources/Exception.i: src/sources/Exception.cpp.i
@@ -246,7 +246,7 @@ src/sources/Exception.i: src/sources/Exception.cpp.i
 
 # target to preprocess a source file
 src/sources/Exception.cpp.i:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Exception.cpp.i
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Exception.cpp.i
 .PHONY : src/sources/Exception.cpp.i
 
 src/sources/Exception.s: src/sources/Exception.cpp.s
@@ -255,7 +255,7 @@ src/sources/Exception.s: src/sources/Exception.cpp.s
 
 # target to generate assembly for a file
 src/sources/Exception.cpp.s:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Exception.cpp.s
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Exception.cpp.s
 .PHONY : src/sources/Exception.cpp.s
 
 src/sources/File.o: src/sources/File.cpp.o
@@ -264,7 +264,7 @@ src/sources/File.o: src/sources/File.cpp.o
 
 # target to build an object file
 src/sources/File.cpp.o:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/File.cpp.o
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/File.cpp.o
 .PHONY : src/sources/File.cpp.o
 
 src/sources/File.i: src/sources/File.cpp.i
@@ -273,7 +273,7 @@ src/sources/File.i: src/sources/File.cpp.i
 
 # target to preprocess a source file
 src/sources/File.cpp.i:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/File.cpp.i
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/File.cpp.i
 .PHONY : src/sources/File.cpp.i
 
 src/sources/File.s: src/sources/File.cpp.s
@@ -282,7 +282,7 @@ src/sources/File.s: src/sources/File.cpp.s
 
 # target to generate assembly for a file
 src/sources/File.cpp.s:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/File.cpp.s
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/File.cpp.s
 .PHONY : src/sources/File.cpp.s
 
 src/sources/Lexer.o: src/sources/Lexer.cpp.o
@@ -291,7 +291,7 @@ src/sources/Lexer.o: src/sources/Lexer.cpp.o
 
 # target to build an object file
 src/sources/Lexer.cpp.o:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Lexer.cpp.o
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Lexer.cpp.o
 .PHONY : src/sources/Lexer.cpp.o
 
 src/sources/Lexer.i: src/sources/Lexer.cpp.i
@@ -300,7 +300,7 @@ src/sources/Lexer.i: src/sources/Lexer.cpp.i
 
 # target to preprocess a source file
 src/sources/Lexer.cpp.i:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Lexer.cpp.i
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Lexer.cpp.i
 .PHONY : src/sources/Lexer.cpp.i
 
 src/sources/Lexer.s: src/sources/Lexer.cpp.s
@@ -309,7 +309,7 @@ src/sources/Lexer.s: src/sources/Lexer.cpp.s
 
 # target to generate assembly for a file
 src/sources/Lexer.cpp.s:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Lexer.cpp.s
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Lexer.cpp.s
 .PHONY : src/sources/Lexer.cpp.s
 
 src/sources/Location.o: src/sources/Location.cpp.o
@@ -318,7 +318,7 @@ src/sources/Location.o: src/sources/Location.cpp.o
 
 # target to build an object file
 src/sources/Location.cpp.o:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Location.cpp.o
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Location.cpp.o
 .PHONY : src/sources/Location.cpp.o
 
 src/sources/Location.i: src/sources/Location.cpp.i
@@ -327,7 +327,7 @@ src/sources/Location.i: src/sources/Location.cpp.i
 
 # target to preprocess a source file
 src/sources/Location.cpp.i:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Location.cpp.i
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Location.cpp.i
 .PHONY : src/sources/Location.cpp.i
 
 src/sources/Location.s: src/sources/Location.cpp.s
@@ -336,7 +336,7 @@ src/sources/Location.s: src/sources/Location.cpp.s
 
 # target to generate assembly for a file
 src/sources/Location.cpp.s:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Location.cpp.s
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Location.cpp.s
 .PHONY : src/sources/Location.cpp.s
 
 src/sources/Locator.o: src/sources/Locator.cpp.o
@@ -345,7 +345,7 @@ src/sources/Locator.o: src/sources/Locator.cpp.o
 
 # target to build an object file
 src/sources/Locator.cpp.o:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Locator.cpp.o
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Locator.cpp.o
 .PHONY : src/sources/Locator.cpp.o
 
 src/sources/Locator.i: src/sources/Locator.cpp.i
@@ -354,7 +354,7 @@ src/sources/Locator.i: src/sources/Locator.cpp.i
 
 # target to preprocess a source file
 src/sources/Locator.cpp.i:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Locator.cpp.i
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Locator.cpp.i
 .PHONY : src/sources/Locator.cpp.i
 
 src/sources/Locator.s: src/sources/Locator.cpp.s
@@ -363,7 +363,7 @@ src/sources/Locator.s: src/sources/Locator.cpp.s
 
 # target to generate assembly for a file
 src/sources/Locator.cpp.s:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Locator.cpp.s
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Locator.cpp.s
 .PHONY : src/sources/Locator.cpp.s
 
 src/sources/Parser.o: src/sources/Parser.cpp.o
@@ -372,7 +372,7 @@ src/sources/Parser.o: src/sources/Parser.cpp.o
 
 # target to build an object file
 src/sources/Parser.cpp.o:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Parser.cpp.o
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Parser.cpp.o
 .PHONY : src/sources/Parser.cpp.o
 
 src/sources/Parser.i: src/sources/Parser.cpp.i
@@ -381,7 +381,7 @@ src/sources/Parser.i: src/sources/Parser.cpp.i
 
 # target to preprocess a source file
 src/sources/Parser.cpp.i:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Parser.cpp.i
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Parser.cpp.i
 .PHONY : src/sources/Parser.cpp.i
 
 src/sources/Parser.s: src/sources/Parser.cpp.s
@@ -390,7 +390,7 @@ src/sources/Parser.s: src/sources/Parser.cpp.s
 
 # target to generate assembly for a file
 src/sources/Parser.cpp.s:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Parser.cpp.s
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Parser.cpp.s
 .PHONY : src/sources/Parser.cpp.s
 
 src/sources/Predef.o: src/sources/Predef.cpp.o
@@ -399,7 +399,7 @@ src/sources/Predef.o: src/sources/Predef.cpp.o
 
 # target to build an object file
 src/sources/Predef.cpp.o:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Predef.cpp.o
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Predef.cpp.o
 .PHONY : src/sources/Predef.cpp.o
 
 src/sources/Predef.i: src/sources/Predef.cpp.i
@@ -408,7 +408,7 @@ src/sources/Predef.i: src/sources/Predef.cpp.i
 
 # target to preprocess a source file
 src/sources/Predef.cpp.i:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Predef.cpp.i
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Predef.cpp.i
 .PHONY : src/sources/Predef.cpp.i
 
 src/sources/Predef.s: src/sources/Predef.cpp.s
@@ -417,7 +417,7 @@ src/sources/Predef.s: src/sources/Predef.cpp.s
 
 # target to generate assembly for a file
 src/sources/Predef.cpp.s:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Predef.cpp.s
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Predef.cpp.s
 .PHONY : src/sources/Predef.cpp.s
 
 src/sources/Scope.o: src/sources/Scope.cpp.o
@@ -426,7 +426,7 @@ src/sources/Scope.o: src/sources/Scope.cpp.o
 
 # target to build an object file
 src/sources/Scope.cpp.o:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Scope.cpp.o
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Scope.cpp.o
 .PHONY : src/sources/Scope.cpp.o
 
 src/sources/Scope.i: src/sources/Scope.cpp.i
@@ -435,7 +435,7 @@ src/sources/Scope.i: src/sources/Scope.cpp.i
 
 # target to preprocess a source file
 src/sources/Scope.cpp.i:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Scope.cpp.i
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Scope.cpp.i
 .PHONY : src/sources/Scope.cpp.i
 
 src/sources/Scope.s: src/sources/Scope.cpp.s
@@ -444,7 +444,7 @@ src/sources/Scope.s: src/sources/Scope.cpp.s
 
 # target to generate assembly for a file
 src/sources/Scope.cpp.s:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Scope.cpp.s
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Scope.cpp.s
 .PHONY : src/sources/Scope.cpp.s
 
 src/sources/Token.o: src/sources/Token.cpp.o
@@ -453,7 +453,7 @@ src/sources/Token.o: src/sources/Token.cpp.o
 
 # target to build an object file
 src/sources/Token.cpp.o:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Token.cpp.o
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Token.cpp.o
 .PHONY : src/sources/Token.cpp.o
 
 src/sources/Token.i: src/sources/Token.cpp.i
@@ -462,7 +462,7 @@ src/sources/Token.i: src/sources/Token.cpp.i
 
 # target to preprocess a source file
 src/sources/Token.cpp.i:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Token.cpp.i
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Token.cpp.i
 .PHONY : src/sources/Token.cpp.i
 
 src/sources/Token.s: src/sources/Token.cpp.s
@@ -471,7 +471,7 @@ src/sources/Token.s: src/sources/Token.cpp.s
 
 # target to generate assembly for a file
 src/sources/Token.cpp.s:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Token.cpp.s
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Token.cpp.s
 .PHONY : src/sources/Token.cpp.s
 
 src/sources/Type.o: src/sources/Type.cpp.o
@@ -480,7 +480,7 @@ src/sources/Type.o: src/sources/Type.cpp.o
 
 # target to build an object file
 src/sources/Type.cpp.o:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Type.cpp.o
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Type.cpp.o
 .PHONY : src/sources/Type.cpp.o
 
 src/sources/Type.i: src/sources/Type.cpp.i
@@ -489,7 +489,7 @@ src/sources/Type.i: src/sources/Type.cpp.i
 
 # target to preprocess a source file
 src/sources/Type.cpp.i:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Type.cpp.i
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Type.cpp.i
 .PHONY : src/sources/Type.cpp.i
 
 src/sources/Type.s: src/sources/Type.cpp.s
@@ -498,7 +498,7 @@ src/sources/Type.s: src/sources/Type.cpp.s
 
 # target to generate assembly for a file
 src/sources/Type.cpp.s:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/Type.cpp.s
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Type.cpp.s
 .PHONY : src/sources/Type.cpp.s
 
 src/sources/TypeChecker.o: src/sources/TypeChecker.cpp.o
@@ -507,7 +507,7 @@ src/sources/TypeChecker.o: src/sources/TypeChecker.cpp.o
 
 # target to build an object file
 src/sources/TypeChecker.cpp.o:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/TypeChecker.cpp.o
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/TypeChecker.cpp.o
 .PHONY : src/sources/TypeChecker.cpp.o
 
 src/sources/TypeChecker.i: src/sources/TypeChecker.cpp.i
@@ -516,7 +516,7 @@ src/sources/TypeChecker.i: src/sources/TypeChecker.cpp.i
 
 # target to preprocess a source file
 src/sources/TypeChecker.cpp.i:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/TypeChecker.cpp.i
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/TypeChecker.cpp.i
 .PHONY : src/sources/TypeChecker.cpp.i
 
 src/sources/TypeChecker.s: src/sources/TypeChecker.cpp.s
@@ -525,7 +525,7 @@ src/sources/TypeChecker.s: src/sources/TypeChecker.cpp.s
 
 # target to generate assembly for a file
 src/sources/TypeChecker.cpp.s:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/src/sources/TypeChecker.cpp.s
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/TypeChecker.cpp.s
 .PHONY : src/sources/TypeChecker.cpp.s
 
 test/sources/JSON.o: test/sources/JSON.cpp.o
@@ -534,7 +534,7 @@ test/sources/JSON.o: test/sources/JSON.cpp.o
 
 # target to build an object file
 test/sources/JSON.cpp.o:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/test/sources/JSON.cpp.o
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/test/sources/JSON.cpp.o
 .PHONY : test/sources/JSON.cpp.o
 
 test/sources/JSON.i: test/sources/JSON.cpp.i
@@ -543,7 +543,7 @@ test/sources/JSON.i: test/sources/JSON.cpp.i
 
 # target to preprocess a source file
 test/sources/JSON.cpp.i:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/test/sources/JSON.cpp.i
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/test/sources/JSON.cpp.i
 .PHONY : test/sources/JSON.cpp.i
 
 test/sources/JSON.s: test/sources/JSON.cpp.s
@@ -552,7 +552,7 @@ test/sources/JSON.s: test/sources/JSON.cpp.s
 
 # target to generate assembly for a file
 test/sources/JSON.cpp.s:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/test/sources/JSON.cpp.s
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/test/sources/JSON.cpp.s
 .PHONY : test/sources/JSON.cpp.s
 
 test/sources/TestCompiler.o: test/sources/TestCompiler.cpp.o
@@ -561,7 +561,7 @@ test/sources/TestCompiler.o: test/sources/TestCompiler.cpp.o
 
 # target to build an object file
 test/sources/TestCompiler.cpp.o:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/test/sources/TestCompiler.cpp.o
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/test/sources/TestCompiler.cpp.o
 .PHONY : test/sources/TestCompiler.cpp.o
 
 test/sources/TestCompiler.i: test/sources/TestCompiler.cpp.i
@@ -570,7 +570,7 @@ test/sources/TestCompiler.i: test/sources/TestCompiler.cpp.i
 
 # target to preprocess a source file
 test/sources/TestCompiler.cpp.i:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/test/sources/TestCompiler.cpp.i
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/test/sources/TestCompiler.cpp.i
 .PHONY : test/sources/TestCompiler.cpp.i
 
 test/sources/TestCompiler.s: test/sources/TestCompiler.cpp.s
@@ -579,7 +579,7 @@ test/sources/TestCompiler.s: test/sources/TestCompiler.cpp.s
 
 # target to generate assembly for a file
 test/sources/TestCompiler.cpp.s:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/test/sources/TestCompiler.cpp.s
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/test/sources/TestCompiler.cpp.s
 .PHONY : test/sources/TestCompiler.cpp.s
 
 test/sources/TestEndian.o: test/sources/TestEndian.cpp.o
@@ -588,7 +588,7 @@ test/sources/TestEndian.o: test/sources/TestEndian.cpp.o
 
 # target to build an object file
 test/sources/TestEndian.cpp.o:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/test/sources/TestEndian.cpp.o
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/test/sources/TestEndian.cpp.o
 .PHONY : test/sources/TestEndian.cpp.o
 
 test/sources/TestEndian.i: test/sources/TestEndian.cpp.i
@@ -597,7 +597,7 @@ test/sources/TestEndian.i: test/sources/TestEndian.cpp.i
 
 # target to preprocess a source file
 test/sources/TestEndian.cpp.i:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/test/sources/TestEndian.cpp.i
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/test/sources/TestEndian.cpp.i
 .PHONY : test/sources/TestEndian.cpp.i
 
 test/sources/TestEndian.s: test/sources/TestEndian.cpp.s
@@ -606,7 +606,7 @@ test/sources/TestEndian.s: test/sources/TestEndian.cpp.s
 
 # target to generate assembly for a file
 test/sources/TestEndian.cpp.s:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/test/sources/TestEndian.cpp.s
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/test/sources/TestEndian.cpp.s
 .PHONY : test/sources/TestEndian.cpp.s
 
 test/sources/TestLexer.o: test/sources/TestLexer.cpp.o
@@ -615,7 +615,7 @@ test/sources/TestLexer.o: test/sources/TestLexer.cpp.o
 
 # target to build an object file
 test/sources/TestLexer.cpp.o:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/test/sources/TestLexer.cpp.o
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/test/sources/TestLexer.cpp.o
 .PHONY : test/sources/TestLexer.cpp.o
 
 test/sources/TestLexer.i: test/sources/TestLexer.cpp.i
@@ -624,7 +624,7 @@ test/sources/TestLexer.i: test/sources/TestLexer.cpp.i
 
 # target to preprocess a source file
 test/sources/TestLexer.cpp.i:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/test/sources/TestLexer.cpp.i
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/test/sources/TestLexer.cpp.i
 .PHONY : test/sources/TestLexer.cpp.i
 
 test/sources/TestLexer.s: test/sources/TestLexer.cpp.s
@@ -633,7 +633,7 @@ test/sources/TestLexer.s: test/sources/TestLexer.cpp.s
 
 # target to generate assembly for a file
 test/sources/TestLexer.cpp.s:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/test/sources/TestLexer.cpp.s
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/test/sources/TestLexer.cpp.s
 .PHONY : test/sources/TestLexer.cpp.s
 
 test/sources/TestLocator.o: test/sources/TestLocator.cpp.o
@@ -642,7 +642,7 @@ test/sources/TestLocator.o: test/sources/TestLocator.cpp.o
 
 # target to build an object file
 test/sources/TestLocator.cpp.o:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/test/sources/TestLocator.cpp.o
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/test/sources/TestLocator.cpp.o
 .PHONY : test/sources/TestLocator.cpp.o
 
 test/sources/TestLocator.i: test/sources/TestLocator.cpp.i
@@ -651,7 +651,7 @@ test/sources/TestLocator.i: test/sources/TestLocator.cpp.i
 
 # target to preprocess a source file
 test/sources/TestLocator.cpp.i:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/test/sources/TestLocator.cpp.i
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/test/sources/TestLocator.cpp.i
 .PHONY : test/sources/TestLocator.cpp.i
 
 test/sources/TestLocator.s: test/sources/TestLocator.cpp.s
@@ -660,7 +660,7 @@ test/sources/TestLocator.s: test/sources/TestLocator.cpp.s
 
 # target to generate assembly for a file
 test/sources/TestLocator.cpp.s:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/test/sources/TestLocator.cpp.s
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/test/sources/TestLocator.cpp.s
 .PHONY : test/sources/TestLocator.cpp.s
 
 test/sources/TestParser.o: test/sources/TestParser.cpp.o
@@ -669,7 +669,7 @@ test/sources/TestParser.o: test/sources/TestParser.cpp.o
 
 # target to build an object file
 test/sources/TestParser.cpp.o:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/test/sources/TestParser.cpp.o
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/test/sources/TestParser.cpp.o
 .PHONY : test/sources/TestParser.cpp.o
 
 test/sources/TestParser.i: test/sources/TestParser.cpp.i
@@ -678,7 +678,7 @@ test/sources/TestParser.i: test/sources/TestParser.cpp.i
 
 # target to preprocess a source file
 test/sources/TestParser.cpp.i:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/test/sources/TestParser.cpp.i
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/test/sources/TestParser.cpp.i
 .PHONY : test/sources/TestParser.cpp.i
 
 test/sources/TestParser.s: test/sources/TestParser.cpp.s
@@ -687,7 +687,7 @@ test/sources/TestParser.s: test/sources/TestParser.cpp.s
 
 # target to generate assembly for a file
 test/sources/TestParser.cpp.s:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/test/sources/TestParser.cpp.s
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/test/sources/TestParser.cpp.s
 .PHONY : test/sources/TestParser.cpp.s
 
 test/sources/TestString.o: test/sources/TestString.cpp.o
@@ -696,7 +696,7 @@ test/sources/TestString.o: test/sources/TestString.cpp.o
 
 # target to build an object file
 test/sources/TestString.cpp.o:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/test/sources/TestString.cpp.o
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/test/sources/TestString.cpp.o
 .PHONY : test/sources/TestString.cpp.o
 
 test/sources/TestString.i: test/sources/TestString.cpp.i
@@ -705,7 +705,7 @@ test/sources/TestString.i: test/sources/TestString.cpp.i
 
 # target to preprocess a source file
 test/sources/TestString.cpp.i:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/test/sources/TestString.cpp.i
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/test/sources/TestString.cpp.i
 .PHONY : test/sources/TestString.cpp.i
 
 test/sources/TestString.s: test/sources/TestString.cpp.s
@@ -714,7 +714,7 @@ test/sources/TestString.s: test/sources/TestString.cpp.s
 
 # target to generate assembly for a file
 test/sources/TestString.cpp.s:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/test/sources/TestString.cpp.s
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/test/sources/TestString.cpp.s
 .PHONY : test/sources/TestString.cpp.s
 
 test/sources/TestTypeChecker.o: test/sources/TestTypeChecker.cpp.o
@@ -723,7 +723,7 @@ test/sources/TestTypeChecker.o: test/sources/TestTypeChecker.cpp.o
 
 # target to build an object file
 test/sources/TestTypeChecker.cpp.o:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/test/sources/TestTypeChecker.cpp.o
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/test/sources/TestTypeChecker.cpp.o
 .PHONY : test/sources/TestTypeChecker.cpp.o
 
 test/sources/TestTypeChecker.i: test/sources/TestTypeChecker.cpp.i
@@ -732,7 +732,7 @@ test/sources/TestTypeChecker.i: test/sources/TestTypeChecker.cpp.i
 
 # target to preprocess a source file
 test/sources/TestTypeChecker.cpp.i:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/test/sources/TestTypeChecker.cpp.i
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/test/sources/TestTypeChecker.cpp.i
 .PHONY : test/sources/TestTypeChecker.cpp.i
 
 test/sources/TestTypeChecker.s: test/sources/TestTypeChecker.cpp.s
@@ -741,7 +741,7 @@ test/sources/TestTypeChecker.s: test/sources/TestTypeChecker.cpp.s
 
 # target to generate assembly for a file
 test/sources/TestTypeChecker.cpp.s:
-	$(MAKE) -f CMakeFiles/VirtualMachine.dir/build.make CMakeFiles/VirtualMachine.dir/test/sources/TestTypeChecker.cpp.s
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/test/sources/TestTypeChecker.cpp.s
 .PHONY : test/sources/TestTypeChecker.cpp.s
 
 # Help Target
@@ -751,7 +751,7 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... VirtualMachine"
+	@echo "... CygniCompiler"
 	@echo "... edit_cache"
 	@echo "... main.o"
 	@echo "... main.i"
