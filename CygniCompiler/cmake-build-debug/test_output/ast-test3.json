@@ -1,0 +1,114 @@
+{
+    "modules": [
+        {
+            "methods": [
+                {
+                    "type": {
+                        "parameters": [
+                            {
+                                "kind": "Type Leaf",
+                                "name": "Int"
+                            },
+                            {
+                                "kind": "Type Leaf",
+                                "name": "Int"
+                            }
+                        ],
+                        "kind": "Type List"
+                    },
+                    "body": {
+                        "expressions": [
+                            {
+                                "if false": {
+                                    "expressions": [
+                                        {
+                                            "value": {
+                                                "id": "63",
+                                                "kind": "Multiply",
+                                                "right": {
+                                                    "arguments": [
+                                                        {
+                                                            "id": "61",
+                                                            "kind": "Subtract",
+                                                            "right": {
+                                                                "id": "60",
+                                                                "constant": "1",
+                                                                "kind": "Constant"
+                                                            },
+                                                            "left": {
+                                                                "name": "n",
+                                                                "kind": "Name",
+                                                                "id": "59"
+                                                            }
+                                                        }
+                                                    ],
+                                                    "function": {
+                                                        "name": "Factorial",
+                                                        "kind": "Name",
+                                                        "id": "58"
+                                                    },
+                                                    "kind": "Call",
+                                                    "id": "62"
+                                                },
+                                                "left": {
+                                                    "name": "n",
+                                                    "kind": "Name",
+                                                    "id": "57"
+                                                }
+                                            },
+                                            "kind": "Return",
+                                            "id": "64"
+                                        }
+                                    ],
+                                    "kind": "Block",
+                                    "id": "65"
+                                },
+                                "if true": {
+                                    "expressions": [
+                                        {
+                                            "value": {
+                                                "id": "54",
+                                                "constant": "1",
+                                                "kind": "Constant"
+                                            },
+                                            "kind": "Return",
+                                            "id": "55"
+                                        }
+                                    ],
+                                    "kind": "Block",
+                                    "id": "56"
+                                },
+                                "kind": "IfElse",
+                                "condition": {
+                                    "id": "53",
+                                    "kind": "Equal",
+                                    "right": {
+                                        "id": "52",
+                                        "constant": "0",
+                                        "kind": "Constant"
+                                    },
+                                    "left": {
+                                        "name": "n",
+                                        "kind": "Name",
+                                        "id": "51"
+                                    }
+                                },
+                                "id": "66"
+                            }
+                        ],
+                        "kind": "Block",
+                        "id": "67"
+                    },
+                    "name": "Factorial",
+                    "kind": "Def",
+                    "id": "69"
+                }
+            ],
+            "name": "Program",
+            "kind": "DefModule",
+            "fields": [],
+            "id": "70"
+        }
+    ],
+    "classes": []
+}

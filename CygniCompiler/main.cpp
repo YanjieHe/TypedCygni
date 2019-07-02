@@ -3,13 +3,13 @@
 #include "Type.hpp"
 #include "Predef.hpp"
 #include "String.hpp"
-#include "test/TestLexer.hpp"
-#include "test/TestParser.hpp"
-#include "test/TestString.hpp"
-#include "test/TestEndian.hpp"
-#include "test/TestTypeChecker.hpp"
-#include "test/TestLocator.hpp"
-#include "test/TestCompiler.hpp"
+#include "TestLexer.hpp"
+#include "TestParser.hpp"
+#include "TestString.hpp"
+#include "TestEndian.hpp"
+#include "TestTypeChecker.hpp"
+#include "TestLocator.hpp"
+#include "TestCompiler.hpp"
 
 using namespace std;
 
