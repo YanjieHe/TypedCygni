@@ -20,28 +20,10 @@ Predef.hpp
 Optional.hpp
 ../src/headers/Optional.hpp
 
-../src/headers/Compiler.hpp
-Ast.hpp
-../src/headers/Ast.hpp
-Predef.hpp
-../src/headers/Predef.hpp
-TypeChecker.hpp
-../src/headers/TypeChecker.hpp
-Location.hpp
-../src/headers/Location.hpp
-Endian.hpp
-../src/headers/Endian.hpp
-
 ../src/headers/Encoding.hpp
 string
 -
 cstdint
--
-
-../src/headers/Endian.hpp
-cstdint
--
-cstring
 -
 
 ../src/headers/Exception.hpp
@@ -69,16 +51,6 @@ Exception.hpp
 ../src/headers/Location.hpp
 String.hpp
 ../src/headers/String.hpp
-
-../src/headers/Locator.hpp
-Ast.hpp
-../src/headers/Ast.hpp
-Scope.hpp
-../src/headers/Scope.hpp
-Exception.hpp
-../src/headers/Exception.hpp
-Location.hpp
-../src/headers/Location.hpp
 
 ../src/headers/Optional.hpp
 type_traits
@@ -119,6 +91,8 @@ vector
 -
 
 ../src/headers/Scope.hpp
+Exception.hpp
+../src/headers/Exception.hpp
 Location.hpp
 ../src/headers/Location.hpp
 Optional.hpp
@@ -157,16 +131,16 @@ Predef.hpp
 ../src/headers/Predef.hpp
 
 ../src/headers/TypeChecker.hpp
-Type.hpp
-../src/headers/Type.hpp
 Ast.hpp
 ../src/headers/Ast.hpp
+Exception.hpp
+../src/headers/Exception.hpp
 Predef.hpp
 ../src/headers/Predef.hpp
 Scope.hpp
 ../src/headers/Scope.hpp
-Exception.hpp
-../src/headers/Exception.hpp
+Type.hpp
+../src/headers/Type.hpp
 
 ../test/headers/JSON.hpp
 utility
@@ -180,8 +154,6 @@ iostream
 fstream
 -
 
-../test/headers/TestCompiler.hpp
-
 ../test/headers/TestParser.hpp
 Parser.hpp
 ../test/headers/Parser.hpp
@@ -194,17 +166,13 @@ JSON.hpp
 TypeChecker.hpp
 ../test/headers/TypeChecker.hpp
 
-/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Ast.cpp
-Ast.hpp
-/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Ast.hpp
-Exception.hpp
-/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Exception.hpp
-
-/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/TestCompiler.cpp
-TestCompiler.hpp
-/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/TestCompiler.hpp
+/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/TestTypeChecker.cpp
 TestTypeChecker.hpp
 /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/TestTypeChecker.hpp
+fstream
+-
+iostream
+-
 File.hpp
 /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/File.hpp
 Lexer.hpp
@@ -213,12 +181,4 @@ Parser.hpp
 /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/Parser.hpp
 TestParser.hpp
 /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/TestParser.hpp
-Locator.hpp
-/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/Locator.hpp
-fstream
--
-Location.hpp
-/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/Location.hpp
-Compiler.hpp
-/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/Compiler.hpp
 

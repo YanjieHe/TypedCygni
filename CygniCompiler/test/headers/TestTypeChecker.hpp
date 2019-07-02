@@ -3,14 +3,19 @@
 
 #include "TypeChecker.hpp"
 
-namespace TestTypeChecker
-{
-    void TestAll();
+namespace TestTypeChecker {
+void TestAll();
 
-    Ptr<Scope> InitializeBasicTypes();
 
-    void OutputTypeRecord(const std::string &path, const HashMap<int, Ptr<Type>> &typeRecord);
+TypeChecker::ScopeCollection InitializeScopeCollection();
 
-    void Test1();
-}
-#endif //TEST_TYPE_CHECKER_HPP
+Ptr<Scope<Vector<Ptr<FunctionType>>>> InitializeOperatorScope();
+
+Ptr<Scope<Ptr<Type>>> InitializeTypeScope();
+
+void OutputTypeRecord(const std::string& path,
+                      const HashMap<int, Ptr<Type>>& typeRecord);
+
+void Test1();
+}  // namespace TestTypeChecker
+#endif  // TEST_TYPE_CHECKER_HPP

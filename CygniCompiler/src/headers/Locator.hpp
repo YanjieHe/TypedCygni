@@ -3,8 +3,6 @@
 
 #include "Ast.hpp"
 #include "Scope.hpp"
-#include "Exception.hpp"
-#include "Location.hpp"
 
 /*
  * Locator:
@@ -17,29 +15,12 @@
  *     **Scope**, **Parameter**: Ptr<Tuple<Ptr<Ast>, Ptr<Vector<Parameter>>>>
  */
 
-// template<typename T>
-// class NodeInfo
-// {
-// public:
-//     Ptr<Ast> node;
-//     Vector<T> values;
-
-//     NodeInfo()
-//     {
-
-//     }
-
-//     NodeInfo(Ptr<Ast> node, Vector<T> values)
-//             : node{node}, values{values}
-//     {
-
-//     }
-// };
 
 // class Locator
 // {
 // public:
 //     HashMap<int, Location> locations;
+//     Ptr<LocationScope<Module>> moduleScope;
 
 //     void Locate(const Program &program, const Ptr<Scope> &scope)
 //     {
