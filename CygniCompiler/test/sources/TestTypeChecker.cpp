@@ -63,6 +63,7 @@ Ptr<Scope<Ptr<Type>>> TestTypeChecker::InitializeTypeScope() {
   scope->Put("Long", Type::LONG);
   scope->Put("Double", Type::DOUBLE);
   scope->Put("Bool", Type::BOOL);
+  scope->Put("Void", Type::VOID);
   return scope;
 }
 

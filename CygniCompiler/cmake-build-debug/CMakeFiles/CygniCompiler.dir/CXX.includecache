@@ -149,10 +149,10 @@ String.hpp
 ../src/headers/String.hpp
 
 ../src/headers/Type.hpp
-String.hpp
-../src/headers/String.hpp
 Predef.hpp
 ../src/headers/Predef.hpp
+String.hpp
+../src/headers/String.hpp
 
 ../src/headers/TypeChecker.hpp
 Ast.hpp

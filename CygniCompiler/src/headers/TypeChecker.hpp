@@ -105,13 +105,13 @@ class TypeChecker {
       case Kind::Def:
         return record(CheckDef(Cast<Def>(node), scopes));
       case Kind::Assign:
-        break;
+        return record(CheckAssign(Cast<Assign>(node), scopes));
       case Kind::Call:
         return record(CheckCall(Cast<Call>(node), scopes));
       case Kind::While:
         break;
       case Kind::DefClass:
-        break;
+        return record(CheckClass(Cast<DefClass>(node), scopes));
       case Kind::DefModule:
         return record(CheckModule(Cast<DefModule>(node), scopes));
       case Kind::TypeExpr:
@@ -274,7 +274,7 @@ class TypeChecker {
           throw NotImplementedException();
         }
       } else {
-        throw TypeException(expression->position, "type not declared");
+        throw TypeException(expression->position, "type not defined");
       }
     }
   }
@@ -344,6 +344,27 @@ class TypeChecker {
     return Type::VOID;
   }
 
+  Ptr<Type> CheckClass(const Ptr<DefClass>& node,
+                       const ScopeCollection& scopes) {
+    HashMap<String, Ptr<Type>> fields;
+    HashMap<String, Ptr<Type>> methods;
+    for (const Ptr<Var>& var : node->fields) {
+      fields.insert({var->name, Check(*(var->type), scopes)});
+    }
+    for (const Ptr<Def>& def : node->methods) {
+      methods.insert({def->name, Check(def->type, scopes)});
+    }
+    auto _class = New<ClassType>(fields, methods);
+    scopes.identifierScope->Put(node->name, _class);
+    for (const auto& field : node->fields) {
+      Check(field, scopes);
+    }
+    for (const auto& method : node->methods) {
+      Check(method, scopes);
+    }
+    return Type::VOID;
+  }
+
   Ptr<Type> CheckIfThen(const Ptr<IfThen>& node,
                         const ScopeCollection& scopes) {
     auto condition = Check(node->condition, scopes);
@@ -399,6 +420,28 @@ class TypeChecker {
     newScopes.identifierScope = functionScope;
     Check(node->body, newScopes);
     return Type::VOID;
+  }
+
+  Ptr<Type> CheckAssign(const Ptr<Assign>& node,
+                        const ScopeCollection& scopes) {
+    auto right = Check(node->right, scopes);
+    if (node->left->kind == Kind::Name) {
+      auto name = Cast<Name>(node->left);
+      auto result = scopes.identifierScope->Lookup(name->name);
+      if (result) {
+        if ((*result)->Equals(right)) {
+          return right;
+        } else {
+          throw TypeException(node->position,
+                              "assignment: types are not matched");
+        }
+      } else {
+        throw TypeException(node->position, "variable is not defined");
+      }
+    } else {
+      throw TypeException(node->position,
+                          "left part of the assignment must be a variable");
+    }
   }
 };
 

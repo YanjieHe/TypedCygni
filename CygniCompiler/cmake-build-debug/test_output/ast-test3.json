@@ -26,16 +26,16 @@
                                     "expressions": [
                                         {
                                             "value": {
-                                                "id": "85",
+                                                "id": "147",
                                                 "kind": "Multiply",
                                                 "right": {
                                                     "arguments": [
                                                         {
-                                                            "id": "83",
+                                                            "id": "145",
                                                             "kind": "Subtract",
                                                             "right": {
-                                                                "location": "Global, 0",
-                                                                "id": "82",
+                                                                "location": "Function, 2",
+                                                                "id": "144",
                                                                 "constant": "1",
                                                                 "kind": "Constant"
                                                             },
@@ -43,7 +43,7 @@
                                                                 "location": "Function, 0",
                                                                 "name": "n",
                                                                 "kind": "Name",
-                                                                "id": "81"
+                                                                "id": "143"
                                                             }
                                                         }
                                                     ],
@@ -51,48 +51,48 @@
                                                         "location": "Module, 0",
                                                         "name": "Factorial",
                                                         "kind": "Name",
-                                                        "id": "80"
+                                                        "id": "142"
                                                     },
                                                     "kind": "Call",
-                                                    "id": "84"
+                                                    "id": "146"
                                                 },
                                                 "left": {
                                                     "location": "Function, 0",
                                                     "name": "n",
                                                     "kind": "Name",
-                                                    "id": "79"
+                                                    "id": "141"
                                                 }
                                             },
                                             "kind": "Return",
-                                            "id": "86"
+                                            "id": "148"
                                         }
                                     ],
                                     "kind": "Block",
-                                    "id": "87"
+                                    "id": "149"
                                 },
                                 "if true": {
                                     "expressions": [
                                         {
                                             "value": {
-                                                "location": "Global, 0",
-                                                "id": "76",
+                                                "location": "Function, 1",
+                                                "id": "138",
                                                 "constant": "1",
                                                 "kind": "Constant"
                                             },
                                             "kind": "Return",
-                                            "id": "77"
+                                            "id": "139"
                                         }
                                     ],
                                     "kind": "Block",
-                                    "id": "78"
+                                    "id": "140"
                                 },
                                 "kind": "IfElse",
                                 "condition": {
-                                    "id": "75",
+                                    "id": "137",
                                     "kind": "Equal",
                                     "right": {
-                                        "location": "Global, 0",
-                                        "id": "74",
+                                        "location": "Function, 0",
+                                        "id": "136",
                                         "constant": "0",
                                         "kind": "Constant"
                                     },
@@ -100,25 +100,187 @@
                                         "location": "Function, 0",
                                         "name": "n",
                                         "kind": "Name",
-                                        "id": "73"
+                                        "id": "135"
                                     }
                                 },
-                                "id": "88"
+                                "id": "150"
                             }
                         ],
                         "kind": "Block",
-                        "id": "89"
+                        "id": "151"
                     },
                     "name": "Factorial",
                     "kind": "Def",
-                    "id": "91"
+                    "id": "153"
+                },
+                {
+                    "location": "Module, 1",
+                    "type": {
+                        "parameters": [
+                            {
+                                "kind": "Type Leaf",
+                                "name": "Double"
+                            },
+                            {
+                                "kind": "Type Leaf",
+                                "name": "Double"
+                            },
+                            {
+                                "kind": "Type Leaf",
+                                "name": "Double"
+                            }
+                        ],
+                        "name": "Function",
+                        "kind": "Type List"
+                    },
+                    "body": {
+                        "expressions": [
+                            {
+                                "value": {
+                                    "id": "159",
+                                    "kind": "Add",
+                                    "right": {
+                                        "location": "Function, 1",
+                                        "name": "y",
+                                        "kind": "Name",
+                                        "id": "158"
+                                    },
+                                    "left": {
+                                        "location": "Function, 0",
+                                        "name": "x",
+                                        "kind": "Name",
+                                        "id": "157"
+                                    }
+                                },
+                                "kind": "Return",
+                                "id": "160"
+                            }
+                        ],
+                        "kind": "Block",
+                        "id": "161"
+                    },
+                    "name": "Add",
+                    "kind": "Def",
+                    "id": "163"
                 }
             ],
             "name": "Program",
             "kind": "DefModule",
             "fields": [],
-            "id": "92"
+            "id": "164"
         }
     ],
-    "classes": []
+    "classes": [
+        {
+            "methods": [
+                {
+                    "location": "Class, 0",
+                    "type": {
+                        "parameters": [
+                            {
+                                "kind": "Type Leaf",
+                                "name": "Int"
+                            },
+                            {
+                                "kind": "Type Leaf",
+                                "name": "Int"
+                            },
+                            {
+                                "kind": "Type Leaf",
+                                "name": "Void"
+                            }
+                        ],
+                        "name": "Function",
+                        "kind": "Type List"
+                    },
+                    "body": {
+                        "expressions": [
+                            {
+                                "id": "176",
+                                "kind": "Assign",
+                                "right": {
+                                    "id": "175",
+                                    "kind": "Add",
+                                    "right": {
+                                        "location": "Function, 0",
+                                        "name": "dx",
+                                        "kind": "Name",
+                                        "id": "174"
+                                    },
+                                    "left": {
+                                        "location": "Class, 0",
+                                        "name": "x",
+                                        "kind": "Name",
+                                        "id": "173"
+                                    }
+                                },
+                                "left": {
+                                    "location": "Class, 0",
+                                    "name": "x",
+                                    "kind": "Name",
+                                    "id": "172"
+                                }
+                            },
+                            {
+                                "id": "181",
+                                "kind": "Assign",
+                                "right": {
+                                    "id": "180",
+                                    "kind": "Add",
+                                    "right": {
+                                        "location": "Function, 1",
+                                        "name": "dy",
+                                        "kind": "Name",
+                                        "id": "179"
+                                    },
+                                    "left": {
+                                        "location": "Class, 1",
+                                        "name": "y",
+                                        "kind": "Name",
+                                        "id": "178"
+                                    }
+                                },
+                                "left": {
+                                    "location": "Class, 1",
+                                    "name": "y",
+                                    "kind": "Name",
+                                    "id": "177"
+                                }
+                            }
+                        ],
+                        "kind": "Block",
+                        "id": "182"
+                    },
+                    "name": "move",
+                    "kind": "Def",
+                    "id": "184"
+                }
+            ],
+            "name": "Point",
+            "kind": "DefClass",
+            "fields": [
+                {
+                    "location": "Class, 0",
+                    "type": {
+                        "kind": "Type Leaf",
+                        "name": "Int"
+                    },
+                    "name": "x",
+                    "kind": "Var",
+                    "id": "166"
+                },
+                {
+                    "location": "Class, 1",
+                    "type": {
+                        "kind": "Type Leaf",
+                        "name": "Int"
+                    },
+                    "name": "y",
+                    "kind": "Var",
+                    "id": "168"
+                }
+            ],
+            "id": "185"
+        }
+    ]
 }

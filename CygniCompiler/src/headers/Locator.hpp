@@ -37,7 +37,7 @@ class Locator {
 
   HashMap<int, Location> locations;
 
-  void Locate(const Program& program, const ScopeCollection& scopes) {
+  void Locate(const Program& program, ScopeCollection& scopes) {
     RegisterModules(program.modules, scopes);
     RegisterClasses(program.classes, scopes);
     for (const auto& module : program.modules) {
@@ -48,8 +48,8 @@ class Locator {
     }
   }
 
-  void Locate(const Ptr<Ast>& node, const ScopeCollection& scopes) {
-    std::cout << KindToString(node->kind) << std::endl;
+  void Locate(const Ptr<Ast>& node, ScopeCollection& scopes) {
+    // std::cout << KindToString(node->kind) << std::endl;
     switch (node->kind) {
       case Kind::Add:
         LocateBinary(Cast<Add>(node), scopes);
@@ -124,6 +124,7 @@ class Locator {
         LocateDef(Cast<Def>(node), scopes);
         break;
       case Kind::Assign:
+        LocateAssign(Cast<Assign>(node), scopes);
         break;
       case Kind::Call:
         LocateCall(Cast<Call>(node), scopes);
@@ -142,28 +143,28 @@ class Locator {
   }
 
   template <typename BinaryAst>
-  void LocateBinary(const Ptr<BinaryAst>& node, const ScopeCollection& scopes) {
+  void LocateBinary(const Ptr<BinaryAst>& node, ScopeCollection& scopes) {
     Locate(node->left, scopes);
     Locate(node->right, scopes);
   }
 
   template <typename UnaryAst>
-  void LocateUnary(const Ptr<UnaryAst>& node, const ScopeCollection& scopes) {
+  void LocateUnary(const Ptr<UnaryAst>& node, ScopeCollection& scopes) {
     Locate(node->operand, scopes);
   }
 
-  void LocateIfThen(const Ptr<IfThen>& node, const ScopeCollection& scopes) {
+  void LocateIfThen(const Ptr<IfThen>& node, ScopeCollection& scopes) {
     Locate(node->condition, scopes);
     Locate(node->ifTrue, scopes);
   }
 
-  void LocateIfElse(const Ptr<IfElse>& node, const ScopeCollection& scopes) {
+  void LocateIfElse(const Ptr<IfElse>& node, ScopeCollection& scopes) {
     Locate(node->condition, scopes);
     Locate(node->ifTrue, scopes);
     Locate(node->ifFalse, scopes);
   }
 
-  void LocateCall(const Ptr<Call>& node, const ScopeCollection& scopes) {
+  void LocateCall(const Ptr<Call>& node, ScopeCollection& scopes) {
     Locate(node->function, scopes);
     for (const auto& argument : node->arguments) {
       Locate(argument, scopes);
@@ -183,57 +184,65 @@ class Locator {
     }
   }
 
-  void LocateConstant(const Ptr<Constant>& node,
-                      const ScopeCollection& scopes) {
-    auto constants = scopes.constants;
+  void LocateConstant(const Ptr<Constant>& node, ScopeCollection& scopes) {
+    auto& constants = scopes.constants;
     int index = AddNode(constants, node);
     locations.insert({node->id, {scopes.locationKind, index}});
   }
 
-  void LocateBlock(const Ptr<Block>& node, const ScopeCollection& scopes) {
+  void LocateBlock(const Ptr<Block>& node, ScopeCollection& scopes) {
     for (const auto& exp : node->expressions) {
       Locate(exp, scopes);
     }
   }
 
-  void LocateName(const Ptr<Name>& node, const ScopeCollection& scopes) {
+  void LocateName(const Ptr<Name>& node, ScopeCollection& scopes) {
     auto location = scopes.locationScope->Lookup(node->name);
-    locations.insert({node->id, *location});  // TO DO: check
+    if (location) {
+      std::cout << node->name << " $$$ " << (*location).ToString() << std::endl;
+      locations.insert({node->id, *location});  // TO DO: check
+    } else {
+      throw KeyNotFoundException();
+    }
   }
 
-  void LocateReturn(const Ptr<Return>& node, const ScopeCollection& scopes) {
+  void LocateReturn(const Ptr<Return>& node, ScopeCollection& scopes) {
     Locate(node->value, scopes);
   }
 
-  void LocateVar(const Ptr<Var>& node, const ScopeCollection& scopes) {
+  void LocateVar(const Ptr<Var>& node, ScopeCollection& scopes) {
     if (node->value) {
       Locate(*(node->value), scopes);
     }
-    auto variables = scopes.variables;
+    auto& variables = scopes.variables;
     int index = AddNode(variables, node);
     Location location{scopes.locationKind, index};
     locations.insert({node->id, location});
     scopes.locationScope->Put(node->name, location);
   }
 
-  void LocateDef(const Ptr<Def>& node, const ScopeCollection& scopes) {
-    auto functions = scopes.functions;
+  void LocateAssign(const Ptr<Assign>& node, ScopeCollection& scopes) {
+    Locate(node->left, scopes);
+    Locate(node->right, scopes);
+  }
+
+  void LocateDef(const Ptr<Def>& node, ScopeCollection& scopes) {
+    auto& functions = scopes.functions;
     int index = AddNode(functions, node);
     Location location{scopes.locationKind, index};
     locations.insert({node->id, location});
     scopes.locationScope->Put(node->name, location);
 
-    ScopeCollection newScopes;
-    newScopes.locationScope = New<Scope<Location>>(scopes.locationScope);
+    ScopeCollection newScopes(scopes, LocationKind::Function);
     for (const auto& parameter : node->parameters) {
-      AddNode(newScopes.parameters, parameter);
-      newScopes.locationScope->Put(parameter.name,
-                                   Location{LocationKind::Function, index});
+      int parameterIndex = AddNode(newScopes.parameters, parameter);
+      newScopes.locationScope->Put(
+          parameter.name, Location{LocationKind::Function, parameterIndex});
     }
     Locate(node->body, newScopes);
   }
 
-  void LocateModule(const Ptr<DefModule>& node, const ScopeCollection& scopes) {
+  void LocateModule(const Ptr<DefModule>& node, ScopeCollection& scopes) {
     ScopeCollection newScopes(scopes, LocationKind::Module);
     for (const auto& field : node->fields) {
       Locate(field, newScopes);
@@ -243,7 +252,7 @@ class Locator {
     }
   }
 
-  void LocateClass(const Ptr<DefClass>& node, const ScopeCollection& scopes) {
+  void LocateClass(const Ptr<DefClass>& node, ScopeCollection& scopes) {
     ScopeCollection newScopes(scopes, LocationKind::Class);
     for (const auto& field : node->fields) {
       Locate(field, newScopes);
@@ -261,11 +270,11 @@ class Locator {
   }
 
   void RegisterClasses(const Vector<Ptr<DefClass>>& classes,
-                       const ScopeCollection& scopes) {
-    auto nodes = scopes.classes;
+                       ScopeCollection& scopes) {
+    auto& nodes = scopes.classes;
     for (const auto& _class : classes) {
       int index = AddNode(nodes, _class);
-      Location location{LocationKind::Global, index};
+      Location location{scopes.locationKind, index};
       scopes.locationScope->Put(_class->name, location);
       ScopeCollection newScopes(scopes, LocationKind::Class);
       RegisterFields(_class->fields, newScopes);
@@ -274,8 +283,8 @@ class Locator {
   }
 
   void RegisterModules(const Vector<Ptr<DefModule>>& modules,
-                       const ScopeCollection& scopes) {
-    auto nodes = scopes.modules;
+                       ScopeCollection& scopes) {
+    auto& nodes = scopes.modules;
     for (const auto& module : modules) {
       int index = AddNode(nodes, module);
       Location location{scopes.locationKind, index};
@@ -289,21 +298,23 @@ class Locator {
   }
 
   void RegisterFields(const Vector<Ptr<Var>>& fieldDefs,
-                      const ScopeCollection& scopes) {
-    auto nodes = scopes.variables;
+                      ScopeCollection& scopes) {
+    auto& nodes = scopes.variables;
     for (const auto& definition : fieldDefs) {
       int index = AddNode(nodes, definition);
       Location location{scopes.locationKind, index};
+      locations.insert({definition->id, location});
       scopes.locationScope->Put(definition->name, location);
     }
   }
 
   void RegisterMethods(const Vector<Ptr<Def>>& functionDefs,
-                       const ScopeCollection& scopes) {
-    auto nodes = scopes.functions;
+                       ScopeCollection& scopes) {
+    auto& nodes = scopes.functions;
     for (const auto& definition : functionDefs) {
       int index = AddNode(nodes, definition);
       Location location{scopes.locationKind, index};
+      locations.insert({definition->id, location});
       scopes.locationScope->Put(definition->name, location);
     }
   }

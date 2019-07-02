@@ -21,9 +21,9 @@ void TestLocator::Test1() {
     TypeChecker typeChecker;
     typeChecker.CheckProgram(program, scopes);
     cout << "type checking finished" << endl;
-
+    auto locatorScopes = Locator::ScopeCollection();
     Locator locator;
-    locator.Locate(program, Locator::ScopeCollection());
+    locator.Locate(program, locatorScopes);
     for (const auto& item : locator.locations) {
       cout << item.first << ": " << item.second.ToString() << endl;
     }
