@@ -1,9 +1,12 @@
 #ifndef TEST_LOCATOR_HPP
 #define TEST_LOCATOR_HPP
-namespace TestLocator
-{
-    void TestAll();
+#include "Locator.hpp"
+namespace TestLocator {
 
-    void Test1();
-}
-#endif //TEST_LOCATOR_HPP
+Locator::ScopeCollection InitializeLocatorScopeCollection();
+
+void TestAll();
+
+void Test1();
+}  // namespace TestLocator
+#endif  // TEST_LOCATOR_HPP

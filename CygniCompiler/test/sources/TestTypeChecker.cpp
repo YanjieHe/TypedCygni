@@ -80,7 +80,9 @@ void TestTypeChecker::Test1() {
     // OutputTypeRecord("test_output/code3-types.txt", typeChecker.typeRecord);
     std::ofstream stream("test_output/ast-test3.json");
     auto json = TestParser::ProgramToJson(program);
-    AttachTypeToJson(typeChecker.typeRecord, json);
+    auto toString = [](const Ptr<Type>& type) { return type->ToString(); };
+    AttachToJson<Ptr<Type>, decltype(toString)>(typeChecker.typeRecord, "type",
+                                                json, toString);
     cout << __FUNCTION__ << ": successfully convert ast to json" << endl;
     JsonToFile(json, stream);
     stream.close();
@@ -93,31 +95,6 @@ void TestTypeChecker::Test1() {
   }
 }
 
-void TestTypeChecker::AttachTypeToJson(HashMap<int, Ptr<Type>>& map,
-                                       Ptr<JsonObject> json) {
-  if (json->jsonType == JsonType::JsonMapType) {
-    auto jsonMap = Cast<JsonMap>(json);
-    if (jsonMap->ContainsKey("id")) {
-      int id = String::ParseInt(
-          Cast<JsonValue>(jsonMap->GetValueByKey("id"))->value);
-      if (map.find(id) != map.end()) {
-        jsonMap->Add("type", New<JsonValue>(map[id]->ToString()));
-      } else {
-        throw KeyNotFoundException();
-      }
-    }
-    for (const auto& pair : jsonMap->map) {
-      AttachTypeToJson(map, pair.second);
-    }
-  } else if (json->jsonType == JsonType::JsonArrayType) {
-    auto jsonArray = Cast<JsonArray>(json);
-    for (const auto& item : jsonArray->items) {
-      AttachTypeToJson(map, item);
-    }
-  } else {
-    return;
-  }
-}
 void TestTypeChecker::OutputTypeRecord(
     const std::string& path,
     const HashMap<int, Ptr<Type>>& typeRecord) {

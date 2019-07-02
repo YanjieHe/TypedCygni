@@ -5,6 +5,7 @@ CMakeFiles/CygniCompiler.dir/main.cpp.o: ../src/headers/Ast.hpp
 CMakeFiles/CygniCompiler.dir/main.cpp.o: ../src/headers/Encoding.hpp
 CMakeFiles/CygniCompiler.dir/main.cpp.o: ../src/headers/Exception.hpp
 CMakeFiles/CygniCompiler.dir/main.cpp.o: ../src/headers/Location.hpp
+CMakeFiles/CygniCompiler.dir/main.cpp.o: ../src/headers/Locator.hpp
 CMakeFiles/CygniCompiler.dir/main.cpp.o: ../src/headers/Optional.hpp
 CMakeFiles/CygniCompiler.dir/main.cpp.o: ../src/headers/Parser.hpp
 CMakeFiles/CygniCompiler.dir/main.cpp.o: ../src/headers/Predef.hpp

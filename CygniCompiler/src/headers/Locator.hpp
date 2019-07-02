@@ -27,9 +27,12 @@ class Locator {
     Vector<Ptr<Def>> functions;
     Vector<Ptr<Constant>> constants;
     Vector<Parameter> parameters;
-    ScopeCollection() = default;
+    ScopeCollection()
+        : locationKind{LocationKind::Global},
+          locationScope(New<Scope<Location>>()) {}
     ScopeCollection(const ScopeCollection& parent, LocationKind locationKind)
-        : locationKind{locationKind}, locationScope(parent.locationScope) {}
+        : locationKind{locationKind},
+          locationScope(New<Scope<Location>>(parent.locationScope)) {}
   };
 
   HashMap<int, Location> locations;
@@ -123,6 +126,7 @@ class Locator {
       case Kind::Assign:
         break;
       case Kind::Call:
+        LocateCall(Cast<Call>(node), scopes);
         break;
       case Kind::While:
         break;
@@ -159,6 +163,13 @@ class Locator {
     Locate(node->ifFalse, scopes);
   }
 
+  void LocateCall(const Ptr<Call>& node, const ScopeCollection& scopes) {
+    Locate(node->function, scopes);
+    for (const auto& argument : node->arguments) {
+      Locate(argument, scopes);
+    }
+  }
+
   static LocationKind AstKindToLocationKind(Kind kind) {
     switch (kind) {
       case Kind::Def:
@@ -187,7 +198,7 @@ class Locator {
 
   void LocateName(const Ptr<Name>& node, const ScopeCollection& scopes) {
     auto location = scopes.locationScope->Lookup(node->name);
-    locations.insert({node->id, *location}); // TO DO: check
+    locations.insert({node->id, *location});  // TO DO: check
   }
 
   void LocateReturn(const Ptr<Return>& node, const ScopeCollection& scopes) {

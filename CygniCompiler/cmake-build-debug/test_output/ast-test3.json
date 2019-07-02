@@ -1,9 +1,10 @@
 {
     "modules": [
         {
-            "type": "Void",
+            "location": "Global, 0",
             "methods": [
                 {
+                    "location": "Module, 0",
                     "type": {
                         "parameters": [
                             {
@@ -19,114 +20,104 @@
                         "kind": "Type List"
                     },
                     "body": {
-                        "type": "Void",
                         "expressions": [
                             {
-                                "type": "Void",
                                 "if false": {
-                                    "type": "Int",
                                     "expressions": [
                                         {
-                                            "type": "Int",
                                             "value": {
-                                                "type": "Int",
-                                                "id": "63",
+                                                "id": "85",
                                                 "kind": "Multiply",
                                                 "right": {
-                                                    "type": "Int",
                                                     "arguments": [
                                                         {
-                                                            "type": "Int",
-                                                            "id": "61",
+                                                            "id": "83",
                                                             "kind": "Subtract",
                                                             "right": {
-                                                                "type": "Int",
-                                                                "id": "60",
+                                                                "location": "Global, 0",
+                                                                "id": "82",
                                                                 "constant": "1",
                                                                 "kind": "Constant"
                                                             },
                                                             "left": {
-                                                                "type": "Int",
+                                                                "location": "Function, 0",
                                                                 "name": "n",
                                                                 "kind": "Name",
-                                                                "id": "59"
+                                                                "id": "81"
                                                             }
                                                         }
                                                     ],
                                                     "function": {
-                                                        "type": "Function[Int, Int]",
+                                                        "location": "Module, 0",
                                                         "name": "Factorial",
                                                         "kind": "Name",
-                                                        "id": "58"
+                                                        "id": "80"
                                                     },
                                                     "kind": "Call",
-                                                    "id": "62"
+                                                    "id": "84"
                                                 },
                                                 "left": {
-                                                    "type": "Int",
+                                                    "location": "Function, 0",
                                                     "name": "n",
                                                     "kind": "Name",
-                                                    "id": "57"
+                                                    "id": "79"
                                                 }
                                             },
                                             "kind": "Return",
-                                            "id": "64"
+                                            "id": "86"
                                         }
                                     ],
                                     "kind": "Block",
-                                    "id": "65"
+                                    "id": "87"
                                 },
                                 "if true": {
-                                    "type": "Int",
                                     "expressions": [
                                         {
-                                            "type": "Int",
                                             "value": {
-                                                "type": "Int",
-                                                "id": "54",
+                                                "location": "Global, 0",
+                                                "id": "76",
                                                 "constant": "1",
                                                 "kind": "Constant"
                                             },
                                             "kind": "Return",
-                                            "id": "55"
+                                            "id": "77"
                                         }
                                     ],
                                     "kind": "Block",
-                                    "id": "56"
+                                    "id": "78"
                                 },
                                 "kind": "IfElse",
                                 "condition": {
-                                    "type": "Bool",
-                                    "id": "53",
+                                    "id": "75",
                                     "kind": "Equal",
                                     "right": {
-                                        "type": "Int",
-                                        "id": "52",
+                                        "location": "Global, 0",
+                                        "id": "74",
                                         "constant": "0",
                                         "kind": "Constant"
                                     },
                                     "left": {
-                                        "type": "Int",
+                                        "location": "Function, 0",
                                         "name": "n",
                                         "kind": "Name",
-                                        "id": "51"
+                                        "id": "73"
                                     }
                                 },
-                                "id": "66"
+                                "id": "88"
                             }
                         ],
                         "kind": "Block",
-                        "id": "67"
+                        "id": "89"
                     },
                     "name": "Factorial",
                     "kind": "Def",
-                    "id": "69"
+                    "id": "91"
                 }
             ],
             "name": "Program",
             "kind": "DefModule",
             "fields": [],
-            "id": "70"
+            "id": "92"
         }
     ],
     "classes": []

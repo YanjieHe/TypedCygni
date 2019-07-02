@@ -6,6 +6,7 @@ CMakeFiles/CygniCompiler.dir/main.cpp.o
  ../src/headers/Encoding.hpp
  ../src/headers/Exception.hpp
  ../src/headers/Location.hpp
+ ../src/headers/Locator.hpp
  ../src/headers/Optional.hpp
  ../src/headers/Parser.hpp
  ../src/headers/Predef.hpp
