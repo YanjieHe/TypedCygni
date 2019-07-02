@@ -204,6 +204,7 @@ Ptr<JsonObject> TestParser::TypeToJson(const Ptr<TypeExpression> &type)
     auto array = New<JsonArray>();
     if (!(type->parameters.empty()))
     {
+        map->Add("name", New<JsonValue>(type->name));
         map->Add("kind", New<JsonValue>("Type List"));
         for (const auto &item: type->parameters)
         {

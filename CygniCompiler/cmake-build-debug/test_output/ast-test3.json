@@ -15,6 +15,7 @@
                                 "name": "Int"
                             }
                         ],
+                        "name": "Function",
                         "kind": "Type List"
                     },
                     "body": {

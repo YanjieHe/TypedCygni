@@ -48,10 +48,6 @@ Encoding.hpp
 Exception.hpp
 ../src/headers/Exception.hpp
 
-../src/headers/Location.hpp
-String.hpp
-../src/headers/String.hpp
-
 ../src/headers/Optional.hpp
 type_traits
 -
@@ -90,20 +86,6 @@ unordered_map
 vector
 -
 
-../src/headers/Scope.hpp
-Exception.hpp
-../src/headers/Exception.hpp
-Location.hpp
-../src/headers/Location.hpp
-Optional.hpp
-../src/headers/Optional.hpp
-Predef.hpp
-../src/headers/Predef.hpp
-String.hpp
-../src/headers/String.hpp
-Table.hpp
-../src/headers/Table.hpp
-
 ../src/headers/String.hpp
 Encoding.hpp
 ../src/headers/Encoding.hpp
@@ -116,8 +98,6 @@ iostream
 string
 -
 
-../src/headers/Table.hpp
-
 ../src/headers/Token.hpp
 unordered_map
 -
@@ -129,18 +109,6 @@ String.hpp
 ../src/headers/String.hpp
 Predef.hpp
 ../src/headers/Predef.hpp
-
-../src/headers/TypeChecker.hpp
-Ast.hpp
-../src/headers/Ast.hpp
-Exception.hpp
-../src/headers/Exception.hpp
-Predef.hpp
-../src/headers/Predef.hpp
-Scope.hpp
-../src/headers/Scope.hpp
-Type.hpp
-../src/headers/Type.hpp
 
 ../test/headers/JSON.hpp
 utility
@@ -162,25 +130,15 @@ fstream
 JSON.hpp
 ../test/headers/JSON.hpp
 
-../test/headers/TestTypeChecker.hpp
-TypeChecker.hpp
-../test/headers/TypeChecker.hpp
-JSON.hpp
-../test/headers/JSON.hpp
-
-/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/TestTypeChecker.cpp
-TestTypeChecker.hpp
-/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/TestTypeChecker.hpp
-fstream
--
+/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/TestParser.cpp
+TestParser.hpp
+/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/TestParser.hpp
+Lexer.hpp
+/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/Lexer.hpp
 iostream
+-
+algorithm
 -
 File.hpp
 /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/File.hpp
-Lexer.hpp
-/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/Lexer.hpp
-Parser.hpp
-/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/Parser.hpp
-TestParser.hpp
-/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/TestParser.hpp
 
