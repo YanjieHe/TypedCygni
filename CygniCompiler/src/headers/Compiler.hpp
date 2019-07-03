@@ -79,10 +79,10 @@ enum class Op
 
 enum class OpTypeCode
 {
-    INT,
-    FLOAT,
-    LONG,
-    DOUBLE
+    INT_32,
+    INT_64,
+    FLOAT_32,
+    FLOAT_64
 };
 
 class Compiler
