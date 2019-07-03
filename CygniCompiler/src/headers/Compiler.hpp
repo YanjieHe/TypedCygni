@@ -20,6 +20,9 @@ enum class Op
     PUSH_LOCAL,
     POP_LOCAL,
 
+    PUSH_ARG,
+    POP_ARG,
+
     ADD,
     SUB,
     MUL,
