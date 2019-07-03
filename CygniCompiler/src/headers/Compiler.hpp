@@ -7,9 +7,9 @@
 #include "Predef.hpp"
 #include "TypeChecker.hpp"
 
-#define OP_NUMERIC(TYPE)                                                 \
-  ADD_##TYPE, SUB_##TYPE, MUL_##TYPE, DIV_##TYPE, MOD_##TYPE, GT_##TYPE, \
-      LT_##TYPE, GE_##TYPE, LE_##TYPE, EQ_##TYPE, NE_##TYPE
+#define OP_NUMERIC(TYPE)                                                    \
+  ADD_##TYPE, SUB_##TYPE, MUL_##TYPE, DIV_##TYPE, MOD_##TYPE, MINUS_##TYPE, \
+      GT_##TYPE, LT_##TYPE, GE_##TYPE, LE_##TYPE, EQ_##TYPE, NE_##TYPE
 
 #define OP_ACTION(TYPE)                                                  \
   PUSH_LOCAL_##TYPE, POP_LOCAL_##TYPE, RETURN_##TYPE, PUSH_FIELD_##TYPE, \
@@ -88,6 +88,20 @@ enum class OpFlag {
   DEFINE_MODULE,
   DEFINE_CLASS
 };
+
+class CompilerException : Exception {
+ public:
+  Position position;
+
+  CompilerException(Position position, String message)
+      : Exception(std::move(message)), position{position} {
+    AddInfo("startLine", String::ToString(position.startLine));
+    AddInfo("startColumn", String::ToString(position.startColumn));
+    AddInfo("endLine", String::ToString(position.endLine));
+    AddInfo("endColumn", String::ToString(position.endColumn));
+  }
+};
+
 class Compiler {
  private:
   class Rule {
@@ -153,7 +167,7 @@ class Compiler {
       case Kind::Not:
         break;
       case Kind::UnaryPlus:
-        return CompileUnary(Cast<UnaryPlus>(node), code);
+        break;
       case Kind::UnaryMinus:
         return CompileUnary(Cast<UnaryMinus>(node), code);
       case Kind::IfThen:
@@ -185,10 +199,12 @@ class Compiler {
         break;
       case Kind::DefModule:
         CompileModule(Cast<DefModule>(node), code);
+        return;
         break;
       default:
         throw NotImplementedException();
     }
+    throw NotImplementedException();
   }
 
   const Ptr<Type>& TypeOf(const Ptr<Ast>& node) const {
@@ -199,35 +215,37 @@ class Compiler {
   void CompileBinary(const Ptr<Binary<kind>>& node, Vector<Byte>& code) {
     CompileNode(node->left, code);
     CompileNode(node->right, code);
-    Op op = Match(kind, {TypeOf(node->left), TypeOf(node->right)});
+    Op op = Match(node, {TypeOf(node->left), TypeOf(node->right)});
     code.push_back(static_cast<Byte>(op));
   }
 
   template <Kind kind>
   void CompileUnary(const Ptr<Unary<kind>>& node, Vector<Byte>& code) {
     CompileNode(node->operand, code);
-    Op op = Match(kind, {TypeOf(node->operand)});
+    Op op = Match(node, {TypeOf(node->operand)});
     code.push_back(static_cast<Byte>(op));
   }
 
-  Op Match(Kind kind, const Vector<Ptr<Type>>& values) {
+  Op Match(const Ptr<Ast>& node, const Vector<Ptr<Type>>& values) {
     auto comparator = [](const Ptr<Type>& x, const Ptr<Type>& y) -> bool {
       return x->Equals(y);
     };
+    Kind kind = node->kind;
     for (const auto& items : rules.at(kind)) {
       if (std::equal(items.types.begin(), items.types.end(), values.begin(),
                      values.end(), comparator)) {
         return items.instruction;
       }
     }
-    throw NotSupportedException();
+    throw CompilerException(node->position, "type not match");
   }
 
   void CompileConstant(const Ptr<Constant>& node, Vector<Byte>& code) {
-    int index = locations.at(node->id).Index();
-    Op op = Match(node->kind, {TypeOf(node)});
-    code.push_back(static_cast<Byte>(op));
-    EmitUInt16(code, index);
+      throw NotImplementedException();
+    // int index = locations.at(node->id).Index();
+    // Op op = Match(node, {TypeOf(node)});
+    // code.push_back(static_cast<Byte>(op));
+    // EmitUInt16(code, index);
   }
 
   void CompileBlock(const Ptr<Block>& node, Vector<Byte>& code) {
@@ -299,7 +317,14 @@ class Compiler {
                                   RULE_NUMERIC(GreaterThanOrEqual, GE),
                                   RULE_NUMERIC(LessThanOrEqual, LE),
                                   RULE_NUMERIC(Equal, EQ),
-                                  RULE_NUMERIC(NotEqual, NE)};
+                                  RULE_NUMERIC(NotEqual, NE),
+                                  {Kind::UnaryMinus,
+                                   {
+                                       {{Type::INT}, Op::MINUS_I32},
+                                       {{Type::LONG}, Op::MINUS_I64},
+                                       {{Type::FLOAT}, Op::MINUS_F32},
+                                       {{Type::DOUBLE}, Op::MINUS_F64},
+                                   }}};
     for (const auto& pair : rulesToAdd) {
       rules.insert({pair.first, pair.second});
     }
