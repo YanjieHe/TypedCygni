@@ -17,8 +17,8 @@ enum class Op
     PUSH_INT_1BYTE,
     PUSH_INT_2BYTE,
 
-    PUSH_STACK,
-    POP_STACK,
+    PUSH_LOCAL,
+    POP_LOCAL,
 
     ADD,
     SUB,
