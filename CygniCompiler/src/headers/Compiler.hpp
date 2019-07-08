@@ -196,6 +196,7 @@ class Compiler {
       case Kind::While:
         break;
       case Kind::DefClass:
+        CompileClass(Cast<DefClass>(node), code);
         break;
       case Kind::DefModule:
         CompileModule(Cast<DefModule>(node), code);
@@ -216,14 +217,14 @@ class Compiler {
     CompileNode(node->left, code);
     CompileNode(node->right, code);
     Op op = Match(node, {TypeOf(node->left), TypeOf(node->right)});
-    code.push_back(static_cast<Byte>(op));
+    EmitOp(op);
   }
 
   template <Kind kind>
   void CompileUnary(const Ptr<Unary<kind>>& node, Vector<Byte>& code) {
     CompileNode(node->operand, code);
     Op op = Match(node, {TypeOf(node->operand)});
-    code.push_back(static_cast<Byte>(op));
+    EmitOp(op);
   }
 
   Op Match(const Ptr<Ast>& node, const Vector<Ptr<Type>>& values) {
@@ -241,11 +242,11 @@ class Compiler {
   }
 
   void CompileConstant(const Ptr<Constant>& node, Vector<Byte>& code) {
-      throw NotImplementedException();
-    // int index = locations.at(node->id).Index();
-    // Op op = Match(node, {TypeOf(node)});
-    // code.push_back(static_cast<Byte>(op));
-    // EmitUInt16(code, index);
+    throw NotImplementedException();
+    int index = locations.at(node->id).Index();
+    Op op = Match(node, {TypeOf(node)});
+    EmitOp(op);
+    EmitUInt16(code, index);
   }
 
   void CompileBlock(const Ptr<Block>& node, Vector<Byte>& code) {
@@ -255,6 +256,7 @@ class Compiler {
   }
 
   void CompileModule(const Ptr<DefModule>& node, Vector<Byte>& code) {
+    EmitFlag(code, OpFlag::DEFINE_MODULE);
     EmitString(code, node->name);
     EmitUInt16(code, locations.at(node->id).Index());
     EmitUInt16(code, node->fields.size());
@@ -268,10 +270,25 @@ class Compiler {
   }
 
   void CompileDef(const Ptr<Def>& node, Vector<Byte>& code) {
+    EmitFlag(code, OpFlag::DEFINE_FUNCTION);
     EmitString(code, node->name);
     EmitUInt16(code, locations.at(node->id).Index());
     EmitUInt16(code, node->parameters.size());
     CompileNode(node->body, code);
+  }
+
+  void CompileClass(const Ptr<DefClass>& node, Vector<Byte>& code) {
+    EmitFlag(code, OpFlag::DEFINE_CLASS);
+    EmitString(code, node->name);
+    EmitUInt16(code, locations.at(node->id).Index());
+    EmitUInt16(code, node->fields.size());
+    EmitUInt16(code, node->methods.size());
+    for (const auto& field : node->fields) {
+      CompileNode(field, code);
+    }
+    for (const auto& method : node->methods) {
+      CompileNode(method, code);
+    }
   }
 
   void EmitUInt16(Vector<Byte>& code, int number) {
@@ -285,6 +302,18 @@ class Compiler {
     for (int i = 0; i < 4; i++) {
       code.push_back(bytes[i]);
     }
+  }
+
+  void EmitFlag(Vector<Byte>& code, OpFlag flag) {
+    code.push_back(static_cast<Byte>(flag));
+  }
+
+  void EmitByte(Vector<Byte>& code, int value) {
+    code.push_back(static_cast<Byte>(value));
+  }
+
+  void EmitOp(Vector<Byte>& code, Op op) {
+    code.push_back(static_cast<Byte>(op));
   }
 
   void EmitString(Vector<Byte>& code, String s) {
@@ -324,6 +353,13 @@ class Compiler {
                                        {{Type::LONG}, Op::MINUS_I64},
                                        {{Type::FLOAT}, Op::MINUS_F32},
                                        {{Type::DOUBLE}, Op::MINUS_F64},
+                                   }},
+                                  {Kind::Constant,
+                                   {
+                                       {{Type::INT}, Op::PUSH_CONSTANT_I32},
+                                       {{Type::LONG}, Op::PUSH_CONSTANT_I64},
+                                       {{Type::FLOAT}, Op::PUSH_CONSTANT_F32},
+                                       {{Type::DOUBLE}, Op::PUSH_CONSTANT_F64},
                                    }}};
     for (const auto& pair : rulesToAdd) {
       rules.insert({pair.first, pair.second});

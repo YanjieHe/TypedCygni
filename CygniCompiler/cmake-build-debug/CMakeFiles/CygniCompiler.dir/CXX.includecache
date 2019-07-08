@@ -47,10 +47,10 @@ cstring
 ../src/headers/Exception.hpp
 exception
 -
-String.hpp
-../src/headers/String.hpp
 Predef.hpp
 ../src/headers/Predef.hpp
+String.hpp
+../src/headers/String.hpp
 
 ../src/headers/File.hpp
 String.hpp

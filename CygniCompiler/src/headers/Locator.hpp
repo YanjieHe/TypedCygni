@@ -25,7 +25,6 @@ class Locator {
     Vector<Ptr<DefClass>> classes;
     Vector<Ptr<Var>> variables;
     Vector<Ptr<Def>> functions;
-    Vector<Ptr<Constant>> constants;
     Vector<Parameter> parameters;
     ScopeCollection()
         : locationKind{LocationKind::Global},
@@ -35,8 +34,20 @@ class Locator {
           locationScope(New<Scope<Location>>(parent.locationScope)) {}
   };
 
-  HashMap<int, Location> locations;
+  class ConstantPool {
+   public:
+    Vector<Ptr<Constant>> constants;
+    HashMap<int, int> constantNodes;
+    ConstantPool();
+    void Assign(Ptr<Constant> node) {
+      int index = constants.size();
+      constantNodes.insert({node->id, index});
+      constants.push_back(node);
+    }
+  };
 
+  ConstantPool constantPool;
+  HashMap<int, Location> locations;
   void Locate(const Program& program, ScopeCollection& scopes) {
     RegisterModules(program.modules, scopes);
     RegisterClasses(program.classes, scopes);
@@ -185,9 +196,7 @@ class Locator {
   }
 
   void LocateConstant(const Ptr<Constant>& node, ScopeCollection& scopes) {
-    auto& constants = scopes.constants;
-    int index = AddNode(constants, node);
-    locations.insert({node->id, {scopes.locationKind, index}});
+    constantPool.Assign(node);
   }
 
   void LocateBlock(const Ptr<Block>& node, ScopeCollection& scopes) {
@@ -199,7 +208,6 @@ class Locator {
   void LocateName(const Ptr<Name>& node, ScopeCollection& scopes) {
     auto location = scopes.locationScope->Lookup(node->name);
     if (location) {
-      std::cout << node->name << " $$$ " << (*location).ToString() << std::endl;
       locations.insert({node->id, *location});  // TO DO: check
     } else {
       throw KeyNotFoundException();
