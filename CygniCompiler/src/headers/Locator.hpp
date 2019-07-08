@@ -37,12 +37,11 @@ class Locator {
   class ConstantPool {
    public:
     Vector<Ptr<Constant>> constants;
-    HashMap<int, int> constantNodes;
-    ConstantPool();
-    void Assign(Ptr<Constant> node) {
+    ConstantPool() {}
+    int Assign(Ptr<Constant> node) {
       int index = constants.size();
-      constantNodes.insert({node->id, index});
       constants.push_back(node);
+      return index;
     }
   };
 
@@ -196,7 +195,8 @@ class Locator {
   }
 
   void LocateConstant(const Ptr<Constant>& node, ScopeCollection& scopes) {
-    constantPool.Assign(node);
+    int index = constantPool.Assign(node);
+    locations.insert({node->id, Location(LocationKind::Global, index)});
   }
 
   void LocateBlock(const Ptr<Block>& node, ScopeCollection& scopes) {

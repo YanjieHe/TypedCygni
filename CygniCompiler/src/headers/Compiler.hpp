@@ -217,14 +217,14 @@ class Compiler {
     CompileNode(node->left, code);
     CompileNode(node->right, code);
     Op op = Match(node, {TypeOf(node->left), TypeOf(node->right)});
-    EmitOp(op);
+    EmitOp(code, op);
   }
 
   template <Kind kind>
   void CompileUnary(const Ptr<Unary<kind>>& node, Vector<Byte>& code) {
     CompileNode(node->operand, code);
     Op op = Match(node, {TypeOf(node->operand)});
-    EmitOp(op);
+    EmitOp(code, op);
   }
 
   Op Match(const Ptr<Ast>& node, const Vector<Ptr<Type>>& values) {
@@ -245,7 +245,7 @@ class Compiler {
     throw NotImplementedException();
     int index = locations.at(node->id).Index();
     Op op = Match(node, {TypeOf(node)});
-    EmitOp(op);
+    EmitOp(code, op);
     EmitUInt16(code, index);
   }
 
