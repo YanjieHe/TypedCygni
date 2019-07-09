@@ -26,12 +26,14 @@ class Locator {
     Vector<Ptr<Var>> variables;
     Vector<Ptr<Def>> functions;
     Vector<Parameter> parameters;
+    int currentScope = -1;
     ScopeCollection()
         : locationKind{LocationKind::Global},
           locationScope(New<Scope<Location>>()) {}
     ScopeCollection(const ScopeCollection& parent, LocationKind locationKind)
         : locationKind{locationKind},
-          locationScope(New<Scope<Location>>(parent.locationScope)) {}
+          locationScope(New<Scope<Location>>(parent.locationScope)),
+          currentScope{parent.currentScope} {}
   };
 
   class ConstantPool {
@@ -47,6 +49,7 @@ class Locator {
 
   ConstantPool constantPool;
   HashMap<int, Location> locations;
+  HashMap<int, int> functionLocals;
   void Locate(const Program& program, ScopeCollection& scopes) {
     RegisterModules(program.modules, scopes);
     RegisterClasses(program.classes, scopes);
@@ -224,6 +227,14 @@ class Locator {
     }
     auto& variables = scopes.variables;
     int index = AddNode(variables, node);
+    if (scopes.locationKind == LocationKind::Function) {
+      if (functionLocals.find(scopes.currentScope) != functionLocals.end()) {
+        functionLocals.insert(
+            {scopes.currentScope, functionLocals[scopes.currentScope] + 1});
+      } else {
+        functionLocals.insert({scopes.currentScope, 1});
+      }
+    }
     Location location{scopes.locationKind, index};
     locations.insert({node->id, location});
     scopes.locationScope->Put(node->name, location);
@@ -242,6 +253,7 @@ class Locator {
     scopes.locationScope->Put(node->name, location);
 
     ScopeCollection newScopes(scopes, LocationKind::Function);
+    newScopes.currentScope = node->id;
     for (const auto& parameter : node->parameters) {
       int parameterIndex = AddNode(newScopes.parameters, parameter);
       newScopes.locationScope->Put(
