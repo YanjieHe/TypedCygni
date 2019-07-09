@@ -124,7 +124,6 @@ class Compiler {
  public:
   const HashMap<int, Ptr<Type>>& typeRecord;
   const HashMap<int, Location>& locations;
-  const HashMap<int, int>& functionLocals;
   const Locator& locator;
 
   Compiler(const HashMap<int, Ptr<Type>>& typeRecord,
@@ -136,7 +135,8 @@ class Compiler {
 
   Vector<Byte> Compile(const Program& program) {
     Vector<Byte> code;
-    CompileConstantPool() EmitUInt16(code, program.modules.size());
+    CompileConstantPool(locator.constantPool, code);
+    EmitUInt16(code, program.modules.size());
     EmitUInt16(code, program.classes.size());
     for (const auto& module : program.modules) {
       CompileNode(module, code);
