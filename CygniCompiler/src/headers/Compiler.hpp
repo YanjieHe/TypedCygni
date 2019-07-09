@@ -7,6 +7,7 @@
 #include "Predef.hpp"
 #include "TypeChecker.hpp"
 
+
 #define OP_NUMERIC(TYPE)                                                    \
   ADD_##TYPE, SUB_##TYPE, MUL_##TYPE, DIV_##TYPE, MOD_##TYPE, MINUS_##TYPE, \
       GT_##TYPE, LT_##TYPE, GE_##TYPE, LE_##TYPE, EQ_##TYPE, NE_##TYPE
@@ -20,9 +21,8 @@
   CONVERT_##TYPE1##_TO_##TYPE2, CONVERT_##TYPE2##_TO_##TYPE1
 
 #define OP_INTEGER(TYPE) BIT_AND_##TYPE, BIT_OR_##TYPE, BIT_XOR_##TYPE
-using Byte = uint8_t;
 
-enum class Op {
+enum Op {
   PUSH_INT_MINUS_ONE,
   PUSH_INT_1BYTE,
   PUSH_INT_2BYTE,
@@ -32,6 +32,11 @@ enum class Op {
   PUSH_CONSTANT_F32,
   PUSH_CONSTANT_F64,
   PUSH_CONSTANT_STRING,
+  PUSH_CONSTANT_WIDE_I32,
+  PUSH_CONSTANT_WIDE_I64,
+  PUSH_CONSTANT_WIDE_F32,
+  PUSH_CONSTANT_WIDE_F64,
+  PUSH_CONSTANT_WIDE_STRING,
 
   OP_NUMERIC(I32),
   OP_NUMERIC(I64),
@@ -66,6 +71,7 @@ enum class Op {
 
   PUSH_METHOD,
   PUSH_STATIC_METHOD,
+  PUSH_FUNCTION,
 
   NEW,
 
@@ -79,6 +85,7 @@ enum class Op {
   JUMP_IF_TRUE,
   JUMP_IF_FALSE
 };
+
 
 enum class OpTypeCode { INT_32, INT_64, FLOAT_32, FLOAT_64 };
 
