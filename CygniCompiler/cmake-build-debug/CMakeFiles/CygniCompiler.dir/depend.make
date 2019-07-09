@@ -40,6 +40,7 @@ CMakeFiles/CygniCompiler.dir/src/sources/Compiler.cpp.o: ../src/headers/Encoding
 CMakeFiles/CygniCompiler.dir/src/sources/Compiler.cpp.o: ../src/headers/Endian.hpp
 CMakeFiles/CygniCompiler.dir/src/sources/Compiler.cpp.o: ../src/headers/Exception.hpp
 CMakeFiles/CygniCompiler.dir/src/sources/Compiler.cpp.o: ../src/headers/Location.hpp
+CMakeFiles/CygniCompiler.dir/src/sources/Compiler.cpp.o: ../src/headers/Locator.hpp
 CMakeFiles/CygniCompiler.dir/src/sources/Compiler.cpp.o: ../src/headers/Optional.hpp
 CMakeFiles/CygniCompiler.dir/src/sources/Compiler.cpp.o: ../src/headers/Predef.hpp
 CMakeFiles/CygniCompiler.dir/src/sources/Compiler.cpp.o: ../src/headers/Scope.hpp

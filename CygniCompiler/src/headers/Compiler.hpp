@@ -95,6 +95,8 @@ enum class OpFlag {
   DEFINE_CLASS
 };
 
+typedef uint8_t Byte;
+
 class CompilerException : Exception {
  public:
   Position position;
@@ -124,10 +126,10 @@ class Compiler {
  public:
   const HashMap<int, Ptr<Type>>& typeRecord;
   const HashMap<int, Location>& locations;
-  const Locator& locator;
+  Locator& locator;
 
   Compiler(const HashMap<int, Ptr<Type>>& typeRecord,
-           const Locator& locator,
+           Locator& locator,
            const HashMap<int, Location>& locations)
       : typeRecord{typeRecord}, locator{locator}, locations{locations} {
     Register();
@@ -300,7 +302,7 @@ class Compiler {
   }
 
   void CompileConstant(const Ptr<Constant>& node, Vector<Byte>& code) {
-    int index = locations.at(node->id).Index();
+    int index = locator.locations.at(node->id).Index();
     Op op = Match(node, {TypeOf(node)});
     EmitOp(code, op);
     if (index < 65536) {
@@ -335,9 +337,10 @@ class Compiler {
     EmitFlag(code, OpFlag::DEFINE_FUNCTION);
     EmitString(code, node->name);
     EmitUInt16(code, locations.at(node->id).Index());
-    EmitUInt16(code, functionLocals[node->id]); /* locals */
-    EmitUInt16(code, 0);                        /* TO DO: stack */
-    EmitUInt16(code, node->parameters.size());  /* args_size */
+    int locals = locator.functionLocals[node->id];
+    EmitUInt16(code, locals);                  /* locals */
+    EmitUInt16(code, 0);                       /* TO DO: stack */
+    EmitUInt16(code, node->parameters.size()); /* args_size */
     int pos = code.size();
     CompileNode(node->body, code);
     int codeSize = static_cast<int>(code.size()) - pos;
