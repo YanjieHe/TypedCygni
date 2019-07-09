@@ -363,6 +363,10 @@ class Compiler {
     }
   }
 
+  void CompileIfThen(const Ptr<IfThen>& node, Vector<Byte>& code) {
+    // TO DO
+  }
+
   void EmitUInt16(Vector<Byte>& code, int number) {
     Byte* bytes = Endian::UInt16ToBytes(static_cast<uint16_t>(number));
     code.push_back(bytes[0]);
