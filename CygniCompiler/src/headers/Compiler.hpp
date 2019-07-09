@@ -4,9 +4,9 @@
 #include "Ast.hpp"
 #include "Endian.hpp"
 #include "Location.hpp"
+#include "Locator.hpp"
 #include "Predef.hpp"
 #include "TypeChecker.hpp"
-
 
 #define OP_NUMERIC(TYPE)                                                    \
   ADD_##TYPE, SUB_##TYPE, MUL_##TYPE, DIV_##TYPE, MOD_##TYPE, MINUS_##TYPE, \
@@ -86,7 +86,6 @@ enum Op {
   JUMP_IF_FALSE
 };
 
-
 enum class OpTypeCode { INT_32, INT_64, FLOAT_32, FLOAT_64 };
 
 enum class OpFlag {
@@ -125,15 +124,20 @@ class Compiler {
  public:
   const HashMap<int, Ptr<Type>>& typeRecord;
   const HashMap<int, Location>& locations;
+  const HashMap<int, int>& functionLocals;
+  const Locator& locator;
 
   Compiler(const HashMap<int, Ptr<Type>>& typeRecord,
+           const Locator& locator,
            const HashMap<int, Location>& locations)
-      : typeRecord{typeRecord}, locations{locations} {
+      : typeRecord{typeRecord}, locator{locator}, locations{locations} {
     Register();
   }
 
   Vector<Byte> Compile(const Program& program) {
     Vector<Byte> code;
+    CompileConstantPool() EmitUInt16(code, program.modules.size());
+    EmitUInt16(code, program.classes.size());
     for (const auto& module : program.modules) {
       CompileNode(module, code);
     }
@@ -219,6 +223,53 @@ class Compiler {
     return typeRecord.at(node->id);
   }
 
+  void CompileConstantPool(const Locator::ConstantPool& constantPool,
+                           Vector<Byte>& code) {
+    EmitInt32(code, constantPool.constants.size());
+    for (const Ptr<Constant>& constant : constantPool.constants) {
+      EmitByte(code, static_cast<int>(constant->constantType));
+      switch (constant->constantType) {
+        case Constant::ConstantType::Int32Type: {
+          auto value = String::ParseInt(constant->value);
+          EmitInt32(code, value);
+          break;
+        }
+        case Constant::ConstantType::Int64Type: {
+          auto value = String::ParseLong(constant->value);
+          EmitInt64(code, value);
+          break;
+        }
+        case Constant::ConstantType::FloatType: {
+          auto value = String::ParseFloat(constant->value);
+          EmitFloat32(code, value);
+          break;
+        }
+        case Constant::ConstantType::DoubleType: {
+          auto value = String::ParseDouble(constant->value);
+          EmitFloat64(code, value);
+          break;
+        }
+        case Constant::ConstantType::BooleanType: {
+          if (constant->value == String("true")) {
+            EmitByte(code, 1);
+          } else {
+            EmitByte(code, 0);
+          }
+          break;
+        }
+        case Constant::ConstantType::CharType: {
+          Char value = constant->value.at(0);
+          EmitInt32(code, static_cast<int32_t>(value));
+          break;
+        }
+        case Constant::ConstantType::StringType: {
+          EmitString(code, constant->value);
+          break;
+        }
+      }
+    }
+  }
+
   template <Kind kind>
   void CompileBinary(const Ptr<Binary<kind>>& node, Vector<Byte>& code) {
     CompileNode(node->left, code);
@@ -249,11 +300,15 @@ class Compiler {
   }
 
   void CompileConstant(const Ptr<Constant>& node, Vector<Byte>& code) {
-    throw NotImplementedException();
     int index = locations.at(node->id).Index();
     Op op = Match(node, {TypeOf(node)});
     EmitOp(code, op);
-    EmitUInt16(code, index);
+    if (index < 65536) {
+      EmitUInt16(code, index);
+    } else {
+      // PUSH_CONSTANT_WIDE_...
+      throw NotImplementedException();
+    }
   }
 
   void CompileBlock(const Ptr<Block>& node, Vector<Byte>& code) {
@@ -280,8 +335,15 @@ class Compiler {
     EmitFlag(code, OpFlag::DEFINE_FUNCTION);
     EmitString(code, node->name);
     EmitUInt16(code, locations.at(node->id).Index());
-    EmitUInt16(code, node->parameters.size());
+    EmitUInt16(code, functionLocals[node->id]); /* locals */
+    EmitUInt16(code, 0);                        /* TO DO: stack */
+    EmitUInt16(code, node->parameters.size());  /* args_size */
+    int pos = code.size();
     CompileNode(node->body, code);
+    int codeSize = static_cast<int>(code.size()) - pos;
+    if (codeSize >= 65536) {
+      throw CompilerException(node->position, "function code size too large");
+    }
   }
 
   void CompileClass(const Ptr<DefClass>& node, Vector<Byte>& code) {
@@ -307,6 +369,27 @@ class Compiler {
   void EmitInt32(Vector<Byte>& code, int32_t number) {
     Byte* bytes = Endian::Int32ToBytes(number);
     for (int i = 0; i < 4; i++) {
+      code.push_back(bytes[i]);
+    }
+  }
+
+  void EmitInt64(Vector<Byte>& code, int64_t number) {
+    Byte* bytes = Endian::Int64ToBytes(number);
+    for (int i = 0; i < 8; i++) {
+      code.push_back(bytes[i]);
+    }
+  }
+
+  void EmitFloat32(Vector<Byte>& code, float number) {
+    Byte* bytes = Endian::Float32ToBytes(number);
+    for (int i = 0; i < 4; i++) {
+      code.push_back(bytes[i]);
+    }
+  }
+
+  void EmitFloat64(Vector<Byte>& code, double number) {
+    Byte* bytes = Endian::Float64ToBytes(number);
+    for (int i = 0; i < 8; i++) {
       code.push_back(bytes[i]);
     }
   }
