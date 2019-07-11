@@ -379,29 +379,35 @@ class Compiler {
   }
 
   void CompileIfThen(const Ptr<IfThen>& node, Vector<Byte>& code) {
-    Compile(node->condition, code);
+    CompileNode(node->condition, code);
     EmitOp(code, Op::JUMP_IF_FALSE);
     int index = code.size();
     EmitU16(code, 0);  // hold the place (2 bytes)
-    Compile(node->ifTrue, code);
+    CompileNode(node->ifTrue, code);
     int indexJump = code.size();
     RewriteU16(code, indexJump, index);
   }
 
   void CompileIfElse(const Ptr<IfElse>& node, Vector<Byte>& code) {
-    Compile(node->condition, code);
+    CompileNode(node->condition, code);
     EmitOp(code, Op::JUMP_IF_FALSE);
     int index1 = code.size();
     EmitU16(code, 0);  // hold the place (2 bytes)
-    Compile(node->ifTrue, code);
+    CompileNode(node->ifTrue, code);
     EmitOp(code, Op::JUMP);
     int index2 = code.size();
     EmitU16(code, 0);  // hold the place (2 bytes)
     int index1Jump = code.size();
     RewriteU16(code, index1Jump, index1);
-    Compile(node->ifFalse, code);
+    CompileNode(node->ifFalse, code);
     int index2Jump = code.size();
     RewriteU16(code, index2, index2Jump);
+  }
+
+  void CompileReturn(const Ptr<Return>& node, Vector<Byte>& code) {
+    CompileNode(node->value, code);
+    Op op = Match(node, {TypeOf(node->value)});
+    EmitOp(code, op);
   }
 
   void EmitU16(Vector<Byte>& code, int number) {
@@ -500,6 +506,13 @@ class Compiler {
                                        {{Type::LONG}, Op::PUSH_CONSTANT_I64},
                                        {{Type::FLOAT}, Op::PUSH_CONSTANT_F32},
                                        {{Type::DOUBLE}, Op::PUSH_CONSTANT_F64},
+                                   }},
+                                  {Kind::Return,
+                                   {
+                                       {{Type::INT}, Op::RETURN_I32},
+                                       {{Type::LONG}, Op::RETURN_I64},
+                                       {{Type::FLOAT}, Op::RETURN_F32},
+                                       {{Type::DOUBLE}, Op::RETURN_F64},
                                    }}};
     for (const auto& pair : rulesToAdd) {
       rules.insert({pair.first, pair.second});
