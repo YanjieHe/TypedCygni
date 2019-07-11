@@ -40,6 +40,7 @@ void TestCompiler::Test1() {
     stream.close();
     Compiler compiler(typeChecker.typeRecord, locator);
     auto compiledCode = compiler.Compile(program);
+    File::WriteBinaryFile("test_output/compiled-code.exe", compiledCode);
   } catch (ParserException& ex) {
     cout << ex.line << ", " << ex.column << ": " << ex.Message() << endl;
   } catch (TypeException& ex) {
