@@ -1,0 +1,15 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "defines": [],
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c11",
+            "includePath": [
+                "${default}",
+                "${workspaceFolder}/src/headers"
+            ]
+        }
+    ],
+    "version": 4
+}
