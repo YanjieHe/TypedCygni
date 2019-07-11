@@ -151,27 +151,38 @@ class Compiler {
   void CompileNode(const Ptr<Ast>& node, Vector<Byte>& code) {
     switch (node->kind) {
       case Kind::Add:
-        return CompileBinary(Cast<Add>(node), code);
+        CompileBinary(Cast<Add>(node), code);
+        break;
       case Kind::Subtract:
-        return CompileBinary(Cast<Subtract>(node), code);
+        CompileBinary(Cast<Subtract>(node), code);
+        break;
       case Kind::Multiply:
-        return CompileBinary(Cast<Multiply>(node), code);
+        CompileBinary(Cast<Multiply>(node), code);
+        break;
       case Kind::Divide:
-        return CompileBinary(Cast<Divide>(node), code);
+        CompileBinary(Cast<Divide>(node), code);
+        break;
       case Kind::Modulo:
-        return CompileBinary(Cast<Modulo>(node), code);
+        CompileBinary(Cast<Modulo>(node), code);
+        break;
       case Kind::GreaterThan:
-        return CompileBinary(Cast<GreaterThan>(node), code);
+        CompileBinary(Cast<GreaterThan>(node), code);
+        break;
       case Kind::LessThan:
-        return CompileBinary(Cast<LessThan>(node), code);
+        CompileBinary(Cast<LessThan>(node), code);
+        break;
       case Kind::GreaterThanOrEqual:
-        return CompileBinary(Cast<GreaterThanOrEqual>(node), code);
+        CompileBinary(Cast<GreaterThanOrEqual>(node), code);
+        break;
       case Kind::LessThanOrEqual:
-        return CompileBinary(Cast<LessThanOrEqual>(node), code);
+        CompileBinary(Cast<LessThanOrEqual>(node), code);
+        break;
       case Kind::Equal:
-        return CompileBinary(Cast<Equal>(node), code);
+        CompileBinary(Cast<Equal>(node), code);
+        break;
       case Kind::NotEqual:
-        return CompileBinary(Cast<NotEqual>(node), code);
+        CompileBinary(Cast<NotEqual>(node), code);
+        break;
       case Kind::And:
         break;
       case Kind::Or:
@@ -183,8 +194,10 @@ class Compiler {
       case Kind::UnaryMinus:
         return CompileUnary(Cast<UnaryMinus>(node), code);
       case Kind::IfThen:
+        CompileIfThen(Cast<IfThen>(node), code);
         break;
       case Kind::IfElse:
+        CompileIfElse(Cast<IfElse>(node), code);
         break;
       case Kind::Constant:
         CompileConstant(Cast<Constant>(node), code);
@@ -340,11 +353,14 @@ class Compiler {
     EmitU16(code, locals);                  /* locals */
     EmitU16(code, 0);                       /* TO DO: stack */
     EmitU16(code, node->parameters.size()); /* args_size */
-    int pos = code.size();
-    CompileNode(node->body, code);
-    int codeSize = static_cast<int>(code.size()) - pos;
-    if (codeSize >= 65536) {
+    Vector<Byte> functionCode;
+    CompileNode(node->body, functionCode);
+    if (functionCode.size() >= 65536) {
       throw CompilerException(node->position, "function code size too large");
+    } else {
+      for (const auto& byte : functionCode) {
+        code.push_back(byte);
+      }
     }
   }
 
