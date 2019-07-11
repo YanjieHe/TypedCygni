@@ -34,7 +34,12 @@ int parse_constant_pool(FILE* file, Program* program) {
     if (!fread(&flag, sizeof(uint8_t), 1, file)) {
       return ERROR_READ_U8;
     }
-    
+    switch(flag){
+        case CONSTANT_TYPE_INT32:{
+            
+            break;
+        }
+    }
   }
   return SUCCESS;
 }
