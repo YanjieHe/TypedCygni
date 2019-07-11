@@ -81,7 +81,6 @@ class Locator {
   }
 
   void Locate(const Ptr<Ast>& node, ScopeCollection& scopes) {
-    // std::cout << KindToString(node->kind) << std::endl;
     switch (node->kind) {
       case Kind::Add:
         LocateBinary(Cast<Add>(node), scopes);

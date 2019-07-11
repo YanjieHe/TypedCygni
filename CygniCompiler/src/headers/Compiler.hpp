@@ -137,8 +137,8 @@ class Compiler {
   Vector<Byte> Compile(const Program& program) {
     Vector<Byte> code;
     CompileConstantPool(locator.constantPool, code);
-    EmitUInt16(code, program.modules.size());
-    EmitUInt16(code, program.classes.size());
+    EmitU16(code, program.modules.size());
+    EmitU16(code, program.classes.size());
     for (const auto& module : program.modules) {
       CompileNode(module, code);
     }
@@ -305,7 +305,7 @@ class Compiler {
     Op op = Match(node, {TypeOf(node)});
     EmitOp(code, op);
     if (index < 65536) {
-      EmitUInt16(code, index);
+      EmitU16(code, index);
     } else {
       // PUSH_CONSTANT_WIDE_...
       throw NotImplementedException();
@@ -321,9 +321,9 @@ class Compiler {
   void CompileModule(const Ptr<DefModule>& node, Vector<Byte>& code) {
     EmitFlag(code, OpFlag::DEFINE_MODULE);
     EmitString(code, node->name);
-    EmitUInt16(code, locations.at(node->id).Index());
-    EmitUInt16(code, node->fields.size());
-    EmitUInt16(code, node->methods.size());
+    EmitU16(code, locations.at(node->id).Index());
+    EmitU16(code, node->fields.size());
+    EmitU16(code, node->methods.size());
     for (const auto& field : node->fields) {
       CompileNode(field, code);
     }
@@ -335,11 +335,11 @@ class Compiler {
   void CompileDef(const Ptr<Def>& node, Vector<Byte>& code) {
     EmitFlag(code, OpFlag::DEFINE_FUNCTION);
     EmitString(code, node->name);
-    EmitUInt16(code, locations.at(node->id).Index());
+    EmitU16(code, locations.at(node->id).Index());
     int locals = locator.functionLocals[node->id];
-    EmitUInt16(code, locals);                  /* locals */
-    EmitUInt16(code, 0);                       /* TO DO: stack */
-    EmitUInt16(code, node->parameters.size()); /* args_size */
+    EmitU16(code, locals);                  /* locals */
+    EmitU16(code, 0);                       /* TO DO: stack */
+    EmitU16(code, node->parameters.size()); /* args_size */
     int pos = code.size();
     CompileNode(node->body, code);
     int codeSize = static_cast<int>(code.size()) - pos;
@@ -351,9 +351,9 @@ class Compiler {
   void CompileClass(const Ptr<DefClass>& node, Vector<Byte>& code) {
     EmitFlag(code, OpFlag::DEFINE_CLASS);
     EmitString(code, node->name);
-    EmitUInt16(code, locations.at(node->id).Index());
-    EmitUInt16(code, node->fields.size());
-    EmitUInt16(code, node->methods.size());
+    EmitU16(code, locations.at(node->id).Index());
+    EmitU16(code, node->fields.size());
+    EmitU16(code, node->methods.size());
     for (const auto& field : node->fields) {
       CompileNode(field, code);
     }
@@ -363,13 +363,41 @@ class Compiler {
   }
 
   void CompileIfThen(const Ptr<IfThen>& node, Vector<Byte>& code) {
-    // TO DO
+    Compile(node->condition, code);
+    EmitOp(code, Op::JUMP_IF_FALSE);
+    int index = code.size();
+    EmitU16(code, 0);  // hold the place (2 bytes)
+    Compile(node->ifTrue, code);
+    int indexJump = code.size();
+    RewriteU16(code, indexJump, index);
   }
 
-  void EmitUInt16(Vector<Byte>& code, int number) {
+  void CompileIfElse(const Ptr<IfElse>& node, Vector<Byte>& code) {
+    Compile(node->condition, code);
+    EmitOp(code, Op::JUMP_IF_FALSE);
+    int index1 = code.size();
+    EmitU16(code, 0);  // hold the place (2 bytes)
+    Compile(node->ifTrue, code);
+    EmitOp(code, Op::JUMP);
+    int index2 = code.size();
+    EmitU16(code, 0);  // hold the place (2 bytes)
+    int index1Jump = code.size();
+    RewriteU16(code, index1Jump, index1);
+    Compile(node->ifFalse, code);
+    int index2Jump = code.size();
+    RewriteU16(code, index2, index2Jump);
+  }
+
+  void EmitU16(Vector<Byte>& code, int number) {
     Byte* bytes = Endian::UInt16ToBytes(static_cast<uint16_t>(number));
     code.push_back(bytes[0]);
     code.push_back(bytes[1]);
+  }
+
+  void RewriteU16(Vector<Byte>& code, int number, int index) {
+    Byte* bytes = Endian::UInt16ToBytes(static_cast<uint16_t>(number));
+    code.at(index) = bytes[0];
+    code.at(index + 1) = bytes[1];
   }
 
   void EmitInt32(Vector<Byte>& code, int32_t number) {

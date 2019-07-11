@@ -15,7 +15,7 @@ void TestCompiler::TestAll() {
 void TestCompiler::Test1() {
   auto scopes = TestTypeChecker::InitializeScopeCollection();
   Lexer lexer(File::ReadFile("test_code/code3.txt"));
-  std::vector<Token> tokens = lexer.ReadAll();
+  Vector<Token> tokens = lexer.ReadAll();
   Parser parser(String(), tokens);
   try {
     auto program = parser.ParseProgram();
