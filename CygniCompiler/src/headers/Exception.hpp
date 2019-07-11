@@ -48,6 +48,7 @@ class ParserException : public Exception {
     AddInfo("column", String::ToString(column));
   }
 };
+
 class NotSupportedException : public Exception {
  public:
   NotSupportedException() : Exception("Specified method is not supported.") {}

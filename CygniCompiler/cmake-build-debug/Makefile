@@ -204,33 +204,6 @@ src/sources/Compiler.cpp.s:
 	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Compiler.cpp.s
 .PHONY : src/sources/Compiler.cpp.s
 
-src/sources/Encoding.o: src/sources/Encoding.cpp.o
-
-.PHONY : src/sources/Encoding.o
-
-# target to build an object file
-src/sources/Encoding.cpp.o:
-	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Encoding.cpp.o
-.PHONY : src/sources/Encoding.cpp.o
-
-src/sources/Encoding.i: src/sources/Encoding.cpp.i
-
-.PHONY : src/sources/Encoding.i
-
-# target to preprocess a source file
-src/sources/Encoding.cpp.i:
-	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Encoding.cpp.i
-.PHONY : src/sources/Encoding.cpp.i
-
-src/sources/Encoding.s: src/sources/Encoding.cpp.s
-
-.PHONY : src/sources/Encoding.s
-
-# target to generate assembly for a file
-src/sources/Encoding.cpp.s:
-	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Encoding.cpp.s
-.PHONY : src/sources/Encoding.cpp.s
-
 src/sources/Exception.o: src/sources/Exception.cpp.o
 
 .PHONY : src/sources/Exception.o
@@ -258,33 +231,6 @@ src/sources/Exception.cpp.s:
 	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Exception.cpp.s
 .PHONY : src/sources/Exception.cpp.s
 
-src/sources/File.o: src/sources/File.cpp.o
-
-.PHONY : src/sources/File.o
-
-# target to build an object file
-src/sources/File.cpp.o:
-	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/File.cpp.o
-.PHONY : src/sources/File.cpp.o
-
-src/sources/File.i: src/sources/File.cpp.i
-
-.PHONY : src/sources/File.i
-
-# target to preprocess a source file
-src/sources/File.cpp.i:
-	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/File.cpp.i
-.PHONY : src/sources/File.cpp.i
-
-src/sources/File.s: src/sources/File.cpp.s
-
-.PHONY : src/sources/File.s
-
-# target to generate assembly for a file
-src/sources/File.cpp.s:
-	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/File.cpp.s
-.PHONY : src/sources/File.cpp.s
-
 src/sources/Lexer.o: src/sources/Lexer.cpp.o
 
 .PHONY : src/sources/Lexer.o
@@ -311,33 +257,6 @@ src/sources/Lexer.s: src/sources/Lexer.cpp.s
 src/sources/Lexer.cpp.s:
 	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Lexer.cpp.s
 .PHONY : src/sources/Lexer.cpp.s
-
-src/sources/Location.o: src/sources/Location.cpp.o
-
-.PHONY : src/sources/Location.o
-
-# target to build an object file
-src/sources/Location.cpp.o:
-	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Location.cpp.o
-.PHONY : src/sources/Location.cpp.o
-
-src/sources/Location.i: src/sources/Location.cpp.i
-
-.PHONY : src/sources/Location.i
-
-# target to preprocess a source file
-src/sources/Location.cpp.i:
-	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Location.cpp.i
-.PHONY : src/sources/Location.cpp.i
-
-src/sources/Location.s: src/sources/Location.cpp.s
-
-.PHONY : src/sources/Location.s
-
-# target to generate assembly for a file
-src/sources/Location.cpp.s:
-	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Location.cpp.s
-.PHONY : src/sources/Location.cpp.s
 
 src/sources/Locator.o: src/sources/Locator.cpp.o
 
@@ -392,33 +311,6 @@ src/sources/Parser.s: src/sources/Parser.cpp.s
 src/sources/Parser.cpp.s:
 	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Parser.cpp.s
 .PHONY : src/sources/Parser.cpp.s
-
-src/sources/Predef.o: src/sources/Predef.cpp.o
-
-.PHONY : src/sources/Predef.o
-
-# target to build an object file
-src/sources/Predef.cpp.o:
-	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Predef.cpp.o
-.PHONY : src/sources/Predef.cpp.o
-
-src/sources/Predef.i: src/sources/Predef.cpp.i
-
-.PHONY : src/sources/Predef.i
-
-# target to preprocess a source file
-src/sources/Predef.cpp.i:
-	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Predef.cpp.i
-.PHONY : src/sources/Predef.cpp.i
-
-src/sources/Predef.s: src/sources/Predef.cpp.s
-
-.PHONY : src/sources/Predef.s
-
-# target to generate assembly for a file
-src/sources/Predef.cpp.s:
-	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/src/sources/Predef.cpp.s
-.PHONY : src/sources/Predef.cpp.s
 
 src/sources/Scope.o: src/sources/Scope.cpp.o
 
@@ -744,6 +636,87 @@ test/sources/TestTypeChecker.cpp.s:
 	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/test/sources/TestTypeChecker.cpp.s
 .PHONY : test/sources/TestTypeChecker.cpp.s
 
+utils/sources/Encoding.o: utils/sources/Encoding.cpp.o
+
+.PHONY : utils/sources/Encoding.o
+
+# target to build an object file
+utils/sources/Encoding.cpp.o:
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/utils/sources/Encoding.cpp.o
+.PHONY : utils/sources/Encoding.cpp.o
+
+utils/sources/Encoding.i: utils/sources/Encoding.cpp.i
+
+.PHONY : utils/sources/Encoding.i
+
+# target to preprocess a source file
+utils/sources/Encoding.cpp.i:
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/utils/sources/Encoding.cpp.i
+.PHONY : utils/sources/Encoding.cpp.i
+
+utils/sources/Encoding.s: utils/sources/Encoding.cpp.s
+
+.PHONY : utils/sources/Encoding.s
+
+# target to generate assembly for a file
+utils/sources/Encoding.cpp.s:
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/utils/sources/Encoding.cpp.s
+.PHONY : utils/sources/Encoding.cpp.s
+
+utils/sources/File.o: utils/sources/File.cpp.o
+
+.PHONY : utils/sources/File.o
+
+# target to build an object file
+utils/sources/File.cpp.o:
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/utils/sources/File.cpp.o
+.PHONY : utils/sources/File.cpp.o
+
+utils/sources/File.i: utils/sources/File.cpp.i
+
+.PHONY : utils/sources/File.i
+
+# target to preprocess a source file
+utils/sources/File.cpp.i:
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/utils/sources/File.cpp.i
+.PHONY : utils/sources/File.cpp.i
+
+utils/sources/File.s: utils/sources/File.cpp.s
+
+.PHONY : utils/sources/File.s
+
+# target to generate assembly for a file
+utils/sources/File.cpp.s:
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/utils/sources/File.cpp.s
+.PHONY : utils/sources/File.cpp.s
+
+utils/sources/Predef.o: utils/sources/Predef.cpp.o
+
+.PHONY : utils/sources/Predef.o
+
+# target to build an object file
+utils/sources/Predef.cpp.o:
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/utils/sources/Predef.cpp.o
+.PHONY : utils/sources/Predef.cpp.o
+
+utils/sources/Predef.i: utils/sources/Predef.cpp.i
+
+.PHONY : utils/sources/Predef.i
+
+# target to preprocess a source file
+utils/sources/Predef.cpp.i:
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/utils/sources/Predef.cpp.i
+.PHONY : utils/sources/Predef.cpp.i
+
+utils/sources/Predef.s: utils/sources/Predef.cpp.s
+
+.PHONY : utils/sources/Predef.s
+
+# target to generate assembly for a file
+utils/sources/Predef.cpp.s:
+	$(MAKE) -f CMakeFiles/CygniCompiler.dir/build.make CMakeFiles/CygniCompiler.dir/utils/sources/Predef.cpp.s
+.PHONY : utils/sources/Predef.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -762,30 +735,18 @@ help:
 	@echo "... src/sources/Compiler.o"
 	@echo "... src/sources/Compiler.i"
 	@echo "... src/sources/Compiler.s"
-	@echo "... src/sources/Encoding.o"
-	@echo "... src/sources/Encoding.i"
-	@echo "... src/sources/Encoding.s"
 	@echo "... src/sources/Exception.o"
 	@echo "... src/sources/Exception.i"
 	@echo "... src/sources/Exception.s"
-	@echo "... src/sources/File.o"
-	@echo "... src/sources/File.i"
-	@echo "... src/sources/File.s"
 	@echo "... src/sources/Lexer.o"
 	@echo "... src/sources/Lexer.i"
 	@echo "... src/sources/Lexer.s"
-	@echo "... src/sources/Location.o"
-	@echo "... src/sources/Location.i"
-	@echo "... src/sources/Location.s"
 	@echo "... src/sources/Locator.o"
 	@echo "... src/sources/Locator.i"
 	@echo "... src/sources/Locator.s"
 	@echo "... src/sources/Parser.o"
 	@echo "... src/sources/Parser.i"
 	@echo "... src/sources/Parser.s"
-	@echo "... src/sources/Predef.o"
-	@echo "... src/sources/Predef.i"
-	@echo "... src/sources/Predef.s"
 	@echo "... src/sources/Scope.o"
 	@echo "... src/sources/Scope.i"
 	@echo "... src/sources/Scope.s"
@@ -822,6 +783,15 @@ help:
 	@echo "... test/sources/TestTypeChecker.o"
 	@echo "... test/sources/TestTypeChecker.i"
 	@echo "... test/sources/TestTypeChecker.s"
+	@echo "... utils/sources/Encoding.o"
+	@echo "... utils/sources/Encoding.i"
+	@echo "... utils/sources/Encoding.s"
+	@echo "... utils/sources/File.o"
+	@echo "... utils/sources/File.i"
+	@echo "... utils/sources/File.s"
+	@echo "... utils/sources/Predef.o"
+	@echo "... utils/sources/Predef.i"
+	@echo "... utils/sources/Predef.s"
 .PHONY : help
 
 

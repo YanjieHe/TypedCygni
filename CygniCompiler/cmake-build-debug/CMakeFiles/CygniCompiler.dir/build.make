@@ -96,22 +96,9 @@ CMakeFiles/CygniCompiler.dir/src/sources/Compiler.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/CygniCompiler.dir/src/sources/Compiler.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Compiler.cpp -o CMakeFiles/CygniCompiler.dir/src/sources/Compiler.cpp.s
 
-CMakeFiles/CygniCompiler.dir/src/sources/Encoding.cpp.o: CMakeFiles/CygniCompiler.dir/flags.make
-CMakeFiles/CygniCompiler.dir/src/sources/Encoding.cpp.o: ../src/sources/Encoding.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/CygniCompiler.dir/src/sources/Encoding.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/CygniCompiler.dir/src/sources/Encoding.cpp.o -c /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Encoding.cpp
-
-CMakeFiles/CygniCompiler.dir/src/sources/Encoding.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/CygniCompiler.dir/src/sources/Encoding.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Encoding.cpp > CMakeFiles/CygniCompiler.dir/src/sources/Encoding.cpp.i
-
-CMakeFiles/CygniCompiler.dir/src/sources/Encoding.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/CygniCompiler.dir/src/sources/Encoding.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Encoding.cpp -o CMakeFiles/CygniCompiler.dir/src/sources/Encoding.cpp.s
-
 CMakeFiles/CygniCompiler.dir/src/sources/Exception.cpp.o: CMakeFiles/CygniCompiler.dir/flags.make
 CMakeFiles/CygniCompiler.dir/src/sources/Exception.cpp.o: ../src/sources/Exception.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/CygniCompiler.dir/src/sources/Exception.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/CygniCompiler.dir/src/sources/Exception.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/CygniCompiler.dir/src/sources/Exception.cpp.o -c /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Exception.cpp
 
 CMakeFiles/CygniCompiler.dir/src/sources/Exception.cpp.i: cmake_force
@@ -122,22 +109,9 @@ CMakeFiles/CygniCompiler.dir/src/sources/Exception.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/CygniCompiler.dir/src/sources/Exception.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Exception.cpp -o CMakeFiles/CygniCompiler.dir/src/sources/Exception.cpp.s
 
-CMakeFiles/CygniCompiler.dir/src/sources/File.cpp.o: CMakeFiles/CygniCompiler.dir/flags.make
-CMakeFiles/CygniCompiler.dir/src/sources/File.cpp.o: ../src/sources/File.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/CygniCompiler.dir/src/sources/File.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/CygniCompiler.dir/src/sources/File.cpp.o -c /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/File.cpp
-
-CMakeFiles/CygniCompiler.dir/src/sources/File.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/CygniCompiler.dir/src/sources/File.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/File.cpp > CMakeFiles/CygniCompiler.dir/src/sources/File.cpp.i
-
-CMakeFiles/CygniCompiler.dir/src/sources/File.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/CygniCompiler.dir/src/sources/File.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/File.cpp -o CMakeFiles/CygniCompiler.dir/src/sources/File.cpp.s
-
 CMakeFiles/CygniCompiler.dir/src/sources/Lexer.cpp.o: CMakeFiles/CygniCompiler.dir/flags.make
 CMakeFiles/CygniCompiler.dir/src/sources/Lexer.cpp.o: ../src/sources/Lexer.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/CygniCompiler.dir/src/sources/Lexer.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/CygniCompiler.dir/src/sources/Lexer.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/CygniCompiler.dir/src/sources/Lexer.cpp.o -c /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Lexer.cpp
 
 CMakeFiles/CygniCompiler.dir/src/sources/Lexer.cpp.i: cmake_force
@@ -148,22 +122,9 @@ CMakeFiles/CygniCompiler.dir/src/sources/Lexer.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/CygniCompiler.dir/src/sources/Lexer.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Lexer.cpp -o CMakeFiles/CygniCompiler.dir/src/sources/Lexer.cpp.s
 
-CMakeFiles/CygniCompiler.dir/src/sources/Location.cpp.o: CMakeFiles/CygniCompiler.dir/flags.make
-CMakeFiles/CygniCompiler.dir/src/sources/Location.cpp.o: ../src/sources/Location.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/CygniCompiler.dir/src/sources/Location.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/CygniCompiler.dir/src/sources/Location.cpp.o -c /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Location.cpp
-
-CMakeFiles/CygniCompiler.dir/src/sources/Location.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/CygniCompiler.dir/src/sources/Location.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Location.cpp > CMakeFiles/CygniCompiler.dir/src/sources/Location.cpp.i
-
-CMakeFiles/CygniCompiler.dir/src/sources/Location.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/CygniCompiler.dir/src/sources/Location.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Location.cpp -o CMakeFiles/CygniCompiler.dir/src/sources/Location.cpp.s
-
 CMakeFiles/CygniCompiler.dir/src/sources/Locator.cpp.o: CMakeFiles/CygniCompiler.dir/flags.make
 CMakeFiles/CygniCompiler.dir/src/sources/Locator.cpp.o: ../src/sources/Locator.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/CygniCompiler.dir/src/sources/Locator.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/CygniCompiler.dir/src/sources/Locator.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/CygniCompiler.dir/src/sources/Locator.cpp.o -c /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Locator.cpp
 
 CMakeFiles/CygniCompiler.dir/src/sources/Locator.cpp.i: cmake_force
@@ -176,7 +137,7 @@ CMakeFiles/CygniCompiler.dir/src/sources/Locator.cpp.s: cmake_force
 
 CMakeFiles/CygniCompiler.dir/src/sources/Parser.cpp.o: CMakeFiles/CygniCompiler.dir/flags.make
 CMakeFiles/CygniCompiler.dir/src/sources/Parser.cpp.o: ../src/sources/Parser.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/CygniCompiler.dir/src/sources/Parser.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/CygniCompiler.dir/src/sources/Parser.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/CygniCompiler.dir/src/sources/Parser.cpp.o -c /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Parser.cpp
 
 CMakeFiles/CygniCompiler.dir/src/sources/Parser.cpp.i: cmake_force
@@ -187,22 +148,9 @@ CMakeFiles/CygniCompiler.dir/src/sources/Parser.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/CygniCompiler.dir/src/sources/Parser.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Parser.cpp -o CMakeFiles/CygniCompiler.dir/src/sources/Parser.cpp.s
 
-CMakeFiles/CygniCompiler.dir/src/sources/Predef.cpp.o: CMakeFiles/CygniCompiler.dir/flags.make
-CMakeFiles/CygniCompiler.dir/src/sources/Predef.cpp.o: ../src/sources/Predef.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/CygniCompiler.dir/src/sources/Predef.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/CygniCompiler.dir/src/sources/Predef.cpp.o -c /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Predef.cpp
-
-CMakeFiles/CygniCompiler.dir/src/sources/Predef.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/CygniCompiler.dir/src/sources/Predef.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Predef.cpp > CMakeFiles/CygniCompiler.dir/src/sources/Predef.cpp.i
-
-CMakeFiles/CygniCompiler.dir/src/sources/Predef.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/CygniCompiler.dir/src/sources/Predef.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Predef.cpp -o CMakeFiles/CygniCompiler.dir/src/sources/Predef.cpp.s
-
 CMakeFiles/CygniCompiler.dir/src/sources/Scope.cpp.o: CMakeFiles/CygniCompiler.dir/flags.make
 CMakeFiles/CygniCompiler.dir/src/sources/Scope.cpp.o: ../src/sources/Scope.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/CygniCompiler.dir/src/sources/Scope.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/CygniCompiler.dir/src/sources/Scope.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/CygniCompiler.dir/src/sources/Scope.cpp.o -c /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Scope.cpp
 
 CMakeFiles/CygniCompiler.dir/src/sources/Scope.cpp.i: cmake_force
@@ -215,7 +163,7 @@ CMakeFiles/CygniCompiler.dir/src/sources/Scope.cpp.s: cmake_force
 
 CMakeFiles/CygniCompiler.dir/src/sources/Token.cpp.o: CMakeFiles/CygniCompiler.dir/flags.make
 CMakeFiles/CygniCompiler.dir/src/sources/Token.cpp.o: ../src/sources/Token.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/CygniCompiler.dir/src/sources/Token.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/CygniCompiler.dir/src/sources/Token.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/CygniCompiler.dir/src/sources/Token.cpp.o -c /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Token.cpp
 
 CMakeFiles/CygniCompiler.dir/src/sources/Token.cpp.i: cmake_force
@@ -228,7 +176,7 @@ CMakeFiles/CygniCompiler.dir/src/sources/Token.cpp.s: cmake_force
 
 CMakeFiles/CygniCompiler.dir/src/sources/Type.cpp.o: CMakeFiles/CygniCompiler.dir/flags.make
 CMakeFiles/CygniCompiler.dir/src/sources/Type.cpp.o: ../src/sources/Type.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/CygniCompiler.dir/src/sources/Type.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/CygniCompiler.dir/src/sources/Type.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/CygniCompiler.dir/src/sources/Type.cpp.o -c /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Type.cpp
 
 CMakeFiles/CygniCompiler.dir/src/sources/Type.cpp.i: cmake_force
@@ -241,7 +189,7 @@ CMakeFiles/CygniCompiler.dir/src/sources/Type.cpp.s: cmake_force
 
 CMakeFiles/CygniCompiler.dir/src/sources/TypeChecker.cpp.o: CMakeFiles/CygniCompiler.dir/flags.make
 CMakeFiles/CygniCompiler.dir/src/sources/TypeChecker.cpp.o: ../src/sources/TypeChecker.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/CygniCompiler.dir/src/sources/TypeChecker.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/CygniCompiler.dir/src/sources/TypeChecker.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/CygniCompiler.dir/src/sources/TypeChecker.cpp.o -c /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/TypeChecker.cpp
 
 CMakeFiles/CygniCompiler.dir/src/sources/TypeChecker.cpp.i: cmake_force
@@ -254,7 +202,7 @@ CMakeFiles/CygniCompiler.dir/src/sources/TypeChecker.cpp.s: cmake_force
 
 CMakeFiles/CygniCompiler.dir/test/sources/JSON.cpp.o: CMakeFiles/CygniCompiler.dir/flags.make
 CMakeFiles/CygniCompiler.dir/test/sources/JSON.cpp.o: ../test/sources/JSON.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/CygniCompiler.dir/test/sources/JSON.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/CygniCompiler.dir/test/sources/JSON.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/CygniCompiler.dir/test/sources/JSON.cpp.o -c /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/JSON.cpp
 
 CMakeFiles/CygniCompiler.dir/test/sources/JSON.cpp.i: cmake_force
@@ -267,7 +215,7 @@ CMakeFiles/CygniCompiler.dir/test/sources/JSON.cpp.s: cmake_force
 
 CMakeFiles/CygniCompiler.dir/test/sources/TestCompiler.cpp.o: CMakeFiles/CygniCompiler.dir/flags.make
 CMakeFiles/CygniCompiler.dir/test/sources/TestCompiler.cpp.o: ../test/sources/TestCompiler.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/CygniCompiler.dir/test/sources/TestCompiler.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/CygniCompiler.dir/test/sources/TestCompiler.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/CygniCompiler.dir/test/sources/TestCompiler.cpp.o -c /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/TestCompiler.cpp
 
 CMakeFiles/CygniCompiler.dir/test/sources/TestCompiler.cpp.i: cmake_force
@@ -280,7 +228,7 @@ CMakeFiles/CygniCompiler.dir/test/sources/TestCompiler.cpp.s: cmake_force
 
 CMakeFiles/CygniCompiler.dir/test/sources/TestEndian.cpp.o: CMakeFiles/CygniCompiler.dir/flags.make
 CMakeFiles/CygniCompiler.dir/test/sources/TestEndian.cpp.o: ../test/sources/TestEndian.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/CygniCompiler.dir/test/sources/TestEndian.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/CygniCompiler.dir/test/sources/TestEndian.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/CygniCompiler.dir/test/sources/TestEndian.cpp.o -c /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/TestEndian.cpp
 
 CMakeFiles/CygniCompiler.dir/test/sources/TestEndian.cpp.i: cmake_force
@@ -293,7 +241,7 @@ CMakeFiles/CygniCompiler.dir/test/sources/TestEndian.cpp.s: cmake_force
 
 CMakeFiles/CygniCompiler.dir/test/sources/TestLexer.cpp.o: CMakeFiles/CygniCompiler.dir/flags.make
 CMakeFiles/CygniCompiler.dir/test/sources/TestLexer.cpp.o: ../test/sources/TestLexer.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/CygniCompiler.dir/test/sources/TestLexer.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/CygniCompiler.dir/test/sources/TestLexer.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/CygniCompiler.dir/test/sources/TestLexer.cpp.o -c /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/TestLexer.cpp
 
 CMakeFiles/CygniCompiler.dir/test/sources/TestLexer.cpp.i: cmake_force
@@ -306,7 +254,7 @@ CMakeFiles/CygniCompiler.dir/test/sources/TestLexer.cpp.s: cmake_force
 
 CMakeFiles/CygniCompiler.dir/test/sources/TestLocator.cpp.o: CMakeFiles/CygniCompiler.dir/flags.make
 CMakeFiles/CygniCompiler.dir/test/sources/TestLocator.cpp.o: ../test/sources/TestLocator.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object CMakeFiles/CygniCompiler.dir/test/sources/TestLocator.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/CygniCompiler.dir/test/sources/TestLocator.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/CygniCompiler.dir/test/sources/TestLocator.cpp.o -c /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/TestLocator.cpp
 
 CMakeFiles/CygniCompiler.dir/test/sources/TestLocator.cpp.i: cmake_force
@@ -319,7 +267,7 @@ CMakeFiles/CygniCompiler.dir/test/sources/TestLocator.cpp.s: cmake_force
 
 CMakeFiles/CygniCompiler.dir/test/sources/TestParser.cpp.o: CMakeFiles/CygniCompiler.dir/flags.make
 CMakeFiles/CygniCompiler.dir/test/sources/TestParser.cpp.o: ../test/sources/TestParser.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object CMakeFiles/CygniCompiler.dir/test/sources/TestParser.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/CygniCompiler.dir/test/sources/TestParser.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/CygniCompiler.dir/test/sources/TestParser.cpp.o -c /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/TestParser.cpp
 
 CMakeFiles/CygniCompiler.dir/test/sources/TestParser.cpp.i: cmake_force
@@ -332,7 +280,7 @@ CMakeFiles/CygniCompiler.dir/test/sources/TestParser.cpp.s: cmake_force
 
 CMakeFiles/CygniCompiler.dir/test/sources/TestString.cpp.o: CMakeFiles/CygniCompiler.dir/flags.make
 CMakeFiles/CygniCompiler.dir/test/sources/TestString.cpp.o: ../test/sources/TestString.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building CXX object CMakeFiles/CygniCompiler.dir/test/sources/TestString.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/CygniCompiler.dir/test/sources/TestString.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/CygniCompiler.dir/test/sources/TestString.cpp.o -c /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/TestString.cpp
 
 CMakeFiles/CygniCompiler.dir/test/sources/TestString.cpp.i: cmake_force
@@ -345,7 +293,7 @@ CMakeFiles/CygniCompiler.dir/test/sources/TestString.cpp.s: cmake_force
 
 CMakeFiles/CygniCompiler.dir/test/sources/TestTypeChecker.cpp.o: CMakeFiles/CygniCompiler.dir/flags.make
 CMakeFiles/CygniCompiler.dir/test/sources/TestTypeChecker.cpp.o: ../test/sources/TestTypeChecker.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building CXX object CMakeFiles/CygniCompiler.dir/test/sources/TestTypeChecker.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/CygniCompiler.dir/test/sources/TestTypeChecker.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/CygniCompiler.dir/test/sources/TestTypeChecker.cpp.o -c /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/TestTypeChecker.cpp
 
 CMakeFiles/CygniCompiler.dir/test/sources/TestTypeChecker.cpp.i: cmake_force
@@ -356,19 +304,54 @@ CMakeFiles/CygniCompiler.dir/test/sources/TestTypeChecker.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/CygniCompiler.dir/test/sources/TestTypeChecker.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/TestTypeChecker.cpp -o CMakeFiles/CygniCompiler.dir/test/sources/TestTypeChecker.cpp.s
 
+CMakeFiles/CygniCompiler.dir/utils/sources/Encoding.cpp.o: CMakeFiles/CygniCompiler.dir/flags.make
+CMakeFiles/CygniCompiler.dir/utils/sources/Encoding.cpp.o: ../utils/sources/Encoding.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object CMakeFiles/CygniCompiler.dir/utils/sources/Encoding.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/CygniCompiler.dir/utils/sources/Encoding.cpp.o -c /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/utils/sources/Encoding.cpp
+
+CMakeFiles/CygniCompiler.dir/utils/sources/Encoding.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/CygniCompiler.dir/utils/sources/Encoding.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/utils/sources/Encoding.cpp > CMakeFiles/CygniCompiler.dir/utils/sources/Encoding.cpp.i
+
+CMakeFiles/CygniCompiler.dir/utils/sources/Encoding.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/CygniCompiler.dir/utils/sources/Encoding.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/utils/sources/Encoding.cpp -o CMakeFiles/CygniCompiler.dir/utils/sources/Encoding.cpp.s
+
+CMakeFiles/CygniCompiler.dir/utils/sources/File.cpp.o: CMakeFiles/CygniCompiler.dir/flags.make
+CMakeFiles/CygniCompiler.dir/utils/sources/File.cpp.o: ../utils/sources/File.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object CMakeFiles/CygniCompiler.dir/utils/sources/File.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/CygniCompiler.dir/utils/sources/File.cpp.o -c /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/utils/sources/File.cpp
+
+CMakeFiles/CygniCompiler.dir/utils/sources/File.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/CygniCompiler.dir/utils/sources/File.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/utils/sources/File.cpp > CMakeFiles/CygniCompiler.dir/utils/sources/File.cpp.i
+
+CMakeFiles/CygniCompiler.dir/utils/sources/File.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/CygniCompiler.dir/utils/sources/File.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/utils/sources/File.cpp -o CMakeFiles/CygniCompiler.dir/utils/sources/File.cpp.s
+
+CMakeFiles/CygniCompiler.dir/utils/sources/Predef.cpp.o: CMakeFiles/CygniCompiler.dir/flags.make
+CMakeFiles/CygniCompiler.dir/utils/sources/Predef.cpp.o: ../utils/sources/Predef.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building CXX object CMakeFiles/CygniCompiler.dir/utils/sources/Predef.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/CygniCompiler.dir/utils/sources/Predef.cpp.o -c /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/utils/sources/Predef.cpp
+
+CMakeFiles/CygniCompiler.dir/utils/sources/Predef.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/CygniCompiler.dir/utils/sources/Predef.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/utils/sources/Predef.cpp > CMakeFiles/CygniCompiler.dir/utils/sources/Predef.cpp.i
+
+CMakeFiles/CygniCompiler.dir/utils/sources/Predef.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/CygniCompiler.dir/utils/sources/Predef.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/utils/sources/Predef.cpp -o CMakeFiles/CygniCompiler.dir/utils/sources/Predef.cpp.s
+
 # Object files for target CygniCompiler
 CygniCompiler_OBJECTS = \
 "CMakeFiles/CygniCompiler.dir/main.cpp.o" \
 "CMakeFiles/CygniCompiler.dir/src/sources/Ast.cpp.o" \
 "CMakeFiles/CygniCompiler.dir/src/sources/Compiler.cpp.o" \
-"CMakeFiles/CygniCompiler.dir/src/sources/Encoding.cpp.o" \
 "CMakeFiles/CygniCompiler.dir/src/sources/Exception.cpp.o" \
-"CMakeFiles/CygniCompiler.dir/src/sources/File.cpp.o" \
 "CMakeFiles/CygniCompiler.dir/src/sources/Lexer.cpp.o" \
-"CMakeFiles/CygniCompiler.dir/src/sources/Location.cpp.o" \
 "CMakeFiles/CygniCompiler.dir/src/sources/Locator.cpp.o" \
 "CMakeFiles/CygniCompiler.dir/src/sources/Parser.cpp.o" \
-"CMakeFiles/CygniCompiler.dir/src/sources/Predef.cpp.o" \
 "CMakeFiles/CygniCompiler.dir/src/sources/Scope.cpp.o" \
 "CMakeFiles/CygniCompiler.dir/src/sources/Token.cpp.o" \
 "CMakeFiles/CygniCompiler.dir/src/sources/Type.cpp.o" \
@@ -380,7 +363,10 @@ CygniCompiler_OBJECTS = \
 "CMakeFiles/CygniCompiler.dir/test/sources/TestLocator.cpp.o" \
 "CMakeFiles/CygniCompiler.dir/test/sources/TestParser.cpp.o" \
 "CMakeFiles/CygniCompiler.dir/test/sources/TestString.cpp.o" \
-"CMakeFiles/CygniCompiler.dir/test/sources/TestTypeChecker.cpp.o"
+"CMakeFiles/CygniCompiler.dir/test/sources/TestTypeChecker.cpp.o" \
+"CMakeFiles/CygniCompiler.dir/utils/sources/Encoding.cpp.o" \
+"CMakeFiles/CygniCompiler.dir/utils/sources/File.cpp.o" \
+"CMakeFiles/CygniCompiler.dir/utils/sources/Predef.cpp.o"
 
 # External object files for target CygniCompiler
 CygniCompiler_EXTERNAL_OBJECTS =
@@ -388,14 +374,10 @@ CygniCompiler_EXTERNAL_OBJECTS =
 CygniCompiler: CMakeFiles/CygniCompiler.dir/main.cpp.o
 CygniCompiler: CMakeFiles/CygniCompiler.dir/src/sources/Ast.cpp.o
 CygniCompiler: CMakeFiles/CygniCompiler.dir/src/sources/Compiler.cpp.o
-CygniCompiler: CMakeFiles/CygniCompiler.dir/src/sources/Encoding.cpp.o
 CygniCompiler: CMakeFiles/CygniCompiler.dir/src/sources/Exception.cpp.o
-CygniCompiler: CMakeFiles/CygniCompiler.dir/src/sources/File.cpp.o
 CygniCompiler: CMakeFiles/CygniCompiler.dir/src/sources/Lexer.cpp.o
-CygniCompiler: CMakeFiles/CygniCompiler.dir/src/sources/Location.cpp.o
 CygniCompiler: CMakeFiles/CygniCompiler.dir/src/sources/Locator.cpp.o
 CygniCompiler: CMakeFiles/CygniCompiler.dir/src/sources/Parser.cpp.o
-CygniCompiler: CMakeFiles/CygniCompiler.dir/src/sources/Predef.cpp.o
 CygniCompiler: CMakeFiles/CygniCompiler.dir/src/sources/Scope.cpp.o
 CygniCompiler: CMakeFiles/CygniCompiler.dir/src/sources/Token.cpp.o
 CygniCompiler: CMakeFiles/CygniCompiler.dir/src/sources/Type.cpp.o
@@ -408,9 +390,12 @@ CygniCompiler: CMakeFiles/CygniCompiler.dir/test/sources/TestLocator.cpp.o
 CygniCompiler: CMakeFiles/CygniCompiler.dir/test/sources/TestParser.cpp.o
 CygniCompiler: CMakeFiles/CygniCompiler.dir/test/sources/TestString.cpp.o
 CygniCompiler: CMakeFiles/CygniCompiler.dir/test/sources/TestTypeChecker.cpp.o
+CygniCompiler: CMakeFiles/CygniCompiler.dir/utils/sources/Encoding.cpp.o
+CygniCompiler: CMakeFiles/CygniCompiler.dir/utils/sources/File.cpp.o
+CygniCompiler: CMakeFiles/CygniCompiler.dir/utils/sources/Predef.cpp.o
 CygniCompiler: CMakeFiles/CygniCompiler.dir/build.make
 CygniCompiler: CMakeFiles/CygniCompiler.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Linking CXX executable CygniCompiler"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Linking CXX executable CygniCompiler"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/CygniCompiler.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

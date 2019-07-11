@@ -7,14 +7,10 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/main.cpp" "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/CygniCompiler.dir/main.cpp.o"
   "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Ast.cpp" "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/CygniCompiler.dir/src/sources/Ast.cpp.o"
   "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Compiler.cpp" "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/CygniCompiler.dir/src/sources/Compiler.cpp.o"
-  "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Encoding.cpp" "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/CygniCompiler.dir/src/sources/Encoding.cpp.o"
   "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Exception.cpp" "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/CygniCompiler.dir/src/sources/Exception.cpp.o"
-  "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/File.cpp" "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/CygniCompiler.dir/src/sources/File.cpp.o"
   "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Lexer.cpp" "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/CygniCompiler.dir/src/sources/Lexer.cpp.o"
-  "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Location.cpp" "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/CygniCompiler.dir/src/sources/Location.cpp.o"
   "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Locator.cpp" "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/CygniCompiler.dir/src/sources/Locator.cpp.o"
   "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Parser.cpp" "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/CygniCompiler.dir/src/sources/Parser.cpp.o"
-  "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Predef.cpp" "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/CygniCompiler.dir/src/sources/Predef.cpp.o"
   "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Scope.cpp" "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/CygniCompiler.dir/src/sources/Scope.cpp.o"
   "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Token.cpp" "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/CygniCompiler.dir/src/sources/Token.cpp.o"
   "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Type.cpp" "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/CygniCompiler.dir/src/sources/Type.cpp.o"
@@ -27,6 +23,9 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/TestParser.cpp" "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/CygniCompiler.dir/test/sources/TestParser.cpp.o"
   "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/TestString.cpp" "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/CygniCompiler.dir/test/sources/TestString.cpp.o"
   "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/TestTypeChecker.cpp" "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/CygniCompiler.dir/test/sources/TestTypeChecker.cpp.o"
+  "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/utils/sources/Encoding.cpp" "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/CygniCompiler.dir/utils/sources/Encoding.cpp.o"
+  "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/utils/sources/File.cpp" "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/CygniCompiler.dir/utils/sources/File.cpp.o"
+  "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/utils/sources/Predef.cpp" "/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/CygniCompiler.dir/utils/sources/Predef.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
@@ -34,6 +33,7 @@ set(CMAKE_CXX_COMPILER_ID "GNU")
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "../src/headers"
   "../test/headers"
+  "../utils/headers"
   )
 
 # Targets to which this target links.

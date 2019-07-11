@@ -6,5 +6,5 @@ CXX_FLAGS =   -std=gnu++14
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/headers -I/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/headers 
+CXX_INCLUDES = -I/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/headers -I/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/headers -I/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/utils/headers 
 

@@ -3,7 +3,6 @@
 
 #include "Ast.hpp"
 #include "Endian.hpp"
-#include "Location.hpp"
 #include "Locator.hpp"
 #include "Predef.hpp"
 #include "TypeChecker.hpp"

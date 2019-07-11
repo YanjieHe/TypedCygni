@@ -3,7 +3,6 @@
 #include "Compiler.hpp"
 #include "File.hpp"
 #include "Lexer.hpp"
-#include "Location.hpp"
 #include "Locator.hpp"
 #include "Parser.hpp"
 #include "TestParser.hpp"
