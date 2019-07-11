@@ -124,13 +124,10 @@ class Compiler {
 
  public:
   const HashMap<int, Ptr<Type>>& typeRecord;
-  const HashMap<int, Location>& locations;
   Locator& locator;
 
-  Compiler(const HashMap<int, Ptr<Type>>& typeRecord,
-           Locator& locator,
-           const HashMap<int, Location>& locations)
-      : typeRecord{typeRecord}, locator{locator}, locations{locations} {
+  Compiler(const HashMap<int, Ptr<Type>>& typeRecord, Locator& locator)
+      : typeRecord{typeRecord}, locator{locator} {
     Register();
   }
 
@@ -142,9 +139,9 @@ class Compiler {
     for (const auto& module : program.modules) {
       CompileNode(module, code);
     }
-    for (const auto& _class : program.classes) {
-      CompileNode(_class, code);
-    }
+    // for (const auto& _class : program.classes) {
+    //   CompileNode(_class, code);
+    // }
     return code;
   }
 
@@ -221,16 +218,15 @@ class Compiler {
       case Kind::While:
         break;
       case Kind::DefClass:
-        CompileClass(Cast<DefClass>(node), code);
+        // TO DO
+        // CompileClass(Cast<DefClass>(node), code);
         break;
       case Kind::DefModule:
         CompileModule(Cast<DefModule>(node), code);
-        return;
         break;
       default:
         throw NotImplementedException();
     }
-    throw NotImplementedException();
   }
 
   const Ptr<Type>& TypeOf(const Ptr<Ast>& node) const {
@@ -334,7 +330,7 @@ class Compiler {
   void CompileModule(const Ptr<DefModule>& node, Vector<Byte>& code) {
     EmitFlag(code, OpFlag::DEFINE_MODULE);
     EmitString(code, node->name);
-    EmitU16(code, locations.at(node->id).Index());
+    EmitU16(code, locator.locations.at(node->id).Index());
     EmitU16(code, node->fields.size());
     EmitU16(code, node->methods.size());
     for (const auto& field : node->fields) {
@@ -346,9 +342,12 @@ class Compiler {
   }
 
   void CompileDef(const Ptr<Def>& node, Vector<Byte>& code) {
+    if (locator.locations.find(node->id) == locator.locations.end()) {
+      std::cout << __FUNCTION__ << std::endl;
+    }
     EmitFlag(code, OpFlag::DEFINE_FUNCTION);
     EmitString(code, node->name);
-    EmitU16(code, locations.at(node->id).Index());
+    EmitU16(code, locator.locations.at(node->id).Index());
     int locals = locator.functionLocals[node->id];
     EmitU16(code, locals);                  /* locals */
     EmitU16(code, 0);                       /* TO DO: stack */
@@ -367,7 +366,7 @@ class Compiler {
   void CompileClass(const Ptr<DefClass>& node, Vector<Byte>& code) {
     EmitFlag(code, OpFlag::DEFINE_CLASS);
     EmitString(code, node->name);
-    EmitU16(code, locations.at(node->id).Index());
+    EmitU16(code, locator.locations.at(node->id).Index());
     EmitU16(code, node->fields.size());
     EmitU16(code, node->methods.size());
     for (const auto& field : node->fields) {
@@ -401,7 +400,7 @@ class Compiler {
     RewriteU16(code, index1Jump, index1);
     CompileNode(node->ifFalse, code);
     int index2Jump = code.size();
-    RewriteU16(code, index2, index2Jump);
+    RewriteU16(code, index2Jump, index2);
   }
 
   void CompileReturn(const Ptr<Return>& node, Vector<Byte>& code) {

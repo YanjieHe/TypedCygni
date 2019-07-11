@@ -169,7 +169,7 @@ class String {
     }
   }
 
-  std::string ToCppString() {
+  std::string ToCppString() const {
     auto utf8String = Encoding::Utf16ToUtf8(characters);
     return std::string(utf8String.begin(), utf8String.end());
   }

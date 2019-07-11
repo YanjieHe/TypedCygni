@@ -38,8 +38,8 @@ void TestCompiler::Test1() {
         locator.locations, "location", json, toString);
     JsonToFile(json, stream);
     stream.close();
-    Compiler compiler(typeChecker.typeRecord, locator, locator.locations);
-    compiler.Compile(program);
+    Compiler compiler(typeChecker.typeRecord, locator);
+    auto compiledCode = compiler.Compile(program);
   } catch (ParserException& ex) {
     cout << ex.line << ", " << ex.column << ": " << ex.Message() << endl;
   } catch (TypeException& ex) {
