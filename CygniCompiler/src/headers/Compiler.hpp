@@ -428,6 +428,7 @@ class Compiler {
     } else if (location.kind == LocationKind::Module) {
       auto type = TypeOf(node);
       if (type.GetTypeCode() == TypeCode::FUNCTION) {
+        EmitOp(code, Op::PUSH_FUNCTION);
       } else {
         throw NotSupportedException();
       }
