@@ -429,6 +429,7 @@ class Compiler {
       auto type = TypeOf(node);
       if (type.GetTypeCode() == TypeCode::FUNCTION) {
         EmitOp(code, Op::PUSH_FUNCTION);
+        // TO DO
       } else {
         throw NotSupportedException();
       }
