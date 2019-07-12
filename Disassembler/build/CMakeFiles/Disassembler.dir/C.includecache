@@ -10,13 +10,15 @@
 stdint.h
 -
 
-../src/headers/Parser.h
-stdio.h
--
+../src/headers/View.h
 DataStructures.h
 ../src/headers/DataStructures.h
 
-/home/yanjie/Documents/GitHub/TypedCygni/Disassembler/src/sources/Parser.c
-Parser.h
-/home/yanjie/Documents/GitHub/TypedCygni/Disassembler/src/sources/Parser.h
+/home/yanjie/Documents/GitHub/TypedCygni/Disassembler/src/sources/View.c
+View.h
+/home/yanjie/Documents/GitHub/TypedCygni/Disassembler/src/sources/View.h
+stdio.h
+-
+stdlib.h
+-
 

@@ -9,6 +9,11 @@ typedef struct ByteArray {
   Byte* bytes;
 } ByteArray;
 
+typedef struct Utf8String {
+  int32_t length;
+  Byte* bytes;
+} Utf8String;
+
 typedef struct String {
   int32_t length;
   uint16_t* characters;
@@ -26,7 +31,7 @@ typedef struct Value {
 } Value;
 
 typedef struct Function {
-  ByteArray name;
+  Utf8String name;
   uint16_t locals;
   uint16_t stack;
   uint16_t args_size;
@@ -70,13 +75,13 @@ typedef struct ConstantPool {
 } ConstantPool;
 
 typedef struct Module {
-  ByteArray name;
+  Utf8String name;
   ValueArray variables;
   FunctionArray functions;
 } Module;
 
 typedef struct Class {
-  ByteArray name;
+  Utf8String name;
   ValueArray variables;
   FunctionArray functions;
 } Class;
@@ -92,8 +97,9 @@ typedef struct ClassArray {
 } ClassArray;
 
 typedef struct Program {
-  ByteArray name;
+  Utf8String name;
   ModuleArray modules;
+  ClassArray classes;
   ConstantPool constantPool;
 } Program;
 

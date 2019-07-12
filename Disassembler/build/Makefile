@@ -123,32 +123,32 @@ Disassembler/fast:
 	$(MAKE) -f CMakeFiles/Disassembler.dir/build.make CMakeFiles/Disassembler.dir/build
 .PHONY : Disassembler/fast
 
-main.o: main.cpp.o
+main.o: main.c.o
 
 .PHONY : main.o
 
 # target to build an object file
-main.cpp.o:
-	$(MAKE) -f CMakeFiles/Disassembler.dir/build.make CMakeFiles/Disassembler.dir/main.cpp.o
-.PHONY : main.cpp.o
+main.c.o:
+	$(MAKE) -f CMakeFiles/Disassembler.dir/build.make CMakeFiles/Disassembler.dir/main.c.o
+.PHONY : main.c.o
 
-main.i: main.cpp.i
+main.i: main.c.i
 
 .PHONY : main.i
 
 # target to preprocess a source file
-main.cpp.i:
-	$(MAKE) -f CMakeFiles/Disassembler.dir/build.make CMakeFiles/Disassembler.dir/main.cpp.i
-.PHONY : main.cpp.i
+main.c.i:
+	$(MAKE) -f CMakeFiles/Disassembler.dir/build.make CMakeFiles/Disassembler.dir/main.c.i
+.PHONY : main.c.i
 
-main.s: main.cpp.s
+main.s: main.c.s
 
 .PHONY : main.s
 
 # target to generate assembly for a file
-main.cpp.s:
-	$(MAKE) -f CMakeFiles/Disassembler.dir/build.make CMakeFiles/Disassembler.dir/main.cpp.s
-.PHONY : main.cpp.s
+main.c.s:
+	$(MAKE) -f CMakeFiles/Disassembler.dir/build.make CMakeFiles/Disassembler.dir/main.c.s
+.PHONY : main.c.s
 
 src/sources/Parser.o: src/sources/Parser.c.o
 
@@ -177,6 +177,33 @@ src/sources/Parser.c.s:
 	$(MAKE) -f CMakeFiles/Disassembler.dir/build.make CMakeFiles/Disassembler.dir/src/sources/Parser.c.s
 .PHONY : src/sources/Parser.c.s
 
+src/sources/View.o: src/sources/View.c.o
+
+.PHONY : src/sources/View.o
+
+# target to build an object file
+src/sources/View.c.o:
+	$(MAKE) -f CMakeFiles/Disassembler.dir/build.make CMakeFiles/Disassembler.dir/src/sources/View.c.o
+.PHONY : src/sources/View.c.o
+
+src/sources/View.i: src/sources/View.c.i
+
+.PHONY : src/sources/View.i
+
+# target to preprocess a source file
+src/sources/View.c.i:
+	$(MAKE) -f CMakeFiles/Disassembler.dir/build.make CMakeFiles/Disassembler.dir/src/sources/View.c.i
+.PHONY : src/sources/View.c.i
+
+src/sources/View.s: src/sources/View.c.s
+
+.PHONY : src/sources/View.s
+
+# target to generate assembly for a file
+src/sources/View.c.s:
+	$(MAKE) -f CMakeFiles/Disassembler.dir/build.make CMakeFiles/Disassembler.dir/src/sources/View.c.s
+.PHONY : src/sources/View.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -192,6 +219,9 @@ help:
 	@echo "... src/sources/Parser.o"
 	@echo "... src/sources/Parser.i"
 	@echo "... src/sources/Parser.s"
+	@echo "... src/sources/View.o"
+	@echo "... src/sources/View.i"
+	@echo "... src/sources/View.s"
 .PHONY : help
 
 

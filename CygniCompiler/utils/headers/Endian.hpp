@@ -8,64 +8,64 @@ class Endian
 {
 public:
     /*
-     * Bit endian
+     * Big endian
      */
     static inline uint8_t *UInt16ToBytes(uint16_t i)
     {
         static uint8_t bytes[2];
-        bytes[0] = static_cast<uint8_t>((i >> 8) & 0xff);
-        bytes[1] = static_cast<uint8_t>(i & 0xff);
+        bytes[1] = static_cast<uint8_t>((i >> 8) & 0xff);
+        bytes[0] = static_cast<uint8_t>(i & 0xff);
         return bytes;
     }
 
     static inline uint16_t BytesToUInt16(uint8_t *bytes)
     {
-        return (static_cast<uint16_t>(bytes[0]) << 8)
-               + (static_cast<uint16_t>(bytes[1]));
+        return (static_cast<uint16_t>(bytes[1]) << 8)
+               + (static_cast<uint16_t>(bytes[0]));
     }
 
     static inline uint8_t *Int32ToBytes(int32_t i)
     {
         static uint8_t bytes[4];
-        bytes[0] = static_cast<uint8_t>((i >> 24) & 0xff);
-        bytes[1] = static_cast<uint8_t>((i >> 16) & 0xff);
-        bytes[2] = static_cast<uint8_t>((i >> 8) & 0xff);
-        bytes[3] = static_cast<uint8_t>(i & 0xff);
+        bytes[3] = static_cast<uint8_t>((i >> 24) & 0xff);
+        bytes[2] = static_cast<uint8_t>((i >> 16) & 0xff);
+        bytes[1] = static_cast<uint8_t>((i >> 8) & 0xff);
+        bytes[0] = static_cast<uint8_t>(i & 0xff);
         return bytes;
     }
 
     static inline int32_t BytesToInt32(uint8_t *bytes)
     {
-        return (static_cast<int32_t>(bytes[0]) << 24)
-               + (static_cast<int32_t>(bytes[1]) << 16)
-               + (static_cast<int32_t>(bytes[2]) << 8)
-               + static_cast<int32_t>(bytes[3]);
+        return (static_cast<int32_t>(bytes[3]) << 24)
+               + (static_cast<int32_t>(bytes[2]) << 16)
+               + (static_cast<int32_t>(bytes[1]) << 8)
+               + static_cast<int32_t>(bytes[0]);
     }
 
     static inline uint8_t *Int64ToBytes(int64_t i)
     {
         static uint8_t bytes[8];
-        bytes[0] = static_cast<uint8_t>((i >> 56) & 0xff);
-        bytes[1] = static_cast<uint8_t>((i >> 48) & 0xff);
-        bytes[2] = static_cast<uint8_t>((i >> 40) & 0xff);
-        bytes[3] = static_cast<uint8_t>((i >> 32) & 0xff);
-        bytes[4] = static_cast<uint8_t>((i >> 24) & 0xff);
-        bytes[5] = static_cast<uint8_t>((i >> 16) & 0xff);
-        bytes[6] = static_cast<uint8_t>((i >> 8) & 0xff);
-        bytes[7] = static_cast<uint8_t>(i & 0xff);
+        bytes[7] = static_cast<uint8_t>((i >> 56) & 0xff);
+        bytes[6] = static_cast<uint8_t>((i >> 48) & 0xff);
+        bytes[5] = static_cast<uint8_t>((i >> 40) & 0xff);
+        bytes[4] = static_cast<uint8_t>((i >> 32) & 0xff);
+        bytes[3] = static_cast<uint8_t>((i >> 24) & 0xff);
+        bytes[2] = static_cast<uint8_t>((i >> 16) & 0xff);
+        bytes[1] = static_cast<uint8_t>((i >> 8) & 0xff);
+        bytes[0] = static_cast<uint8_t>(i & 0xff);
         return bytes;
     }
 
     static inline int64_t BytesToInt64(uint8_t *bytes)
     {
-        return (static_cast<int64_t>(bytes[0]) << 56)
-               + (static_cast<int64_t>(bytes[1]) << 48)
-               + (static_cast<int64_t>(bytes[2]) << 40)
-               + (static_cast<int64_t>(bytes[3]) << 32)
-               + (static_cast<int64_t>(bytes[4]) << 24)
-               + (static_cast<int64_t>(bytes[5]) << 16)
-               + (static_cast<int64_t>(bytes[6]) << 8)
-               + static_cast<int64_t>(bytes[7]);
+        return (static_cast<int64_t>(bytes[7]) << 56)
+               + (static_cast<int64_t>(bytes[6]) << 48)
+               + (static_cast<int64_t>(bytes[5]) << 40)
+               + (static_cast<int64_t>(bytes[4]) << 32)
+               + (static_cast<int64_t>(bytes[3]) << 24)
+               + (static_cast<int64_t>(bytes[2]) << 16)
+               + (static_cast<int64_t>(bytes[1]) << 8)
+               + static_cast<int64_t>(bytes[0]);
     }
 
     static inline uint8_t *Float32ToBytes(float_t f)

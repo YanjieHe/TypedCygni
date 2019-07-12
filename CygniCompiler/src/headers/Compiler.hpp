@@ -345,9 +345,8 @@ class Compiler {
     if (locator.locations.find(node->id) == locator.locations.end()) {
       std::cout << __FUNCTION__ << std::endl;
     }
-    EmitFlag(code, OpFlag::DEFINE_FUNCTION);
     EmitString(code, node->name);
-    EmitU16(code, locator.locations.at(node->id).Index());
+    // EmitU16(code, locator.locations.at(node->id).Index());
     int locals = locator.functionLocals[node->id];
     EmitU16(code, locals);                  /* locals */
     EmitU16(code, 0);                       /* TO DO: stack */
@@ -357,6 +356,7 @@ class Compiler {
     if (functionCode.size() >= 65536) {
       throw CompilerException(node->position, "function code size too large");
     } else {
+      EmitU16(code, functionCode.size());
       for (const auto& byte : functionCode) {
         code.push_back(byte);
       }

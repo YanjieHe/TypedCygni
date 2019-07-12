@@ -71,7 +71,7 @@ CMAKE_BINARY_DIR = /home/yanjie/Documents/GitHub/TypedCygni/Disassembler/build
 CMakeFiles/Disassembler.dir/all:
 	$(MAKE) -f CMakeFiles/Disassembler.dir/build.make CMakeFiles/Disassembler.dir/depend
 	$(MAKE) -f CMakeFiles/Disassembler.dir/build.make CMakeFiles/Disassembler.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/Disassembler/build/CMakeFiles --progress-num=1,2,3 "Built target Disassembler"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/Disassembler/build/CMakeFiles --progress-num=1,2,3,4 "Built target Disassembler"
 .PHONY : CMakeFiles/Disassembler.dir/all
 
 # Include target in all.
@@ -81,7 +81,7 @@ all: CMakeFiles/Disassembler.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/Disassembler.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yanjie/Documents/GitHub/TypedCygni/Disassembler/build/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/yanjie/Documents/GitHub/TypedCygni/Disassembler/build/CMakeFiles 4
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/Disassembler.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/yanjie/Documents/GitHub/TypedCygni/Disassembler/build/CMakeFiles 0
 .PHONY : CMakeFiles/Disassembler.dir/rule

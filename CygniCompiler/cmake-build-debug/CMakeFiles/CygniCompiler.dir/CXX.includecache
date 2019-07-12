@@ -190,6 +190,10 @@ Encoding.hpp
 
 ../utils/headers/Table.hpp
 
+/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Compiler.cpp
+Compiler.hpp
+/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Compiler.hpp
+
 /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/TestCompiler.cpp
 TestCompiler.hpp
 /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/TestCompiler.hpp

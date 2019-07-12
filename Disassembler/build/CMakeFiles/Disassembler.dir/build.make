@@ -57,18 +57,18 @@ include CMakeFiles/Disassembler.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/Disassembler.dir/flags.make
 
-CMakeFiles/Disassembler.dir/main.cpp.o: CMakeFiles/Disassembler.dir/flags.make
-CMakeFiles/Disassembler.dir/main.cpp.o: ../main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/Disassembler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Disassembler.dir/main.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Disassembler.dir/main.cpp.o -c /home/yanjie/Documents/GitHub/TypedCygni/Disassembler/main.cpp
+CMakeFiles/Disassembler.dir/main.c.o: CMakeFiles/Disassembler.dir/flags.make
+CMakeFiles/Disassembler.dir/main.c.o: ../main.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/Disassembler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/Disassembler.dir/main.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Disassembler.dir/main.c.o   -c /home/yanjie/Documents/GitHub/TypedCygni/Disassembler/main.c
 
-CMakeFiles/Disassembler.dir/main.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Disassembler.dir/main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/yanjie/Documents/GitHub/TypedCygni/Disassembler/main.cpp > CMakeFiles/Disassembler.dir/main.cpp.i
+CMakeFiles/Disassembler.dir/main.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/Disassembler.dir/main.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/yanjie/Documents/GitHub/TypedCygni/Disassembler/main.c > CMakeFiles/Disassembler.dir/main.c.i
 
-CMakeFiles/Disassembler.dir/main.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Disassembler.dir/main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/yanjie/Documents/GitHub/TypedCygni/Disassembler/main.cpp -o CMakeFiles/Disassembler.dir/main.cpp.s
+CMakeFiles/Disassembler.dir/main.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/Disassembler.dir/main.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yanjie/Documents/GitHub/TypedCygni/Disassembler/main.c -o CMakeFiles/Disassembler.dir/main.c.s
 
 CMakeFiles/Disassembler.dir/src/sources/Parser.c.o: CMakeFiles/Disassembler.dir/flags.make
 CMakeFiles/Disassembler.dir/src/sources/Parser.c.o: ../src/sources/Parser.c
@@ -83,19 +83,34 @@ CMakeFiles/Disassembler.dir/src/sources/Parser.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/Disassembler.dir/src/sources/Parser.c.s"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yanjie/Documents/GitHub/TypedCygni/Disassembler/src/sources/Parser.c -o CMakeFiles/Disassembler.dir/src/sources/Parser.c.s
 
+CMakeFiles/Disassembler.dir/src/sources/View.c.o: CMakeFiles/Disassembler.dir/flags.make
+CMakeFiles/Disassembler.dir/src/sources/View.c.o: ../src/sources/View.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/Disassembler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/Disassembler.dir/src/sources/View.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Disassembler.dir/src/sources/View.c.o   -c /home/yanjie/Documents/GitHub/TypedCygni/Disassembler/src/sources/View.c
+
+CMakeFiles/Disassembler.dir/src/sources/View.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/Disassembler.dir/src/sources/View.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/yanjie/Documents/GitHub/TypedCygni/Disassembler/src/sources/View.c > CMakeFiles/Disassembler.dir/src/sources/View.c.i
+
+CMakeFiles/Disassembler.dir/src/sources/View.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/Disassembler.dir/src/sources/View.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yanjie/Documents/GitHub/TypedCygni/Disassembler/src/sources/View.c -o CMakeFiles/Disassembler.dir/src/sources/View.c.s
+
 # Object files for target Disassembler
 Disassembler_OBJECTS = \
-"CMakeFiles/Disassembler.dir/main.cpp.o" \
-"CMakeFiles/Disassembler.dir/src/sources/Parser.c.o"
+"CMakeFiles/Disassembler.dir/main.c.o" \
+"CMakeFiles/Disassembler.dir/src/sources/Parser.c.o" \
+"CMakeFiles/Disassembler.dir/src/sources/View.c.o"
 
 # External object files for target Disassembler
 Disassembler_EXTERNAL_OBJECTS =
 
-Disassembler: CMakeFiles/Disassembler.dir/main.cpp.o
+Disassembler: CMakeFiles/Disassembler.dir/main.c.o
 Disassembler: CMakeFiles/Disassembler.dir/src/sources/Parser.c.o
+Disassembler: CMakeFiles/Disassembler.dir/src/sources/View.c.o
 Disassembler: CMakeFiles/Disassembler.dir/build.make
 Disassembler: CMakeFiles/Disassembler.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/Disassembler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable Disassembler"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/yanjie/Documents/GitHub/TypedCygni/Disassembler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking C executable Disassembler"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/Disassembler.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
