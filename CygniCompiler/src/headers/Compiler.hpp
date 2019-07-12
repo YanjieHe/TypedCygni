@@ -203,10 +203,13 @@ class Compiler {
         CompileBlock(Cast<Block>(node), code);
         break;
       case Kind::Name:
+        throw NotImplementedException();
         break;
       case Kind::Return:
+        throw NotImplementedException();
         break;
       case Kind::Var:
+        throw NotImplementedException();
         break;
       case Kind::Def:
         CompileDef(Cast<Def>(node), code);
@@ -214,6 +217,7 @@ class Compiler {
       case Kind::Assign:
         break;
       case Kind::Call:
+        throw NotImplementedException();
         break;
       case Kind::While:
         break;
@@ -328,9 +332,8 @@ class Compiler {
   }
 
   void CompileModule(const Ptr<DefModule>& node, Vector<Byte>& code) {
-    EmitFlag(code, OpFlag::DEFINE_MODULE);
     EmitString(code, node->name);
-    EmitU16(code, locator.locations.at(node->id).Index());
+    // EmitU16(code, locator.locations.at(node->id).Index());
     EmitU16(code, node->fields.size());
     EmitU16(code, node->methods.size());
     for (const auto& field : node->fields) {
@@ -342,9 +345,6 @@ class Compiler {
   }
 
   void CompileDef(const Ptr<Def>& node, Vector<Byte>& code) {
-    if (locator.locations.find(node->id) == locator.locations.end()) {
-      std::cout << __FUNCTION__ << std::endl;
-    }
     EmitString(code, node->name);
     // EmitU16(code, locator.locations.at(node->id).Index());
     int locals = locator.functionLocals[node->id];

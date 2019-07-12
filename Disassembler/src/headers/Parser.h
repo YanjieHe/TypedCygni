@@ -11,5 +11,7 @@ int parse_modules(FILE* file, Program* program, int module_count);
 
 int parse_functions(FILE* file, Module* module, int function_count);
 
-int parse_string(FILE* file, ByteArray* string);
+int parse_string(FILE* file, Utf8String* string);
+
+void print_name(const char* prompt, Utf8String* string);
 #endif /* PARSER_H */

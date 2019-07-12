@@ -12,23 +12,30 @@
 int parse_program(const char* path, Program* program) {
   FILE* file = fopen(path, "r");
   if (file) {
-    int result;
-    if ((result = parse_constant_pool(file, program)) == SUCCESS) {
-      if (!fread(&program->modules.count, sizeof(int32_t), 1, file) ||
-          !(program->modules.count >= 0)) {
-        return ERROR_READ_I32;
-      }
-      if (!fread(&program->classes.count, sizeof(int32_t), 1, file) ||
-          !(program->classes.count >= 0)) {
-        return ERROR_READ_I32;
-      }
-
+    int res;
+    if ((res = parse_constant_pool(file, program)) != SUCCESS) {
       fclose(file);
-      return SUCCESS;
-    } else {
-      fclose(file);
-      return result;
+      return res;
     }
+    if (!fread(&program->modules.count, sizeof(uint16_t), 1, file) ||
+        !(program->modules.count >= 0)) {
+      return ERROR_READ_I32;
+    }
+    if (!fread(&program->classes.count, sizeof(uint16_t), 1, file) ||
+        !(program->classes.count >= 0)) {
+      return ERROR_READ_I32;
+    }
+
+    printf("module count = %d\n", program->modules.count);
+    program->modules.modules = malloc(sizeof(Module) * program->modules.count);
+    if ((res = parse_modules(file, program, program->modules.count)) !=
+        SUCCESS) {
+      fclose(file);
+      return res;
+    }
+
+    fclose(file);
+    return SUCCESS;
   } else {
     return ERROR_IO;
   }
@@ -71,10 +78,28 @@ int parse_constant_pool(FILE* file, Program* program) {
 }
 
 int parse_modules(FILE* file, Program* program, int module_count) {
+  int res;
   for (int i = 0; i < module_count; i++) {
     Module* module = &program->modules.modules[i];
-    // TO DO
+    if ((res = parse_string(file, &module->name)) != SUCCESS) {
+      return res;
+    }
+    print_name("module name = ", &module->name);
+    if (!fread(&module->variables.count, sizeof(uint16_t), 1, file)) {
+      return ERROR_READ_U16;
+    }
+    if (!fread(&module->functions.count, sizeof(uint16_t), 1, file)) {
+      return ERROR_READ_U16;
+    }
+    printf("function count = %d\n", module->functions.count);
+    module->functions.functions =
+        malloc(sizeof(Function) * module->functions.count);
+    if ((res = parse_functions(file, module, module->functions.count)) !=
+        SUCCESS) {
+      return res;
+    }
   }
+  return SUCCESS;
 }
 
 int parse_functions(FILE* file, Module* module, int function_count) {
@@ -84,6 +109,7 @@ int parse_functions(FILE* file, Module* module, int function_count) {
     if ((res = parse_string(file, &function->name)) != SUCCESS) {
       return res;
     }
+    print_name("function name = ", &function->name);
     if (!fread(&function->locals, sizeof(uint16_t), 1, file)) {
       return ERROR_READ_U16;
     }
@@ -96,20 +122,35 @@ int parse_functions(FILE* file, Module* module, int function_count) {
     if (!fread(&function->code.length, sizeof(uint16_t), 1, file)) {
       return ERROR_READ_U16;
     }
+    printf("locals = %d, stack = %d, args_size = %d\n", function->locals,
+           function->stack, function->args_size);
+    printf("function code length = %d\n", function->code.length);
+    function->code.bytes = malloc(sizeof(Byte) * function->code.length);
     if (!fread(function->code.bytes, sizeof(Byte), function->code.length,
                file)) {
       return ERROR_READ_BYTES;
     }
   }
+  return SUCCESS;
 }
 
-int parse_string(FILE* file, ByteArray* string) {
+int parse_string(FILE* file, Utf8String* string) {
   if (!fread(&string->length, sizeof(int32_t), 1, file) ||
       !(string->length >= 0)) {
     return ERROR_READ_STRING;
   }
+  printf("string length = %d\n", string->length);
+  string->bytes = malloc(sizeof(Byte) * string->length);
   if (!fread(string->bytes, sizeof(Byte), string->length, file)) {
     return ERROR_READ_STRING;
   }
   return SUCCESS;
+}
+
+void print_name(const char* prompt, Utf8String* string) {
+  printf(prompt);
+  for (int k = 0; k < string->length; k++) {
+    printf("%c", string->bytes[k]);
+  }
+  printf("\n");
 }
