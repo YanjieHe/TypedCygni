@@ -206,7 +206,7 @@ class Compiler {
         throw NotImplementedException();
         break;
       case Kind::Return:
-        throw NotImplementedException();
+        CompileReturn(Cast<Return>(node), code);
         break;
       case Kind::Var:
         throw NotImplementedException();
@@ -409,6 +409,32 @@ class Compiler {
     EmitOp(code, op);
   }
 
+  void CompileName(const Ptr<Name>& node, Vector<Byte>& code) {
+    const Location& location = locator.locations[node->id];
+    if (location.kind == LocationKind::Function) {
+      auto type = TypeOf(node);
+      if (type->GetTypeCode() == TypeCode::INT) {
+        EmitOp(code, Op::PUSH_LOCAL_I32);
+      } else if (type->GetTypeCode() == TypeCode::LONG) {
+        EmitOp(code, Op::PUSH_LOCAL_I64);
+      } else if (type->GetTypeCode() == TypeCode::FLOAT) {
+        EmitOp(code, Op::PUSH_LOCAL_F32);
+      } else if (type->GetTypeCode() == TypeCode::DOUBLE) {
+        EmitOp(code, Op::PUSH_LOCAL_F64);
+      } else {
+        throw NotSupportedException();
+      }
+      EmitU16(code, location.Index());
+    } else if (location.kind == LocationKind::Module) {
+      auto type = TypeOf(node);
+      if (type.GetTypeCode() == TypeCode::FUNCTION) {
+      } else {
+        throw NotSupportedException();
+      }
+    } else {
+      throw NotImplementedException();
+    }
+  }
   void EmitU16(Vector<Byte>& code, int number) {
     Byte* bytes = Endian::UInt16ToBytes(static_cast<uint16_t>(number));
     code.push_back(bytes[0]);
