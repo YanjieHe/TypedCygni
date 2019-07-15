@@ -1,8 +1,6 @@
 #ifndef AST_HPP
 #define AST_HPP
 
-#include <algorithm>
-#include "Encoding.hpp"
 #include "Optional.hpp"
 #include "Predef.hpp"
 #include "String.hpp"
@@ -43,6 +41,13 @@ enum class Kind {
   TypeExpr
 };
 
+enum class Access {
+  Local,  // for local variables and functions
+  Public,
+  Private,
+  Protected
+};
+
 class Position {
  public:
   int startLine;
@@ -64,49 +69,20 @@ class Ast {
   Ast(Kind kind, Position position);
 };
 
-template <Kind nodeKind>
 class Binary : public Ast {
  public:
   Ptr<Ast> left;
   Ptr<Ast> right;
 
-  Binary(Position position, Ptr<Ast> left, Ptr<Ast> right);
+  Binary(Position position, Kind kind, Ptr<Ast> left, Ptr<Ast> right);
 };
 
-template <Kind nodeKind>
-Binary<nodeKind>::Binary(Position position, Ptr<Ast> left, Ptr<Ast> right)
-    : Ast(nodeKind, position), left{left}, right{right} {}
-
-using Add = Binary<Kind::Add>;
-using Subtract = Binary<Kind::Subtract>;
-using Multiply = Binary<Kind::Multiply>;
-using Divide = Binary<Kind::Divide>;
-using Modulo = Binary<Kind::Modulo>;
-using GreaterThan = Binary<Kind::GreaterThan>;
-using LessThan = Binary<Kind::LessThan>;
-using GreaterThanOrEqual = Binary<Kind::GreaterThanOrEqual>;
-using LessThanOrEqual = Binary<Kind::LessThanOrEqual>;
-using Equal = Binary<Kind::Equal>;
-using NotEqual = Binary<Kind::NotEqual>;
-using Assign = Binary<Kind::Assign>;
-using And = Binary<Kind::And>;
-using Or = Binary<Kind::Or>;
-
-template <Kind nodeKind>
 class Unary : public Ast {
  public:
   Ptr<Ast> operand;
 
-  Unary(Position position, Ptr<Ast> operand);
+  Unary(Position position, Kind kind, Ptr<Ast> operand);
 };
-
-template <Kind nodeKind>
-Unary<nodeKind>::Unary(Position position, Ptr<Ast> operand)
-    : Ast(nodeKind, position), operand{operand} {}
-
-using UnaryPlus = Unary<Kind::UnaryPlus>;
-using UnaryMinus = Unary<Kind::UnaryMinus>;
-using Not = Unary<Kind::Not>;
 
 class IfThen : public Ast {
  public:
@@ -192,13 +168,6 @@ class TypeExpression : public Ast {
   TypeExpression(Position position,
                  String name,
                  Vector<Ptr<TypeExpression>> parameters);
-};
-
-enum class Access {
-  Local,  // for local variables and functions
-  Public,
-  Private,
-  Protected
 };
 
 class Var : public Ast {

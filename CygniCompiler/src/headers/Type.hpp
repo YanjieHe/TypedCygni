@@ -3,6 +3,7 @@
 
 #include "Predef.hpp"
 #include "String.hpp"
+#include "Table.hpp"
 
 enum class TypeCode {
   VOID,
@@ -198,12 +199,14 @@ class FunctionType : public Type {
 
 class ModuleType : public Type {
  public:
-  HashMap<String, Ptr<Type>> fields;
-  HashMap<String, Ptr<Type>> methods;
+  String name;
+  Table<String, Ptr<Type>> fields;
+  Table<String, Ptr<FunctionType>> methods;
 
-  ModuleType(HashMap<String, Ptr<Type>> fields,
-             HashMap<String, Ptr<Type>> methods)
-      : fields{fields}, methods{methods} {}
+  ModuleType(String name,
+             Table<String, Ptr<Type>> fields,
+             Table<String, Ptr<FunctionType>> methods)
+      : name{name}, fields{fields}, methods{methods} {}
 
   TypeCode GetTypeCode() override { return TypeCode::MODULE; }
 

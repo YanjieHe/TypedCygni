@@ -24,6 +24,45 @@ class TypeException : public Exception {
     AddInfo("position", position.ToString());
   }
 };
+class TypeRegister {
+ private:
+  HashMap<int, Ptr<Type>> typeRecord;
+
+ public:
+  TypeRegister(HashMap<int, Ptr<Type>>& typeRecord) : typeRecord{typeRecord} {}
+
+  void Register(const Ptr<Ast>& node, Ptr<Scope<Ptr<Type>>>& scope);
+
+  void RegisterModule(const Ptr<DefModule>& node,
+                      Ptr<Scope<Ptr<Type>>>& scope) {
+    for (const auto& variable : node->fields) {
+      RegisterVariable(variable, scope);
+    }
+    for (const auto& function : node->methods) {
+      RegisterFunction(function, scope);
+    }
+    Table<String, Ptr<Type>> variables;
+    Table<String, Ptr<FunctionType>> functions;
+    for (const auto& variable : node->fields) {
+      const auto& type = typeRecord[variable->id];
+      variables.Add(variable->name, type);
+    }
+    for (const auto& function : node->methods) {
+      const auto& type = typeRecord[function->id];
+      functions.Add(function->name, Cast<FunctionType>(type));
+    }
+    auto moduleType = New<ModuleType>(module->name, variables, functions);
+    typeRecord[node->id] = moduleType;
+  }
+
+  void RegisterFunction(const Ptr<Def>& node, Ptr<Scope<Ptr<Type>>>& scope) {
+    // TO DO
+  }
+
+  void RegisterVariable(const Ptr<Var>& node, Ptr<Scope<Ptr<Type>>>& scope) {
+    // TO DO
+  }
+};
 
 class TypeChecker {
  public:
@@ -55,31 +94,18 @@ class TypeChecker {
     };
     switch (node->kind) {
       case Kind::Add:
-        return record(CheckBinaryArithmetic(Cast<Add>(node), scopes));
       case Kind::Subtract:
-        return record(CheckBinaryArithmetic(Cast<Subtract>(node), scopes));
       case Kind::Multiply:
-        return record(CheckBinaryArithmetic(Cast<Multiply>(node), scopes));
       case Kind::Divide:
-        return record(CheckBinaryArithmetic(Cast<Divide>(node), scopes));
       case Kind::Modulo:
-        return record(CheckBinaryArithmetic(Cast<Modulo>(node), scopes));
       case Kind::GreaterThan:
-        return record(CheckBinaryArithmetic(Cast<GreaterThan>(node), scopes));
       case Kind::LessThan:
-        return record(CheckBinaryArithmetic(Cast<LessThan>(node), scopes));
       case Kind::GreaterThanOrEqual:
-        return record(
-            CheckBinaryArithmetic(Cast<GreaterThanOrEqual>(node), scopes));
       case Kind::LessThanOrEqual:
-        return record(
-            CheckBinaryArithmetic(Cast<LessThanOrEqual>(node), scopes));
       case Kind::Equal:
-        return record(CheckBinaryArithmetic(Cast<Equal>(node), scopes));
       case Kind::NotEqual:
         return record(CheckBinaryArithmetic(Cast<NotEqual>(node), scopes));
       case Kind::UnaryPlus:
-        return record(CheckUnaryArithmetic(Cast<UnaryPlus>(node), scopes));
       case Kind::UnaryMinus:
         return record(CheckUnaryArithmetic(Cast<UnaryMinus>(node), scopes));
       case Kind::And:
@@ -120,7 +146,6 @@ class TypeChecker {
     throw NotImplementedException();
   }
 
-  template <Kind kind>
   Ptr<Type> CheckBinaryArithmetic(Ptr<Binary<kind>> node,
                                   const ScopeCollection& scopes) {
     static HashMap<Kind, String> binaryOperators = {
@@ -136,7 +161,7 @@ class TypeChecker {
         {Kind::Equal, "=="},
         {Kind::NotEqual, "!="},
     };
-
+    Kind kind = node->kind;
     auto leftType = Check(node->left, scopes);
     auto rightType = Check(node->right, scopes);
     auto result = scopes.operatorScope->Lookup(binaryOperators[kind]);
@@ -156,12 +181,11 @@ class TypeChecker {
     }
   }
 
-  template <Kind kind>
   Ptr<Type> CheckUnaryArithmetic(Ptr<Unary<kind>> node,
                                  const ScopeCollection& scopes) {
     static HashMap<Kind, String> unaryOperators = {
         {Kind::UnaryPlus, "+"}, {Kind::UnaryMinus, "-"}, {Kind::Not, "not"}};
-
+    Kind kind = node->kind;
     auto operandType = Check(node->operand, scopes);
     auto opChar = unaryOperators[kind];
     auto result = scopes.operatorScope->Lookup(unaryOperators[kind]);

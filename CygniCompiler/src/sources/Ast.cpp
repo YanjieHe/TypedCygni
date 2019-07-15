@@ -1,5 +1,7 @@
 #include "Ast.hpp"
+#include <algorithm>
 #include "Exception.hpp"
+
 Position::Position(int startLine, int startColumn, int endLine, int endColumn)
     : startLine{startLine},
       startColumn{startColumn},
@@ -13,10 +15,17 @@ String Position::ToString() {
 }
 
 Ast::Ast(Kind kind, Position position) : kind{kind}, position{position} {
+  /* assign unique id */
   static int currentId = 0;
   currentId++;
   this->id = currentId;
 }
+
+Binary::Binary(Position position, Kind kind, Ptr<Ast> left, Ptr<Ast> right)
+    : Ast(kind, position), left{left}, right{right} {}
+
+Unary::Unary(Position position, Kind kind, Ptr<Ast> operand)
+    : Ast(kind, position), operand{operand} {}
 
 IfThen::IfThen(Position position, Ptr<Ast> condition, Ptr<Ast> ifTrue)
     : Ast(Kind::IfThen, position),
@@ -110,6 +119,25 @@ Program::Program(String path,
       classes{std::move(classes)},
       modules{std::move(modules)} {}
 
+DefModule::DefModule(Position position,
+                     String name,
+                     Vector<Ptr<Var>> fields,
+                     Vector<Ptr<Def>> methods)
+    : Ast(Kind::DefModule, position),
+      name{std::move(name)},
+      fields{std::move(fields)},
+      methods{std::move(methods)} {}
+
+TypeExpression::TypeExpression(Position position, String name)
+    : Ast(Kind::TypeExpr, position), name{std::move(name)} {}
+
+TypeExpression::TypeExpression(Position position,
+                               String name,
+                               Vector<Ptr<TypeExpression>> parameters)
+    : Ast(Kind::TypeExpr, position),
+      name{std::move(name)},
+      parameters{std::move(parameters)} {}
+
 String KindToString(Kind kind) {
   switch (kind) {
     case Kind::Add:
@@ -176,22 +204,3 @@ String KindToString(Kind kind) {
       throw NotImplementedException();
   }
 }
-
-DefModule::DefModule(Position position,
-                     String name,
-                     Vector<Ptr<Var>> fields,
-                     Vector<Ptr<Def>> methods)
-    : Ast(Kind::DefModule, position),
-      name{std::move(name)},
-      fields{std::move(fields)},
-      methods{std::move(methods)} {}
-
-TypeExpression::TypeExpression(Position position, String name)
-    : Ast(Kind::TypeExpr, position), name{std::move(name)} {}
-
-TypeExpression::TypeExpression(Position position,
-                               String name,
-                               Vector<Ptr<TypeExpression>> parameters)
-    : Ast(Kind::TypeExpr, position),
-      name{std::move(name)},
-      parameters{std::move(parameters)} {}

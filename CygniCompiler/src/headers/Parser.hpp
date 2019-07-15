@@ -24,17 +24,17 @@ public:
 
     Program ParseProgram();
 
-    bool IsEof() const
+    inline bool IsEof() const
     {
         return Look().tag == Tag::Eof;
     }
 
-    const Token &Look() const
+    inline const Token &Look() const
     {
         return tokens[offset];
     }
 
-    void Move()
+    inline void Move()
     {
         offset++;
     }
@@ -106,6 +106,8 @@ public:
     Ptr<DefClass> ParseDefClass();
 
     Ptr<DefModule> ParseDefModule();
+
+    Access ParseAccess();
 };
 
 
