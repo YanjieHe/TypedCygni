@@ -326,7 +326,7 @@ Ptr<TypeExpression> Parser::ParseType() {
     const auto& token = Look();
     Vector<Ptr<TypeExpression>> types = ParseTypeArguments();
     auto result = New<TypeExpression>(GetPos(token), name, types);
-    if (result) {
+    if (types.empty()) {
       throw ParserException(Look().line, Look().column, "type error");
     } else {
       return result;

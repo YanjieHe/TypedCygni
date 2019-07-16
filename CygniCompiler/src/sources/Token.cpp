@@ -5,7 +5,7 @@
 Token::Token(int line, int column, Tag tag, String text)
         : line{line}, column{column}, tag{tag}, text{std::move(text)}
 {
-    if (keywords.find(this->text) != keywords.end())
+    if (tag == Tag::Identifier && keywords.find(this->text) != keywords.end())
     {
         this->tag = keywords[this->text];
     }
