@@ -200,183 +200,221 @@ class FunctionType : public Type {
 class ModuleType : public Type {
  public:
   String name;
-  Table<String, Ptr<Type>> fields;
-  Table<String, Ptr<FunctionType>> methods;
-
-  ModuleType(String name,
-             Table<String, Ptr<Type>> fields,
-             Table<String, Ptr<FunctionType>> methods)
-      : name{name}, fields{fields}, methods{methods} {}
-
+  ModuleType(String name) : name{name} {}
   TypeCode GetTypeCode() override { return TypeCode::MODULE; }
 
   bool Equals(const Ptr<Type>& other) override {
-    if (other->GetTypeCode() == TypeCode::MODULE) {
-      auto module = Cast<ModuleType>(other);
-      if (fields.size() == module->fields.size()) {
-        for (const auto& pair : module->fields) {
-          const String& key = pair.first;
-          bool found = fields.find(key) != fields.end();
-          if (found && fields[key]->Equals(module->fields[key])) {
-            // pass
-          } else {
-            return false;
-          }
-        }
-        for (const auto& pair : module->methods) {
-          const String& key = pair.first;
-          bool found = methods.find(key) != methods.end();
-          if (found && methods[key]->Equals(module->methods[key])) {
-            // pass
-          } else {
-            return false;
-          }
-        }
-        return true;
-      } else {
-        return false;
-      }
-
-    } else {
-      return false;
-    }
+    return other->GetTypeCode() == TypeCode::MODULE &&
+           name == Cast<ModuleType>(other)->name;
   }
 
-  String ToString() override {
-    Vector<String> items;
-    for (const auto& pair : fields) {
-      const String& key = pair.first;
-      const String& value = pair.second->ToString();
-      items.push_back(key + ": " + value);
-    }
-
-    for (const auto& pair : methods) {
-      const String& key = pair.first;
-      const String& value = pair.second->ToString();
-      items.push_back(key + ": " + value);
-    }
-    return "Module[" + String::Join(", ", items.begin(), items.end()) + "]";
-  }
+  String ToString() override { return name; }
 };
+
 class ClassType : public Type {
  public:
-  HashMap<String, Ptr<Type>> fields;
-  HashMap<String, Ptr<Type>> methods;
-
-  ClassType(HashMap<String, Ptr<Type>> fields,
-            HashMap<String, Ptr<Type>> methods)
-      : fields{fields}, methods{methods} {}
-
-  TypeCode GetTypeCode() override { return TypeCode::CLASS; }
-
+  String name;
+  ClassType(String name) : name{name} {}
   bool Equals(const Ptr<Type>& other) override {
-    if (other->GetTypeCode() == TypeCode::CLASS) {
-      auto _class = Cast<ClassType>(other);
-      if (fields.size() == _class->fields.size()) {
-        for (const auto& pair : _class->fields) {
-          const String& key = pair.first;
-          bool found = fields.find(key) != fields.end();
-          if (found && fields[key]->Equals(_class->fields[key])) {
-            // pass
-          } else {
-            return false;
-          }
-        }
-        for (const auto& pair : _class->methods) {
-          const String& key = pair.first;
-          bool found = methods.find(key) != methods.end();
-          if (found && methods[key]->Equals(_class->methods[key])) {
-            // pass
-          } else {
-            return false;
-          }
-        }
-        return true;
-      } else {
-        return false;
-      }
-
-    } else {
-      return false;
-    }
+    return other->GetTypeCode() == TypeCode::CLASS &&
+           name == Cast<ClassType>(other)->name;
   }
 
-  String ToString() override {
-    Vector<String> items;
-    for (const auto& pair : fields) {
-      const String& key = pair.first;
-      const String& value = pair.second->ToString();
-      items.push_back(key + ": " + value);
-    }
-
-    for (const auto& pair : methods) {
-      const String& key = pair.first;
-      const String& value = pair.second->ToString();
-      items.push_back(key + ": " + value);
-    }
-    return "Class[" + String::Join(", ", items.begin(), items.end()) + "]";
-  }
+  String ToString() override { return name; }
 };
 
 class ObjectType : public Type {
  public:
-  HashMap<String, Ptr<Type>> fields;
-  HashMap<String, Ptr<Type>> methods;
-
-  ObjectType(HashMap<String, Ptr<Type>> fields,
-             HashMap<String, Ptr<Type>> methods)
-      : fields{fields}, methods{methods} {}
-
+  Ptr<ClassType> classType;
+  ObjectType(Ptr<ClassType> classType) : classType{classType} {}
   TypeCode GetTypeCode() override { return TypeCode::OBJECT; }
-
   bool Equals(const Ptr<Type>& other) override {
-    if (other->GetTypeCode() == TypeCode::OBJECT) {
-      auto object = Cast<ObjectType>(other);
-      if (fields.size() == object->fields.size()) {
-        for (const auto& pair : object->fields) {
-          const String& key = pair.first;
-          bool found = fields.find(key) != fields.end();
-          if (found && fields[key]->Equals(object->fields[key])) {
-            // pass
-          } else {
-            return false;
-          }
-        }
-        for (const auto& pair : object->methods) {
-          const String& key = pair.first;
-          bool found = methods.find(key) != methods.end();
-          if (found && methods[key]->Equals(object->methods[key])) {
-            // pass
-          } else {
-            return false;
-          }
-        }
-        return true;
-      } else {
-        return false;
-      }
-
-    } else {
-      return false;
-    }
+    return classType->Equals(other);
   }
 
-  String ToString() override {
-    Vector<String> items;
-    for (const auto& pair : fields) {
-      const String& key = pair.first;
-      const String& value = pair.second->ToString();
-      items.push_back(key + ": " + value);
-    }
-
-    for (const auto& pair : methods) {
-      const String& key = pair.first;
-      const String& value = pair.second->ToString();
-      items.push_back(key + ": " + value);
-    }
-    return "Object[" + String::Join(", ", items.begin(), items.end()) + "]";
-  }
+  String ToString() override { return classType->ToString(); }
 };
+
+// class ModuleType : public Type {
+//  public:
+//   String name;
+//   Table<String, Ptr<Type>> fields;
+//   Table<String, Ptr<FunctionType>> methods;
+
+//   ModuleType(String name,
+//              Table<String, Ptr<Type>> fields,
+//              Table<String, Ptr<FunctionType>> methods)
+//       : name{name}, fields{fields}, methods{methods} {}
+
+//   TypeCode GetTypeCode() override { return TypeCode::MODULE; }
+
+//   bool Equals(const Ptr<Type>& other) override {
+//     if (other->GetTypeCode() == TypeCode::MODULE) {
+//       auto module = Cast<ModuleType>(other);
+//       if (fields.size() == module->fields.size()) {
+//         for (const auto& pair : module->fields) {
+//           const String& key = pair.first;
+//           bool found = fields.find(key) != fields.end();
+//           if (found && fields[key]->Equals(module->fields[key])) {
+//             // pass
+//           } else {
+//             return false;
+//           }
+//         }
+//         for (const auto& pair : module->methods) {
+//           const String& key = pair.first;
+//           bool found = methods.find(key) != methods.end();
+//           if (found && methods[key]->Equals(module->methods[key])) {
+//             // pass
+//           } else {
+//             return false;
+//           }
+//         }
+//         return true;
+//       } else {
+//         return false;
+//       }
+
+//     } else {
+//       return false;
+//     }
+//   }
+
+//   String ToString() override {
+//     Vector<String> items;
+//     for (const auto& pair : fields) {
+//       const String& key = pair.first;
+//       const String& value = pair.second->ToString();
+//       items.push_back(key + ": " + value);
+//     }
+
+//     for (const auto& pair : methods) {
+//       const String& key = pair.first;
+//       const String& value = pair.second->ToString();
+//       items.push_back(key + ": " + value);
+//     }
+//     return "Module[" + String::Join(", ", items.begin(), items.end()) + "]";
+//   }
+// };
+// class ClassType : public Type {
+//  public:
+//   HashMap<String, Ptr<Type>> fields;
+//   HashMap<String, Ptr<Type>> methods;
+
+//   ClassType(HashMap<String, Ptr<Type>> fields,
+//             HashMap<String, Ptr<Type>> methods)
+//       : fields{fields}, methods{methods} {}
+
+//   TypeCode GetTypeCode() override { return TypeCode::CLASS; }
+
+//   bool Equals(const Ptr<Type>& other) override {
+//     if (other->GetTypeCode() == TypeCode::CLASS) {
+//       auto _class = Cast<ClassType>(other);
+//       if (fields.size() == _class->fields.size()) {
+//         for (const auto& pair : _class->fields) {
+//           const String& key = pair.first;
+//           bool found = fields.find(key) != fields.end();
+//           if (found && fields[key]->Equals(_class->fields[key])) {
+//             // pass
+//           } else {
+//             return false;
+//           }
+//         }
+//         for (const auto& pair : _class->methods) {
+//           const String& key = pair.first;
+//           bool found = methods.find(key) != methods.end();
+//           if (found && methods[key]->Equals(_class->methods[key])) {
+//             // pass
+//           } else {
+//             return false;
+//           }
+//         }
+//         return true;
+//       } else {
+//         return false;
+//       }
+
+//     } else {
+//       return false;
+//     }
+//   }
+
+//   String ToString() override {
+//     Vector<String> items;
+//     for (const auto& pair : fields) {
+//       const String& key = pair.first;
+//       const String& value = pair.second->ToString();
+//       items.push_back(key + ": " + value);
+//     }
+
+//     for (const auto& pair : methods) {
+//       const String& key = pair.first;
+//       const String& value = pair.second->ToString();
+//       items.push_back(key + ": " + value);
+//     }
+//     return "Class[" + String::Join(", ", items.begin(), items.end()) + "]";
+//   }
+// };
+
+// class ObjectType : public Type {
+//  public:
+//   HashMap<String, Ptr<Type>> fields;
+//   HashMap<String, Ptr<Type>> methods;
+
+//   ObjectType(HashMap<String, Ptr<Type>> fields,
+//              HashMap<String, Ptr<Type>> methods)
+//       : fields{fields}, methods{methods} {}
+
+//   TypeCode GetTypeCode() override { return TypeCode::OBJECT; }
+
+//   bool Equals(const Ptr<Type>& other) override {
+//     if (other->GetTypeCode() == TypeCode::OBJECT) {
+//       auto object = Cast<ObjectType>(other);
+//       if (fields.size() == object->fields.size()) {
+//         for (const auto& pair : object->fields) {
+//           const String& key = pair.first;
+//           bool found = fields.find(key) != fields.end();
+//           if (found && fields[key]->Equals(object->fields[key])) {
+//             // pass
+//           } else {
+//             return false;
+//           }
+//         }
+//         for (const auto& pair : object->methods) {
+//           const String& key = pair.first;
+//           bool found = methods.find(key) != methods.end();
+//           if (found && methods[key]->Equals(object->methods[key])) {
+//             // pass
+//           } else {
+//             return false;
+//           }
+//         }
+//         return true;
+//       } else {
+//         return false;
+//       }
+
+//     } else {
+//       return false;
+//     }
+//   }
+
+//   String ToString() override {
+//     Vector<String> items;
+//     for (const auto& pair : fields) {
+//       const String& key = pair.first;
+//       const String& value = pair.second->ToString();
+//       items.push_back(key + ": " + value);
+//     }
+
+//     for (const auto& pair : methods) {
+//       const String& key = pair.first;
+//       const String& value = pair.second->ToString();
+//       items.push_back(key + ": " + value);
+//     }
+//     return "Object[" + String::Join(", ", items.begin(), items.end()) + "]";
+//   }
+// };
 
 // enum class ValueCode
 //{

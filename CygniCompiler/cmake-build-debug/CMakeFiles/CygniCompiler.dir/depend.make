@@ -31,6 +31,7 @@ CMakeFiles/CygniCompiler.dir/src/sources/Ast.cpp.o: ../utils/headers/Encoding.hp
 CMakeFiles/CygniCompiler.dir/src/sources/Ast.cpp.o: ../utils/headers/Optional.hpp
 CMakeFiles/CygniCompiler.dir/src/sources/Ast.cpp.o: ../utils/headers/Predef.hpp
 CMakeFiles/CygniCompiler.dir/src/sources/Ast.cpp.o: ../utils/headers/String.hpp
+CMakeFiles/CygniCompiler.dir/src/sources/Ast.cpp.o: ../utils/headers/Table.hpp
 CMakeFiles/CygniCompiler.dir/src/sources/Ast.cpp.o: ../src/sources/Ast.cpp
 
 CMakeFiles/CygniCompiler.dir/src/sources/Compiler.cpp.o: ../src/headers/Ast.hpp
@@ -83,6 +84,7 @@ CMakeFiles/CygniCompiler.dir/src/sources/Parser.cpp.o: ../utils/headers/Encoding
 CMakeFiles/CygniCompiler.dir/src/sources/Parser.cpp.o: ../utils/headers/Optional.hpp
 CMakeFiles/CygniCompiler.dir/src/sources/Parser.cpp.o: ../utils/headers/Predef.hpp
 CMakeFiles/CygniCompiler.dir/src/sources/Parser.cpp.o: ../utils/headers/String.hpp
+CMakeFiles/CygniCompiler.dir/src/sources/Parser.cpp.o: ../utils/headers/Table.hpp
 CMakeFiles/CygniCompiler.dir/src/sources/Parser.cpp.o: ../src/sources/Parser.cpp
 
 CMakeFiles/CygniCompiler.dir/src/sources/Scope.cpp.o: ../src/headers/Exception.hpp
@@ -103,6 +105,7 @@ CMakeFiles/CygniCompiler.dir/src/sources/Type.cpp.o: ../src/headers/Type.hpp
 CMakeFiles/CygniCompiler.dir/src/sources/Type.cpp.o: ../utils/headers/Encoding.hpp
 CMakeFiles/CygniCompiler.dir/src/sources/Type.cpp.o: ../utils/headers/Predef.hpp
 CMakeFiles/CygniCompiler.dir/src/sources/Type.cpp.o: ../utils/headers/String.hpp
+CMakeFiles/CygniCompiler.dir/src/sources/Type.cpp.o: ../utils/headers/Table.hpp
 CMakeFiles/CygniCompiler.dir/src/sources/Type.cpp.o: ../src/sources/Type.cpp
 
 CMakeFiles/CygniCompiler.dir/src/sources/TypeChecker.cpp.o: ../src/headers/Ast.hpp
@@ -194,6 +197,7 @@ CMakeFiles/CygniCompiler.dir/test/sources/TestParser.cpp.o: ../utils/headers/Fil
 CMakeFiles/CygniCompiler.dir/test/sources/TestParser.cpp.o: ../utils/headers/Optional.hpp
 CMakeFiles/CygniCompiler.dir/test/sources/TestParser.cpp.o: ../utils/headers/Predef.hpp
 CMakeFiles/CygniCompiler.dir/test/sources/TestParser.cpp.o: ../utils/headers/String.hpp
+CMakeFiles/CygniCompiler.dir/test/sources/TestParser.cpp.o: ../utils/headers/Table.hpp
 CMakeFiles/CygniCompiler.dir/test/sources/TestParser.cpp.o: ../test/sources/TestParser.cpp
 
 CMakeFiles/CygniCompiler.dir/test/sources/TestString.cpp.o: ../test/headers/TestString.hpp

@@ -2,6 +2,7 @@
 #define OPTIONAL_HPP
 
 #include <type_traits>
+#include <utility>
 
 template<typename T>
 class Optional
@@ -80,7 +81,7 @@ public:
             return *((T *) (&m_data));
         }
 
-        throw std::exception("");
+        throw "";
     }
 
     bool operator==(const Optional<T> &rhs) const

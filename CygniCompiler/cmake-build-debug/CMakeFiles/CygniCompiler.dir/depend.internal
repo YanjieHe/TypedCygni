@@ -32,6 +32,7 @@ CMakeFiles/CygniCompiler.dir/src/sources/Ast.cpp.o
  ../utils/headers/Optional.hpp
  ../utils/headers/Predef.hpp
  ../utils/headers/String.hpp
+ ../utils/headers/Table.hpp
  /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Ast.cpp
 CMakeFiles/CygniCompiler.dir/src/sources/Compiler.cpp.o
  ../src/headers/Ast.hpp
@@ -84,6 +85,7 @@ CMakeFiles/CygniCompiler.dir/src/sources/Parser.cpp.o
  ../utils/headers/Optional.hpp
  ../utils/headers/Predef.hpp
  ../utils/headers/String.hpp
+ ../utils/headers/Table.hpp
  /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Parser.cpp
 CMakeFiles/CygniCompiler.dir/src/sources/Scope.cpp.o
  ../src/headers/Exception.hpp
@@ -104,6 +106,7 @@ CMakeFiles/CygniCompiler.dir/src/sources/Type.cpp.o
  ../utils/headers/Encoding.hpp
  ../utils/headers/Predef.hpp
  ../utils/headers/String.hpp
+ ../utils/headers/Table.hpp
  /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/src/sources/Type.cpp
 CMakeFiles/CygniCompiler.dir/src/sources/TypeChecker.cpp.o
  ../src/headers/Ast.hpp
@@ -195,6 +198,7 @@ CMakeFiles/CygniCompiler.dir/test/sources/TestParser.cpp.o
  ../utils/headers/Optional.hpp
  ../utils/headers/Predef.hpp
  ../utils/headers/String.hpp
+ ../utils/headers/Table.hpp
  /home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/test/sources/TestParser.cpp
 CMakeFiles/CygniCompiler.dir/test/sources/TestString.cpp.o
  ../test/headers/TestString.hpp

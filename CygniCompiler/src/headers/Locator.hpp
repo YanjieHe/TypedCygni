@@ -358,127 +358,127 @@ class Location {
 //   }
 // };
 
-class Locator {
-  void Locate(const Ptr<Ast>& node, ScopeInformation& scope) {
-    switch (node->kind) {
-      case Kind::Add:
-        LocateBinary(Cast<Add>(node), scope);
-        break;
-      case Kind::Subtract:
-        LocateBinary(Cast<Subtract>(node), scope);
-        break;
-      case Kind::Multiply:
-        LocateBinary(Cast<Multiply>(node), scope);
-        break;
-      case Kind::Divide:
-        LocateBinary(Cast<Divide>(node), scope);
-        break;
-      case Kind::Modulo:
-        LocateBinary(Cast<Modulo>(node), scope);
-        break;
-      case Kind::GreaterThan:
-        LocateBinary(Cast<GreaterThan>(node), scope);
-        break;
-      case Kind::LessThan:
-        LocateBinary(Cast<LessThan>(node), scope);
-        break;
-      case Kind::GreaterThanOrEqual:
-        LocateBinary(Cast<GreaterThanOrEqual>(node), scope);
-        break;
-      case Kind::LessThanOrEqual:
-        LocateBinary(Cast<LessThanOrEqual>(node), scope);
-        break;
-      case Kind::Equal:
-        LocateBinary(Cast<Equal>(node), scope);
-        break;
-      case Kind::NotEqual:
-        LocateBinary(Cast<NotEqual>(node), scope);
-        break;
-      case Kind::And:
-        LocateBinary(Cast<And>(node), scope);
-        break;
-      case Kind::Or:
-        LocateBinary(Cast<Or>(node), scope);
-        break;
-      case Kind::Not:
-        LocateUnary(Cast<Not>(node), scope);
-        break;
-      case Kind::UnaryPlus:
-        LocateUnary(Cast<UnaryPlus>(node), scope);
-        break;
-      case Kind::UnaryMinus:
-        LocateUnary(Cast<UnaryMinus>(node), scope);
-        break;
-      case Kind::IfThen:
-        LocateIfThen(Cast<IfThen>(node), scope);
-        break;
-      case Kind::IfElse:
-        LocateIfElse(Cast<IfElse>(node), scope);
-        break;
-      case Kind::Constant:
-        LocateConstant(Cast<Constant>(node), scope);
-        break;
-      case Kind::Block:
-        LocateBlock(Cast<Block>(node), scope);
-        break;
-      case Kind::Name:
-        LocateName(Cast<Name>(node), scope);
-        break;
-      case Kind::Return:
-        LocateReturn(Cast<Return>(node), scope);
-        break;
-      case Kind::Var:
-        LocateVar(Cast<Var>(node), scope);
-        break;
-      case Kind::Def:
-        LocateDef(Cast<Def>(node), scope);
-        break;
-      case Kind::Assign:
-        LocateAssign(Cast<Assign>(node), scope);
-        break;
-      case Kind::Call:
-        LocateCall(Cast<Call>(node), scope);
-        break;
-      case Kind::While:
-        break;
-      case Kind::DefClass:
-        LocateClass(Cast<DefClass>(node), scope);
-        break;
-      case Kind::DefModule:
-        LocateModule(Cast<DefModule>(node), scope);
-        break;
-      case Kind::TypeExpr:
-        throw NotImplementedException();
-    }
-  }
-  template <typename BinaryAst>
-  virtual void LocateBinary(const Ptr<BinaryAst>& node, ScopeCollection& scope) {
-    Locate(node->left, scope);
-    Locate(node->right, scope);
-  }
+// class Locator {
+//   void Locate(const Ptr<Ast>& node, ScopeInformation& scope) {
+//     switch (node->kind) {
+//       case Kind::Add:
+//         LocateBinary(Cast<Add>(node), scope);
+//         break;
+//       case Kind::Subtract:
+//         LocateBinary(Cast<Subtract>(node), scope);
+//         break;
+//       case Kind::Multiply:
+//         LocateBinary(Cast<Multiply>(node), scope);
+//         break;
+//       case Kind::Divide:
+//         LocateBinary(Cast<Divide>(node), scope);
+//         break;
+//       case Kind::Modulo:
+//         LocateBinary(Cast<Modulo>(node), scope);
+//         break;
+//       case Kind::GreaterThan:
+//         LocateBinary(Cast<GreaterThan>(node), scope);
+//         break;
+//       case Kind::LessThan:
+//         LocateBinary(Cast<LessThan>(node), scope);
+//         break;
+//       case Kind::GreaterThanOrEqual:
+//         LocateBinary(Cast<GreaterThanOrEqual>(node), scope);
+//         break;
+//       case Kind::LessThanOrEqual:
+//         LocateBinary(Cast<LessThanOrEqual>(node), scope);
+//         break;
+//       case Kind::Equal:
+//         LocateBinary(Cast<Equal>(node), scope);
+//         break;
+//       case Kind::NotEqual:
+//         LocateBinary(Cast<NotEqual>(node), scope);
+//         break;
+//       case Kind::And:
+//         LocateBinary(Cast<And>(node), scope);
+//         break;
+//       case Kind::Or:
+//         LocateBinary(Cast<Or>(node), scope);
+//         break;
+//       case Kind::Not:
+//         LocateUnary(Cast<Not>(node), scope);
+//         break;
+//       case Kind::UnaryPlus:
+//         LocateUnary(Cast<UnaryPlus>(node), scope);
+//         break;
+//       case Kind::UnaryMinus:
+//         LocateUnary(Cast<UnaryMinus>(node), scope);
+//         break;
+//       case Kind::IfThen:
+//         LocateIfThen(Cast<IfThen>(node), scope);
+//         break;
+//       case Kind::IfElse:
+//         LocateIfElse(Cast<IfElse>(node), scope);
+//         break;
+//       case Kind::Constant:
+//         LocateConstant(Cast<Constant>(node), scope);
+//         break;
+//       case Kind::Block:
+//         LocateBlock(Cast<Block>(node), scope);
+//         break;
+//       case Kind::Name:
+//         LocateName(Cast<Name>(node), scope);
+//         break;
+//       case Kind::Return:
+//         LocateReturn(Cast<Return>(node), scope);
+//         break;
+//       case Kind::Var:
+//         LocateVar(Cast<Var>(node), scope);
+//         break;
+//       case Kind::Def:
+//         LocateDef(Cast<Def>(node), scope);
+//         break;
+//       case Kind::Assign:
+//         LocateAssign(Cast<Assign>(node), scope);
+//         break;
+//       case Kind::Call:
+//         LocateCall(Cast<Call>(node), scope);
+//         break;
+//       case Kind::While:
+//         break;
+//       case Kind::DefClass:
+//         LocateClass(Cast<DefClass>(node), scope);
+//         break;
+//       case Kind::DefModule:
+//         LocateModule(Cast<DefModule>(node), scope);
+//         break;
+//       case Kind::TypeExpr:
+//         throw NotImplementedException();
+//     }
+//   }
+//   template <typename BinaryAst>
+//   virtual void LocateBinary(const Ptr<BinaryAst>& node, ScopeCollection& scope) {
+//     Locate(node->left, scope);
+//     Locate(node->right, scope);
+//   }
 
-  template <typename UnaryAst>
-  virtual void LocateUnary(const Ptr<UnaryAst>& node, ScopeCollection& scope) {
-    Locate(node->operand, scope);
-  }
+//   template <typename UnaryAst>
+//   virtual void LocateUnary(const Ptr<UnaryAst>& node, ScopeCollection& scope) {
+//     Locate(node->operand, scope);
+//   }
 
-  virtual void LocateIfThen(const Ptr<IfThen>& node, ScopeCollection& scope) {
-    Locate(node->condition, scope);
-    Locate(node->ifTrue, scope);
-  }
+//   virtual void LocateIfThen(const Ptr<IfThen>& node, ScopeCollection& scope) {
+//     Locate(node->condition, scope);
+//     Locate(node->ifTrue, scope);
+//   }
 
-  virtual void LocateIfElse(const Ptr<IfElse>& node, ScopeCollection& scope) {
-    Locate(node->condition, scope);
-    Locate(node->ifTrue, scope);
-    Locate(node->ifFalse, scope);
-  }
+//   virtual void LocateIfElse(const Ptr<IfElse>& node, ScopeCollection& scope) {
+//     Locate(node->condition, scope);
+//     Locate(node->ifTrue, scope);
+//     Locate(node->ifFalse, scope);
+//   }
 
-  virtual void LocateCall(const Ptr<Call>& node, ScopeCollection& scope) {
-    Locate(node->function, scope);
-    for (const auto& argument : node->arguments) {
-      Locate(argument, scope);
-    }
-  }
-};
+//   virtual void LocateCall(const Ptr<Call>& node, ScopeCollection& scope) {
+//     Locate(node->function, scope);
+//     for (const auto& argument : node->arguments) {
+//       Locate(argument, scope);
+//     }
+//   }
+// };
 
 #endif  // LOCATOR_HPP

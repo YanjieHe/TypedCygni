@@ -143,15 +143,15 @@ Ptr<Ast> Parser::ParseUnary() {
   if (Look().tag == Tag::Add) {
     Move();
     Ptr<Ast> x = ParseUnary();
-    return New<Binary>(GetPos(start), Kind::UnaryPlus, x);
+    return New<Unary>(GetPos(start), Kind::UnaryPlus, x);
   } else if (Look().tag == Tag::Subtract) {
     Move();
     Ptr<Ast> x = ParseUnary();
-    return New<Binary>(GetPos(start), Kind::UnaryMinus, x);
+    return New<Unary>(GetPos(start), Kind::UnaryMinus, x);
   } else if (Look().tag == Tag::Not) {
     Move();
     Ptr<Ast> x = ParseUnary();
-    return New<Binary>(GetPos(start), Kind::Not, x);
+    return New<Unary>(GetPos(start), Kind::Not, x);
   } else {
     return ParsePostfix();
   }

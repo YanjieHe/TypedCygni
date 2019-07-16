@@ -143,33 +143,20 @@ Ptr<JsonObject> TestParser::TreeToJson(const Ptr<Ast> &node)
             return map;
         }
         case Kind::Add:
-            return ConvertBinaryNodeToJson<Kind::Add>(node);
         case Kind::Subtract:
-            return ConvertBinaryNodeToJson<Kind::Subtract>(node);
         case Kind::Multiply:
-            return ConvertBinaryNodeToJson<Kind::Multiply>(node);
         case Kind::Divide:
-            return ConvertBinaryNodeToJson<Kind::Divide>(node);
         case Kind::Modulo:
-            return ConvertBinaryNodeToJson<Kind::Modulo>(node);
         case Kind::GreaterThan:
-            return ConvertBinaryNodeToJson<Kind::GreaterThan>(node);
         case Kind::LessThan:
-            return ConvertBinaryNodeToJson<Kind::LessThan>(node);
         case Kind::GreaterThanOrEqual:
-            return ConvertBinaryNodeToJson<Kind::GreaterThanOrEqual>(node);
         case Kind::LessThanOrEqual:
-            return ConvertBinaryNodeToJson<Kind::LessThanOrEqual>(node);
         case Kind::Equal:
-            return ConvertBinaryNodeToJson<Kind::Equal>(node);
         case Kind::NotEqual:
-            return ConvertBinaryNodeToJson<Kind::NotEqual>(node);
         case Kind::And:
-            return ConvertBinaryNodeToJson<Kind::And>(node);
         case Kind::Or:
-            return ConvertBinaryNodeToJson<Kind::Or>(node);
         case Kind::Assign:
-            return ConvertBinaryNodeToJson<Kind::Assign>(node);
+            return ConvertBinaryNodeToJson(node);
         default:
         {
             cout << KindToString(node->kind) << endl;
@@ -197,7 +184,17 @@ void TestParser::Test2()
         cout << ex.line << ", " << ex.column << ": " << ex.Message() << endl;
     }
 }
-
+    Ptr<JsonObject> TestParser::ConvertBinaryNodeToJson(const Ptr<Ast> &node)
+    {
+        auto expr = Cast<Binary>(node);
+        auto map = New<JsonMap>();
+        Kind kind = node->kind;
+        map->Add("kind", New<JsonValue>(KindToString(kind)));
+        map->Add("left", TreeToJson(expr->left));
+        map->Add("right", TreeToJson(expr->right));
+        map->Add("id", New<JsonValue>(String::ToString(node->id)));
+        return map;
+    }
 Ptr<JsonObject> TestParser::TypeToJson(const Ptr<TypeExpression> &type)
 {
     auto map = New<JsonMap>();

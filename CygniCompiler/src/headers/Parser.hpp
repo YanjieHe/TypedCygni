@@ -1,13 +1,12 @@
 #ifndef PARSER_HPP
 #define PARSER_HPP
 
-#include <vector>
 #include "Token.hpp"
 #include "Encoding.hpp"
 #include "Ast.hpp"
 #include "Type.hpp"
-#include <iostream>
 #include "Predef.hpp"
+#include <iostream>
 #include "Exception.hpp"
 
 using std::cout;

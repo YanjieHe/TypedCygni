@@ -3,7 +3,7 @@
 #include "Locator.hpp"
 namespace TestLocator {
 
-Locator::ScopeCollection InitializeLocatorScopeCollection();
+// Locator::ScopeCollection InitializeLocatorScopeCollection();
 
 void TestAll();
 
