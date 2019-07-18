@@ -44,6 +44,7 @@
     <Compile Include="TypeChecker.cs" />
     <Compile Include="Type.cs" />
     <Compile Include="Locator.cs" />
+    <Compile Include="Compiler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

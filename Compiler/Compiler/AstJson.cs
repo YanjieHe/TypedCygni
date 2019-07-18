@@ -82,6 +82,7 @@ namespace Compiler
             return new JsonMap(
             new Dictionary<string, JsonObject>()
             {
+                {"id", new JsonValue(node.id.ToString())},
                 {"kind", new JsonValue(node.kind.ToString())},
                 {"left", VisitNode(node.left)},
                 {"right", VisitNode(node.right)},
@@ -93,6 +94,7 @@ namespace Compiler
             return new JsonMap(
             new Dictionary<string, JsonObject>()
             {
+                {"id", new JsonValue(node.id.ToString())},
                 {"kind", new JsonValue(node.kind.ToString())},
                 {"operand", VisitNode(node.operand)}
             });
@@ -103,6 +105,7 @@ namespace Compiler
             return new JsonMap(
             new Dictionary<string, JsonObject>()
             {
+                {"id", new JsonValue(node.id.ToString())},
                 {"kind", new JsonValue(node.kind.ToString())},
                 {"name", new JsonValue(node.name)},
                 {"parameters", new JsonArray(node.parameters.Select(VisitType).ToList())}
@@ -114,6 +117,7 @@ namespace Compiler
             return new JsonMap(
             new Dictionary<string, JsonObject>()
             {
+                {"id", new JsonValue(node.id.ToString())},
                 {"kind", new JsonValue(node.kind.ToString())},
                 {"name", new JsonValue(node.name)},
                 {"body", VisitNode(node.body)},
@@ -126,6 +130,7 @@ namespace Compiler
             return new JsonMap(
             new Dictionary<string, JsonObject>()
             {
+                {"id", new JsonValue(node.id.ToString())},
                 {"kind", new JsonValue(node.kind.ToString())},
                 {"name", new JsonValue(node.name)},
                 {"fields", new JsonArray(node.fields.Select(VisitNode).ToList())},
@@ -138,6 +143,7 @@ namespace Compiler
             return new JsonMap(
      new Dictionary<string, JsonObject>()
      {
+                {"id", new JsonValue(node.id.ToString())},
                 {"kind", new JsonValue(node.kind.ToString())},
                 {"name", new JsonValue(node.name)},
                 {"fields", new JsonArray(node.fields.Select(VisitNode).ToList())},
@@ -150,6 +156,7 @@ namespace Compiler
             return new JsonMap(
                  new Dictionary<string, JsonObject>()
                 {
+                {"id", new JsonValue(node.id.ToString())},
                 {"kind", new JsonValue(node.kind.ToString())},
                 {"function", VisitNode(node.function)},
                 {"arguments", new JsonArray(node.arguments.Select(VisitNode).ToList())}
@@ -161,6 +168,7 @@ namespace Compiler
             return new JsonMap(
             new Dictionary<string, JsonObject>()
             {
+                {"id", new JsonValue(node.id.ToString())},
                 {"kind", new JsonValue(node.kind.ToString())},
                 { "condition", VisitNode(node.condition) },
                 { "ifTrue",VisitNode(node.ifTrue) }
@@ -172,6 +180,7 @@ namespace Compiler
             return new JsonMap(
             new Dictionary<string, JsonObject>()
             {
+                {"id", new JsonValue(node.id.ToString())},
                 {"kind", new JsonValue(node.kind.ToString())},
                 { "condition", VisitNode(node.condition) },
                 { "ifTrue",VisitNode(node.ifTrue) },
@@ -184,6 +193,7 @@ namespace Compiler
             return new JsonMap(
             new Dictionary<string, JsonObject>()
             {
+                {"id", new JsonValue(node.id.ToString())},
                 {"kind", new JsonValue(node.kind.ToString())},
                 {"type", new JsonValue(node.value.GetType().ToString())},
                 {"value", new JsonValue(node.value.ToString())}
@@ -195,6 +205,7 @@ namespace Compiler
             return new JsonMap(
             new Dictionary<string, JsonObject>()
             {
+                {"id", new JsonValue(node.id.ToString())},
                 {"kind", new JsonValue(node.kind.ToString())},
                 {"expressions",new JsonArray( node.expressions.Select(VisitNode).ToList()) }
             });
@@ -205,6 +216,7 @@ namespace Compiler
             return new JsonMap(
             new Dictionary<string, JsonObject>()
             {
+                {"id", new JsonValue(node.id.ToString())},
                 {"kind", new JsonValue(node.kind.ToString())},
                 {"name", new JsonValue(node.name)}
             });
@@ -215,6 +227,7 @@ namespace Compiler
             return new JsonMap(
             new Dictionary<string, JsonObject>()
             {
+                {"id", new JsonValue(node.id.ToString())},
                 {"kind", new JsonValue(node.kind.ToString())},
                 {"value", VisitNode(node.value) }
             });
@@ -225,6 +238,7 @@ namespace Compiler
             return new JsonMap(
             new Dictionary<string, JsonObject>()
             {
+                {"id", new JsonValue(node.id.ToString())},
                 {"kind", new JsonValue(node.kind.ToString())},
                 {"type", node.type == null?new JsonValue("<NULL>"):VisitType(node.type) },
                 {"value", node.value == null?new JsonValue("<NULL>"):VisitNode(node.value) }
@@ -236,6 +250,7 @@ namespace Compiler
             return new JsonMap(
             new Dictionary<string, JsonObject>()
             {
+                {"id", new JsonValue(node.id.ToString())},
                 {"kind", new JsonValue(node.kind.ToString())},
                 {"condition", VisitNode(node.condition)},
                 {"body", VisitNode(node.body)}

@@ -422,7 +422,6 @@ namespace Compiler
 
         Type CheckName(Name node, Scope scope)
         {
-            Console.WriteLine(node.name);
             Object result = scope.Lookup(node.name, "IDENTIFIER_TYPE");
             if (result == null)
             {
