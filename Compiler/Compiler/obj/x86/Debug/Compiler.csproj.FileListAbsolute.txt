@@ -1,0 +1,6 @@
+/home/yanjie/Documents/MyCode/C#/Compiler/Compiler/bin/Debug/Compiler.exe
+/home/yanjie/Documents/MyCode/C#/Compiler/Compiler/bin/Debug/Compiler.pdb
+/home/yanjie/Documents/MyCode/C#/Compiler/Compiler/obj/x86/Debug/Compiler.csprojAssemblyReference.cache
+/home/yanjie/Documents/MyCode/C#/Compiler/Compiler/obj/x86/Debug/Compiler.csproj.CoreCompileInputs.cache
+/home/yanjie/Documents/MyCode/C#/Compiler/Compiler/obj/x86/Debug/Compiler.exe
+/home/yanjie/Documents/MyCode/C#/Compiler/Compiler/obj/x86/Debug/Compiler.pdb

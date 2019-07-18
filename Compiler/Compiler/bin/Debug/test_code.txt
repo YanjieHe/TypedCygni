@@ -1,0 +1,31 @@
+module Program
+{
+	def Factorial(n: Int): Int
+	{
+		if (n == 0)
+		{
+			return 1
+		}
+		else
+		{
+			return n * Factorial(n - 1)
+		}
+	}
+
+	def Add(x: Double, y: Double): Double
+	{
+		return x + y
+	}
+}
+
+class Point
+{
+	var x: Int
+	var y: Int
+	
+	def move(dx: Int, dy: Int): Void
+	{
+		x = x + dx
+		y = y + dy
+	}
+} 
