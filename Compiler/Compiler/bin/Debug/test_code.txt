@@ -16,6 +16,47 @@ module Program
 	{
 		return x + y
 	}
+	
+	def Multiply(x: Int, y: Int): Int
+	{
+        return x * y
+    }
+    
+    def Fibonacci(n: Int): Int
+    {
+        if (n == 0)
+        {
+            return n
+        }
+        else if (n == 1)
+        {
+            return n
+        }
+        else
+        {
+            return Fibonacci(n - 1) + Fibonacci(n - 2)
+        }
+    }
+    
+    def Choose(n: Int): Int
+    {
+        if (n == 1)
+        {
+            return 100
+        }
+        else if (n == 2)
+        {
+            return 200
+        }
+        else
+        {
+            return 300
+        }
+    }
+	def Main(): Int
+	{
+        return Fibonacci(10)
+	}
 }
 
 class Point

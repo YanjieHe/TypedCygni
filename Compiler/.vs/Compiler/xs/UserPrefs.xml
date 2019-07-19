@@ -1,17 +1,16 @@
 ﻿<Properties StartupConfiguration="{350C4F1D-AF57-4FF4-B93F-A580601741B4}|Default">
   <MonoDevelop.Ide.ItemProperties.Compiler PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Compiler/Program.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Compiler/Compiler.cs">
     <Files>
-      <File FileName="Compiler/VM.cs" Line="324" Column="66" />
-      <File FileName="Compiler/Compiler.cs" Line="285" Column="44" NotebookId="1" />
-      <File FileName="Compiler/Program.cs" Line="88" Column="57" NotebookId="1" />
+      <File FileName="Compiler/VM.cs" Line="117" Column="53" />
+      <File FileName="Compiler/Compiler.cs" Line="252" Column="85" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="Compiler" expanded="True">
             <Node name="Compiler" expanded="True">
-              <Node name="Program.cs" selected="True" />
+              <Node name="Compiler.cs" selected="True" />
             </Node>
           </Node>
         </State>

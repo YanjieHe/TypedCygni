@@ -233,8 +233,8 @@ namespace Compiler
                 ruleSet.AddRule("<", new Type[] { Type.INT, Type.INT }, Op.LT_I32);
                 ruleSet.AddRule(">=", new Type[] { Type.INT, Type.INT }, Op.GE_I32);
                 ruleSet.AddRule("<=", new Type[] { Type.INT, Type.INT }, Op.LE_I32);
-                ruleSet.AddRule("!=", new Type[] { Type.INT, Type.INT }, Op.EQ_I32);
-                ruleSet.AddRule("==", new Type[] { Type.INT, Type.INT }, Op.NE_I32);
+                ruleSet.AddRule("==", new Type[] { Type.INT, Type.INT }, Op.EQ_I32);
+                ruleSet.AddRule("!=", new Type[] { Type.INT, Type.INT }, Op.NE_I32);
 
                 ruleSet.AddRule("-", new Type[] { Type.INT }, Op.MINUS_I32);
 
@@ -248,8 +248,8 @@ namespace Compiler
                 ruleSet.AddRule("<", new Type[] { Type.DOUBLE, Type.DOUBLE }, Op.LT_F64);
                 ruleSet.AddRule(">=", new Type[] { Type.DOUBLE, Type.DOUBLE }, Op.GE_F64);
                 ruleSet.AddRule("<=", new Type[] { Type.DOUBLE, Type.DOUBLE }, Op.LE_F64);
-                ruleSet.AddRule("!=", new Type[] { Type.DOUBLE, Type.DOUBLE }, Op.EQ_F64);
-                ruleSet.AddRule("==", new Type[] { Type.DOUBLE, Type.DOUBLE }, Op.NE_F64);
+                ruleSet.AddRule("==", new Type[] { Type.DOUBLE, Type.DOUBLE }, Op.EQ_F64);
+                ruleSet.AddRule("!=", new Type[] { Type.DOUBLE, Type.DOUBLE }, Op.NE_F64);
 
                 ruleSet.AddRule("-", new Type[] { Type.DOUBLE }, Op.MINUS_F64);
 

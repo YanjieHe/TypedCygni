@@ -82,18 +82,31 @@ namespace Compiler
                 //    Console.WriteLine(b);
                 //}
 
-                VM vm = new VM(1000);
+                VM vm = new VM(100);
                 VirtualMachine.Parser bytecodeParser = new VirtualMachine.Parser(bytecode.ToArray());
                 var compiledProgram = bytecodeParser.Parse();
                 Func<byte[], String> str = bytes => Encoding.UTF8.GetString(bytes);
                 Console.WriteLine(str(compiledProgram.path));
+                VirtualMachine.Function main = null;
                 foreach (var module in compiledProgram.modules)
                 {
                     Console.WriteLine(str(module.name));
-                    foreach (var function in module.functions)
+                    foreach (var function in module.env.functions)
                     {
+                        if (str(function.name) == "Main")
+                        {
+                            main = function;
+                        }
                         Console.WriteLine(str(function.name));
                     }
+                }
+                if (main != null)
+                {
+                    VM.Run(vm, main);
+                }
+                else
+                {
+                    Console.WriteLine("cannot find 'main' function");
                 }
             }
             catch (LexerException ex)

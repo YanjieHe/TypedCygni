@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Op = Compiler.Op;
+using System.Text;
+using System.Linq;
 namespace VirtualMachine
 {
     public class Union
@@ -47,21 +49,31 @@ namespace VirtualMachine
         public ushort stack;
         public ushort args_size;
         public byte[] code;
-        public TaggedValue[] constantPool;
+        public Env env;
     }
-    public class Module
+    public class Env
     {
-        public byte[] name;
         public TaggedValue[] constantPool;
         public Value[] variables;
         public Function[] functions;
     }
+    public class Module
+    {
+        public byte[] name;
+        public Env env;
+        public Module()
+        {
+            this.env = new Env();
+        }
+    }
     public class Class
     {
         public byte[] name;
-        public TaggedValue[] constantPool;
-        public Value[] fields;
-        public Function[] methods;
+        Env env;
+        public Class()
+        {
+            this.env = new Env();
+        }
     }
     public class Program
     {
@@ -79,10 +91,47 @@ namespace VirtualMachine
         public VM(int stackSize)
         {
             this.stack = new Value[stackSize];
+            for (int i = 0; i < this.stack.Length; i++)
+            {
+                stack[i] = new Value();
+            }
+            this.sp = -1;
+            this.pc = 0;
+            this.fp = 0;
         }
         public static ushort USHORT(byte[] bytes, int index)
         {
-            return (ushort)((bytes[index] << 8) + (bytes[index + 1]));
+            return (ushort)((bytes[index]) + (bytes[index + 1] << 8));
+        }
+        public static void ViewStack(VM vm)
+        {
+            Console.Write("[");
+            for (int i = 0; i < vm.stack.Length; i++)
+            {
+                if (i != 0)
+                {
+                    Console.Write(", ");
+                }
+                if (i == vm.sp)
+                {
+                    ConsoleColor color = Console.ForegroundColor;
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write(vm.stack[i].u.i32_v);
+                    Console.ForegroundColor = color;
+                }
+                else if (i == vm.fp)
+                {
+                    ConsoleColor color = Console.ForegroundColor;
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.Write(vm.stack[i].u.i32_v);
+                    Console.ForegroundColor = color;
+                }
+                else
+                {
+                    Console.Write(vm.stack[i].u.i32_v);
+                }
+            }
+            Console.WriteLine("]");
         }
         public static void Run(VM vm, Function entry)
         {
@@ -91,6 +140,7 @@ namespace VirtualMachine
             {
                 byte op = current.code[vm.pc];
                 vm.pc++;
+                Console.WriteLine("op = {0}", (Op)op);
                 switch ((Op)op)
                 {
                     case Op.PUSH_CONST_I32:
@@ -98,7 +148,7 @@ namespace VirtualMachine
                             ushort index = USHORT(current.code, vm.pc);
                             vm.sp++;
                             vm.stack[vm.sp].u.i32_v =
-                               current.constantPool[index].u.i32_v;
+                               current.env.constantPool[index].u.i32_v;
                             vm.pc += 2;
                             break;
                         }
@@ -178,14 +228,14 @@ namespace VirtualMachine
                         }
                     case Op.CALL:
                         {
-                            Console.Write("a = {0}\n", vm.stack[vm.fp].u.i32_v);
-                            Console.Write("load function at: {0}\n", vm.sp);
+                            //Console.Write("a = {0}\n", vm.stack[vm.fp].u.i32_v);
+                            //Console.Write("load function at: {0}\n", vm.sp);
                             Function function = (Function)(vm.stack[vm.sp].u.pointer);
-                            Console.Write("successfully load function\n");
+                            Console.WriteLine("successfully load function: {0}", Encoding.UTF8.GetString(function.name));
                             int previous_fp = vm.fp;
                             vm.fp = vm.sp - function.args_size;
-                            Console.Write("after ... a = {0}\n", vm.stack[vm.fp].u.i32_v);
-                            Console.Write("fp = {0}\n", vm.fp);
+                            //Console.Write("after ... a = {0}\n", vm.stack[vm.fp].u.i32_v);
+                            //Console.Write("fp = {0}\n", vm.fp);
                             int _base = vm.fp + function.args_size + function.locals;
                             vm.stack[_base].u.i32_v = vm.pc;
                             vm.stack[_base + 1].u.i32_v = previous_fp;
@@ -230,33 +280,32 @@ namespace VirtualMachine
                         }
                     case Op.PUSH_FUNCTION:
                         {
+                            ViewStack(vm);
                             ushort index = USHORT(current.code, vm.pc);
                             vm.sp++;
                             vm.stack[vm.sp].u.pointer =
-                                current.constantPool[index].u.pointer;
-                            Console.Write("function index: {0}\n", index);
-                            Console.Write("push function at: {0}\n", vm.sp);
+                                current.env.functions[index];
+                            //Console.Write("function index: {0}\n", index);
+                            //Console.Write("push function at: {0}\n", vm.sp);
 
                             vm.pc += 2;
                             break;
                         }
                     case Op.RETURN_I32:
                         {
-                            Console.Write("try to return\n");
-                            bool result = Convert.ToBoolean(vm.stack[vm.sp].u.i32_v);
+                            int result = vm.stack[vm.sp].u.i32_v;
                             int _base = vm.fp + current.args_size + current.locals;
                             vm.sp = vm.fp;
                             vm.pc = vm.stack[_base].u.i32_v;
                             vm.fp = vm.stack[_base + 1].u.i32_v;
 
-                            vm.sp++;
-                            vm.stack[vm.sp].u.i32_v = Convert.ToInt32(result);
-                            Console.Write("result = {0}\n", result);
-
+                            vm.stack[vm.sp].u.i32_v = result;
+                            Console.WriteLine("result = {0}\n", result);
+                            ViewStack(vm);
                             Function previous = (Function)(vm.stack[_base + 2].u.pointer);
-                            if (previous == null)
+                            if (vm.fp == 0)
                             {
-                                Console.Write("finished!\n");
+                                Console.WriteLine("program result: {0}", result);
                                 return;
                             }
                             current = previous;
@@ -296,19 +345,20 @@ namespace VirtualMachine
             for (int i = 0; i < moduleCount; i++)
             {
                 Module module = new Module();
+
                 module.name = ReadString();
                 int constantPoolCount = ReadU16();
                 int variableCount = ReadU16();
                 int functionCount = ReadU16();
-                module.constantPool = ParseConstantPool(constantPoolCount);
-                module.variables = new Value[variableCount];
-                module.functions = ParseFunctions(functionCount, module.constantPool);
+                module.env.constantPool = ParseConstantPool(constantPoolCount);
+                module.env.variables = new Value[variableCount];
+                module.env.functions = ParseFunctions(functionCount, module.env);
                 modules[i] = module;
             }
             return modules;
         }
 
-        Function[] ParseFunctions(int functionCount, TaggedValue[] constantPool)
+        Function[] ParseFunctions(int functionCount, Env env)
         {
             Function[] functions = new Function[functionCount];
             for (int i = 0; i < functionCount; i++)
@@ -320,7 +370,7 @@ namespace VirtualMachine
                 function.args_size = ReadU16();
                 int codeSize = ReadU16();
                 function.code = ReadBytes(codeSize);
-                function.constantPool = constantPool;
+                function.env = env;
                 functions[i] = function;
             }
             return functions;
