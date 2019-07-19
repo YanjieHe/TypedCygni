@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
+using VM = VirtualMachine.VM;
 namespace Compiler
 {
     class MainClass
@@ -49,10 +50,10 @@ namespace Compiler
                 TypeChecker checker = new TypeChecker(scopeMap, typeMap);
                 checker.Check(program, scope);
 
-                foreach (var pair in typeMap)
-                {
-                    Console.WriteLine(pair);
-                }
+                // foreach (var pair in typeMap)
+                // {
+                //     Console.WriteLine(pair);
+                // }
 
                 /* pass 6: register symbols */
                 Dictionary<int, Scope> scopeMap2 = new Dictionary<int, Scope>();
@@ -68,9 +69,31 @@ namespace Compiler
                 locator.Locate(program, scope2);
 
 
-                foreach (var pair in locationMap)
+                // foreach (var pair in locationMap)
+                // {
+                //     Console.WriteLine(pair);
+                // }
+
+                /* pass 8: compile */
+                Compiler compiler = new Compiler(typeMap, locationMap, constantPoolMap);
+                var bytecode = compiler.Compile(program);
+                //foreach(var b in bytecode)
+                //{
+                //    Console.WriteLine(b);
+                //}
+
+                VM vm = new VM(1000);
+                VirtualMachine.Parser bytecodeParser = new VirtualMachine.Parser(bytecode.ToArray());
+                var compiledProgram = bytecodeParser.Parse();
+                Func<byte[], String> str = bytes => Encoding.UTF8.GetString(bytes);
+                Console.WriteLine(str(compiledProgram.path));
+                foreach (var module in compiledProgram.modules)
                 {
-                    Console.WriteLine(pair);
+                    Console.WriteLine(str(module.name));
+                    foreach (var function in module.functions)
+                    {
+                        Console.WriteLine(str(function.name));
+                    }
                 }
             }
             catch (LexerException ex)
