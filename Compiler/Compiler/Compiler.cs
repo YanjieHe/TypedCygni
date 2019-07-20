@@ -370,6 +370,7 @@ namespace Compiler
         {
             return typeMap[node.id];
         }
+
         void CompileBinary(Binary node, List<byte> code)
         {
             CompileNode(node.left, code);

@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using VM = VirtualMachine.VM;
+
 namespace Compiler
 {
     class MainClass

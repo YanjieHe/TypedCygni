@@ -34,7 +34,8 @@ namespace Compiler
         While,
         DefClass,
         DefModule,
-        TypeSpecifier
+        TypeSpecifier,
+        MemberAccess
     };
 
     public enum Access
@@ -300,6 +301,26 @@ namespace Compiler
             this.methods = methods;
         }
     };
+
+    public class MemberInfo
+    {
+        public String name;
+        public MemberInfo(String name)
+        {
+            this.name = name;
+        }
+    }
+    public class MemberAccess : Ast
+    {
+        public Ast expression;
+        public MemberInfo member;
+        public MemberAccess(Position position, Ast expression, MemberInfo member)
+            : base(Kind.MemberAccess, position)
+        {
+            this.expression = expression;
+            this.member = member;
+        }
+    }
 
     public class Program
     {

@@ -156,7 +156,6 @@ namespace VirtualMachine
                     case Op.PUSH_LOCAL_I32:
                         {
                             ushort index = USHORT(current.code, vm.pc);
-                            Console.WriteLine("index = {0}", index);
                             vm.sp++;
                             vm.stack[vm.sp].u.i32_v =
                                 vm.stack[vm.fp + index].u.i32_v;
@@ -166,7 +165,6 @@ namespace VirtualMachine
                     case Op.POP_LOCAL_I32:
                         {
                             ushort index = USHORT(current.code, vm.pc);
-                            Console.WriteLine("index = {0}", index);
                             vm.stack[vm.fp + index].u.i32_v =
                                 vm.stack[vm.sp].u.i32_v;
                             vm.sp--;
@@ -263,14 +261,10 @@ namespace VirtualMachine
                         }
                     case Op.CALL:
                         {
-                            //Console.Write("a = {0}\n", vm.stack[vm.fp].u.i32_v);
-                            //Console.Write("load function at: {0}\n", vm.sp);
                             Function function = (Function)(vm.stack[vm.sp].u.pointer);
                             Console.WriteLine("successfully load function: {0}", Encoding.UTF8.GetString(function.name));
                             int previous_fp = vm.fp;
                             vm.fp = vm.sp - function.args_size;
-                            //Console.Write("after ... a = {0}\n", vm.stack[vm.fp].u.i32_v);
-                            //Console.Write("fp = {0}\n", vm.fp);
                             int _base = vm.fp + function.args_size + function.locals;
                             vm.stack[_base].u.i32_v = vm.pc;
                             vm.stack[_base + 1].u.i32_v = previous_fp;
@@ -320,8 +314,6 @@ namespace VirtualMachine
                             vm.sp++;
                             vm.stack[vm.sp].u.pointer =
                                 current.env.functions[index];
-                            //Console.Write("function index: {0}\n", index);
-                            //Console.Write("push function at: {0}\n", vm.sp);
 
                             vm.pc += 2;
                             break;
