@@ -332,7 +332,7 @@ namespace Compiler
                 case Kind.Call:
                     return CheckCall((Call)node, scope);
                 case Kind.While:
-                    throw new NotImplementedException();
+                    return CheckWhile((While)node, scope);
                 case Kind.DefClass:
                     return CheckDefClass((DefClass)node, scope);
                 case Kind.DefModule:
@@ -540,6 +540,19 @@ namespace Compiler
             }
         }
 
+        Type CheckWhile(While node, Scope scope)
+        {
+            Type condition = Check(node.condition, scope);
+            if (condition.GetTypeCode() == TypeCode.BOOL)
+            {
+                Check(node.body, scope);
+                return Type.VOID;
+            }
+            else
+            {
+                throw new TypeException(node.position, "while condition must be 'Bool' type");
+            }
+        }
 
         Type CheckDefClass(DefClass node, Scope parent)
         {

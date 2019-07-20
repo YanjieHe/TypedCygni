@@ -591,6 +591,22 @@ namespace Compiler
             EmitOp(code, Op.CALL);
         }
 
+        void CompileWhile(While node, List<byte> code)
+        {
+            int index0 = code.Count;
+            CompileNode(node.condition, code);
+            EmitOp(code, Op.JUMP_IF_FALSE);
+            int index1 = code.Count;
+            EmitU16(code, 0); /* hold the place */
+
+            CompileNode(node.body, code);
+            EmitOp(code, Op.JUMP);
+            EmitU16(code, index0);
+
+            int dest1 = code.Count;
+            RewriteU16(code, index1, dest1);
+        }
+
         void CompileModule(DefModule node, List<byte> code)
         {
             List<Object> constantPool = constantPoolMap[node.id];

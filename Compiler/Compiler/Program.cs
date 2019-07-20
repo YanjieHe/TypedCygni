@@ -117,6 +117,7 @@ namespace Compiler
             {
                 Console.WriteLine("line: {0}, col: {1}, message: {2}", ex.line, ex.column, ex.Message);
             }
+            Console.ReadKey();
         }
     }
 }

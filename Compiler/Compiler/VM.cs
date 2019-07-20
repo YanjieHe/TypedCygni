@@ -136,6 +136,7 @@ namespace VirtualMachine
         public static void Run(VM vm, Function entry)
         {
             Function current = entry;
+            InitializeEntryFunction(vm, entry);
             while (vm.pc < current.code.Length)
             {
                 byte op = current.code[vm.pc];
@@ -280,7 +281,7 @@ namespace VirtualMachine
                         }
                     case Op.PUSH_FUNCTION:
                         {
-                            ViewStack(vm);
+                            //ViewStack(vm);
                             ushort index = USHORT(current.code, vm.pc);
                             vm.sp++;
                             vm.stack[vm.sp].u.pointer =
@@ -301,9 +302,9 @@ namespace VirtualMachine
 
                             vm.stack[vm.sp].u.i32_v = result;
                             Console.WriteLine("result = {0}\n", result);
-                            ViewStack(vm);
+                            //ViewStack(vm);
                             Function previous = (Function)(vm.stack[_base + 2].u.pointer);
-                            if (vm.fp == 0)
+                            if (vm.fp == -1)
                             {
                                 Console.WriteLine("program result: {0}", result);
                                 return;
@@ -318,6 +319,15 @@ namespace VirtualMachine
                         }
                 }
             }
+        }
+
+        public static void InitializeEntryFunction(VM vm, Function entry)
+        {
+            int _base = vm.fp + entry.args_size + entry.locals;
+            vm.stack[_base].u.i32_v = vm.pc;
+            vm.stack[_base + 1].u.i32_v = -1;
+            vm.stack[_base + 2].u.pointer = null;
+            vm.sp = vm.fp + entry.args_size + entry.locals + 2;
         }
     }
     public class Parser
