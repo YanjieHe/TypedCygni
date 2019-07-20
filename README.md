@@ -51,11 +51,11 @@ module Program
         var i = 1
         var sum = 0
         while (i <= n)
-        {
+		{
 			sum = sum + i
 			i = i + 1
-        }
-        return sum
+		}
+		return sum
 	}
 	
 	def Main(): Int
