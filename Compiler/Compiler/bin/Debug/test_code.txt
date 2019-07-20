@@ -52,7 +52,7 @@ module Program
 
 	def Main(): Int
 	{
-        return Sum(10)
+        return Sum(100)
 	}
 }
 

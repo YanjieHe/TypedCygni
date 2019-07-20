@@ -470,7 +470,7 @@ namespace Compiler
         void CompileName(Name node, List<byte> code)
         {
             Location location = locationMap[node.id];
-            Type type = typeMap[node.id];
+            Type type = T(node);
             if (type.GetTypeCode() == TypeCode.FUNCTION)
             {
                 if (location.kind == LocationKind.Module)
@@ -570,7 +570,7 @@ namespace Compiler
             {
                 CompileNode(node.value, code);
                 Location location = locationMap[node.id];
-                Type type = typeMap[node.id];
+                Type type = T(node);
                 if (location.kind == LocationKind.Function)
                 {
                     if (type.GetTypeCode() == TypeCode.INT)
@@ -637,7 +637,7 @@ namespace Compiler
         {
             // add support for field assignment and array access
             Location location = locationMap[node.left.id];
-            Type type = typeMap[node.left.id];
+            Type type = T(node.left);
             CompileNode(node.right, code);
             if (location.kind == LocationKind.Function)
             {

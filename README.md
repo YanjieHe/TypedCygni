@@ -3,30 +3,6 @@
 This is a simple compiler with runtime virtual machine, written in C++11.
 The compiler is able to make type check and type inference, then generates the bytecodes for the virtual machine to execute.
 
-# Instruction Set
-- PUSH_CONSTANT_INT
-- PUSH_STACK_INT
-
-- ADD_INT
-- SUB_INT
-- MUL_INT
-- DIV_INT
-- MOD_INT
-
-- GT_INT
-- LT_INT
-- GE_INT
-- LE_INT
-- EQ_INT
-- NE_INT
-
-- JUMP
-- JUMP_IF_TRUE
-- JUMP_IF_FALSE
-
-- RETURN_INT
-- INVOKE
-
 ## Example Code
 
 ```
@@ -42,6 +18,49 @@ module Program
 		{
 			return n * Factorial(n - 1)
 		}
+	}
+
+	def Add(x: Double, y: Double): Double
+	{
+		return x + y
+	}
+	
+	def Multiply(x: Int, y: Int): Int
+	{
+        return x * y
+    }
+    
+    def Fibonacci(n: Int): Int
+    {
+        if (n == 0)
+        {
+            return n
+        }
+        else if (n == 1)
+        {
+            return n
+        }
+        else
+        {
+            return Fibonacci(n - 1) + Fibonacci(n - 2)
+        }
+    }
+
+    def Sum(n: Int): Int
+    {
+        var i = 1
+        var sum = 0
+        while (i <= n)
+        {
+            sum = sum + i
+            i = i + 1
+        }
+        return sum
+    }
+
+	def Main(): Int
+	{
+        return Sum(100)
 	}
 }
 ```
