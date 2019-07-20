@@ -175,7 +175,7 @@ namespace Compiler
                     }
                     break;
                 case Kind.While:
-                    foreach (var item in VisitCall((Call)node))
+                    foreach (var item in VisitWhile((While)node))
                     {
                         yield return item;
                     }
@@ -383,11 +383,6 @@ namespace Compiler
                 throw new LocationException(node.position, "name not defined");
             }
         }
-
-        //void LocateReturn(Return node, Scope scope)
-        //{
-        //    Locate(node.value, scope);
-        //}
 
         void LocateVar(Var node, Scope scope)
         {

@@ -257,6 +257,7 @@ namespace Compiler
                 ruleSet.AddRule("return", new Type[] { Type.LONG }, Op.RETURN_I64);
                 ruleSet.AddRule("return", new Type[] { Type.FLOAT }, Op.RETURN_F32);
                 ruleSet.AddRule("return", new Type[] { Type.DOUBLE }, Op.RETURN_F64);
+
             }
         }
         public static RuleSet<Op> ruleSet = new RuleSet<Op>();
@@ -346,11 +347,13 @@ namespace Compiler
                     CompileDef((Def)node, code);
                     break;
                 case Kind.Assign:
+                    CompileAssign((Binary)node, code);
                     break;
                 case Kind.Call:
                     CompileCall((Call)node, code);
                     break;
                 case Kind.While:
+                    CompileWhile((While)node, code);
                     break;
                 case Kind.DefClass:
                     break;
@@ -563,8 +566,57 @@ namespace Compiler
 
         void CompileVar(Var node, List<byte> code)
         {
-            // TO DO
-            throw new NotFiniteNumberException();
+            if (node.value != null)
+            {
+                CompileNode(node.value, code);
+                Location location = locationMap[node.id];
+                Type type = typeMap[node.id];
+                if (location.kind == LocationKind.Function)
+                {
+                    if (type.GetTypeCode() == TypeCode.INT)
+                    {
+                        EmitOp(code, Op.POP_LOCAL_I32);
+                        EmitU16(code, location.offset);
+                    }
+                    else if (type.GetTypeCode() == TypeCode.FLOAT)
+                    {
+                        EmitOp(code, Op.POP_LOCAL_F32);
+                        EmitU16(code, location.offset);
+                    }
+                    else if (type.GetTypeCode() == TypeCode.LONG)
+                    {
+                        EmitOp(code, Op.POP_LOCAL_I64);
+                        EmitU16(code, location.offset);
+                    }
+                    else if (type.GetTypeCode() == TypeCode.DOUBLE)
+                    {
+                        EmitOp(code, Op.POP_LOCAL_F64);
+                        EmitU16(code, location.offset);
+                    }
+                    else if (type.GetTypeCode() == TypeCode.BOOL)
+                    {
+                        EmitOp(code, Op.POP_LOCAL_I32);
+                        EmitU16(code, location.offset);
+                    }
+                    else if (type.GetTypeCode() == TypeCode.CHAR)
+                    {
+                        EmitOp(code, Op.POP_LOCAL_I32);
+                        EmitU16(code, location.offset);
+                    }
+                    else
+                    {
+                        throw new NotSupportedException();
+                    }
+                }
+                else
+                {
+                    throw new NotSupportedException();
+                }
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
         }
 
         void CompileDef(Def node, List<byte> code)
@@ -580,6 +632,54 @@ namespace Compiler
             CompileNode(node.body, functionCode);
             EmitU16(code, functionCode.Count);
             code.AddRange(functionCode);
+        }
+        void CompileAssign(Binary node, List<byte> code)
+        {
+            // add support for field assignment and array access
+            Location location = locationMap[node.left.id];
+            Type type = typeMap[node.left.id];
+            CompileNode(node.right, code);
+            if (location.kind == LocationKind.Function)
+            {
+                if (type.GetTypeCode() == TypeCode.INT)
+                {
+                    EmitOp(code, Op.POP_LOCAL_I32);
+                    EmitU16(code, location.offset);
+                }
+                else if (type.GetTypeCode() == TypeCode.FLOAT)
+                {
+                    EmitOp(code, Op.POP_LOCAL_F32);
+                    EmitU16(code, location.offset);
+                }
+                else if (type.GetTypeCode() == TypeCode.LONG)
+                {
+                    EmitOp(code, Op.POP_LOCAL_I64);
+                    EmitU16(code, location.offset);
+                }
+                else if (type.GetTypeCode() == TypeCode.DOUBLE)
+                {
+                    EmitOp(code, Op.POP_LOCAL_F64);
+                    EmitU16(code, location.offset);
+                }
+                else if (type.GetTypeCode() == TypeCode.BOOL)
+                {
+                    EmitOp(code, Op.POP_LOCAL_I32);
+                    EmitU16(code, location.offset);
+                }
+                else if (type.GetTypeCode() == TypeCode.CHAR)
+                {
+                    EmitOp(code, Op.POP_LOCAL_I32);
+                    EmitU16(code, location.offset);
+                }
+                else
+                {
+                    throw new NotSupportedException();
+                }
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
         }
         void CompileCall(Call node, List<byte> code)
         {
@@ -665,6 +765,7 @@ namespace Compiler
         }
         static void EmitOp(List<byte> code, Op op)
         {
+            Console.WriteLine("emit {0}", op);
             code.Add((byte)op);
         }
 

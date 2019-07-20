@@ -37,26 +37,22 @@ module Program
             return Fibonacci(n - 1) + Fibonacci(n - 2)
         }
     }
-    
-    def Choose(n: Int): Int
+
+    def Sum(n: Int): Int
     {
-        if (n == 1)
+        var i = 1
+        var sum = 0
+        while (i <= n)
         {
-            return 100
+            sum = sum + i
+            i = i + 1
         }
-        else if (n == 2)
-        {
-            return 200
-        }
-        else
-        {
-            return 300
-        }
+        return sum
     }
 
 	def Main(): Int
 	{
-        return Fibonacci(10)
+        return Sum(10)
 	}
 }
 

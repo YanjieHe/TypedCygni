@@ -156,6 +156,7 @@ namespace VirtualMachine
                     case Op.PUSH_LOCAL_I32:
                         {
                             ushort index = USHORT(current.code, vm.pc);
+                            Console.WriteLine("index = {0}", index);
                             vm.sp++;
                             vm.stack[vm.sp].u.i32_v =
                                 vm.stack[vm.fp + index].u.i32_v;
@@ -165,6 +166,7 @@ namespace VirtualMachine
                     case Op.POP_LOCAL_I32:
                         {
                             ushort index = USHORT(current.code, vm.pc);
+                            Console.WriteLine("index = {0}", index);
                             vm.stack[vm.fp + index].u.i32_v =
                                 vm.stack[vm.sp].u.i32_v;
                             vm.sp--;
@@ -208,6 +210,38 @@ namespace VirtualMachine
                             vm.stack[vm.sp - 1].u.i32_v =
                                 vm.stack[vm.sp - 1].u.i32_v %
                                 vm.stack[vm.sp].u.i32_v;
+                            vm.sp--;
+                            break;
+                        }
+                    case Op.GT_I32:
+                        {
+                            vm.stack[vm.sp - 1].u.i32_v = Convert.ToInt32(
+                                vm.stack[vm.sp - 1].u.i32_v >
+                                vm.stack[vm.sp].u.i32_v);
+                            vm.sp--;
+                            break;
+                        }
+                    case Op.LT_I32:
+                        {
+                            vm.stack[vm.sp - 1].u.i32_v = Convert.ToInt32(
+                                vm.stack[vm.sp - 1].u.i32_v <
+                                vm.stack[vm.sp].u.i32_v);
+                            vm.sp--;
+                            break;
+                        }
+                    case Op.GE_I32:
+                        {
+                            vm.stack[vm.sp - 1].u.i32_v = Convert.ToInt32(
+                                vm.stack[vm.sp - 1].u.i32_v >=
+                                vm.stack[vm.sp].u.i32_v);
+                            vm.sp--;
+                            break;
+                        }
+                    case Op.LE_I32:
+                        {
+                            vm.stack[vm.sp - 1].u.i32_v = Convert.ToInt32(
+                                vm.stack[vm.sp - 1].u.i32_v <=
+                                vm.stack[vm.sp].u.i32_v);
                             vm.sp--;
                             break;
                         }

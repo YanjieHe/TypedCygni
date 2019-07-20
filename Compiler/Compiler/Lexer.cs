@@ -56,8 +56,9 @@ namespace Compiler
 
         public List<Token> ReadAll()
         {
-            Regex real = new Regex("[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?"); String opChars = "+-*/%><=!()[]{}:,.;";
-            Regex operators = new Regex("\\+|-|\\*|/|%|>=|<=|>|<|==|!=|\\(|\\)|\\[|\\]|\\{|\\}|:|,|\\.|;");
+            Regex real = new Regex("[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
+            String opChars = "+-*/%><=!()[]{}:,.;";
+            Regex operators = new Regex("\\+|-|\\*|/|%|>=|<=|>|<|==|!=|=|\\(|\\)|\\[|\\]|\\{|\\}|:|,|\\.|;");
             Regex name = new Regex("[a-zA-Z_][a-zA-Z0-9_]*");
             List<Token> tokens = new List<Token>();
             SkipWhiteSpaces();

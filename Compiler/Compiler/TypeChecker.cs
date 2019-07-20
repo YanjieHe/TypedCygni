@@ -475,10 +475,11 @@ namespace Compiler
             if (node.type != null && node.value != null)
             {
                 Type value = Check(node.value, scope);
-                if (node.type.Equals(value))
+                Type type = CheckTypeSpecifier(node.type, scope);
+                if (type.Equals(value))
                 {
                     scope.Insert(node.name, "IDENTIFIER_TYPE", value);
-                    return Type.VOID;
+                    return type;
                 }
                 else
                 {
@@ -489,15 +490,23 @@ namespace Compiler
             {
                 Type value = Check(node.value, scope);
                 scope.Insert(node.name, "IDENTIFIER_TYPE", value);
-                return Type.VOID;
+                return value;
             }
             else if (node.type != null && node.value == null)
             {
                 if (node.access == Access.Local)
                 {
-                    scope.Insert(node.name, "IDENTIFIER_TYPE", Check(node.type, scope));
+                    Type type = Check(node.type, scope);
+                    scope.Insert(node.name, "IDENTIFIER_TYPE", type);
+                    return type;
                 }
-                return Type.VOID;
+                else
+                {
+                    // TO DO
+                    Type type = Check(node.type, scope);
+                    //throw new NotSupportedException();
+                    return type;
+                }
             }
             else
             {

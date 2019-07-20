@@ -19,7 +19,7 @@ namespace Compiler
                 var tokens = lexer.ReadAll();
                 foreach (var token in tokens)
                 {
-                    // Console.WriteLine(token);
+                    //Console.WriteLine(token);
                 }
 
                 /* pass 2: syntax analysis */
