@@ -269,28 +269,16 @@ namespace Compiler
 
                 if (Look().tag == Tag.LeftParenthesis)
                 {
-                    List<Ast> arguments = new List<Ast>();
-                    Match(Tag.LeftParenthesis);
-                    if (Look().tag == Tag.RightParenthesis)
-                    {
-                        Match(Tag.RightParenthesis);
-                        x = new Call(GetPos(start), x, arguments);
-                    }
-                    else
-                    {
-                        arguments.Add(ParseOr());
-                        while (!IsEof() && Look().tag != Tag.RightParenthesis)
-                        {
-                            Match(Tag.Comma);
-                            arguments.Add(ParseOr());
-                        }
-                        Match(Tag.RightParenthesis);
-                        x = new Call(GetPos(start), x, arguments);
-                    }
+                    x = ParseCall(x);
                 }
                 else if (Look().tag == Tag.LeftBracket)
                 {
                     // TO DO
+                    throw new PlatformNotSupportedException();
+                }
+                else if (Look().tag == Tag.Dot)
+                {
+                    x = ParseDot(x);
                 }
             }
             return x;
@@ -605,6 +593,38 @@ namespace Compiler
             {
                 return Access.Public;
             }
+        }
+
+        Ast ParseCall(Ast function)
+        {
+            Token start = Look();
+            Match(Tag.LeftParenthesis);
+            List<Ast> arguments = new List<Ast>();
+            if (Look().tag == Tag.RightParenthesis)
+            {
+                Match(Tag.RightParenthesis);
+                return new Call(GetPos(start), function, arguments);
+            }
+            else
+            {
+                arguments.Add(ParseOr());
+                while (!IsEof() && Look().tag != Tag.RightParenthesis)
+                {
+                    Match(Tag.Comma);
+                    arguments.Add(ParseOr());
+                }
+                Match(Tag.RightParenthesis);
+                return new Call(GetPos(start), function, arguments);
+            }
+        }
+
+        Ast ParseDot(Ast expression)
+        {
+            Token start = Look();
+            Match(Tag.Dot);
+            String field = Match(Tag.Identifier).text;
+            var member = new MemberInfo(field);
+            return new MemberAccess(GetPos(start), expression, member);
         }
     }
 }

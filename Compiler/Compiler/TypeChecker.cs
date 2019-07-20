@@ -339,6 +339,8 @@ namespace Compiler
                     return CheckDefModule((DefModule)node, scope);
                 case Kind.TypeSpecifier:
                     return CheckTypeSpecifier((TypeSpecifier)node, scope);
+                case Kind.MemberAccess:
+                    return CheckMemberAccess((MemberAccess)node, scope);
                 default:
                     throw new NotSupportedException();
             }
@@ -611,6 +613,34 @@ namespace Compiler
                 {
                     return (Type)result;
                 }
+            }
+        }
+
+        Type CheckMemberAccess(MemberAccess node, Scope scope)
+        {
+            Type expression = Check(node.expression, scope);
+            if (expression.GetTypeCode() == TypeCode.MODULE)
+            {
+                ModuleType moduleType = (ModuleType)expression;
+                if (moduleType.variableTable.ContainsKey(node.member.name))
+                {
+                    int index = moduleType.variableTable[node.member.name];
+                    return typeMap[moduleType.definition.fields[index].id];
+                }
+                else if (moduleType.functionTable.ContainsKey(node.member.name))
+                {
+                    int index = moduleType.functionTable[node.member.name];
+                    return typeMap[moduleType.definition.fields[index].id];
+                }
+                else
+                {
+                    throw new TypeException(node.position, "field not defined");
+                }
+            }
+            else
+            {
+                // TO DO: object
+                throw new MulticastNotSupportedException();
             }
         }
     }

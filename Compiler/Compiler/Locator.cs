@@ -198,6 +198,12 @@ namespace Compiler
                         yield return item;
                     }
                     break;
+                case Kind.MemberAccess:
+                    foreach (var item in VisitMemberAccess((MemberAccess)node))
+                    {
+                        yield return item;
+                    }
+                    break;
                 default:
                     throw new NotSupportedException();
             }
@@ -317,6 +323,10 @@ namespace Compiler
                 }
             }
         }
+        static IEnumerable<Ast> VisitMemberAccess(MemberAccess node)
+        {
+            return Visit(node.expression);
+        }
     }
 
 
@@ -396,6 +406,12 @@ namespace Compiler
             {
                 throw new LocationException(node.position, "name not defined");
             }
+        }
+
+        void LocateMemberAccess(MemberAccess node, Scope scope)
+        {
+            // TO DO
+            throw new DivideByZeroException();
         }
 
         void LocateDef(Def node, Scope parent)

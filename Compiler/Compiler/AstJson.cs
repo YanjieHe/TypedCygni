@@ -71,7 +71,9 @@ namespace Compiler
                 case Kind.DefModule:
                     return VisitModule((DefModule)node);
                 case Kind.TypeSpecifier:
-                    return VisitNode((TypeSpecifier)node);
+                    return VisitType((TypeSpecifier)node);
+                case Kind.MemberAccess:
+                    return VisitMemberAccess((MemberAccess)node);
                 default:
                     throw new NotSupportedException();
             }
@@ -255,6 +257,19 @@ namespace Compiler
                 {"condition", VisitNode(node.condition)},
                 {"body", VisitNode(node.body)}
             });
+        }
+
+        JsonObject VisitMemberAccess(MemberAccess node)
+        {
+            return new JsonMap(
+                new Dictionary<string, JsonObject>
+                {
+                    { "id", new JsonValue(node.id.ToString())},
+                    { "kind", new JsonValue(node.kind.ToString())},
+                    { "expression", VisitNode(node.expression)},
+                    { "member",new JsonValue(node.member.ToString())}
+                }
+            );
         }
     }
 }

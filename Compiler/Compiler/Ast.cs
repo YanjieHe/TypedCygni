@@ -309,6 +309,11 @@ namespace Compiler
         {
             this.name = name;
         }
+
+        public override string ToString()
+        {
+            return name;
+        }
     }
     public class MemberAccess : Ast
     {
