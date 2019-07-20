@@ -56,11 +56,11 @@ module Program
             i = i + 1
         }
         return sum
-    }
-
+	}
+	
 	def Main(): Int
 	{
-        return Sum(100)
+		return Sum(100)
 	}
 }
 ```
