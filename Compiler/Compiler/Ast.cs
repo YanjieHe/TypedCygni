@@ -48,8 +48,7 @@ namespace Compiler
 
     public class Position
     {
-        public
-  int startLine;
+        public int startLine;
         public int startColumn;
         public int endLine;
         public int endColumn;
