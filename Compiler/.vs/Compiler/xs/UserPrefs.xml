@@ -1,12 +1,15 @@
 ﻿<Properties StartupConfiguration="{350C4F1D-AF57-4FF4-B93F-A580601741B4}|Default">
   <MonoDevelop.Ide.ItemProperties.Compiler PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workbench ActiveDocument="Compiler/Disassembler.cs">
+    <Files>
+      <File FileName="Compiler/Disassembler.cs" Line="1" Column="14" />
+    </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="Compiler" expanded="True">
             <Node name="Compiler" expanded="True">
-              <Node name="Lexer.cs" selected="True" />
+              <Node name="Disassembler.cs" selected="True" />
             </Node>
           </Node>
         </State>
