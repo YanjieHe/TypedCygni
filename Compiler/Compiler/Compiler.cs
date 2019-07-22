@@ -364,6 +364,7 @@ namespace Compiler
                 case Kind.TypeSpecifier:
                     break;
                 case Kind.MemberAccess:
+                    CompileMemberAccess((MemberAccess)node, code);
                     break;
                 default:
                     break;
@@ -776,7 +777,8 @@ namespace Compiler
 
         void CompileMemberAccess(MemberAccess node, List<byte> code)
         {
-            EmitOp(code, Op.PUSH_FIELD_OBJECT);
+            CompileNode(node.expression, code);
+            EmitOp(code, Op.PUSH_MEMBER_FUNCTION);
             Location location = locationMap[node.id];
             EmitU16(code, location.offset);
         }

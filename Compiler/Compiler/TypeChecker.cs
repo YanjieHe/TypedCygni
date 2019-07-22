@@ -6,9 +6,11 @@ namespace Compiler
     public class TypeRegister
     {
         Dictionary<int, Scope> scopeMap;
-        public TypeRegister(Dictionary<int, Scope> scopeMap)
+        Dictionary<int, Type> typeMap;
+        public TypeRegister(Dictionary<int, Scope> scopeMap, Dictionary<int, Type> typeMap)
         {
             this.scopeMap = scopeMap;
+            this.typeMap = typeMap;
         }
 
         public void Register(Program program, Scope scope)
@@ -16,12 +18,12 @@ namespace Compiler
             foreach (var module in program.modules)
             {
                 var type = new ModuleType(module.name, module);
-                scope.Insert(module.id.ToString(), "IDENTIFIER_TYPE", module);
+                scope.Insert(module.name, "IDENTIFIER_TYPE", type);
             }
             foreach (var _class in program.classes)
             {
                 var type = new ClassType(_class.name, _class);
-                scope.Insert(_class.id.ToString(), "TYPE", _class);
+                scope.Insert(_class.name, "TYPE", type);
             }
             program.modules.ForEach(m => RegisterModule(m, scope));
             program.classes.ForEach(c => RegisterClass(c, scope));
@@ -45,12 +47,16 @@ namespace Compiler
 
         void RegisterFunction(Def function, Scope scope)
         {
-            scope.Insert(function.name, "IDENTIFIER_TYPE", RegisterTypeSpecifier(function.type, scope));
+            var type = RegisterTypeSpecifier(function.type, scope);
+            scope.Insert(function.name, "IDENTIFIER_TYPE", type);
+            typeMap[function.id] = type;
         }
 
         void RegisterVariable(Var variable, Scope scope)
         {
-            scope.Insert(variable.name, "IDENTIFIER_TYPE", RegisterTypeSpecifier(variable.type, scope));
+            var type = RegisterTypeSpecifier(variable.type, scope);
+            scope.Insert(variable.name, "IDENTIFIER_TYPE", type);
+            typeMap[variable.id] = type;
         }
 
         Type RegisterTypeSpecifier(TypeSpecifier typeSpecifier, Scope scope)
@@ -443,7 +449,7 @@ namespace Compiler
             Object result = scope.Lookup(node.name, "IDENTIFIER_TYPE");
             if (result == null)
             {
-                throw new TypeException(node.position, "name not defined");
+                throw new TypeException(node.position, String.Format("name '{0}' not defined", node.name));
             }
             else
             {
@@ -646,7 +652,7 @@ namespace Compiler
                 else if (moduleType.functionTable.ContainsKey(node.member.name))
                 {
                     int index = moduleType.functionTable[node.member.name];
-                    return typeMap[moduleType.definition.fields[index].id];
+                    return typeMap[moduleType.definition.methods[index].id];
                 }
                 else
                 {

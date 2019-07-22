@@ -39,7 +39,7 @@ namespace Compiler
                 var tokens = lexer.ReadAll();
                 foreach (var token in tokens)
                 {
-                    //Console.WriteLine(token);
+                    Console.WriteLine(token);
                 }
 
                 /* pass 2: syntax analysis */
@@ -54,8 +54,9 @@ namespace Compiler
 
                 /* pass 4: register types */
                 Dictionary<int, Scope> scopeMap = new Dictionary<int, Scope>();
+                Dictionary<int, Type> typeMap = new Dictionary<int, Type>();
                 Scope scope = Scope.BuiltIn();
-                TypeRegister register = new TypeRegister(scopeMap);
+                TypeRegister register = new TypeRegister(scopeMap, typeMap);
                 register.Register(program, scope);
 
                 foreach (var pair in scopeMap)
@@ -64,9 +65,8 @@ namespace Compiler
                     Console.WriteLine(pair.Value);
                     Console.WriteLine();
                 }
-
+                Console.WriteLine(scope);
                 /* pass 5: type checking */
-                Dictionary<int, Type> typeMap = new Dictionary<int, Type>();
                 TypeChecker checker = new TypeChecker(scopeMap, typeMap);
                 checker.Check(program, scope);
 
@@ -143,11 +143,11 @@ namespace Compiler
             }
             catch (LexerException ex)
             {
-                Console.WriteLine("line: {0}, col: {1}, message: {2}", ex.line, ex.column, ex.Message);
+                Console.WriteLine("line: {0}, col: {1}, message: {2}", ex.line + 1, ex.column + 1, ex.Message);
             }
             catch (ParserException ex)
             {
-                Console.WriteLine("line: {0}, col: {1}, message: {2}", ex.line, ex.column, ex.Message);
+                Console.WriteLine("line: {0}, col: {1}, message: {2}", ex.line + 1, ex.column + 1, ex.Message);
             }
             Console.ReadKey();
         }

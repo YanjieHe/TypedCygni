@@ -63,7 +63,7 @@ namespace Compiler
 
         public override string ToString()
         {
-            return String.Join(", ", startLine, startColumn, endLine, endColumn);
+            return String.Join(", ", startLine + 1, startColumn + 1, endLine + 1, endColumn + 1);
         }
     };
 

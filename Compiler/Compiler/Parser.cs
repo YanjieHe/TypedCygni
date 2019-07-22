@@ -263,7 +263,7 @@ namespace Compiler
         Ast ParsePostfix()
         {
             Ast x = ParseFactor();
-            while (Look().tag == Tag.LeftParenthesis || Look().tag == Tag.LeftBracket)
+            while (Look().tag == Tag.LeftParenthesis || Look().tag == Tag.LeftBracket || Look().tag == Tag.Dot)
             {
                 Token start = Look();
 

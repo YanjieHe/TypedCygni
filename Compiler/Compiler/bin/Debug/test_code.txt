@@ -38,6 +38,14 @@ module Program
         }
     }
 
+	def Main(): Int
+	{
+        return Math.Sum(100)
+	}
+}
+
+module Math
+{
     def Sum(n: Int): Int
     {
         var i = 1
@@ -49,11 +57,6 @@ module Program
         }
         return sum
     }
-
-	def Main(): Int
-	{
-        return Sum(100)
-	}
 }
 
 class Point

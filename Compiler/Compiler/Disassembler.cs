@@ -52,7 +52,7 @@ namespace Disassembler
             Op.PUSH_CONST_F64, Op.PUSH_LOCAL_F64, Op.PUSH_FIELD_F64, Op.POP_LOCAL_F64,
 
             Op.JUMP, Op.JUMP_IF_FALSE, Op.JUMP_IF_TRUE,
-            Op.PUSH_FUNCTION,
+            Op.PUSH_FUNCTION,Op.PUSH_MEMBER_FUNCTION,Op.PUSH_MODULE,
         };
         public List<Instruction> CodeToInstructions(List<byte> code)
         {
@@ -88,7 +88,7 @@ namespace Disassembler
             int index = 0;
             foreach (var instruction in instructions)
             {
-                for(int i = 0; i < indentation; i++)
+                for (int i = 0; i < indentation; i++)
                 {
                     Console.Write(" ");
                 }

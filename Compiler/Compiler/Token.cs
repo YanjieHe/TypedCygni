@@ -105,7 +105,7 @@ namespace Compiler
 
         public override string ToString()
         {
-            return String.Format("({0}, {1}, {2}) -> {3}", line, column, tag, text);
+            return String.Format("({0}, {1}, {2})    {3}", line, column, tag, text);
         }
     }
 }
