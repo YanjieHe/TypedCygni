@@ -12,25 +12,18 @@ namespace Compiler
         public static string TaggedValueToString(VirtualMachine.TaggedValue value)
         {
             var tag = value.tag;
-            if (tag == VirtualMachine.TypeTag.TYPE_I32)
+            switch (tag)
             {
-                return value.u.i32_v.ToString();
-            }
-            else if (tag == VirtualMachine.TypeTag.TYPE_I64)
-            {
-                return value.u.i64_v.ToString();
-            }
-            else if (tag == VirtualMachine.TypeTag.TYPE_F32)
-            {
-                return value.u.f32_v.ToString();
-            }
-            else if (tag == VirtualMachine.TypeTag.TYPE_F64)
-            {
-                return value.u.f64_v.ToString();
-            }
-            else
-            {
-                return value.u.pointer.ToString();
+                case VirtualMachine.TypeTag.TYPE_I32:
+                    return value.u.i32_v.ToString();
+                case VirtualMachine.TypeTag.TYPE_I64:
+                    return value.u.i64_v.ToString();
+                case VirtualMachine.TypeTag.TYPE_F32:
+                    return value.u.f32_v.ToString();
+                case VirtualMachine.TypeTag.TYPE_F64:
+                    return value.u.f64_v.ToString();
+                default:
+                    return value.u.pointer.ToString();
             }
         }
         public static void Main(string[] args)
@@ -112,7 +105,7 @@ namespace Compiler
                 VM vm = new VM(100);
                 VirtualMachine.Parser bytecodeParser = new VirtualMachine.Parser(bytecode.ToArray());
                 var compiledProgram = bytecodeParser.Parse();
-                Func<byte[], String> str = bytes => Encoding.UTF8.GetString(bytes);
+                Func<byte[], String> str = Encoding.UTF8.GetString;
                 Console.WriteLine(str(compiledProgram.path));
                 VirtualMachine.Function main = null;
                 foreach (var module in compiledProgram.modules)
