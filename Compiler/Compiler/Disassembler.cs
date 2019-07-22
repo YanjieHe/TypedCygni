@@ -85,13 +85,16 @@ namespace Disassembler
         }
         public void ShowInstructions(List<Instruction> instructions, int indentation)
         {
+            int index = 0;
             foreach (var instruction in instructions)
             {
                 for(int i = 0; i < indentation; i++)
                 {
                     Console.Write(" ");
                 }
+                Console.Write("{0}: ", index);
                 Console.WriteLine(instruction);
+                index = index + instruction.byteCount + 1;
             }
         }
     }

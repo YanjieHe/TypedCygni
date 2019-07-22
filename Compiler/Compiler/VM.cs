@@ -142,7 +142,6 @@ namespace VirtualMachine
             {
                 byte op = current.code[vm.pc];
                 vm.pc++;
-                Console.WriteLine("op = {0}", (Op)op);
                 switch ((Op)op)
                 {
                     case Op.PUSH_CONST_I32:

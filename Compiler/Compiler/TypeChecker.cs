@@ -399,9 +399,25 @@ namespace Compiler
             {
                 return Type.INT;
             }
+            else if (node.value is long)
+            {
+                return Type.LONG;
+            }
+            else if (node.value is float)
+            {
+                return Type.FLOAT;
+            }
+            else if (node.value is double)
+            {
+                return Type.DOUBLE;
+            }
             else if (node.value is bool)
             {
                 return Type.BOOL;
+            }
+            else if (node.value is char)
+            {
+                return Type.CHAR;
             }
             else if (node.value is String)
             {
