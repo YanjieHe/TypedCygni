@@ -1,17 +1,17 @@
 ﻿<Properties StartupConfiguration="{350C4F1D-AF57-4FF4-B93F-A580601741B4}|Default">
   <MonoDevelop.Ide.ItemProperties.Compiler PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Compiler/VM.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Compiler/Disassembler.cs">
     <Files>
-      <File FileName="Compiler/Disassembler.cs" Line="28" Column="13" />
-      <File FileName="Compiler/Program.cs" Line="20" Column="47" />
-      <File FileName="Compiler/VM.cs" Line="6" Column="14" />
+      <File FileName="Compiler/Disassembler.cs" Line="92" Column="37" />
+      <File FileName="Compiler/Program.cs" Line="89" Column="49" />
+      <File FileName="Compiler/VM.cs" Line="44" Column="10" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="Compiler" expanded="True">
             <Node name="Compiler" expanded="True">
-              <Node name="VM.cs" selected="True" />
+              <Node name="Disassembler.cs" selected="True" />
             </Node>
           </Node>
         </State>
