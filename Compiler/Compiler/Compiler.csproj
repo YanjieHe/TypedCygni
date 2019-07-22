@@ -47,6 +47,7 @@
     <Compile Include="Locator.cs" />
     <Compile Include="Compiler.cs" />
     <Compile Include="VM.cs" />
+    <Compile Include="Disassembler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
