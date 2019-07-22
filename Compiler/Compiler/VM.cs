@@ -89,8 +89,9 @@ namespace VirtualMachine
         public int pc;
         public int fp;
         public Value[] stack;
-        public VM(int stackSize)
+        public VM(Program program, int stackSize)
         {
+            this.program = program;
             this.stack = new Value[stackSize];
             for (int i = 0; i < this.stack.Length; i++)
             {
@@ -336,6 +337,24 @@ namespace VirtualMachine
                                 return;
                             }
                             current = previous;
+                            break;
+                        }
+                    case Op.PUSH_MODULE:
+                        {
+                            ushort index = USHORT(current.code, vm.pc);
+                            vm.sp++;
+                            vm.stack[vm.sp].u.pointer = vm.program.modules[index];
+                            vm.pc += 2;
+                            break;
+                        }
+                    case Op.PUSH_MEMBER_FUNCTION:
+                        {
+                            ushort index = USHORT(current.code, vm.pc);
+                            Module module = (Module)vm.stack[vm.sp].u.pointer;
+                            vm.sp--;
+                            vm.sp++;
+                            vm.stack[vm.sp].u.pointer = module.env.functions[index];
+                            vm.pc += 2;
                             break;
                         }
                     default:

@@ -102,7 +102,6 @@ namespace Compiler
                 //    Console.WriteLine(b);
                 //}
 
-                VM vm = new VM(100);
                 VirtualMachine.Parser bytecodeParser = new VirtualMachine.Parser(bytecode.ToArray());
                 var compiledProgram = bytecodeParser.Parse();
                 Func<byte[], String> str = Encoding.UTF8.GetString;
@@ -134,6 +133,7 @@ namespace Compiler
                 Console.ReadKey();
                 if (main != null)
                 {
+                    VM vm = new VM(compiledProgram, 100);
                     VM.Run(vm, main);
                 }
                 else
