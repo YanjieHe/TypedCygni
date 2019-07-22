@@ -230,6 +230,8 @@ namespace Compiler
         {
             this.name = name;
             this.definition = definition;
+            this.variableTable = new Dictionary<string, int>();
+            this.functionTable = new Dictionary<string, int>();
             for (int i = 0; i < definition.fields.Count; i++)
             {
                 variableTable.Add(definition.fields[i].name, i);
