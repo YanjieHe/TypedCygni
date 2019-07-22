@@ -2,14 +2,40 @@
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
+using System.Linq;
 using VM = VirtualMachine.VM;
-
+using Disassembler;
 namespace Compiler
 {
     class MainClass
     {
+        public static string TaggedValueToString(VirtualMachine.TaggedValue value)
+        {
+            var tag = value.tag;
+            if (tag == VirtualMachine.TypeTag.TYPE_I32)
+            {
+                return value.u.i32_v.ToString();
+            }
+            else if (tag == VirtualMachine.TypeTag.TYPE_I64)
+            {
+                return value.u.i64_v.ToString();
+            }
+            else if (tag == VirtualMachine.TypeTag.TYPE_F32)
+            {
+                return value.u.f32_v.ToString();
+            }
+            else if (tag == VirtualMachine.TypeTag.TYPE_F64)
+            {
+                return value.u.f64_v.ToString();
+            }
+            else
+            {
+                return value.u.pointer.ToString();
+            }
+        }
         public static void Main(string[] args)
         {
+            Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
             String path = "test_code.txt";
             String code = File.ReadAllText(path);
@@ -92,6 +118,12 @@ namespace Compiler
                 foreach (var module in compiledProgram.modules)
                 {
                     Console.WriteLine(str(module.name));
+                    for (int i = 0; i < module.env.constantPool.Length; i++)
+                    {
+                        var item = module.env.constantPool[i];
+                        Console.WriteLine("    #{0} = {1} {2}", i, item.tag.ToString().Substring(5), TaggedValueToString(item));
+                    }
+                    Console.WriteLine();
                     foreach (var function in module.env.functions)
                     {
                         if (str(function.name) == "Main")
@@ -99,8 +131,14 @@ namespace Compiler
                             main = function;
                         }
                         Console.WriteLine(str(function.name));
+                        var disassembler = new Disassembler.Disassembler();
+                        var instructions = disassembler.CodeToInstructions(function.code.ToList());
+                        disassembler.ShowInstructions(instructions, 4);
+                        Console.WriteLine();
                     }
                 }
+                Console.WriteLine("Press any key to run the program...");
+                Console.ReadKey();
                 if (main != null)
                 {
                     VM.Run(vm, main);

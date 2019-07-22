@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Op = Compiler.Op;
 using System.Text;
 using System.Linq;
+
 namespace VirtualMachine
 {
     public class Union
