@@ -100,6 +100,8 @@ namespace Compiler
         PUSH_FIELD_F64,
         PUSH_FIELD_OBJECT,
 
+        PUSH_MODULE,
+        PUSH_MEMBER_FUNCTION,
         PUSH_FUNCTION,
         CALL,
         TAIL_CALL,
@@ -361,6 +363,8 @@ namespace Compiler
                     break;
                 case Kind.TypeSpecifier:
                     break;
+                case Kind.MemberAccess:
+                    break;
                 default:
                     break;
             }
@@ -488,6 +492,11 @@ namespace Compiler
                 {
                     throw new MulticastNotSupportedException();
                 }
+            }
+            else if (type.GetTypeCode() == TypeCode.MODULE)
+            {
+                EmitOp(code, Op.PUSH_MODULE);
+                EmitU16(code, location.offset);
             }
             else
             {
@@ -764,6 +773,15 @@ namespace Compiler
                 CompileDef(function, code);
             }
         }
+
+        void CompileMemberAccess(MemberAccess node, List<byte> code)
+        {
+            EmitOp(code, Op.PUSH_FIELD_OBJECT);
+            Location location = locationMap[node.id];
+            EmitU16(code, location.offset);
+        }
+
+        /************************************ Emit ************************************/
         static void EmitOp(List<byte> code, Op op)
         {
             Console.WriteLine("emit {0}", op);

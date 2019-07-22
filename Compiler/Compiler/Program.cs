@@ -85,7 +85,7 @@ namespace Compiler
                 Dictionary<int, Location> locationMap = new Dictionary<int, Location>();
                 Dictionary<int, List<Object>> constantPoolMap = new Dictionary<int, List<object>>();
 
-                Locator locator = new Locator(scopeMap2, locationMap, constantPoolMap);
+                Locator locator = new Locator(scopeMap2, locationMap, constantPoolMap, typeMap);
                 locator.Locate(program, scope2);
 
 

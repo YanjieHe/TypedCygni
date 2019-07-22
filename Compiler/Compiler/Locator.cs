@@ -335,11 +335,13 @@ namespace Compiler
         Dictionary<int, Scope> scopeMap;
         Dictionary<int, Location> locationMap;
         Dictionary<int, List<Object>> constantPoolMap;
-        public Locator(Dictionary<int, Scope> scopeMap, Dictionary<int, Location> locationMap, Dictionary<int, List<Object>> constantPoolMap)
+        Dictionary<int, Type> typeMap;
+        public Locator(Dictionary<int, Scope> scopeMap, Dictionary<int, Location> locationMap, Dictionary<int, List<Object>> constantPoolMap, Dictionary<int, Type> typeMap)
         {
             this.scopeMap = scopeMap;
             this.locationMap = locationMap;
             this.constantPoolMap = constantPoolMap;
+            this.typeMap = typeMap;
         }
 
         public void Locate(Program program, Scope parent)
@@ -410,8 +412,17 @@ namespace Compiler
 
         void LocateMemberAccess(MemberAccess node, Scope scope)
         {
-            // TO DO
-            throw new DivideByZeroException();
+            Type type = typeMap[node.expression.id];
+            if (type.GetTypeCode() == TypeCode.MODULE)
+            {
+                var moduleType = (ModuleType)type;
+                int index = moduleType.functionTable[node.member.name];
+                locationMap.Add(node.id, new Location(LocationKind.Program, index));
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
         }
 
         void LocateDef(Def node, Scope parent)
@@ -442,6 +453,12 @@ namespace Compiler
                 .Cast<Var>())
             {
                 LocateVar(variable, scope);
+            }
+            foreach (var memberAccess in AstVisitor.Visit(node.body)
+            .Where(n => n.kind == Kind.MemberAccess)
+                .Cast<MemberAccess>())
+            {
+                LocateMemberAccess(memberAccess, scope);
             }
         }
     }
