@@ -64,6 +64,8 @@ namespace Compiler
         Private,
         Protected,
         Module,
+
+        New,
         Eof
     };
 
@@ -100,7 +102,8 @@ namespace Compiler
         {"class",     Tag.Class},
         {"private",   Tag.Private},
         {"module",    Tag.Module},
-        {"protected", Tag.Protected}
+        {"protected", Tag.Protected},
+        {"new", Tag.New}
         };
 
         public override string ToString()

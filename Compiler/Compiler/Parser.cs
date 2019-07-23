@@ -346,6 +346,10 @@ namespace Compiler
                 Ast x = new Name(GetPos(start), name);
                 return x;
             }
+            else if (Look().tag == Tag.New)
+            {
+                return ParseNew();
+            }
             else
             {
                 throw new ParserException(Look().line, Look().column, "factor");
@@ -606,12 +610,18 @@ namespace Compiler
         Ast ParseCall(Ast function)
         {
             Token start = Look();
-            Match(Tag.LeftParenthesis);
+            List<Ast> arguments = ParseArguments();
+            return new Call(GetPos(start), function, arguments);
+        }
+
+        List<Ast> ParseArguments()
+        {
             List<Ast> arguments = new List<Ast>();
+            Match(Tag.LeftParenthesis);
             if (Look().tag == Tag.RightParenthesis)
             {
                 Match(Tag.RightParenthesis);
-                return new Call(GetPos(start), function, arguments);
+                return arguments;
             }
             else
             {
@@ -622,10 +632,9 @@ namespace Compiler
                     arguments.Add(ParseOr());
                 }
                 Match(Tag.RightParenthesis);
-                return new Call(GetPos(start), function, arguments);
+                return arguments;
             }
         }
-
         Ast ParseDot(Ast expression)
         {
             Token start = Look();
@@ -633,6 +642,15 @@ namespace Compiler
             String field = Match(Tag.Identifier).text;
             var member = new MemberInfo(field);
             return new MemberAccess(GetPos(start), expression, member);
+        }
+
+        Ast ParseNew()
+        {
+            Token start = Look();
+            Match(Tag.New);
+            TypeSpecifier type = ParseType();
+            List<Ast> arguments = ParseArguments();
+            return new New(GetPos(start), type, arguments);
         }
     }
 }

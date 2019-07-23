@@ -36,7 +36,8 @@ namespace Compiler
         DefModule,
         TypeSpecifier,
         MemberAccess,
-        MemberAssign
+        MemberAssign,
+        New
     };
 
     public enum Access
@@ -337,6 +338,17 @@ namespace Compiler
             this.expression = expression;
             this.member = member;
             this.value = value;
+        }
+    }
+    public class New: Ast
+    {
+        public TypeSpecifier type;
+        public List<Ast> arguments;
+
+        public New(Position position, TypeSpecifier type, List<Ast> arguments) : base(Kind.New, position)
+        {
+            this.type = type;
+            this.arguments = arguments;
         }
     }
     public class Program
