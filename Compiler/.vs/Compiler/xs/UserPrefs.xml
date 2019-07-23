@@ -1,21 +1,15 @@
 ﻿<Properties StartupConfiguration="{350C4F1D-AF57-4FF4-B93F-A580601741B4}|Default">
   <MonoDevelop.Ide.ItemProperties.Compiler PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Compiler/TypeChecker.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Compiler/Program.cs">
     <Files>
-      <File FileName="Compiler/Disassembler.cs" Line="78" Column="18" />
-      <File FileName="Compiler/Program.cs" Line="150" Column="98" />
-      <File FileName="Compiler/VM.cs" Line="100" Column="25" />
-      <File FileName="Compiler/Compiler.cs" Line="781" Column="38" />
-      <File FileName="Compiler/Token.cs" Line="88" Column="10" />
-      <File FileName="Compiler/Parser.cs" Line="266" Column="111" />
-      <File FileName="Compiler/TypeChecker.cs" Line="443" Column="69" />
+      <File FileName="Compiler/Program.cs" Line="71" Column="47" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="Compiler" expanded="True">
             <Node name="Compiler" expanded="True">
-              <Node name="TypeChecker.cs" selected="True" />
+              <Node name="Program.cs" selected="True" />
             </Node>
           </Node>
         </State>
