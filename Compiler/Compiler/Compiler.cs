@@ -100,6 +100,12 @@ namespace Compiler
         PUSH_FIELD_F64,
         PUSH_FIELD_OBJECT,
 
+        POP_FIELD_I32,
+        POP_FIELD_I64,
+        POP_FIELD_F32,
+        POP_FIELD_F64,
+        POP_FIELD_OBJECT,
+
         PUSH_MODULE,
         PUSH_MEMBER_FUNCTION,
         PUSH_FUNCTION,
@@ -260,6 +266,17 @@ namespace Compiler
                 ruleSet.AddRule("return", new Type[] { Type.FLOAT }, Op.RETURN_F32);
                 ruleSet.AddRule("return", new Type[] { Type.DOUBLE }, Op.RETURN_F64);
 
+
+                ruleSet.AddRule("MemberAccess", new Type[] { Type.INT }, Op.PUSH_FIELD_I32);
+                ruleSet.AddRule("MemberAccess", new Type[] { Type.LONG }, Op.PUSH_FIELD_I64);
+                ruleSet.AddRule("MemberAccess", new Type[] { Type.FLOAT }, Op.PUSH_FIELD_F32);
+                ruleSet.AddRule("MemberACcess", new Type[] { Type.DOUBLE }, Op.PUSH_FIELD_F64);
+
+                ruleSet.AddRule("MemberAssign", new Type[] { Type.INT }, Op.POP_FIELD_I32);
+                ruleSet.AddRule("MemberAssign", new Type[] { Type.LONG }, Op.POP_FIELD_I64);
+                ruleSet.AddRule("MemberAssign", new Type[] { Type.FLOAT }, Op.POP_FIELD_F32);
+                ruleSet.AddRule("MemberAssign", new Type[] { Type.DOUBLE }, Op.POP_FIELD_F64);
+
             }
         }
         public static RuleSet<Op> ruleSet = new RuleSet<Op>();
@@ -314,7 +331,7 @@ namespace Compiler
                 case Kind.Equal:
                 case Kind.NotEqual:
                     CompileBinary((Binary)node, code);
-                    break;
+                    return;
                 case Kind.And:
                     break;
                 case Kind.Or:
@@ -323,40 +340,40 @@ namespace Compiler
                 case Kind.UnaryPlus:
                 case Kind.UnaryMinus:
                     CompileUnary((Unary)node, code);
-                    break;
+                    return;
                 case Kind.IfThen:
                     CompileIfThen((IfThen)node, code);
-                    break;
+                    return;
                 case Kind.IfElse:
                     CompileIfElse((IfElse)node, code);
-                    break;
+                    return;
                 case Kind.Constant:
                     CompileConstant((Constant)node, code);
-                    break;
+                    return;
                 case Kind.Block:
                     CompileBlock((Block)node, code);
-                    break;
+                    return;
                 case Kind.Name:
                     CompileName((Name)node, code);
-                    break;
+                    return;
                 case Kind.Return:
                     CompileReturn((Return)node, code);
-                    break;
+                    return;
                 case Kind.Var:
                     CompileVar((Var)node, code);
-                    break;
+                    return;
                 case Kind.Def:
                     CompileDef((Def)node, code);
-                    break;
+                    return;
                 case Kind.Assign:
                     CompileAssign((Binary)node, code);
-                    break;
+                    return;
                 case Kind.Call:
                     CompileCall((Call)node, code);
-                    break;
+                    return;
                 case Kind.While:
                     CompileWhile((While)node, code);
-                    break;
+                    return;
                 case Kind.DefClass:
                     break;
                 case Kind.DefModule:
@@ -365,10 +382,14 @@ namespace Compiler
                     break;
                 case Kind.MemberAccess:
                     CompileMemberAccess((MemberAccess)node, code);
-                    break;
+                    return;
+                case Kind.MemberAssign:
+                    CompileMemberAssign((MemberAssign)node, code);
+                    return;
                 default:
                     break;
             }
+            throw new RankException();
         }
 
         Type T(Ast node)
@@ -778,9 +799,70 @@ namespace Compiler
         void CompileMemberAccess(MemberAccess node, List<byte> code)
         {
             CompileNode(node.expression, code);
-            EmitOp(code, Op.PUSH_MEMBER_FUNCTION);
-            Location location = locationMap[node.id];
-            EmitU16(code, location.offset);
+            Type type = T(node.expression);
+            if (type.GetTypeCode() == TypeCode.MODULE)
+            {
+                ModuleType moduleType = (ModuleType)type;
+                if (moduleType.variableTable.ContainsKey(node.member.name))
+                {
+                    if (ruleSet.TryMatch("MemberAccess", new Type[] { T(node) }, out Op op))
+                    {
+                        EmitOp(code, op);
+                        Location location = locationMap[node.id];
+                        EmitU16(code, location.offset);
+                    }
+                    else
+                    {
+                        throw new CompilerException(node.position, "member access: type not supported");
+                    }
+                }
+                else if (moduleType.functionTable.ContainsKey(node.member.name))
+                {
+                    EmitOp(code, Op.PUSH_MEMBER_FUNCTION);
+                    Location location = locationMap[node.id];
+                    EmitU16(code, location.offset);
+                }
+                else
+                {
+                    throw new CompilerException(node.position, "member access: member not found");
+                }
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        void CompileMemberAssign(MemberAssign node, List<byte> code)
+        {
+            CompileNode(node.expression, code);
+            CompileNode(node.value, code);
+            Type type = T(node.expression);
+            if (type.GetTypeCode() == TypeCode.MODULE)
+            {
+                ModuleType moduleType = (ModuleType)type;
+                if (moduleType.variableTable.ContainsKey(node.member.name))
+                {
+                    if (ruleSet.TryMatch("MemberAssign", new Type[] { T(node) }, out Op op))
+                    {
+                        EmitOp(code, op);
+                        Location location = locationMap[node.id];
+                        EmitU16(code, location.offset);
+                    }
+                    else
+                    {
+                        throw new CompilerException(node.position, "member access: type not supported");
+                    }
+                }
+                else
+                {
+                    throw new CompilerException(node.position, "member access: member not found");
+                }
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
         }
 
         /************************************ Emit ************************************/

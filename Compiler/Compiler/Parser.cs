@@ -102,7 +102,15 @@ namespace Compiler
             {
                 Token t = Match(Tag.Assign);
                 Ast y = ParseOr();
-                return new Binary(GetPos(start), Kind.Assign, x, y);
+                if (x.kind == Kind.MemberAccess)
+                {
+                    var node = (MemberAccess)x;
+                    return new MemberAssign(GetPos(start), node.expression, node.member, y);
+                }
+                else
+                {
+                    return new Binary(GetPos(start), Kind.Assign, x, y);
+                }
             }
             else
             {

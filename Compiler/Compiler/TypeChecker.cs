@@ -347,6 +347,8 @@ namespace Compiler
                     return CheckTypeSpecifier((TypeSpecifier)node, scope);
                 case Kind.MemberAccess:
                     return CheckMemberAccess((MemberAccess)node, scope);
+                case Kind.MemberAssign:
+                    return CheckMemberAssign((MemberAssign)node, scope);
                 default:
                     throw new NotSupportedException();
             }
@@ -653,6 +655,42 @@ namespace Compiler
                 {
                     int index = moduleType.functionTable[node.member.name];
                     return typeMap[moduleType.definition.methods[index].id];
+                }
+                else
+                {
+                    throw new TypeException(node.position, "field not defined");
+                }
+            }
+            else
+            {
+                // TO DO: object
+                throw new MulticastNotSupportedException();
+            }
+        }
+
+        Type CheckMemberAssign(MemberAssign node, Scope scope)
+        {
+            Type expression = Check(node.expression, scope);
+            Type value = Check(node.value, scope);
+            if (expression.GetTypeCode() == TypeCode.MODULE)
+            {
+                ModuleType moduleType = (ModuleType)expression;
+                if (moduleType.variableTable.ContainsKey(node.member.name))
+                {
+                    int index = moduleType.variableTable[node.member.name];
+                    Type type = typeMap[moduleType.definition.fields[index].id];
+                    if (type.Equals(value))
+                    {
+                        return type;
+                    }
+                    else
+                    {
+                        throw new TypeException(node.position, "member assignment: type mismatch");
+                    }
+                }
+                else if (moduleType.functionTable.ContainsKey(node.member.name))
+                {
+                    throw new TypeException(node.position, "member function is immutable");
                 }
                 else
                 {

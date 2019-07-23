@@ -35,7 +35,8 @@ namespace Compiler
         DefClass,
         DefModule,
         TypeSpecifier,
-        MemberAccess
+        MemberAccess,
+        MemberAssign
     };
 
     public enum Access
@@ -325,7 +326,19 @@ namespace Compiler
             this.member = member;
         }
     }
-
+    public class MemberAssign : Ast
+    {
+        public Ast expression;
+        public MemberInfo member;
+        public Ast value;
+        public MemberAssign(Position position, Ast expression, MemberInfo member, Ast value)
+            : base(Kind.MemberAssign, position)
+        {
+            this.expression = expression;
+            this.member = member;
+            this.value = value;
+        }
+    }
     public class Program
     {
         public String path;

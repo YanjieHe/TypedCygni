@@ -204,6 +204,12 @@ namespace Compiler
                         yield return item;
                     }
                     break;
+                case Kind.MemberAssign:
+                    foreach (var item in VisitMemberAssign((MemberAssign)node))
+                    {
+                        yield return item;
+                    }
+                    break;
                 default:
                     throw new NotSupportedException();
             }
@@ -327,6 +333,10 @@ namespace Compiler
         {
             return Visit(node.expression);
         }
+        static IEnumerable<Ast> VisitMemberAssign(MemberAssign node)
+        {
+            return Visit(node.expression).Concat(Visit(node.value));
+        }
     }
 
 
@@ -416,15 +426,47 @@ namespace Compiler
             if (type.GetTypeCode() == TypeCode.MODULE)
             {
                 var moduleType = (ModuleType)type;
-                int index = moduleType.functionTable[node.member.name];
-                locationMap.Add(node.id, new Location(LocationKind.Program, index));
+                if (moduleType.variableTable.ContainsKey(node.member.name))
+                {
+                    int index = moduleType.variableTable[node.member.name];
+                    locationMap.Add(node.id, new Location(LocationKind.Program, index));
+                }
+                else if (moduleType.functionTable.ContainsKey(node.member.name))
+                {
+                    int index = moduleType.functionTable[node.member.name];
+                    locationMap.Add(node.id, new Location(LocationKind.Program, index));
+                }
+                else
+                {
+                    throw new LocationException(node.position, "member not defined");
+                }
             }
             else
             {
                 throw new NotSupportedException();
             }
         }
-
+        void LocateMemberAssign(MemberAssign node, Scope scope)
+        {
+            Type type = typeMap[node.expression.id];
+            if (type.GetTypeCode() == TypeCode.MODULE)
+            {
+                var moduleType = (ModuleType)type;
+                if (moduleType.variableTable.ContainsKey(node.member.name))
+                {
+                    int index = moduleType.variableTable[node.member.name];
+                    locationMap.Add(node.id, new Location(LocationKind.Program, index));
+                }
+                else
+                {
+                    throw new LocationException(node.position, "member not defined");
+                }
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
         void LocateDef(Def node, Scope parent)
         {
             Scope scope = new Scope(parent);
@@ -459,6 +501,12 @@ namespace Compiler
                 .Cast<MemberAccess>())
             {
                 LocateMemberAccess(memberAccess, scope);
+            }
+            foreach (var memberAssign in AstVisitor.Visit(node.body)
+           .Where(n => n.kind == Kind.MemberAssign)
+               .Cast<MemberAssign>())
+            {
+                LocateMemberAssign(memberAssign, scope);
             }
         }
     }

@@ -40,16 +40,17 @@ module Program
 
 	def Main(): Int
 	{
-        return Math.Sum(100)
+        return Math.Sum(100) + Math.Six
 	}
 }
 
 module Math
 {
-	var PI: Int
+	var Six: Int
 	
     def Sum(n: Int): Int
     {
+        Math.Six = 6
         var i = 1
         var sum = 0
         while (i <= n)

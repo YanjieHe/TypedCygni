@@ -357,6 +357,27 @@ namespace VirtualMachine
                             vm.pc += 2;
                             break;
                         }
+                    case Op.PUSH_FIELD_I32:
+                        {
+                            ushort index = USHORT(current.code, vm.pc);
+                            Module module = (Module)vm.stack[vm.sp].u.pointer;
+                            vm.sp--;
+                            vm.sp++;
+                            vm.stack[vm.sp].u.i32_v = module.env.variables[index].u.i32_v;
+                            vm.pc += 2;
+                            break;
+                        }
+                    case Op.POP_FIELD_I32:
+                        {
+                            ushort index = USHORT(current.code, vm.pc);
+                            int value = vm.stack[vm.sp].u.i32_v;
+                            vm.sp--;
+                            Module module = (Module)vm.stack[vm.sp].u.pointer;
+                            vm.sp--;
+                            module.env.variables[index].u.i32_v = value;
+                            vm.pc += 2;
+                            break;
+                        }
                     default:
                         {
                             Console.Write("not supported operation code");
@@ -407,12 +428,20 @@ namespace VirtualMachine
                 int functionCount = ReadU16();
                 module.env.constantPool = ParseConstantPool(constantPoolCount);
                 module.env.variables = new Value[variableCount];
+                InitializeVariables(module.env.variables);
                 module.env.functions = ParseFunctions(functionCount, module.env);
                 modules[i] = module;
             }
             return modules;
         }
 
+        void InitializeVariables(Value[] variables)
+        {
+            for (int i = 0; i < variables.Length; i++)
+            {
+                variables[i] = new Value();
+            }
+        }
         Function[] ParseFunctions(int functionCount, Env env)
         {
             Function[] functions = new Function[functionCount];

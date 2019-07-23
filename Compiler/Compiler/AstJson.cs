@@ -74,6 +74,8 @@ namespace Compiler
                     return VisitType((TypeSpecifier)node);
                 case Kind.MemberAccess:
                     return VisitMemberAccess((MemberAccess)node);
+                case Kind.MemberAssign:
+                    return VisitMemberAssign((MemberAssign)node);
                 default:
                     throw new NotSupportedException();
             }
@@ -270,6 +272,18 @@ namespace Compiler
                     { "member",new JsonValue(node.member.ToString())}
                 }
             );
+        }
+        JsonObject VisitMemberAssign(MemberAssign node)
+        {
+            return new JsonMap(
+                new Dictionary<string, JsonObject>
+                {
+                    { "id", new JsonValue(node.id.ToString())},
+                    { "kind", new JsonValue(node.kind.ToString())},
+                    { "expression", VisitNode(node.expression)},
+                    { "member",new JsonValue(node.member.ToString())},
+                    { "value",VisitNode(node.value)}
+    });
         }
     }
 }
