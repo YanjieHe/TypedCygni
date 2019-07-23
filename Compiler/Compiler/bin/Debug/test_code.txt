@@ -46,6 +46,8 @@ module Program
 
 module Math
 {
+	var PI: Int
+	
     def Sum(n: Int): Int
     {
         var i = 1
