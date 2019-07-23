@@ -54,7 +54,8 @@ namespace Disassembler
             Op.JUMP, Op.JUMP_IF_FALSE, Op.JUMP_IF_TRUE,
             Op.PUSH_FUNCTION,Op.PUSH_MEMBER_FUNCTION,Op.PUSH_MODULE,
             Op.PUSH_FIELD_I32, Op.PUSH_FIELD_I64, Op.PUSH_FIELD_F32, Op.PUSH_FIELD_F64,Op.PUSH_FIELD_OBJECT,
-            Op.POP_FIELD_I32, Op.POP_FIELD_I64, Op.POP_FIELD_F32, Op.POP_FIELD_F64,Op.POP_FIELD_OBJECT
+            Op.POP_FIELD_I32, Op.POP_FIELD_I64, Op.POP_FIELD_F32, Op.POP_FIELD_F64,Op.POP_FIELD_OBJECT,
+            Op.NEW
         };
         public List<Instruction> CodeToInstructions(List<byte> code)
         {

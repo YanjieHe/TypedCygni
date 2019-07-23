@@ -40,7 +40,7 @@ module Program
 
 	def Main(): Int
 	{
-        return Math.Sum(100) + Math.Six
+        return new Point(10, 20).x
 	}
 }
 
@@ -67,7 +67,13 @@ class Point
 	var x: Int
 	var y: Int
 	
-	def move(dx: Int, dy: Int): Void
+	def Initialize(_x: Int, _y: Int): Void
+	{
+        x = _x
+        y = _y
+	}
+	
+	def Move(dx: Int, dy: Int): Void
 	{
 		x = x + dx
 		y = y + dy

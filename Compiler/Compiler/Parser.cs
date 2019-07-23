@@ -457,6 +457,31 @@ namespace Compiler
             return new Def(GetPos(start), name, parameters, Def.MakeFunctionType(GetPos(start), parameters, returnType), body);
         }
 
+        Def ParseMethod(TypeSpecifier classType)
+        {
+            Token start = Look();
+            Match(Tag.Def);
+            String name = Match(Tag.Identifier).text;
+
+            Match(Tag.LeftParenthesis);
+            List<Parameter> parameters = new List<Parameter>();
+            if (Look().tag != Tag.RightParenthesis)
+            {
+                parameters.Add(ParseParameter());
+                while (!IsEof() && Look().tag != Tag.RightParenthesis)
+                {
+                    Match(Tag.Comma);
+                    parameters.Add(ParseParameter());
+                }
+            }
+            Match(Tag.RightParenthesis);
+            parameters.Add(new Parameter("this", classType));
+            Match(Tag.Colon);
+            var returnType = ParseType();
+            Ast body = ParseBlock();
+            return new Def(GetPos(start), name, parameters, Def.MakeFunctionType(GetPos(start), parameters, returnType), body);
+        }
+
         Parameter ParseParameter()
         {
             String name = Match(Tag.Identifier).text;
@@ -542,7 +567,7 @@ namespace Compiler
                 else if (Look().tag == Tag.Def)
                 {
                     // def method(args..) { }
-                    var method = ParseDef();
+                    var method = ParseMethod(new TypeSpecifier(GetPos(start), name));
                     method.access = access;
                     methods.Add(method);
                 }

@@ -58,7 +58,11 @@ namespace VirtualMachine
         public Value[] variables;
         public Function[] functions;
     }
-    public class Module
+    public interface IRecord
+    {
+         Env GetEnv();
+    }
+    public class Module: IRecord
     {
         public byte[] name;
         public Env env;
@@ -66,14 +70,23 @@ namespace VirtualMachine
         {
             this.env = new Env();
         }
+
+        public Env GetEnv()
+        {
+            return env;
+        }
     }
-    public class Class
+    public class Class:IRecord
     {
         public byte[] name;
         Env env;
         public Class()
         {
             this.env = new Env();
+        }
+        public Env GetEnv()
+        {
+            return env;
         }
     }
     public class Program
@@ -350,20 +363,20 @@ namespace VirtualMachine
                     case Op.PUSH_MEMBER_FUNCTION:
                         {
                             ushort index = USHORT(current.code, vm.pc);
-                            Module module = (Module)vm.stack[vm.sp].u.pointer;
+                            IRecord record = (IRecord)vm.stack[vm.sp].u.pointer;
                             vm.sp--;
                             vm.sp++;
-                            vm.stack[vm.sp].u.pointer = module.env.functions[index];
+                            vm.stack[vm.sp].u.pointer = record.GetEnv().functions[index];
                             vm.pc += 2;
                             break;
                         }
                     case Op.PUSH_FIELD_I32:
                         {
                             ushort index = USHORT(current.code, vm.pc);
-                            Module module = (Module)vm.stack[vm.sp].u.pointer;
+                            IRecord record = (IRecord)vm.stack[vm.sp].u.pointer;
                             vm.sp--;
                             vm.sp++;
-                            vm.stack[vm.sp].u.i32_v = module.env.variables[index].u.i32_v;
+                            vm.stack[vm.sp].u.i32_v = record.GetEnv().variables[index].u.i32_v;
                             vm.pc += 2;
                             break;
                         }
@@ -372,11 +385,16 @@ namespace VirtualMachine
                             ushort index = USHORT(current.code, vm.pc);
                             int value = vm.stack[vm.sp].u.i32_v;
                             vm.sp--;
-                            Module module = (Module)vm.stack[vm.sp].u.pointer;
+                            IRecord record = (IRecord)vm.stack[vm.sp].u.pointer;
                             vm.sp--;
-                            module.env.variables[index].u.i32_v = value;
+                            record.GetEnv().variables[index].u.i32_v = value;
                             vm.pc += 2;
                             break;
+                        }
+                    case Op.NEW:
+                        {
+                            ushort index = USHORT(current.code, vm.pc);
+                            throw new UriFormatException();
                         }
                     default:
                         {

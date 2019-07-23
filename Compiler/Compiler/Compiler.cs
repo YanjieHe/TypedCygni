@@ -110,7 +110,11 @@ namespace Compiler
         PUSH_MEMBER_FUNCTION,
         PUSH_FUNCTION,
         CALL,
+        CALL_METHOD,
         TAIL_CALL,
+
+        NEW,
+        DUPLICATE_OBJECT
     }
 
 
@@ -385,6 +389,9 @@ namespace Compiler
                     return;
                 case Kind.MemberAssign:
                     CompileMemberAssign((MemberAssign)node, code);
+                    return;
+                case Kind.New:
+                    CompileNew((New)node, code);
                     return;
                 default:
                     break;
@@ -827,6 +834,33 @@ namespace Compiler
                     throw new CompilerException(node.position, "member access: member not found");
                 }
             }
+            else if (type.GetTypeCode() == TypeCode.CLASS)
+            {
+                ClassType classType = (ClassType)type;
+                if (classType.variableTable.ContainsKey(node.member.name))
+                {
+                    if (ruleSet.TryMatch("MemberAccess", new Type[] { T(node) }, out Op op))
+                    {
+                        EmitOp(code, op);
+                        Location location = locationMap[node.id];
+                        EmitU16(code, location.offset);
+                    }
+                    else
+                    {
+                        throw new CompilerException(node.position, "member access: type not supported");
+                    }
+                }
+                else if (classType.functionTable.ContainsKey(node.member.name))
+                {
+                    EmitOp(code, Op.PUSH_MEMBER_FUNCTION);
+                    Location location = locationMap[node.id];
+                    EmitU16(code, location.offset);
+                }
+                else
+                {
+                    throw new CompilerException(node.position, "member access: member not found");
+                }
+            }
             else
             {
                 throw new NotSupportedException();
@@ -859,10 +893,47 @@ namespace Compiler
                     throw new CompilerException(node.position, "member access: member not found");
                 }
             }
+            else if (type.GetTypeCode() == TypeCode.CLASS)
+            {
+                ClassType classType = (ClassType)type;
+                if (classType.variableTable.ContainsKey(node.member.name))
+                {
+                    if (ruleSet.TryMatch("MemberAssign", new Type[] { T(node) }, out Op op))
+                    {
+                        EmitOp(code, op);
+                        Location location = locationMap[node.id];
+                        EmitU16(code, location.offset);
+                    }
+                    else
+                    {
+                        throw new CompilerException(node.position, "member access: type not supported");
+                    }
+                }
+                else
+                {
+                    throw new CompilerException(node.position, "member access: member not found");
+                }
+            }
             else
             {
                 throw new NotSupportedException();
             }
+        }
+
+        void CompileNew(New node, List<byte> code)
+        {
+            ClassType classType = (ClassType)T(node);
+
+            foreach (var arg in node.arguments)
+            {
+                CompileNode(arg, code);
+            }
+            int index = classType.functionTable["Initialize"];
+            EmitOp(code, Op.PUSH_MEMBER_FUNCTION);
+            EmitU16(code, index);
+
+            EmitOp(code, Op.NEW);
+            EmitU16(code, locationMap[node.id].offset);
         }
 
         /************************************ Emit ************************************/

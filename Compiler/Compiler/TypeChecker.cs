@@ -663,6 +663,24 @@ namespace Compiler
                     throw new TypeException(node.position, "field not defined");
                 }
             }
+            else if (expression.GetTypeCode() == TypeCode.CLASS)
+            {
+                ClassType classType = (ClassType)expression;
+                if (classType.variableTable.ContainsKey(node.member.name))
+                {
+                    int index = classType.variableTable[node.member.name];
+                    return typeMap[classType.definition.fields[index].id];
+                }
+                else if (classType.functionTable.ContainsKey(node.member.name))
+                {
+                    int index = classType.functionTable[node.member.name];
+                    return typeMap[classType.definition.methods[index].id];
+                }
+                else
+                {
+                    throw new TypeException(node.position, "field not defined");
+                }
+            }
             else
             {
                 // TO DO: object
@@ -691,6 +709,31 @@ namespace Compiler
                     }
                 }
                 else if (moduleType.functionTable.ContainsKey(node.member.name))
+                {
+                    throw new TypeException(node.position, "member function is immutable");
+                }
+                else
+                {
+                    throw new TypeException(node.position, "field not defined");
+                }
+            }
+            else if(expression.GetTypeCode() == TypeCode.CLASS)
+            {
+                ClassType classType = (ClassType)expression;
+                if (classType.variableTable.ContainsKey(node.member.name))
+                {
+                    int index = classType.variableTable[node.member.name];
+                    Type type = typeMap[classType.definition.fields[index].id];
+                    if (type.Equals(value))
+                    {
+                        return type;
+                    }
+                    else
+                    {
+                        throw new TypeException(node.position, "member assignment: type mismatch");
+                    }
+                }
+                else if (classType.functionTable.ContainsKey(node.member.name))
                 {
                     throw new TypeException(node.position, "member function is immutable");
                 }

@@ -461,6 +461,24 @@ namespace Compiler
                     throw new LocationException(node.position, "member not defined");
                 }
             }
+            else if (type.GetTypeCode() == TypeCode.CLASS)
+            {
+                var classType = (ClassType)type;
+                if (classType.variableTable.ContainsKey(node.member.name))
+                {
+                    int index = classType.variableTable[node.member.name];
+                    locationMap.Add(node.id, new Location(LocationKind.Program, index));
+                }
+                else if (classType.functionTable.ContainsKey(node.member.name))
+                {
+                    int index = classType.functionTable[node.member.name];
+                    locationMap.Add(node.id, new Location(LocationKind.Program, index));
+                }
+                else
+                {
+                    throw new LocationException(node.position, "member not defined");
+                }
+            }
             else
             {
                 throw new NotSupportedException();
@@ -475,6 +493,19 @@ namespace Compiler
                 if (moduleType.variableTable.ContainsKey(node.member.name))
                 {
                     int index = moduleType.variableTable[node.member.name];
+                    locationMap.Add(node.id, new Location(LocationKind.Program, index));
+                }
+                else
+                {
+                    throw new LocationException(node.position, "member not defined");
+                }
+            }
+            else if (type.GetTypeCode() == TypeCode.CLASS)
+            {
+                var classType = (ClassType)type;
+                if (classType.variableTable.ContainsKey(node.member.name))
+                {
+                    int index = classType.variableTable[node.member.name];
                     locationMap.Add(node.id, new Location(LocationKind.Program, index));
                 }
                 else
