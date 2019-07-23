@@ -3,8 +3,7 @@
   <MonoDevelop.Ide.Workbench ActiveDocument="Compiler/Ast.cs">
     <Files>
       <File FileName="Compiler/Program.cs" Line="30" Column="10" />
-      <File FileName="Compiler/Parser.cs" Line="635" Column="28" />
-      <File FileName="Compiler/Ast.cs" Line="341" Column="6" />
+      <File FileName="Compiler/Ast.cs" Line="353" Column="6" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
