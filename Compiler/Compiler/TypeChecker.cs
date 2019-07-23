@@ -349,6 +349,8 @@ namespace Compiler
                     return CheckMemberAccess((MemberAccess)node, scope);
                 case Kind.MemberAssign:
                     return CheckMemberAssign((MemberAssign)node, scope);
+                case Kind.New:
+                    return CheckNew((New)node, scope);
                 default:
                     throw new NotSupportedException();
             }
@@ -701,6 +703,38 @@ namespace Compiler
             {
                 // TO DO: object
                 throw new MulticastNotSupportedException();
+            }
+        }
+
+        Type CheckNew(New node, Scope scope)
+        {
+            Type type = Check(node.type, scope);
+            if (type.GetTypeCode() == TypeCode.CLASS)
+            {
+
+                ClassType classType = (ClassType)type;
+                if (classType.functionTable.ContainsKey("Initialize"))
+                {
+                    int index = classType.functionTable["Initialize"];
+                    FunctionType functionType = (FunctionType)typeMap[classType.definition.methods[index].id];
+                    var arguments = node.arguments.Select(n => Check(n, scope));
+                    if (functionType.parameters.Zip(arguments, (p, arg) => p.Equals(arg)).All(b => b))
+                    {
+                        return type;
+                    }
+                    else
+                    {
+                        throw new TypeException(node.position, "constructor arguments mismatch");
+                    }
+                }
+                else
+                {
+                    throw new TypeException(node.position, "missing constructor definition in class");
+                }
+            }
+            else
+            {
+                throw new TypeException(node.position, "the object of new expression is not a class type");
             }
         }
     }

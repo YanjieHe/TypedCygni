@@ -256,10 +256,22 @@ namespace Compiler
     {
         public String name;
         public DefClass definition;
+        public Dictionary<String, int> variableTable;
+        public Dictionary<String, int> functionTable;
         public ClassType(String name, DefClass definition)
         {
             this.name = name;
             this.definition = definition;
+            this.variableTable = new Dictionary<string, int>();
+            this.functionTable = new Dictionary<string, int>();
+            for (int i = 0; i < definition.fields.Count; i++)
+            {
+                variableTable.Add(definition.fields[i].name, i);
+            }
+            for (int i = 0; i < definition.methods.Count; i++)
+            {
+                functionTable.Add(definition.methods[i].name, i);
+            }
         }
         public override TypeCode GetTypeCode() { return TypeCode.CLASS; }
         public override bool Equals(Type other)

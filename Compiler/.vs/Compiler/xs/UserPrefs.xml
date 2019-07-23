@@ -1,16 +1,19 @@
 ﻿<Properties StartupConfiguration="{350C4F1D-AF57-4FF4-B93F-A580601741B4}|Default">
   <MonoDevelop.Ide.ItemProperties.Compiler PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Compiler/Ast.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Compiler/Compiler.cs">
     <Files>
       <File FileName="Compiler/Program.cs" Line="30" Column="10" />
       <File FileName="Compiler/Ast.cs" Line="353" Column="6" />
+      <File FileName="Compiler/TypeChecker.cs" Line="353" Column="55" />
+      <File FileName="Compiler/Locator.cs" Line="546" Column="43" />
+      <File FileName="Compiler/Compiler.cs" Line="389" Column="31" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="Compiler" expanded="True">
             <Node name="Compiler" expanded="True">
-              <Node name="Ast.cs" selected="True" />
+              <Node name="Compiler.cs" selected="True" />
             </Node>
           </Node>
         </State>

@@ -210,6 +210,12 @@ namespace Compiler
                         yield return item;
                     }
                     break;
+                case Kind.New:
+                    foreach (var item in VisitNew((New)node))
+                    {
+                        yield return item;
+                    }
+                    break;
                 default:
                     throw new NotSupportedException();
             }
@@ -336,6 +342,20 @@ namespace Compiler
         static IEnumerable<Ast> VisitMemberAssign(MemberAssign node)
         {
             return Visit(node.expression).Concat(Visit(node.value));
+        }
+        static IEnumerable<Ast> VisitNew(New node)
+        {
+            foreach (var item in Visit(node.type))
+            {
+                yield return item;
+            }
+            foreach (var p in node.arguments)
+            {
+                foreach (var item in Visit(p))
+                {
+                    yield return item;
+                }
+            }
         }
     }
 
@@ -467,6 +487,20 @@ namespace Compiler
                 throw new NotSupportedException();
             }
         }
+        void LocateNew(New node, Scope scope)
+        {
+            ClassType type = (ClassType)typeMap[node.id];
+            Object result= scope.Lookup(type.name, "LOCATION");
+            if(result != null && result is Location)
+            {
+                Location location = (Location)result;
+                locationMap.Add(node.id, location);
+            }
+            else
+            {
+                throw new LocationException(node.position, "type to be constructed is not defined");
+            }
+        }
         void LocateDef(Def node, Scope parent)
         {
             Scope scope = new Scope(parent);
@@ -507,6 +541,12 @@ namespace Compiler
                .Cast<MemberAssign>())
             {
                 LocateMemberAssign(memberAssign, scope);
+            }
+            foreach (var newNode in AstVisitor.Visit(node.body)
+           .Where(n => n.kind == Kind.New)
+               .Cast<New>())
+            {
+                LocateNew(newNode, scope);
             }
         }
     }
