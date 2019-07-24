@@ -116,8 +116,6 @@ namespace Compiler
         NEW,
         DUPLICATE_OBJECT
     }
-
-
     public enum OpType
     {
         I32,
