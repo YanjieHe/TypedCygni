@@ -6,7 +6,7 @@
       <File FileName="Compiler/Ast.cs" Line="353" Column="6" />
       <File FileName="Compiler/Locator.cs" Line="528" Column="52" />
       <File FileName="Compiler/Disassembler.cs" Line="58" Column="19" />
-      <File FileName="Compiler/Compiler.cs" Line="117" Column="25" />
+      <File FileName="Compiler/Compiler.cs" Line="119" Column="1" />
       <File FileName="Compiler/TypeChecker.cs" Line="562" Column="42" />
       <File FileName="Compiler/Parser.cs" Line="570" Column="47" />
       <File FileName="Compiler/Type.cs" Line="174" Column="6" />
