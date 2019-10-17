@@ -1,5 +1,6 @@
 #ifndef CYGNI_UTILITY_HPP
 #define CYGNI_UTILITY_HPP
+#include <string>
 
 namespace cygni {
 
@@ -14,6 +15,8 @@ inline static bool IsLetter(char32_t c) {
 inline static bool IsWhiteSpace(char32_t c) {
 	return c == U' ' || c == U'\t' || c == U'\v' || c == U'\r' || c == U'\n';
 }
+
+int HexToInt(std::u32string hex);
 
 } // namespace cygni
 

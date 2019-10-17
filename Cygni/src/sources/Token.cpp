@@ -34,6 +34,8 @@ std::string TagToString(Tag tag) {
 		return "Integer";
 	case Tag::Float:
 		return "Float";
+	case Tag::Character:
+		return "Character";
 	case Tag::String:
 		return "String";
 	case Tag::Add:

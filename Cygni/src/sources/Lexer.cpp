@@ -17,7 +17,9 @@ std::vector<Token> Lexer::ReadAll() {
 	while (!IsEof()) {
 		if (IsDigit(Peek())) {
 			tokens.push_back(ReadInt());
-		} else if (Peek() == DOUBLE_QUOTE || Peek() == SINGLE_QUOTE) {
+		} else if (Peek() == SINGLE_QUOTE) {
+			tokens.push_back(ReadCharacterLiteral());
+		} else if (Peek() == DOUBLE_QUOTE) {
 			tokens.push_back(ReadString());
 		} else if (IsLetter(Peek()) || Peek() == U'_') {
 			tokens.push_back(ReadIdentifier());
@@ -34,9 +36,7 @@ std::vector<Token> Lexer::ReadAll() {
 
 Token Lexer::ReadInt() {
 	Reset();
-	while (!IsEof() && IsDigit(Peek())) {
-		Consume();
-	}
+	ReadDecimalDigits();
 	if (IsEof()) {
 		return Token(line, column, Tag::Integer, builder);
 	} else {
@@ -50,9 +50,7 @@ Token Lexer::ReadInt() {
 }
 
 Token Lexer::ReadFloat() {
-	while (!IsEof() && IsDigit(Peek())) {
-		Consume();
-	}
+	ReadDecimalDigits();
 	if (IsEof()) {
 		return Token(line, column, Tag::Float, builder);
 	} else {
@@ -73,10 +71,76 @@ Token Lexer::ReadExponent() {
 	if (IsEof() || !IsDigit(Peek())) {
 		throw LexicalException(line, column, U"float literal");
 	} else {
-		while (!IsEof() && IsDigit(Peek())) {
+		ReadDecimalDigits();
+		return Token(line, column, Tag::Float, builder);
+	}
+}
+
+void Lexer::ReadDecimalDigits() {
+	while (!IsEof() && IsDigit(Peek())) {
+		Consume();
+	}
+}
+
+Token Lexer::ReadCharacterLiteral() {
+	Reset();
+	MatchAndSkip(SINGLE_QUOTE);
+	ReadCharacter();
+	MatchAndSkip(SINGLE_QUOTE);
+	return Token(line, column, Tag::Character, builder);
+}
+
+void Lexer::ReadCharacter() {
+	if (IsEof()) {
+		throw LexicalException(line, column, U"character literal");
+	} else {
+		if (Peek() == BACKSLASH) {
+			ReadSimpleEscapeSequence();
+		} else {
 			Consume();
 		}
-		return Token(line, column, Tag::Float, builder);
+	}
+}
+
+void Lexer::ReadSimpleEscapeSequence() {
+	MatchAndSkip(BACKSLASH);
+	if (Peek() == U'x') {
+		Forward();
+		ReadHexadecimalEscapeSequence();
+	} else {
+		builder.push_back(UnescapedChar(Peek()));
+		Forward();
+	}
+}
+
+void Lexer::ReadHexadecimalEscapeSequence() {
+	std::u32string text;
+	if (IsHexDigit()) {
+		text.push_back(Peek());
+		Forward();
+	} else {
+		throw LexicalException(line, column, U"expecting an hex digit");
+	}
+
+	for (int i = 0; i < 3 && IsHexDigit(); i++) {
+		text.push_back(Peek());
+		Forward();
+	}
+	try {
+		int val = HexToInt(text);
+		builder.push_back(static_cast<char32_t>(val));
+	} catch (ArgumentException& ex) {
+		throw LexicalException(line, column, U"wrong format for hex digit");
+	}
+}
+
+bool Lexer::IsHexDigit() {
+	static std::u32string digits = U"0123456789abcdefABCDEF";
+	static std::unordered_set<char32_t> digitSet(digits.begin(), digits.end());
+	if (!IsEof()) {
+		return digitSet.find(Peek()) != digitSet.end();
+	} else {
+		return false;
 	}
 }
 

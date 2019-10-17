@@ -177,6 +177,33 @@ home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Token.cpp.s:
 	$(MAKE) -f CMakeFiles/Cygni_Test.dir/build.make CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Token.cpp.s
 .PHONY : home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Token.cpp.s
 
+sources/Test_Lexer.o: sources/Test_Lexer.cpp.o
+
+.PHONY : sources/Test_Lexer.o
+
+# target to build an object file
+sources/Test_Lexer.cpp.o:
+	$(MAKE) -f CMakeFiles/Cygni_Test.dir/build.make CMakeFiles/Cygni_Test.dir/sources/Test_Lexer.cpp.o
+.PHONY : sources/Test_Lexer.cpp.o
+
+sources/Test_Lexer.i: sources/Test_Lexer.cpp.i
+
+.PHONY : sources/Test_Lexer.i
+
+# target to preprocess a source file
+sources/Test_Lexer.cpp.i:
+	$(MAKE) -f CMakeFiles/Cygni_Test.dir/build.make CMakeFiles/Cygni_Test.dir/sources/Test_Lexer.cpp.i
+.PHONY : sources/Test_Lexer.cpp.i
+
+sources/Test_Lexer.s: sources/Test_Lexer.cpp.s
+
+.PHONY : sources/Test_Lexer.s
+
+# target to generate assembly for a file
+sources/Test_Lexer.cpp.s:
+	$(MAKE) -f CMakeFiles/Cygni_Test.dir/build.make CMakeFiles/Cygni_Test.dir/sources/Test_Lexer.cpp.s
+.PHONY : sources/Test_Lexer.cpp.s
+
 test.o: test.cpp.o
 
 .PHONY : test.o
@@ -219,6 +246,9 @@ help:
 	@echo "... home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Token.o"
 	@echo "... home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Token.i"
 	@echo "... home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Token.s"
+	@echo "... sources/Test_Lexer.o"
+	@echo "... sources/Test_Lexer.i"
+	@echo "... sources/Test_Lexer.s"
 	@echo "... test.o"
 	@echo "... test.i"
 	@echo "... test.s"

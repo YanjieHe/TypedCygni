@@ -18,3 +18,7 @@ CMakeFiles/Cygni.dir/src/sources/Lexer.cpp.o: ../src/sources/Lexer.cpp
 CMakeFiles/Cygni.dir/src/sources/Token.cpp.o: ../src/headers/Token.hpp
 CMakeFiles/Cygni.dir/src/sources/Token.cpp.o: ../src/sources/Token.cpp
 
+CMakeFiles/Cygni.dir/src/sources/Utility.cpp.o: ../src/headers/Exception.hpp
+CMakeFiles/Cygni.dir/src/sources/Utility.cpp.o: ../src/headers/Utility.hpp
+CMakeFiles/Cygni.dir/src/sources/Utility.cpp.o: ../src/sources/Utility.cpp
+

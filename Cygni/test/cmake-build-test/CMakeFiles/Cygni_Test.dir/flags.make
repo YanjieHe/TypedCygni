@@ -6,5 +6,5 @@ CXX_FLAGS =   -std=gnu++1z
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/../src/headers -I/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/../include 
+CXX_INCLUDES = -I/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/../src/headers -I/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/../test/headers -I/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/../include 
 

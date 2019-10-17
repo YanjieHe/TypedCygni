@@ -11,6 +11,14 @@ CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/
 CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Token.cpp.o
  ../../src/headers/Token.hpp
  /home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Token.cpp
+CMakeFiles/Cygni_Test.dir/sources/Test_Lexer.cpp.o
+ ../../src/headers/Constants.hpp
+ ../../src/headers/Exception.hpp
+ ../../src/headers/Lexer.hpp
+ ../../src/headers/Token.hpp
+ ../../src/headers/Utility.hpp
+ ../../test/headers/Test_Lexer.hpp
+ /home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/sources/Test_Lexer.cpp
 CMakeFiles/Cygni_Test.dir/test.cpp.o
  ../../include/catch.hpp
  ../../src/headers/Constants.hpp
@@ -18,4 +26,5 @@ CMakeFiles/Cygni_Test.dir/test.cpp.o
  ../../src/headers/Lexer.hpp
  ../../src/headers/Token.hpp
  ../../src/headers/Utility.hpp
+ ../../test/headers/Test_Lexer.hpp
  /home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/test.cpp

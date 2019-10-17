@@ -581,16 +581,16 @@ string
 ../../src/headers/Exception.hpp
 
 ../../src/headers/Lexer.hpp
-vector
--
+Constants.hpp
+../../src/headers/Constants.hpp
+Exception.hpp
+../../src/headers/Exception.hpp
 Token.hpp
 ../../src/headers/Token.hpp
 Utility.hpp
 ../../src/headers/Utility.hpp
-Exception.hpp
-../../src/headers/Exception.hpp
-Constants.hpp
-../../src/headers/Constants.hpp
+vector
+-
 
 ../../src/headers/Token.hpp
 string
@@ -599,6 +599,12 @@ unordered_map
 -
 
 ../../src/headers/Utility.hpp
+
+../../test/headers/Test_Lexer.hpp
+Token.hpp
+../../test/headers/Token.hpp
+vector
+-
 
 /home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Lexer.cpp
 Lexer.hpp
@@ -614,17 +620,19 @@ Token.hpp
 iostream
 -
 
-/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/test.cpp
-iostream
--
-string
--
-codecvt
--
-locale
--
+/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/sources/Test_Lexer.cpp
+Test_Lexer.hpp
+/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/sources/Test_Lexer.hpp
 Lexer.hpp
-/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/Lexer.hpp
+/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/sources/Lexer.hpp
+
+/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/test.cpp
 catch.hpp
 /home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/catch.hpp
+Lexer.hpp
+/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/Lexer.hpp
+Token.hpp
+/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/Token.hpp
+Test_Lexer.hpp
+/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/Test_Lexer.hpp
 

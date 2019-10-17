@@ -11,11 +11,20 @@ CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/
 CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Token.cpp.o: ../../src/headers/Token.hpp
 CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Token.cpp.o: /home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Token.cpp
 
+CMakeFiles/Cygni_Test.dir/sources/Test_Lexer.cpp.o: ../../src/headers/Constants.hpp
+CMakeFiles/Cygni_Test.dir/sources/Test_Lexer.cpp.o: ../../src/headers/Exception.hpp
+CMakeFiles/Cygni_Test.dir/sources/Test_Lexer.cpp.o: ../../src/headers/Lexer.hpp
+CMakeFiles/Cygni_Test.dir/sources/Test_Lexer.cpp.o: ../../src/headers/Token.hpp
+CMakeFiles/Cygni_Test.dir/sources/Test_Lexer.cpp.o: ../../src/headers/Utility.hpp
+CMakeFiles/Cygni_Test.dir/sources/Test_Lexer.cpp.o: ../../test/headers/Test_Lexer.hpp
+CMakeFiles/Cygni_Test.dir/sources/Test_Lexer.cpp.o: ../sources/Test_Lexer.cpp
+
 CMakeFiles/Cygni_Test.dir/test.cpp.o: ../../include/catch.hpp
 CMakeFiles/Cygni_Test.dir/test.cpp.o: ../../src/headers/Constants.hpp
 CMakeFiles/Cygni_Test.dir/test.cpp.o: ../../src/headers/Exception.hpp
 CMakeFiles/Cygni_Test.dir/test.cpp.o: ../../src/headers/Lexer.hpp
 CMakeFiles/Cygni_Test.dir/test.cpp.o: ../../src/headers/Token.hpp
 CMakeFiles/Cygni_Test.dir/test.cpp.o: ../../src/headers/Utility.hpp
+CMakeFiles/Cygni_Test.dir/test.cpp.o: ../../test/headers/Test_Lexer.hpp
 CMakeFiles/Cygni_Test.dir/test.cpp.o: ../test.cpp
 

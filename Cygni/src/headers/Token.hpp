@@ -10,6 +10,7 @@ enum class Tag {
 	Identifier,
 	Integer,
 	Float,
+	Character,
 	String,
 
 	Add,

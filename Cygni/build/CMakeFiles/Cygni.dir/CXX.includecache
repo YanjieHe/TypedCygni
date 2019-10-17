@@ -11,6 +11,8 @@ string
 -
 
 ../src/headers/Exception.hpp
+string
+-
 
 ../src/headers/Lexer.hpp
 Constants.hpp
@@ -31,6 +33,8 @@ unordered_map
 -
 
 ../src/headers/Utility.hpp
+string
+-
 
 /home/heyanjie/Documents/Projects/TypedCygni/Cygni/main.cpp
 Lexer.hpp
@@ -57,4 +61,10 @@ Token.hpp
 /home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Token.hpp
 iostream
 -
+
+/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp
+Utility.hpp
+/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.hpp
+Exception.hpp
+/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Exception.hpp
 

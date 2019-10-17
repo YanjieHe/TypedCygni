@@ -2,6 +2,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/Cygni_Test.dir/test.cpp.o"
   "CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Lexer.cpp.o"
   "CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Token.cpp.o"
+  "CMakeFiles/Cygni_Test.dir/sources/Test_Lexer.cpp.o"
   "Cygni_Test.pdb"
   "Cygni_Test"
 )

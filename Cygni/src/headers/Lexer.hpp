@@ -22,12 +22,26 @@ public:
 
 	std::vector<Token> ReadAll();
 
-public:
+private:
 	Token ReadInt();
 
 	Token ReadFloat();
 
 	Token ReadExponent();
+
+	void ReadDecimalDigits();
+
+	Token ReadCharacterLiteral();
+
+	void ReadCharacter();
+
+	void ReadSimpleEscapeSequence();
+
+	void ReadHexadecimalEscapeSequence();
+
+	void ReadUnicodeEscapeSequence();
+
+	bool IsHexDigit();
 
 	Token ReadString();
 
@@ -82,6 +96,14 @@ public:
 	inline void Match(char32_t c1, char32_t c2) {
 		if (Peek() == c1 || Peek() == c2) {
 			Consume();
+		} else {
+			throw LexicalException(line, column, U"unexpected character");
+		}
+	}
+
+	inline void MatchAndSkip(char32_t c) {
+		if (Peek() == c) {
+			Forward();
 		} else {
 			throw LexicalException(line, column, U"unexpected character");
 		}

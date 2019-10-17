@@ -204,6 +204,33 @@ src/sources/Token.cpp.s:
 	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/src/sources/Token.cpp.s
 .PHONY : src/sources/Token.cpp.s
 
+src/sources/Utility.o: src/sources/Utility.cpp.o
+
+.PHONY : src/sources/Utility.o
+
+# target to build an object file
+src/sources/Utility.cpp.o:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/src/sources/Utility.cpp.o
+.PHONY : src/sources/Utility.cpp.o
+
+src/sources/Utility.i: src/sources/Utility.cpp.i
+
+.PHONY : src/sources/Utility.i
+
+# target to preprocess a source file
+src/sources/Utility.cpp.i:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/src/sources/Utility.cpp.i
+.PHONY : src/sources/Utility.cpp.i
+
+src/sources/Utility.s: src/sources/Utility.cpp.s
+
+.PHONY : src/sources/Utility.s
+
+# target to generate assembly for a file
+src/sources/Utility.cpp.s:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/src/sources/Utility.cpp.s
+.PHONY : src/sources/Utility.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -222,6 +249,9 @@ help:
 	@echo "... src/sources/Token.o"
 	@echo "... src/sources/Token.i"
 	@echo "... src/sources/Token.s"
+	@echo "... src/sources/Utility.o"
+	@echo "... src/sources/Utility.i"
+	@echo "... src/sources/Utility.s"
 .PHONY : help
 
 

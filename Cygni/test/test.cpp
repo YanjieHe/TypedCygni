@@ -1,36 +1,33 @@
-#include <iostream>
-#include <string>
-#include <codecvt>
-#include <locale>
-#include "Lexer.hpp"
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "catch.hpp"
+#include "Lexer.hpp"
+#include "Token.hpp"
+#include "Test_Lexer.hpp"
 
-using namespace std;
+using namespace cygni;
 
-std::string utf32_to_utf8(const std::u32string& utf32) {
-    std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> cnv;
-    std::string utf8 = cnv.to_bytes(utf32);
-    if (cnv.converted() < utf32.size()) {
-        throw std::runtime_error("incomplete conversion");
-	} else {
-		return utf8;
-	}
-}
+TEST_CASE("test the lexer", "[Lexer]") {
+    SECTION("define an variable with initial value of an integer") {
+		std::vector<Token> tokens = ParseTokensFromText(U"var x = 20");
 
-std::ostream& operator<< (std::ostream& stream, const std::u32string& utf32) {
-	stream << utf32_to_utf8(utf32);
-	return stream;
-}
+        REQUIRE(tokens.size() == 5);
+        REQUIRE(SameToken(tokens[0], Tag::Var));
+        REQUIRE(SameToken(tokens[1], Tag::Identifier));
+        REQUIRE(SameToken(tokens[2], Tag::Assign));
+        REQUIRE(SameToken(tokens[3], Tag::Integer, std::u32string(U"20")));
+        REQUIRE(SameToken(tokens[4], Tag::Eof));
+    }
 
+    SECTION("define an variable with initial value of an character") {
+		std::vector<Token> tokens = ParseTokensFromText(U"var a: Char = 'b'");
 
-unsigned int Factorial( unsigned int number ) {
-    return number <= 1 ? number : Factorial(number-1)*number;
-}
-
-TEST_CASE( "Factorials are computed", "[factorial]" ) {
-    REQUIRE( Factorial(1) == 1 );
-    REQUIRE( Factorial(2) == 2 );
-    REQUIRE( Factorial(3) == 6 );
-    REQUIRE( Factorial(10) == 3628800 );
+        REQUIRE(tokens.size() == 7);
+        REQUIRE(SameToken(tokens[0], Tag::Var));
+        REQUIRE(SameToken(tokens[1], Tag::Identifier));
+        REQUIRE(SameToken(tokens[2], Tag::Colon));
+        REQUIRE(SameToken(tokens[3], Tag::Identifier));
+        REQUIRE(SameToken(tokens[4], Tag::Assign));
+        REQUIRE(SameToken(tokens[5], Tag::Character, std::u32string(U"b")));
+        REQUIRE(SameToken(tokens[6], Tag::Eof));
+    }
 }
