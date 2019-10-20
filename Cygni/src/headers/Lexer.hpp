@@ -53,11 +53,15 @@ private:
 
 	void SkipWhitespaces();
 
+	void SkipComment();
+
+	void SkipSingleLineComment();
+
 	inline static bool IsIdentifierChar(char32_t c) {
 		return IsLetter(c) || IsDigit(c) || c == U'_';
 	}
 
-	inline bool IsEof() {
+	inline bool IsEof() const {
 		return offset >= static_cast<int32_t>(code.size());
 	}
 
@@ -72,7 +76,7 @@ private:
 		}
 	}
 
-	inline char32_t Peek() {
+	inline char32_t Peek() const {
 		return code.at(offset);
 	}
 

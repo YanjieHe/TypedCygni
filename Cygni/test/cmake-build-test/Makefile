@@ -177,6 +177,33 @@ home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Token.cpp.s:
 	$(MAKE) -f CMakeFiles/Cygni_Test.dir/build.make CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Token.cpp.s
 .PHONY : home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Token.cpp.s
 
+home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.o: home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.o
+
+.PHONY : home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.o
+
+# target to build an object file
+home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.o:
+	$(MAKE) -f CMakeFiles/Cygni_Test.dir/build.make CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.o
+.PHONY : home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.o
+
+home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.i: home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.i
+
+.PHONY : home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.i
+
+# target to preprocess a source file
+home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.i:
+	$(MAKE) -f CMakeFiles/Cygni_Test.dir/build.make CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.i
+.PHONY : home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.i
+
+home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.s: home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.s
+
+.PHONY : home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.s
+
+# target to generate assembly for a file
+home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.s:
+	$(MAKE) -f CMakeFiles/Cygni_Test.dir/build.make CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.s
+.PHONY : home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.s
+
 sources/Test_Lexer.o: sources/Test_Lexer.cpp.o
 
 .PHONY : sources/Test_Lexer.o
@@ -246,6 +273,9 @@ help:
 	@echo "... home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Token.o"
 	@echo "... home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Token.i"
 	@echo "... home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Token.s"
+	@echo "... home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.o"
+	@echo "... home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.i"
+	@echo "... home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.s"
 	@echo "... sources/Test_Lexer.o"
 	@echo "... sources/Test_Lexer.i"
 	@echo "... sources/Test_Lexer.s"

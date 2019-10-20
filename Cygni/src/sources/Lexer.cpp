@@ -15,7 +15,9 @@ std::vector<Token> Lexer::ReadAll() {
 												  opChars.end());
 	SkipWhitespaces();
 	while (!IsEof()) {
-		if (IsDigit(Peek())) {
+		if (Peek() == U'/') {
+			SkipComment();
+		} else if (IsDigit(Peek())) {
 			tokens.push_back(ReadInt());
 		} else if (Peek() == SINGLE_QUOTE) {
 			tokens.push_back(ReadCharacterLiteral());
@@ -256,6 +258,22 @@ Token Lexer::ReadOperator() {
 
 void Lexer::SkipWhitespaces() {
 	while (!IsEof() && IsWhiteSpace(Peek())) {
+		Forward();
+	}
+}
+
+void Lexer::SkipComment() {
+	MatchAndSkip(U'/');
+	if (Peek() == U'/') {
+		SkipSingleLineComment();
+	} else {
+		throw LexicalException(line, column, U"expecting '/' for comment");
+	}
+}
+
+void Lexer::SkipSingleLineComment() {
+	MatchAndSkip(U'/');
+	while ((not IsEof()) and Peek() != END_LINE) {
 		Forward();
 	}
 }

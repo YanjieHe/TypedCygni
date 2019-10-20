@@ -129,9 +129,33 @@ CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/
 CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Token.cpp.o.provides.build: CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Token.cpp.o
 
 
+CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.o: CMakeFiles/Cygni_Test.dir/flags.make
+CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.o: /home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/cmake-build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.o -c /home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp
+
+CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp > CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.i
+
+CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp -o CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.s
+
+CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.o.requires:
+
+.PHONY : CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.o.requires
+
+CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.o.provides: CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.o.requires
+	$(MAKE) -f CMakeFiles/Cygni_Test.dir/build.make CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.o.provides.build
+.PHONY : CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.o.provides
+
+CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.o.provides.build: CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.o
+
+
 CMakeFiles/Cygni_Test.dir/sources/Test_Lexer.cpp.o: CMakeFiles/Cygni_Test.dir/flags.make
 CMakeFiles/Cygni_Test.dir/sources/Test_Lexer.cpp.o: ../sources/Test_Lexer.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/cmake-build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/Cygni_Test.dir/sources/Test_Lexer.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/cmake-build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/Cygni_Test.dir/sources/Test_Lexer.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cygni_Test.dir/sources/Test_Lexer.cpp.o -c /home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/sources/Test_Lexer.cpp
 
 CMakeFiles/Cygni_Test.dir/sources/Test_Lexer.cpp.i: cmake_force
@@ -158,6 +182,7 @@ Cygni_Test_OBJECTS = \
 "CMakeFiles/Cygni_Test.dir/test.cpp.o" \
 "CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Lexer.cpp.o" \
 "CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Token.cpp.o" \
+"CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.o" \
 "CMakeFiles/Cygni_Test.dir/sources/Test_Lexer.cpp.o"
 
 # External object files for target Cygni_Test
@@ -166,10 +191,11 @@ Cygni_Test_EXTERNAL_OBJECTS =
 Cygni_Test: CMakeFiles/Cygni_Test.dir/test.cpp.o
 Cygni_Test: CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Lexer.cpp.o
 Cygni_Test: CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Token.cpp.o
+Cygni_Test: CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.o
 Cygni_Test: CMakeFiles/Cygni_Test.dir/sources/Test_Lexer.cpp.o
 Cygni_Test: CMakeFiles/Cygni_Test.dir/build.make
 Cygni_Test: CMakeFiles/Cygni_Test.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/cmake-build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable Cygni_Test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/cmake-build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable Cygni_Test"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/Cygni_Test.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -180,6 +206,7 @@ CMakeFiles/Cygni_Test.dir/build: Cygni_Test
 CMakeFiles/Cygni_Test.dir/requires: CMakeFiles/Cygni_Test.dir/test.cpp.o.requires
 CMakeFiles/Cygni_Test.dir/requires: CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Lexer.cpp.o.requires
 CMakeFiles/Cygni_Test.dir/requires: CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Token.cpp.o.requires
+CMakeFiles/Cygni_Test.dir/requires: CMakeFiles/Cygni_Test.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp.o.requires
 CMakeFiles/Cygni_Test.dir/requires: CMakeFiles/Cygni_Test.dir/sources/Test_Lexer.cpp.o.requires
 
 .PHONY : CMakeFiles/Cygni_Test.dir/requires
