@@ -39,6 +39,12 @@ vector
 -
 
 ../src/headers/Parser.hpp
+Exception.hpp
+../src/headers/Exception.hpp
+Expression.hpp
+../src/headers/Expression.hpp
+Token.hpp
+../src/headers/Token.hpp
 
 ../src/headers/PreDef.hpp
 iostream
@@ -77,6 +83,10 @@ string
 /home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Enum.cpp
 Enum.hpp
 /home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Enum.hpp
+
+/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Expression.cpp
+Expression.hpp
+/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Expression.hpp
 
 /home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Lexer.cpp
 Lexer.hpp

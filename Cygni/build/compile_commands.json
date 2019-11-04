@@ -11,6 +11,11 @@
 },
 {
   "directory": "/home/heyanjie/Documents/Projects/TypedCygni/Cygni/build",
+  "command": "/usr/bin/c++   -I/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/headers -I/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/headers -I/home/heyanjie/Documents/Projects/TypedCygni/Cygni/include    -std=gnu++1z -o CMakeFiles/Cygni.dir/src/sources/Expression.cpp.o -c /home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Expression.cpp",
+  "file": "/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Expression.cpp"
+},
+{
+  "directory": "/home/heyanjie/Documents/Projects/TypedCygni/Cygni/build",
   "command": "/usr/bin/c++   -I/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/headers -I/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/headers -I/home/heyanjie/Documents/Projects/TypedCygni/Cygni/include    -std=gnu++1z -o CMakeFiles/Cygni.dir/src/sources/Lexer.cpp.o -c /home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Lexer.cpp",
   "file": "/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Lexer.cpp"
 },

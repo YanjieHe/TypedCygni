@@ -177,6 +177,33 @@ src/sources/Enum.cpp.s:
 	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/src/sources/Enum.cpp.s
 .PHONY : src/sources/Enum.cpp.s
 
+src/sources/Expression.o: src/sources/Expression.cpp.o
+
+.PHONY : src/sources/Expression.o
+
+# target to build an object file
+src/sources/Expression.cpp.o:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/src/sources/Expression.cpp.o
+.PHONY : src/sources/Expression.cpp.o
+
+src/sources/Expression.i: src/sources/Expression.cpp.i
+
+.PHONY : src/sources/Expression.i
+
+# target to preprocess a source file
+src/sources/Expression.cpp.i:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/src/sources/Expression.cpp.i
+.PHONY : src/sources/Expression.cpp.i
+
+src/sources/Expression.s: src/sources/Expression.cpp.s
+
+.PHONY : src/sources/Expression.s
+
+# target to generate assembly for a file
+src/sources/Expression.cpp.s:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/src/sources/Expression.cpp.s
+.PHONY : src/sources/Expression.cpp.s
+
 src/sources/Lexer.o: src/sources/Lexer.cpp.o
 
 .PHONY : src/sources/Lexer.o
@@ -300,6 +327,9 @@ help:
 	@echo "... src/sources/Enum.o"
 	@echo "... src/sources/Enum.i"
 	@echo "... src/sources/Enum.s"
+	@echo "... src/sources/Expression.o"
+	@echo "... src/sources/Expression.i"
+	@echo "... src/sources/Expression.s"
 	@echo "... src/sources/Lexer.o"
 	@echo "... src/sources/Lexer.i"
 	@echo "... src/sources/Lexer.s"

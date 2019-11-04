@@ -1,8 +1,8 @@
 #ifndef CYGNI_PARSER_HPP
 #define CYGNI_PARSER_HPP
+#include "Exception.hpp"
 #include "Expression.hpp"
 #include "Token.hpp"
-#include "Exception.hpp"
 namespace cygni {
 class Parser {
 public:
@@ -27,7 +27,7 @@ public:
 	Token Match(Tag tag) {
 		if (tag == Look().tag) {
 			Token t = Look();
-			Move();
+			Advance();
 			return t;
 		} else {
 			std::u32string message = U"expecting '" + Enum<Tag>::ToString(tag) +
@@ -37,12 +37,10 @@ public:
 		}
 	}
 
-	inline SourceLocation GetPos(const Token& token) const {
+	inline SourceLocation GetLoc(const Token& token) const {
 		return SourceLocation{document, token.line, token.column, Look().line,
 							  Look().column};
 	}
-
-
 };
 } // namespace cygni
 #endif // CYGNI_PARSER_HPP

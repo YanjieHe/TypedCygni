@@ -72,115 +72,115 @@ enum class Tag {
 
 template <typename TEnum> class Enum {
 public:
-	static std::string ToString(TEnum);
+	static std::u32string ToString(TEnum);
 };
 
 template <> class Enum<Tag> {
 public:
-	static std::string ToString(Tag tag) {
+	static std::u32string ToString(Tag tag) {
 		switch (tag) {
 		case Tag::Identifier:
-			return "Identifier";
+			return U"Identifier";
 		case Tag::Integer:
-			return "Integer";
+			return U"Integer";
 		case Tag::Float:
-			return "Float";
+			return U"Float";
 		case Tag::Character:
-			return "Character";
+			return U"Character";
 		case Tag::String:
-			return "String";
+			return U"String";
 		case Tag::Add:
-			return "Add";
+			return U"Add";
 		case Tag::Subtract:
-			return "Subtract";
+			return U"Subtract";
 		case Tag::Multiply:
-			return "Multiply";
+			return U"Multiply";
 		case Tag::Divide:
-			return "Divide";
+			return U"Divide";
 		case Tag::Modulo:
-			return "Modulo";
+			return U"Modulo";
 		case Tag::Equal:
-			return "Equal";
+			return U"Equal";
 		case Tag::NotEqual:
-			return "NotEqual";
+			return U"NotEqual";
 		case Tag::GreaterThan:
-			return "GreaterThan";
+			return U"GreaterThan";
 		case Tag::GreaterThanOrEqual:
-			return "GreaterThanOrEqual";
+			return U"GreaterThanOrEqual";
 		case Tag::LessThan:
-			return "LessThan";
+			return U"LessThan";
 		case Tag::LessThanOrEqual:
-			return "LessThanOrEqual";
+			return U"LessThanOrEqual";
 		case Tag::And:
-			return "And";
+			return U"And";
 		case Tag::Or:
-			return "Or";
+			return U"Or";
 		case Tag::Not:
-			return "Not";
+			return U"Not";
 		case Tag::Var:
-			return "Var";
+			return U"Var";
 		case Tag::Def:
-			return "Def";
+			return U"Def";
 		case Tag::Assign:
-			return "Assign";
+			return U"Assign";
 		case Tag::LeftBrace:
-			return "LeftBrace";
+			return U"LeftBrace";
 		case Tag::RightBrace:
-			return "RightBrace";
+			return U"RightBrace";
 		case Tag::LeftBracket:
-			return "LeftBracket";
+			return U"LeftBracket";
 		case Tag::RightBracket:
-			return "RightBracket";
+			return U"RightBracket";
 		case Tag::LeftParenthesis:
-			return "LeftParenthesis";
+			return U"LeftParenthesis";
 		case Tag::RightParenthesis:
-			return "RightParenthesis";
+			return U"RightParenthesis";
 		case Tag::Dot:
-			return "Dot";
+			return U"Dot";
 		case Tag::Comma:
-			return "Comma";
+			return U"Comma";
 		case Tag::Semicolon:
-			return "Semicolon";
+			return U"Semicolon";
 		case Tag::Colon:
-			return "Colon";
+			return U"Colon";
 		case Tag::RightArrow:
-			return "RightArrow";
+			return U"RightArrow";
 		case Tag::At:
-			return "At";
+			return U"At";
 		case Tag::True:
-			return "True";
+			return U"True";
 		case Tag::False:
-			return "False";
+			return U"False";
 		case Tag::If:
-			return "If";
+			return U"If";
 		case Tag::Else:
-			return "Else";
+			return U"Else";
 		case Tag::While:
-			return "While";
+			return U"While";
 		case Tag::For:
-			return "For";
+			return U"For";
 		case Tag::Break:
-			return "Break";
+			return U"Break";
 		case Tag::Return:
-			return "Return";
+			return U"Return";
 		case Tag::Import:
-			return "Import";
+			return U"Import";
 		case Tag::Uses:
-			return "Uses";
+			return U"Uses";
 		case Tag::LowerBound:
-			return "LowerBound";
+			return U"LowerBound";
 		case Tag::UpperBound:
-			return "UpperBound";
+			return U"UpperBound";
 		case Tag::Class:
-			return "Class";
+			return U"Class";
 		case Tag::Private:
-			return "Private";
+			return U"Private";
 		case Tag::Protected:
-			return "Protected";
+			return U"Protected";
 		case Tag::Module:
-			return "Module";
+			return U"Module";
 		case Tag::Eof:
-			return "Eof";
+			return U"Eof";
 		default:
 			std::cout << __FUNCTION__ << std::endl;
 			exit(1);
