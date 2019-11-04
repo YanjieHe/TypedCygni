@@ -10,7 +10,7 @@ Lexer::Lexer(const std::u32string& code)
 
 std::vector<Token> Lexer::ReadAll() {
 	std::vector<Token> tokens;
-	static std::u32string opChars = U"+-*/%><=!()[]{}:,.;";
+	static std::u32string opChars = U"+-*/%><=!()[]{}:,.;@";
 	static std::unordered_set<char32_t> opCharSet(opChars.begin(),
 												  opChars.end());
 	SkipWhitespaces();
@@ -23,10 +23,10 @@ std::vector<Token> Lexer::ReadAll() {
 			tokens.push_back(ReadCharacterLiteral());
 		} else if (Peek() == DOUBLE_QUOTE) {
 			tokens.push_back(ReadString());
-		} else if (IsLetter(Peek()) || Peek() == U'_') {
-			tokens.push_back(ReadIdentifier());
 		} else if (opCharSet.find(Peek()) != opCharSet.end()) {
 			tokens.push_back(ReadOperator());
+		} else if (IsLetter(Peek()) || Peek() == U'_') {
+			tokens.push_back(ReadIdentifier());
 		} else {
 			throw LexicalException(line, column, U"unsupported token");
 		}
@@ -97,6 +97,7 @@ void Lexer::ReadCharacter() {
 		throw LexicalException(line, column, U"character literal");
 	} else {
 		if (Peek() == BACKSLASH) {
+			MatchAndSkip(BACKSLASH);
 			ReadSimpleEscapeSequence();
 		} else {
 			Consume();
@@ -105,10 +106,10 @@ void Lexer::ReadCharacter() {
 }
 
 void Lexer::ReadSimpleEscapeSequence() {
-	MatchAndSkip(BACKSLASH);
 	if (Peek() == U'x') {
-		Forward();
 		ReadHexadecimalEscapeSequence();
+	} else if (Peek() == U'u' || Peek() == U'U') {
+		ReadUnicodeEscapeSequence();
 	} else {
 		builder.push_back(UnescapedChar(Peek()));
 		Forward();
@@ -116,6 +117,7 @@ void Lexer::ReadSimpleEscapeSequence() {
 }
 
 void Lexer::ReadHexadecimalEscapeSequence() {
+	MatchAndSkip(U'x');
 	std::u32string text;
 	if (IsHexDigit()) {
 		text.push_back(Peek());
@@ -127,6 +129,39 @@ void Lexer::ReadHexadecimalEscapeSequence() {
 	for (int i = 0; i < 3 && IsHexDigit(); i++) {
 		text.push_back(Peek());
 		Forward();
+	}
+	try {
+		int val = HexToInt(text);
+		builder.push_back(static_cast<char32_t>(val));
+	} catch (ArgumentException& ex) {
+		throw LexicalException(line, column, U"wrong format for hex digit");
+	}
+}
+
+void Lexer::ReadUnicodeEscapeSequence() {
+	std::u32string text;
+	if (Peek() == U'u') {
+		Match(U'u');
+		for (int i = 0; i < 4; i++) {
+			if ((not IsEof()) and IsHexDigit()) {
+				text.push_back(Peek());
+				Forward();
+			} else {
+				throw LexicalException(line, column, U"expecting an hex digit");
+			}
+		}
+	} else if (Peek() == U'U') {
+		Match(U'U');
+		for (int i = 0; i < 8; i++) {
+			if ((not IsEof()) and IsHexDigit()) {
+				text.push_back(Peek());
+				Forward();
+			} else {
+				throw LexicalException(line, column, U"expecting an hex digit");
+			}
+		}
+	} else {
+		throw LexicalException(line, column, U"expecting 'u' or 'U'");
 	}
 	try {
 		int val = HexToInt(text);
@@ -227,6 +262,7 @@ Token Lexer::ReadOperator() {
 		{U";", Tag::Semicolon},
 		{U"=", Tag::Assign},
 		{U"->", Tag::RightArrow},
+		{U"@", Tag::At},
 		{U"<:", Tag::UpperBound},
 		{U":>", Tag::LowerBound}};
 

@@ -20,4 +20,4 @@ int HexToInt(std::u32string hex) {
 	return val;
 }
 
-}
+} // namespace cygni

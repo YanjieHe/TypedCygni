@@ -150,6 +150,33 @@ main.cpp.s:
 	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+src/sources/Enum.o: src/sources/Enum.cpp.o
+
+.PHONY : src/sources/Enum.o
+
+# target to build an object file
+src/sources/Enum.cpp.o:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/src/sources/Enum.cpp.o
+.PHONY : src/sources/Enum.cpp.o
+
+src/sources/Enum.i: src/sources/Enum.cpp.i
+
+.PHONY : src/sources/Enum.i
+
+# target to preprocess a source file
+src/sources/Enum.cpp.i:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/src/sources/Enum.cpp.i
+.PHONY : src/sources/Enum.cpp.i
+
+src/sources/Enum.s: src/sources/Enum.cpp.s
+
+.PHONY : src/sources/Enum.s
+
+# target to generate assembly for a file
+src/sources/Enum.cpp.s:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/src/sources/Enum.cpp.s
+.PHONY : src/sources/Enum.cpp.s
+
 src/sources/Lexer.o: src/sources/Lexer.cpp.o
 
 .PHONY : src/sources/Lexer.o
@@ -176,6 +203,33 @@ src/sources/Lexer.s: src/sources/Lexer.cpp.s
 src/sources/Lexer.cpp.s:
 	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/src/sources/Lexer.cpp.s
 .PHONY : src/sources/Lexer.cpp.s
+
+src/sources/Parser.o: src/sources/Parser.cpp.o
+
+.PHONY : src/sources/Parser.o
+
+# target to build an object file
+src/sources/Parser.cpp.o:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/src/sources/Parser.cpp.o
+.PHONY : src/sources/Parser.cpp.o
+
+src/sources/Parser.i: src/sources/Parser.cpp.i
+
+.PHONY : src/sources/Parser.i
+
+# target to preprocess a source file
+src/sources/Parser.cpp.i:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/src/sources/Parser.cpp.i
+.PHONY : src/sources/Parser.cpp.i
+
+src/sources/Parser.s: src/sources/Parser.cpp.s
+
+.PHONY : src/sources/Parser.s
+
+# target to generate assembly for a file
+src/sources/Parser.cpp.s:
+	$(MAKE) -f CMakeFiles/Cygni.dir/build.make CMakeFiles/Cygni.dir/src/sources/Parser.cpp.s
+.PHONY : src/sources/Parser.cpp.s
 
 src/sources/Token.o: src/sources/Token.cpp.o
 
@@ -243,9 +297,15 @@ help:
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... src/sources/Enum.o"
+	@echo "... src/sources/Enum.i"
+	@echo "... src/sources/Enum.s"
 	@echo "... src/sources/Lexer.o"
 	@echo "... src/sources/Lexer.i"
 	@echo "... src/sources/Lexer.s"
+	@echo "... src/sources/Parser.o"
+	@echo "... src/sources/Parser.i"
+	@echo "... src/sources/Parser.s"
 	@echo "... src/sources/Token.o"
 	@echo "... src/sources/Token.i"
 	@echo "... src/sources/Token.s"

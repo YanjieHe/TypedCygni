@@ -5,7 +5,9 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
   "/home/heyanjie/Documents/Projects/TypedCygni/Cygni/main.cpp" "/home/heyanjie/Documents/Projects/TypedCygni/Cygni/build/CMakeFiles/Cygni.dir/main.cpp.o"
+  "/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Enum.cpp" "/home/heyanjie/Documents/Projects/TypedCygni/Cygni/build/CMakeFiles/Cygni.dir/src/sources/Enum.cpp.o"
   "/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Lexer.cpp" "/home/heyanjie/Documents/Projects/TypedCygni/Cygni/build/CMakeFiles/Cygni.dir/src/sources/Lexer.cpp.o"
+  "/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Parser.cpp" "/home/heyanjie/Documents/Projects/TypedCygni/Cygni/build/CMakeFiles/Cygni.dir/src/sources/Parser.cpp.o"
   "/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Token.cpp" "/home/heyanjie/Documents/Projects/TypedCygni/Cygni/build/CMakeFiles/Cygni.dir/src/sources/Token.cpp.o"
   "/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp" "/home/heyanjie/Documents/Projects/TypedCygni/Cygni/build/CMakeFiles/Cygni.dir/src/sources/Utility.cpp.o"
   )

@@ -1,3 +1,4 @@
+#include "Expression.hpp"
 #include "Lexer.hpp"
 #include <codecvt>
 #include <iostream>
@@ -28,12 +29,14 @@ int main(int argc, char** argv) {
 	try {
 		auto tokens = lexer.ReadAll();
 		for (const cygni::Token& token : tokens) {
-			cout << TagToString(token.tag) << ": ";
+			cout << cygni::Enum<cygni::Tag>::ToString(token.tag) << ": ";
 			cout << token.text << endl;
 		}
 	} catch (cygni::LexicalException& ex) {
 		cout << "(" << ex.line << ", " << ex.column << "): ";
 		cout << ex.message << endl;
 	}
+	cout << "Press any key to close..." << endl;
+	cin.get();
 	return 0;
 }

@@ -10,7 +10,19 @@
 string
 -
 
+../src/headers/Enum.hpp
+PreDef.hpp
+../src/headers/PreDef.hpp
+
 ../src/headers/Exception.hpp
+string
+-
+
+../src/headers/Expression.hpp
+PreDef.hpp
+../src/headers/PreDef.hpp
+memory
+-
 string
 -
 
@@ -26,17 +38,31 @@ Utility.hpp
 vector
 -
 
-../src/headers/Token.hpp
+../src/headers/Parser.hpp
+
+../src/headers/PreDef.hpp
+iostream
+-
 string
 -
 unordered_map
 -
+vector
+-
+
+../src/headers/Token.hpp
+Enum.hpp
+../src/headers/Enum.hpp
+PreDef.hpp
+../src/headers/PreDef.hpp
 
 ../src/headers/Utility.hpp
 string
 -
 
 /home/heyanjie/Documents/Projects/TypedCygni/Cygni/main.cpp
+Expression.hpp
+/home/heyanjie/Documents/Projects/TypedCygni/Cygni/Expression.hpp
 Lexer.hpp
 /home/heyanjie/Documents/Projects/TypedCygni/Cygni/Lexer.hpp
 codecvt
@@ -48,6 +74,10 @@ locale
 string
 -
 
+/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Enum.cpp
+Enum.hpp
+/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Enum.hpp
+
 /home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Lexer.cpp
 Lexer.hpp
 /home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Lexer.hpp
@@ -55,6 +85,10 @@ iostream
 -
 unordered_set
 -
+
+/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Parser.cpp
+Parser.hpp
+/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Parser.hpp
 
 /home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Token.cpp
 Token.hpp

@@ -94,7 +94,7 @@ CMAKE_EXE_LINKER_FLAGS_RELEASE:STRING=
 CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 
 //Enable/Disable output of compile commands during generation.
-CMAKE_EXPORT_COMPILE_COMMANDS:BOOL=OFF
+CMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON
 
 //Install path prefix, prepended onto install directories.
 CMAKE_INSTALL_PREFIX:PATH=/usr/local
@@ -186,87 +186,6 @@ Cygni_BINARY_DIR:STATIC=/home/heyanjie/Documents/Projects/TypedCygni/Cygni/build
 
 //Value Computed by CMake
 Cygni_SOURCE_DIR:STATIC=/home/heyanjie/Documents/Projects/TypedCygni/Cygni
-
-//Path to a library.
-ICUDATA_LIB:FILEPATH=ICUDATA_LIB-NOTFOUND
-
-//Path to a library.
-ICUDATA_MAJOR_LIB:FILEPATH=ICUDATA_MAJOR_LIB-NOTFOUND
-
-//Path to a library.
-ICUIL18N_LIB:FILEPATH=ICUIL18N_LIB-NOTFOUND
-
-//Path to a library.
-ICUIL18N_MAJOR_LIB:FILEPATH=ICUIL18N_MAJOR_LIB-NOTFOUND
-
-//Path to a library.
-ICUUC_LIB:FILEPATH=ICUUC_LIB-NOTFOUND
-
-//Path to a library.
-ICUUC_MAJOR_LIB:FILEPATH=ICUUC_MAJOR_LIB-NOTFOUND
-
-//ICU components... library (debug)
-ICU_COMPONENTS..._LIBRARY_DEBUG:FILEPATH=ICU_COMPONENTS..._LIBRARY_DEBUG-NOTFOUND
-
-//ICU components... library (release)
-ICU_COMPONENTS..._LIBRARY_RELEASE:FILEPATH=ICU_COMPONENTS..._LIBRARY_RELEASE-NOTFOUND
-
-//ICU derb executable
-ICU_DERB_EXECUTABLE:FILEPATH=/usr/bin/derb
-
-//ICU genbrk executable
-ICU_GENBRK_EXECUTABLE:FILEPATH=/usr/bin/genbrk
-
-//ICU genccode executable
-ICU_GENCCODE_EXECUTABLE:FILEPATH=/usr/sbin/genccode
-
-//ICU gencfu executable
-ICU_GENCFU_EXECUTABLE:FILEPATH=/usr/bin/gencfu
-
-//ICU gencmn executable
-ICU_GENCMN_EXECUTABLE:FILEPATH=/usr/sbin/gencmn
-
-//ICU gencnval executable
-ICU_GENCNVAL_EXECUTABLE:FILEPATH=/usr/bin/gencnval
-
-//ICU gendict executable
-ICU_GENDICT_EXECUTABLE:FILEPATH=/usr/bin/gendict
-
-//ICU gennorm2 executable
-ICU_GENNORM2_EXECUTABLE:FILEPATH=/usr/sbin/gennorm2
-
-//ICU genrb executable
-ICU_GENRB_EXECUTABLE:FILEPATH=/usr/bin/genrb
-
-//ICU gensprep executable
-ICU_GENSPREP_EXECUTABLE:FILEPATH=/usr/sbin/gensprep
-
-//ICU icu-config executable
-ICU_ICU-CONFIG_EXECUTABLE:FILEPATH=/usr/bin/icu-config
-
-//ICU icuinfo executable
-ICU_ICUINFO_EXECUTABLE:FILEPATH=/usr/bin/icuinfo
-
-//ICU icupkg executable
-ICU_ICUPKG_EXECUTABLE:FILEPATH=/usr/sbin/icupkg
-
-//ICU include directory
-ICU_INCLUDE_DIR:PATH=/usr/include
-
-//ICU makeconv executable
-ICU_MAKECONV_EXECUTABLE:FILEPATH=/usr/bin/makeconv
-
-//ICU Makefile.inc data file
-ICU_MAKEFILE_INC:FILEPATH=/usr/lib/x86_64-linux-gnu/icu/60.2/Makefile.inc
-
-//ICU pkgdata executable
-ICU_PKGDATA_EXECUTABLE:FILEPATH=/usr/bin/pkgdata
-
-//ICU pkgdata.inc data file
-ICU_PKGDATA_INC:FILEPATH=/usr/lib/x86_64-linux-gnu/icu/60.2/pkgdata.inc
-
-//ICU uconv executable
-ICU_UCONV_EXECUTABLE:FILEPATH=/usr/bin/uconv
 
 
 ########################
@@ -408,8 +327,4 @@ CMAKE_STRIP-ADVANCED:INTERNAL=1
 CMAKE_UNAME:INTERNAL=/bin/uname
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: ICU_COMPONENTS..._LIBRARY_DEBUG
-ICU_COMPONENTS..._LIBRARY_DEBUG-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: ICU_COMPONENTS..._LIBRARY_RELEASE
-ICU_COMPONENTS..._LIBRARY_RELEASE-ADVANCED:INTERNAL=1
 

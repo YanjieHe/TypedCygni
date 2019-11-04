@@ -1,0 +1,32 @@
+[
+{
+  "directory": "/home/heyanjie/Documents/Projects/TypedCygni/Cygni/build",
+  "command": "/usr/bin/c++   -I/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/headers -I/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/headers -I/home/heyanjie/Documents/Projects/TypedCygni/Cygni/include    -std=gnu++1z -o CMakeFiles/Cygni.dir/main.cpp.o -c /home/heyanjie/Documents/Projects/TypedCygni/Cygni/main.cpp",
+  "file": "/home/heyanjie/Documents/Projects/TypedCygni/Cygni/main.cpp"
+},
+{
+  "directory": "/home/heyanjie/Documents/Projects/TypedCygni/Cygni/build",
+  "command": "/usr/bin/c++   -I/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/headers -I/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/headers -I/home/heyanjie/Documents/Projects/TypedCygni/Cygni/include    -std=gnu++1z -o CMakeFiles/Cygni.dir/src/sources/Enum.cpp.o -c /home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Enum.cpp",
+  "file": "/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Enum.cpp"
+},
+{
+  "directory": "/home/heyanjie/Documents/Projects/TypedCygni/Cygni/build",
+  "command": "/usr/bin/c++   -I/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/headers -I/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/headers -I/home/heyanjie/Documents/Projects/TypedCygni/Cygni/include    -std=gnu++1z -o CMakeFiles/Cygni.dir/src/sources/Lexer.cpp.o -c /home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Lexer.cpp",
+  "file": "/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Lexer.cpp"
+},
+{
+  "directory": "/home/heyanjie/Documents/Projects/TypedCygni/Cygni/build",
+  "command": "/usr/bin/c++   -I/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/headers -I/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/headers -I/home/heyanjie/Documents/Projects/TypedCygni/Cygni/include    -std=gnu++1z -o CMakeFiles/Cygni.dir/src/sources/Parser.cpp.o -c /home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Parser.cpp",
+  "file": "/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Parser.cpp"
+},
+{
+  "directory": "/home/heyanjie/Documents/Projects/TypedCygni/Cygni/build",
+  "command": "/usr/bin/c++   -I/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/headers -I/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/headers -I/home/heyanjie/Documents/Projects/TypedCygni/Cygni/include    -std=gnu++1z -o CMakeFiles/Cygni.dir/src/sources/Token.cpp.o -c /home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Token.cpp",
+  "file": "/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Token.cpp"
+},
+{
+  "directory": "/home/heyanjie/Documents/Projects/TypedCygni/Cygni/build",
+  "command": "/usr/bin/c++   -I/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/headers -I/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/headers -I/home/heyanjie/Documents/Projects/TypedCygni/Cygni/include    -std=gnu++1z -o CMakeFiles/Cygni.dir/src/sources/Utility.cpp.o -c /home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp",
+  "file": "/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Utility.cpp"
+}
+]
