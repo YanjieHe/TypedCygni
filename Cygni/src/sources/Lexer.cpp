@@ -133,7 +133,7 @@ void Lexer::ReadHexadecimalEscapeSequence() {
 	try {
 		int val = HexToInt(text);
 		builder.push_back(static_cast<char32_t>(val));
-	} catch (ArgumentException& ex) {
+	} catch (ArgumentException&) {
 		throw LexicalException(line, column, U"wrong format for hex digit");
 	}
 }
@@ -143,7 +143,7 @@ void Lexer::ReadUnicodeEscapeSequence() {
 	if (Peek() == U'u') {
 		Match(U'u');
 		for (int i = 0; i < 4; i++) {
-			if ((not IsEof()) and IsHexDigit()) {
+			if ((!IsEof()) && IsHexDigit()) {
 				text.push_back(Peek());
 				Forward();
 			} else {
@@ -153,7 +153,7 @@ void Lexer::ReadUnicodeEscapeSequence() {
 	} else if (Peek() == U'U') {
 		Match(U'U');
 		for (int i = 0; i < 8; i++) {
-			if ((not IsEof()) and IsHexDigit()) {
+			if ((!IsEof()) && IsHexDigit()) {
 				text.push_back(Peek());
 				Forward();
 			} else {
@@ -166,7 +166,7 @@ void Lexer::ReadUnicodeEscapeSequence() {
 	try {
 		int val = HexToInt(text);
 		builder.push_back(static_cast<char32_t>(val));
-	} catch (ArgumentException& ex) {
+	} catch (ArgumentException&) {
 		throw LexicalException(line, column, U"wrong format for hex digit");
 	}
 }
@@ -309,7 +309,7 @@ void Lexer::SkipComment() {
 
 void Lexer::SkipSingleLineComment() {
 	MatchAndSkip(U'/');
-	while ((not IsEof()) and Peek() != END_LINE) {
+	while ((!IsEof()) && Peek() != END_LINE) {
 		Forward();
 	}
 }

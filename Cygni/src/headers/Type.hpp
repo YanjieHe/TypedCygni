@@ -1,10 +1,14 @@
 #ifndef CYGNI_TYPE_HPP
 #define CYGNI_TYPE_HPP
 #include "Enum.hpp"
+#include "Utility.hpp"
 #include <memory>
 #include <unordered_map>
 #include <vector>
 namespace cygni {
+class Type;
+using TypePtr = std::shared_ptr<Type>;
+
 class Type {
 public:
 	TypeCode typeCode;
@@ -12,11 +16,9 @@ public:
 	explicit Type(TypeCode typeCode);
 };
 
-using TypePtr = std::shared_ptr<Type>;
-
 class UnknownType : public Type {
 public:
-    UnknownType();
+	UnknownType();
 };
 
 class Int32Type : public Type {
@@ -55,43 +57,30 @@ public:
 	explicit ObjectType(std::u32string name);
 };
 
-template <typename TKey, typename TValue> class Table {
-public:
-	std::vector<TValue> values;
-	std::unordered_map<TKey, int> map;
-
-	Table() = default;
-	void Add(const TKey& key, const TValue& value) {
-		if (map.find(key) != map.end()) {
-			values[map[key]] = value;
-		} else {
-			int n = values.size();
-			map.insert({key, n});
-			values.push_back(value);
-		}
-	}
-
-	const TValue& GetValueByKey(const TKey& key) const {
-		return values[map[key]];
-	}
-
-	TValue& GetValueByKey(const TKey& key) {
-		return values[map[key]];
-	}
-
-	int GetIndexByKey(const TKey& key) {
-		return map[key];
-	}
-
-	bool ContainsKey(const TKey& key) {
-		return map.find(key) != map.end();
-	}
-};
-
-class ArrayType {
+class ArrayType : public Type {
 public:
 	TypePtr elementType;
 	explicit ArrayType(TypePtr elementType);
+};
+
+class FieldTypeInfo {
+public:
+	std::u32string name;
+	TypePtr type;
+};
+
+class MethodTypeInfo {
+public:
+	std::u32string name;
+	std::vector<TypePtr> parameters;
+	TypePtr returnType;
+};
+
+class ClassTypeInfo {
+public:
+	Table<std::u32string, FieldTypeInfo> fields;
+	Table<std::u32string, MethodTypeInfo> methods;
+	ClassTypeInfo() = default;
 };
 
 class TypeParameter {

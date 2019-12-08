@@ -1,6 +1,8 @@
 #ifndef CYGNI_UTILITY_HPP
 #define CYGNI_UTILITY_HPP
 #include <string>
+#include <vector>
+#include <unordered_map>
 
 namespace cygni {
 
@@ -19,6 +21,39 @@ inline static bool IsWhiteSpace(char32_t c) {
 int HexToInt(std::u32string hex);
 
 std::string utf32_to_utf8(const std::u32string& utf32);
+
+template <typename TKey, typename TValue> class Table {
+public:
+	std::vector<TValue> values;
+	std::unordered_map<TKey, int> map;
+
+	Table() = default;
+	void Add(const TKey& key, const TValue& value) {
+		if (map.find(key) != map.end()) {
+			values[map[key]] = value;
+		} else {
+			int n = values.size();
+			map.insert({key, n});
+			values.push_back(value);
+		}
+	}
+
+	const TValue& GetValueByKey(const TKey& key) const {
+		return values[map[key]];
+	}
+
+	TValue& GetValueByKey(const TKey& key) {
+		return values[map[key]];
+	}
+
+	int GetIndexByKey(const TKey& key) {
+		return map[key];
+	}
+
+	bool ContainsKey(const TKey& key) {
+		return map.find(key) != map.end();
+	}
+};
 
 } // namespace cygni
 

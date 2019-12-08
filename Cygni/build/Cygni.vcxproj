@@ -322,7 +322,9 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="D:\Documents\Compiler Construction\TypedCygni\Cygni\src\sources\Expression.cpp" />
     <ClCompile Include="D:\Documents\Compiler Construction\TypedCygni\Cygni\src\sources\Lexer.cpp" />
     <ClCompile Include="D:\Documents\Compiler Construction\TypedCygni\Cygni\src\sources\Parser.cpp" />
+    <ClCompile Include="D:\Documents\Compiler Construction\TypedCygni\Cygni\src\sources\Scope.cpp" />
     <ClCompile Include="D:\Documents\Compiler Construction\TypedCygni\Cygni\src\sources\Token.cpp" />
+    <ClCompile Include="D:\Documents\Compiler Construction\TypedCygni\Cygni\src\sources\Type.cpp" />
     <ClCompile Include="D:\Documents\Compiler Construction\TypedCygni\Cygni\src\sources\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>

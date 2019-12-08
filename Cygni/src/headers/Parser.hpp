@@ -42,53 +42,57 @@ public:
 							  Look().column};
 	}
 
+	Program ParseProgram();
+
 	ExpPtr Statement();
 
-    ExpPtr ParseAssign();
+	ExpPtr ParseAssign();
 
-    ExpPtr ParseOr();
+	ExpPtr ParseOr();
 
-    ExpPtr ParseAnd();
+	ExpPtr ParseAnd();
 
-    ExpPtr ParseEquality();
+	ExpPtr ParseEquality();
 
-    ExpPtr ParseRelation();
+	ExpPtr ParseRelation();
 
-    ExpPtr ParseExpr();
+	ExpPtr ParseExpr();
 
-    ExpPtr ParseTerm();
+	ExpPtr ParseTerm();
 
-    ExpPtr ParseUnary();
+	ExpPtr ParseUnary();
 
-    ExpPtr ParsePostfix();
+	ExpPtr ParsePostfix();
 
-    ExpPtr ParseFactor();
+	ExpPtr ParseFactor();
 
-    ExpPtr ParseBlock();
+	ExpPtr ParseBlock();
 
-    ExpPtr IfStatement();
+	ExpPtr IfStatement();
 
-    ExpPtr ParseVar();
+	ExpPtr ParseVar();
 
-    Ptr<Var> ParseVarDeclaration();
+	std::shared_ptr<VariableDefinitionExpression> ParseVarDeclaration();
 
-    Ptr<Def> ParseDef();
+	FieldDef ParseFieldDefinition(AccessModifier modifier, bool isStatic);
 
-    Parameter ParseParameter();
+	MethodDef ParseMethodDefinition(AccessModifier modifier, bool isStatic);
 
-    Ptr<TypeExpression> ParseType();
+	ParameterExpression ParseParameter();
 
-    ExpPtr ParseReturn();
+	std::shared_ptr<Type> ParseType();
 
-    Vector<Ptr<TypeExpression>> ParseTypeArguments();
+	ExpPtr ParseReturn();
 
-    Ptr<While> ParseWhile();
+	std::vector<std::shared_ptr<Type>> ParseTypeArguments();
 
-    Ptr<DefClass> ParseDefClass();
+	ExpPtr ParseWhile();
 
-    Ptr<DefModule> ParseDefModule();
+	std::shared_ptr<ClassInfo> ParseDefClass();
 
-    Access ParseAccess();
+	std::shared_ptr<ClassInfo> ParseDefModule();
+
+	AccessModifier ParseAccess();
 };
 } // namespace cygni
 #endif // CYGNI_PARSER_HPP

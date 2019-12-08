@@ -19,6 +19,9 @@
 // else will be ignored.
 CMAKE_CONFIGURATION_TYPES:STRING=Debug;Release;MinSizeRel;RelWithDebInfo
 
+//No help, variable specified on the command line.
+CMAKE_CXX_COMPILER:FILEPATH=C:/Program Files/LLVM/bin/clang-cl.exe
+
 //Flags used by the CXX compiler during all build types.
 CMAKE_CXX_FLAGS:STRING=/DWIN32 /D_WINDOWS /W3 /GR /EHsc
 
@@ -36,6 +39,9 @@ CMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING=/MD /Zi /O2 /Ob1 /DNDEBUG
 
 //Libraries linked by default with all C++ applications.
 CMAKE_CXX_STANDARD_LIBRARIES:STRING=kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
+
+//No help, variable specified on the command line.
+CMAKE_C_COMPILER:FILEPATH=C:/Program Files/LLVM/bin/clang-cl.exe
 
 //Flags used by the C compiler during all build types.
 CMAKE_C_FLAGS:STRING=/DWIN32 /D_WINDOWS /W3

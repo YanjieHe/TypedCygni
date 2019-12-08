@@ -101,13 +101,15 @@ enum class ExpressionType {
 	New,
 	Parameter,
 	Loop,
-	Goto
+	Goto,
+	VariableDefinition,
+	While
 };
 
 enum class AccessModifier { Public, Private, Protected };
 
 enum class TypeCode {
-    Unknown,
+	Unknown,
 	Boolean,
 	Byte,
 	Char,
@@ -121,7 +123,8 @@ enum class TypeCode {
 	String,
 	UInt16,
 	UInt32,
-	UInt64
+	UInt64,
+	Array
 };
 template <typename TEnum> class Enum {
 public:
@@ -307,6 +310,10 @@ public:
 			return U"Loop";
 		case ExpressionType::Goto:
 			return U"Goto";
+		case ExpressionType::VariableDefinition:
+			return U"VariableDefinition";
+		case ExpressionType::While:
+			return U"While";
 
 		default:
 			std::cout << __FUNCTION__ << std::endl;
@@ -335,8 +342,8 @@ template <> class Enum<TypeCode> {
 public:
 	static std::u32string ToString(TypeCode typeCode) {
 		switch (typeCode) {
-            case TypeCode::Unknown:
-                return U"Unknown";
+		case TypeCode::Unknown:
+			return U"Unknown";
 		case TypeCode::Boolean:
 			return U"Boolean";
 		case TypeCode::Byte:
@@ -365,6 +372,8 @@ public:
 			return U"UInt32";
 		case TypeCode::UInt64:
 			return U"UInt64";
+		case TypeCode::Array:
+			return U"Array";
 
 		default:
 			std::cout << __FUNCTION__ << std::endl;

@@ -2,10 +2,16 @@
 #define CYGNI_EXPRESSION_HPP
 #include "Enum.hpp"
 #include "PreDef.hpp"
+#include "Scope.hpp"
 #include "Type.hpp"
 #include <memory>
 #include <string>
+
 namespace cygni {
+
+class Expression;
+using ExpPtr  = std::shared_ptr<Expression>;
+using ExpList = std::vector<std::shared_ptr<Expression>>;
 
 class SourceDocument {
 public:
@@ -36,13 +42,11 @@ public:
 	Expression(SourceLocation location, ExpressionType nodeType);
 };
 
-using ExpPtr  = std::shared_ptr<Expression>;
-using ExpList = std::vector<std::shared_ptr<Expression>>;
-
 class ConstantExpression : public Expression {
 public:
 	std::u32string constant;
-	ConstantExpression(SourceLocation location, TypePtr type, std::u32string constant);
+	ConstantExpression(SourceLocation location, TypePtr type,
+					   std::u32string constant);
 };
 
 class BinaryExpression : public Expression {
@@ -65,6 +69,7 @@ public:
 class BlockExpression : public Expression {
 public:
 	ExpList expressions;
+	std::shared_ptr<Scope> scope;
 	BlockExpression(SourceLocation location, ExpList expressions);
 };
 
@@ -94,36 +99,46 @@ public:
 class ParameterExpression : public Expression {
 public:
 	std::u32string name;
-	TypePtr type;
 	ParameterExpression(SourceLocation location, std::u32string name,
 						TypePtr type);
 };
 
+class VariableDefinitionExpression : public Expression {
+public:
+	ParameterExpression variable;
+	ExpPtr value;
+	VariableDefinitionExpression(SourceLocation location,
+								 ParameterExpression variable, ExpPtr value);
+};
+
 class FieldDef {
 public:
+	SourceLocation location;
 	AccessModifier modifier;
 	bool isStatic;
 	std::u32string name;
 	TypePtr type;
 	ExpPtr value;
 	FieldDef() = default;
-	FieldDef(std::u32string name, TypePtr type);
+	FieldDef(SourceLocation location, AccessModifier modifier, bool isStatic,
+			 std::u32string name, TypePtr type, ExpPtr value);
 };
 
 class MethodDef {
 public:
-	std::u32string name;
+	SourceLocation location;
 	AccessModifier modifier;
 	bool isStatic;
+	std::u32string name;
 	std::vector<ParameterExpression> parameters;
 	TypePtr returnType;
 	ExpPtr body;
 
 	MethodDef() = default;
-	MethodDef(std::u32string name, std::vector<TypePtr> parameters,
-				 TypePtr returnType);
+	MethodDef(SourceLocation location, AccessModifier modifier, bool isStatic,
+			  std::u32string name, std::vector<ParameterExpression> parameters,
+			  TypePtr returnType, ExpPtr body);
 };
-      return std::make_shared<ConditionalExpression>(GetLoc(start), condition, ifTrue, chunk);
 
 class MethodCallExpression : public Expression {
 public:
@@ -131,8 +146,7 @@ public:
 	std::shared_ptr<MethodDef> method;
 	ExpList arguments;
 	MethodCallExpression(SourceLocation location, ExpPtr object,
-						 std::shared_ptr<MethodDef> method,
-						 ExpList arguments);
+						 std::shared_ptr<MethodDef> method, ExpList arguments);
 };
 
 class ConstructorInfo {};
@@ -145,39 +159,38 @@ public:
 				  ExpList arguments);
 };
 
-class GlobalVarDef {
+class ReturnExpression : public Expression {
 public:
-    std::u32string name;
-    TypePtr type;
-    ExpPtr value;
+	ExpPtr value;
+	ReturnExpression(SourceLocation location, ExpPtr value);
 };
 
-class FunctionDef {
+class WhileExpression : public Expression {
 public:
-	std::u32string name;
-	std::vector<ParameterExpression> parameters;
-	TypePtr returnType;
+	ExpPtr condition;
 	ExpPtr body;
-
-	FunctionDef() = default;
-	FunctionDef(std::u32string name,
-				std::vector<ParameterExpression> parameters, TypePtr returnType,
-				ExpPtr body);
+	WhileExpression(SourceLocation location, ExpPtr condition, ExpPtr body);
 };
 
 class ClassInfo {
 public:
+	bool isModule;
 	std::u32string name;
 	Table<std::u32string, FieldDef> fields;
 	Table<std::u32string, MethodDef> methods;
 	ClassInfo() = default;
-	explicit ClassInfo(std::u32string name);
+	ClassInfo(SourceLocation location, bool isModule, std::u32string name);
 };
 
 class Program {
 public:
-    std::string path;
+	std::string path;
 	Table<std::u32string, std::shared_ptr<ClassInfo>> classes;
+	explicit Program(std::string path);
+
+	void AddClass(std::shared_ptr<ClassInfo> info);
+
+	void AddModule(std::shared_ptr<ClassInfo> info);
 };
 
 } // namespace cygni

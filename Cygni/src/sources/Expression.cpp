@@ -19,10 +19,10 @@ Expression::Expression(SourceLocation location, ExpressionType nodeType)
 	currentId++;
 }
 
-ConstantExpression::ConstantExpression(SourceLocation location,
-                                       TypePtr type,
+ConstantExpression::ConstantExpression(SourceLocation location, TypePtr type,
 									   std::u32string constant)
-	: Expression(location, ExpressionType::Constant),type{type}, constant{constant} {
+	: Expression(location, ExpressionType::Constant), constant{constant} {
+	this->type = type;
 }
 
 BinaryExpression::BinaryExpression(SourceLocation location,
@@ -73,25 +73,53 @@ NewExpression::NewExpression(SourceLocation location,
 
 ParameterExpression::ParameterExpression(SourceLocation location,
 										 std::u32string name, TypePtr type)
-	: Expression(location, ExpressionType::Parameter), name{name}, type{type} {
+	: Expression(location, ExpressionType::Parameter), name{name} {
+	this->type = type;
 }
 
-FunctionDef::FunctionDef(std::u32string name,
-						 std::vector<ParameterExpression> parameters,
-						 TypePtr returnType, ExpPtr body)
-	: name{name}, parameters{parameters}, returnType{returnType}, body{body} {
+VariableDefinitionExpression::VariableDefinitionExpression(
+	SourceLocation location, ParameterExpression variable, ExpPtr value)
+	: Expression(location, ExpressionType::VariableDefinition),
+	  variable{variable}, value{value} {
 }
 
-FieldDef::FieldDef(std::u32string name, TypePtr type)
-	: name{name}, type{type} {
+FieldDef::FieldDef(SourceLocation location, AccessModifier modifier,
+				   bool isStatic, std::u32string name, TypePtr type,
+				   ExpPtr value)
+	: location{location}, modifier{modifier}, isStatic{isStatic}, name{name},
+	  type{type}, value{value} {
 }
 
-MethodDef::MethodDef(std::u32string name, std::vector<ParameterExpression> parameters,
-						   TypePtr returnType)
-	: name{name}, parameters{parameters}, returnType{returnType} {
+MethodDef::MethodDef(SourceLocation location, AccessModifier modifier,
+					 bool isStatic, std::u32string name,
+					 std::vector<ParameterExpression> parameters,
+					 TypePtr returnType, ExpPtr body)
+	: location{location}, modifier{modifier}, isStatic{isStatic}, name{name},
+	  parameters{parameters}, returnType{returnType}, body{body} {
 }
 
-ClassInfo::ClassInfo(std::u32string name) : name{name} {
+ClassInfo::ClassInfo(SourceLocation location, bool isModule,
+					 std::u32string name)
+	: isModule{isModule}, name{name} {
 }
 
+ReturnExpression::ReturnExpression(SourceLocation location, ExpPtr value)
+	: Expression(location, ExpressionType::Return), value{value} {
+}
+
+WhileExpression::WhileExpression(SourceLocation location, ExpPtr condition,
+								 ExpPtr body)
+	:Expression(location,ExpressionType::While), condition{condition}, body{body} {
+}
+
+Program::Program(std::string path) : path{path} {
+}
+
+void Program::AddClass(std::shared_ptr<ClassInfo> info) {
+	classes.Add(info->name, info);
+}
+
+void Program::AddModule(std::shared_ptr<ClassInfo> info) {
+	classes.Add(info->name, info);
+}
 } // namespace cygni
