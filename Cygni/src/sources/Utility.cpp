@@ -8,7 +8,7 @@ namespace cygni {
 
 int HexToInt(std::u32string hex) {
 	int val = 0;
-	for (int i = 0; i < hex.size(); i++) {
+	for (size_t i = 0; i < hex.size(); i++) {
 		val = val * 16;
 		if (hex[i] >= U'0' && hex[i] <= U'9') {
 			val = val + (hex[i] - U'0');
