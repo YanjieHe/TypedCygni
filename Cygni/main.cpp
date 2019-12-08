@@ -1,24 +1,12 @@
 #include "Expression.hpp"
 #include "Lexer.hpp"
-#include <codecvt>
 #include <iostream>
-#include <locale>
 #include <string>
 
 using namespace std;
 
-std::string utf32_to_utf8(const std::u32string& utf32) {
-	std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> cnv;
-	std::string utf8 = cnv.to_bytes(utf32);
-	if (cnv.converted() < utf32.size()) {
-		throw std::runtime_error("incomplete conversion");
-	} else {
-		return utf8;
-	}
-}
-
 std::ostream& operator<<(std::ostream& stream, const std::u32string& utf32) {
-	stream << utf32_to_utf8(utf32);
+	stream << cygni::utf32_to_utf8(utf32);
 	return stream;
 }
 

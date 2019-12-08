@@ -1,3 +1,4 @@
-/home/heyanjie/Documents/Projects/TypedCygni/Cygni/build/CMakeFiles/rebuild_cache.dir
-/home/heyanjie/Documents/Projects/TypedCygni/Cygni/build/CMakeFiles/Cygni.dir
-/home/heyanjie/Documents/Projects/TypedCygni/Cygni/build/CMakeFiles/edit_cache.dir
+D:/Documents/Compiler Construction/TypedCygni/Cygni/build/CMakeFiles/Cygni.dir
+D:/Documents/Compiler Construction/TypedCygni/Cygni/build/CMakeFiles/RUN_TESTS.dir
+D:/Documents/Compiler Construction/TypedCygni/Cygni/build/CMakeFiles/ALL_BUILD.dir
+D:/Documents/Compiler Construction/TypedCygni/Cygni/build/CMakeFiles/ZERO_CHECK.dir

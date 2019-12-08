@@ -18,6 +18,8 @@ inline static bool IsWhiteSpace(char32_t c) {
 
 int HexToInt(std::u32string hex);
 
+std::string utf32_to_utf8(const std::u32string& utf32);
+
 } // namespace cygni
 
 #endif // CYGNI_UTILITY_HPP

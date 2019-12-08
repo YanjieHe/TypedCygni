@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\Documents\Compiler Construction\TypedCygni\Cygni\build\CMakeFiles\22bfa84f60338ce58931d03b92b6593e\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{EC58F7FB-C030-31EF-BEEB-4BA6C29E2B7C}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
