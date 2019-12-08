@@ -143,7 +143,7 @@ void Lexer::ReadUnicodeEscapeSequence() {
 	if (Peek() == U'u') {
 		Match(U'u');
 		for (int i = 0; i < 4; i++) {
-			if ((!IsEof()) && IsHexDigit()) {
+			if ((not IsEof()) and IsHexDigit()) {
 				text.push_back(Peek());
 				Forward();
 			} else {
@@ -153,7 +153,7 @@ void Lexer::ReadUnicodeEscapeSequence() {
 	} else if (Peek() == U'U') {
 		Match(U'U');
 		for (int i = 0; i < 8; i++) {
-			if ((!IsEof()) && IsHexDigit()) {
+			if ((not IsEof()) and IsHexDigit()) {
 				text.push_back(Peek());
 				Forward();
 			} else {
@@ -309,7 +309,7 @@ void Lexer::SkipComment() {
 
 void Lexer::SkipSingleLineComment() {
 	MatchAndSkip(U'/');
-	while ((!IsEof()) && Peek() != END_LINE) {
+	while ((not IsEof()) and Peek() != END_LINE) {
 		Forward();
 	}
 }

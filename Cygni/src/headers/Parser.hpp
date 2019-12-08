@@ -10,7 +10,7 @@ public:
 	std::shared_ptr<SourceDocument> document;
 	int offset;
 
-	Parser();
+	Parser(std::vector<Token> tokens, std::shared_ptr<SourceDocument> document);
 
 	inline bool IsEof() const {
 		return Look().tag == Tag::Eof;
@@ -41,6 +41,54 @@ public:
 		return SourceLocation{document, token.line, token.column, Look().line,
 							  Look().column};
 	}
+
+	ExpPtr Statement();
+
+    ExpPtr ParseAssign();
+
+    ExpPtr ParseOr();
+
+    ExpPtr ParseAnd();
+
+    ExpPtr ParseEquality();
+
+    ExpPtr ParseRelation();
+
+    ExpPtr ParseExpr();
+
+    ExpPtr ParseTerm();
+
+    ExpPtr ParseUnary();
+
+    ExpPtr ParsePostfix();
+
+    ExpPtr ParseFactor();
+
+    ExpPtr ParseBlock();
+
+    ExpPtr IfStatement();
+
+    ExpPtr ParseVar();
+
+    Ptr<Var> ParseVarDeclaration();
+
+    Ptr<Def> ParseDef();
+
+    Parameter ParseParameter();
+
+    Ptr<TypeExpression> ParseType();
+
+    ExpPtr ParseReturn();
+
+    Vector<Ptr<TypeExpression>> ParseTypeArguments();
+
+    Ptr<While> ParseWhile();
+
+    Ptr<DefClass> ParseDefClass();
+
+    Ptr<DefModule> ParseDefModule();
+
+    Access ParseAccess();
 };
 } // namespace cygni
 #endif // CYGNI_PARSER_HPP

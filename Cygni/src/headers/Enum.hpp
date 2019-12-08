@@ -70,6 +70,59 @@ enum class Tag {
 	Eof
 };
 
+enum class ExpressionType {
+	Add,
+	Subtract,
+	Multiply,
+	Divide,
+	Modulo,
+	GreaterThan,
+	LessThan,
+	GreaterThanOrEqual,
+	LessThanOrEqual,
+	Equal,
+	NotEqual,
+	And,
+	Or,
+	Not,
+	UnaryPlus,
+	UnaryMinus,
+	Invoke,
+	Conditional,
+	Default,
+	Constant,
+	Block,
+	Name,
+	Return,
+	Var,
+	Def,
+	Assign,
+	MethodCall,
+	New,
+	Parameter,
+	Loop,
+	Goto
+};
+
+enum class AccessModifier { Public, Private, Protected };
+
+enum class TypeCode {
+    Unknown,
+	Boolean,
+	Byte,
+	Char,
+	Double,
+	Empty,
+	Int16,
+	Int32,
+	Int64,
+	Object,
+	Single,
+	String,
+	UInt16,
+	UInt32,
+	UInt64
+};
 template <typename TEnum> class Enum {
 public:
 	static std::u32string ToString(TEnum);
@@ -181,6 +234,138 @@ public:
 			return U"Module";
 		case Tag::Eof:
 			return U"Eof";
+		default:
+			std::cout << __FUNCTION__ << std::endl;
+			exit(1);
+		}
+	}
+};
+
+template <> class Enum<ExpressionType> {
+public:
+	static std::u32string ToString(ExpressionType kind) {
+		switch (kind) {
+		case ExpressionType::Add:
+			return U"Add";
+		case ExpressionType::Subtract:
+			return U"Subtract";
+		case ExpressionType::Multiply:
+			return U"Multiply";
+		case ExpressionType::Divide:
+			return U"Divide";
+		case ExpressionType::Modulo:
+			return U"Modulo";
+		case ExpressionType::GreaterThan:
+			return U"GreaterThan";
+		case ExpressionType::LessThan:
+			return U"LessThan";
+		case ExpressionType::GreaterThanOrEqual:
+			return U"GreaterThanOrEqual";
+		case ExpressionType::LessThanOrEqual:
+			return U"LessThanOrEqual";
+		case ExpressionType::Equal:
+			return U"Equal";
+		case ExpressionType::NotEqual:
+			return U"NotEqual";
+		case ExpressionType::And:
+			return U"And";
+		case ExpressionType::Or:
+			return U"Or";
+		case ExpressionType::Not:
+			return U"Not";
+		case ExpressionType::UnaryPlus:
+			return U"UnaryPlus";
+		case ExpressionType::UnaryMinus:
+			return U"UnaryMinus";
+		case ExpressionType::Invoke:
+			return U"Invoke";
+		case ExpressionType::Conditional:
+			return U"Conditional";
+		case ExpressionType::Default:
+			return U"Default";
+		case ExpressionType::Constant:
+			return U"Constant";
+		case ExpressionType::Block:
+			return U"Block";
+		case ExpressionType::Name:
+			return U"Name";
+		case ExpressionType::Return:
+			return U"Return";
+		case ExpressionType::Var:
+			return U"Var";
+		case ExpressionType::Def:
+			return U"Def";
+		case ExpressionType::Assign:
+			return U"Assign";
+		case ExpressionType::MethodCall:
+			return U"MethodCall";
+		case ExpressionType::New:
+			return U"New";
+		case ExpressionType::Parameter:
+			return U"Parameter";
+		case ExpressionType::Loop:
+			return U"Loop";
+		case ExpressionType::Goto:
+			return U"Goto";
+
+		default:
+			std::cout << __FUNCTION__ << std::endl;
+			exit(1);
+		}
+	}
+};
+template <> class Enum<AccessModifier> {
+public:
+	static std::u32string ToString(AccessModifier modifier) {
+		switch (modifier) {
+		case AccessModifier::Public:
+			return U"Public";
+		case AccessModifier::Private:
+			return U"Private";
+		case AccessModifier::Protected:
+			return U"Protected";
+		default:
+			std::cout << __FUNCTION__ << std::endl;
+			exit(1);
+		}
+	}
+};
+
+template <> class Enum<TypeCode> {
+public:
+	static std::u32string ToString(TypeCode typeCode) {
+		switch (typeCode) {
+            case TypeCode::Unknown:
+                return U"Unknown";
+		case TypeCode::Boolean:
+			return U"Boolean";
+		case TypeCode::Byte:
+			return U"Byte";
+		case TypeCode::Char:
+			return U"Char";
+		case TypeCode::Double:
+			return U"Double";
+		case TypeCode::Empty:
+			return U"Empty";
+		case TypeCode::Int16:
+			return U"Int16";
+		case TypeCode::Int32:
+			return U"Int32";
+		case TypeCode::Int64:
+			return U"Int64";
+		case TypeCode::Object:
+			return U"Object";
+		case TypeCode::Single:
+			return U"Single";
+		case TypeCode::String:
+			return U"String";
+		case TypeCode::UInt16:
+			return U"UInt16";
+		case TypeCode::UInt32:
+			return U"UInt32";
+		case TypeCode::UInt64:
+			return U"UInt64";
+
 		default:
 			std::cout << __FUNCTION__ << std::endl;
 			exit(1);
