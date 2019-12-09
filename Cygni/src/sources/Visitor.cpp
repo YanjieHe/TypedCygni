@@ -14,10 +14,7 @@ json AstToJsonSerialization::VisitSourceLocation(SourceLocation location) {
 json AstToJsonSerialization::VisitBinary(
 	std::shared_ptr<BinaryExpression> node) {
 	json obj;
-	obj["location"] = VisitSourceLocation(node->location);
-	obj["id"]		= node->id;
-	obj["nodeType"] =
-		utf32_to_utf8(Enum<ExpressionType>::ToString(node->nodeType));
+	AttachNodeInformation(obj, node);
 	obj["left"]  = VisitExpression(node->left);
 	obj["right"] = VisitExpression(node->right);
 	return obj;
@@ -26,10 +23,7 @@ json AstToJsonSerialization::VisitBinary(
 json AstToJsonSerialization::VisitConstant(
 	std::shared_ptr<ConstantExpression> node) {
 	json obj;
-	obj["location"] = VisitSourceLocation(node->location);
-	obj["id"]		= node->id;
-	obj["nodeType"] =
-		utf32_to_utf8(Enum<ExpressionType>::ToString(node->nodeType));
+	AttachNodeInformation(obj, node);
 	obj["constant"] = utf32_to_utf8(node->constant);
 	return obj;
 }
@@ -91,9 +85,7 @@ json AstToJsonSerialization::VisitParameter(
 	std::shared_ptr<ParameterExpression> parameter) {
 	json obj;
 	obj["name"] = utf32_to_utf8(parameter->name);
-	obj["id"]   = parameter->id;
-	obj["nodeType"] =
-		utf32_to_utf8(Enum<ExpressionType>::ToString(parameter->nodeType));
+	AttachNodeInformation(obj, parameter);
 	return obj;
 }
 
@@ -103,11 +95,8 @@ json AstToJsonSerialization::VisitBlock(std::shared_ptr<BlockExpression> node) {
 	for (ExpPtr exp : node->expressions) {
 		expressionsJson.push_back(VisitExpression(exp));
 	}
-	obj["id"] = node->id;
-	obj["nodeType"] =
-		utf32_to_utf8(Enum<ExpressionType>::ToString(node->nodeType));
 	obj["expressions"] = expressionsJson;
-	obj["location"]	= VisitSourceLocation(node->location);
+	AttachNodeInformation(obj, node);
 	return obj;
 }
 
@@ -115,11 +104,46 @@ json AstToJsonSerialization::VisitReturn(
 	std::shared_ptr<ReturnExpression> node) {
 	json obj;
 	obj["value"] = VisitExpression(node->value);
-	obj["id"]	= node->id;
+	AttachNodeInformation(obj, node);
+	return obj;
+}
+
+json AstToJsonSerialization::VisitConditional(
+	std::shared_ptr<ConditionalExpression> node) {
+	json obj;
+	obj["condition"] = VisitExpression(node->condition);
+	obj["ifTrue"]	= VisitExpression(node->ifTrue);
+	obj["ifFalse"]   = VisitExpression(node->ifFalse);
+	AttachNodeInformation(obj, node);
+	return obj;
+}
+
+json AstToJsonSerialization::VisitDefault(
+	std::shared_ptr<DefaultExpression> node) {
+	json obj;
+	AttachNodeInformation(obj, node);
+	return obj;
+}
+
+json AstToJsonSerialization::VisitInvocation(
+	std::shared_ptr<InvocationExpression> node) {
+	json obj;
+	AttachNodeInformation(obj, node);
+	obj["expression"] = VisitExpression(node->expression);
+	std::vector<json> argumentsJson;
+	for (const auto& argument : node->arguments) {
+		argumentsJson.push_back(VisitExpression(argument));
+	}
+	obj["arguments"] = argumentsJson;
+	return obj;
+}
+
+void AstToJsonSerialization::AttachNodeInformation(json& obj, ExpPtr node) {
+	obj["id"]		= node->id;
+	obj["location"] = VisitSourceLocation(node->location);
 	obj["nodeType"] =
 		utf32_to_utf8(Enum<ExpressionType>::ToString(node->nodeType));
-	obj["location"] = VisitSourceLocation(node->location);
-	return obj;
+	obj["type"] = utf32_to_utf8(node->type->ToString());
 }
 
 json AstToJsonSerialization::VisitExpression(ExpPtr node) {
@@ -145,6 +169,14 @@ json AstToJsonSerialization::VisitExpression(ExpPtr node) {
 	case ExpressionType::Parameter:
 		return VisitParameter(
 			std::static_pointer_cast<ParameterExpression>(node));
+	case ExpressionType::Conditional:
+		return VisitConditional(
+			std::static_pointer_cast<ConditionalExpression>(node));
+	case ExpressionType::Default:
+		return VisitDefault(std::static_pointer_cast<DefaultExpression>(node));
+	case ExpressionType::Invoke:
+		return VisitInvocation(
+			std::static_pointer_cast<InvocationExpression>(node));
 	default:
 		throw NotImplementedException();
 	}
@@ -152,7 +184,6 @@ json AstToJsonSerialization::VisitExpression(ExpPtr node) {
 
 json AstToJsonSerialization::VisitProgram(const Program& program) {
 	json obj;
-	obj["path"] = program.path;
 	std::vector<json> classesJson;
 	for (const auto& info : program.classes.values) {
 		classesJson.push_back(VisitClassInfo(info));
@@ -160,5 +191,7 @@ json AstToJsonSerialization::VisitProgram(const Program& program) {
 	obj["classes"] = classesJson;
 	return obj;
 }
+
+
 
 } // namespace cygni

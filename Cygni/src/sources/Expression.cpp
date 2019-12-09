@@ -22,6 +22,8 @@ Expression::Expression(SourceLocation location, ExpressionType nodeType)
 	static int currentId = 0;
 	this->id			 = currentId;
 	currentId++;
+	static std::shared_ptr<UnknownType> unknownType = std::make_shared<UnknownType>();
+	this->type = unknownType;
 }
 
 ConstantExpression::ConstantExpression(SourceLocation location, TypePtr type,

@@ -25,7 +25,7 @@ void WriteText(std::string path, std::string text) {
 	stream << text;
 }
 
-void CompileProgram(std::string path) {
+void CompileProgram(std::string path, std::string outputJsonPath) {
 	std::ifstream stream(path);
 	if (stream) {
 		std::string code{(std::istreambuf_iterator<char>(stream)),
@@ -46,7 +46,7 @@ void CompileProgram(std::string path) {
 		cygni::AstToJsonSerialization astToJson;
 		auto jsonObj  = astToJson.VisitProgram(program);
 		auto jsonText = jsonObj.dump();
-		WriteText("ast.json", jsonText);
+		WriteText(outputJsonPath, jsonText);
 		
 	} else {
 		cout << "文件读取失败！" << endl;
@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
 	cout << "Hello Cygni!" << endl;
 	std::u32string s = U"如何从零写一个正则表达式引擎？";
 	try {
-		CompileProgram("test1.cyg");
+		CompileProgram("factorial.cyg", "factorial.json");
 	} catch (cygni::ArgumentException& ex) {
 		cout << cygni::utf32_to_utf8(ex.message) << endl;
 	} catch (cygni::LexicalException& ex) {

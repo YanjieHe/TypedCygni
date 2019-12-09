@@ -14,6 +14,8 @@ public:
 	TypeCode typeCode;
 
 	explicit Type(TypeCode typeCode);
+
+	virtual std::u32string ToString() const;
 };
 
 class UnknownType : public Type {
@@ -55,12 +57,16 @@ class ObjectType : public Type {
 public:
 	std::u32string name;
 	explicit ObjectType(std::u32string name);
+	
+	std::u32string ToString() const override;
 };
 
 class ArrayType : public Type {
 public:
 	TypePtr elementType;
 	explicit ArrayType(TypePtr elementType);
+
+	std::u32string ToString() const override;
 };
 
 class FieldTypeInfo {

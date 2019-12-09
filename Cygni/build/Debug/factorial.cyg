@@ -1,0 +1,13 @@
+module App {
+    def Factorial(n: Long): Long
+    {
+        if (n == 0)
+        {
+            return 1
+        }
+        else
+        {
+            return n * Factorial(n - 1)
+        }
+    }
+}
