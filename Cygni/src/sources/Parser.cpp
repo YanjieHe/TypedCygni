@@ -4,12 +4,11 @@ using std::vector;
 namespace cygni {
 Parser::Parser(std::vector<Token> tokens,
 			   std::shared_ptr<SourceDocument> document)
-	: tokens{tokens}, document{document} {
+	: tokens{tokens}, document{document}, offset{0} {
 }
 
 Program Parser::ParseProgram() {
-	std::string path;
-	Program program(path);
+	Program program(document);
 	while (!IsEof()) {
 		if (Look().tag == Tag::Class) {
 			program.AddClass(ParseDefClass());
@@ -295,20 +294,23 @@ ExpPtr Parser::ParseVar() {
 		if (Look().tag == Tag::Assign) {
 			Match(Tag::Assign);
 			auto value	= ParseOr();
-			auto variable = ParameterExpression(GetLoc(Look()), name, type);
+			auto variable = std::make_shared<ParameterExpression>(
+				GetLoc(Look()), name, type);
 			return std::make_shared<VariableDefinitionExpression>(
 				GetLoc(start), variable, value);
 		} else {
 			auto value	= std::make_shared<DefaultExpression>(GetLoc(Look()));
-			auto variable = ParameterExpression(GetLoc(Look()), name, type);
+			auto variable = std::make_shared<ParameterExpression>(
+				GetLoc(Look()), name, type);
 			return std::make_shared<VariableDefinitionExpression>(
 				GetLoc(start), variable, value);
 		}
 	} else {
 		Match(Tag::Assign);
-		auto type	 = std::make_shared<UnknownType>();
-		auto value	= ParseOr();
-		auto variable = ParameterExpression(GetLoc(Look()), name, type);
+		auto type  = std::make_shared<UnknownType>();
+		auto value = ParseOr();
+		auto variable =
+			std::make_shared<ParameterExpression>(GetLoc(Look()), name, type);
 		return std::make_shared<VariableDefinitionExpression>(GetLoc(start),
 															  variable, value);
 	}
@@ -320,9 +322,10 @@ std::shared_ptr<VariableDefinitionExpression> Parser::ParseVarDeclaration() {
 	Token t   = Match(Tag::Identifier);
 	auto name = t.text;
 	Match(Tag::Colon);
-	auto type	 = ParseType();
-	auto variable = ParameterExpression(GetLoc(Look()), name, type);
-	auto value	= std::make_shared<DefaultExpression>(GetLoc(Look()));
+	auto type = ParseType();
+	auto variable =
+		std::make_shared<ParameterExpression>(GetLoc(Look()), name, type);
+	auto value = std::make_shared<DefaultExpression>(GetLoc(Look()));
 	return std::make_shared<VariableDefinitionExpression>(GetLoc(start),
 														  variable, value);
 }
@@ -350,7 +353,7 @@ MethodDef Parser::ParseMethodDefinition(AccessModifier modifier,
 	auto name = Match(Tag::Identifier).text;
 
 	Match(Tag::LeftParenthesis);
-	std::vector<ParameterExpression> parameters;
+	std::vector<std::shared_ptr<ParameterExpression>> parameters;
 	if (Look().tag != Tag::RightParenthesis) {
 		parameters.push_back(ParseParameter());
 		while (!IsEof() && Look().tag != Tag::RightParenthesis) {
@@ -366,12 +369,14 @@ MethodDef Parser::ParseMethodDefinition(AccessModifier modifier,
 					 returnType, body);
 }
 
-ParameterExpression Parser::ParseParameter() {
+std::shared_ptr<ParameterExpression> Parser::ParseParameter() {
 	const Token& start = Look();
 	auto name		   = Match(Tag::Identifier).text;
 	Match(Tag::Colon);
 	auto type = ParseType();
-	return ParameterExpression(GetLoc(start), name, type);
+	auto parameter =
+		std::make_shared<ParameterExpression>(GetLoc(start), name, type);
+	return parameter;
 }
 
 std::shared_ptr<Type> Parser::ParseType() {
@@ -442,7 +447,7 @@ std::shared_ptr<ClassInfo> Parser::ParseDefClass() {
 
 std::shared_ptr<ClassInfo> Parser::ParseDefModule() {
 	const Token& start = Look();
-	Match(Tag::Class);
+	Match(Tag::Module);
 	auto name = Match(Tag::Identifier).text;
 	auto info = std::make_shared<ClassInfo>(GetLoc(start), true, name);
 	Match(Tag::LeftBrace);

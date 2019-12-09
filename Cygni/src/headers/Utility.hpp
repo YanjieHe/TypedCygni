@@ -1,8 +1,8 @@
 #ifndef CYGNI_UTILITY_HPP
 #define CYGNI_UTILITY_HPP
 #include <string>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
 namespace cygni {
 
@@ -54,6 +54,8 @@ public:
 		return map.find(key) != map.end();
 	}
 };
+
+std::u32string utf8_to_utf32(const std::string& utf8);
 
 } // namespace cygni
 

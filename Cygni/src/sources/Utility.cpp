@@ -44,5 +44,40 @@ std::string utf32_to_utf8(const std::u32string& utf32) {
 	}
 	return res;
 }
-
+std::u32string utf8_to_utf32(const std::string& utf8) {
+	std::u32string res;
+	int i = 0;
+	int n = utf8.size();
+	while (i < n) {
+		if ((utf8[i] & 0x80) == 0) {
+			res.push_back(utf8[i]);
+			i = i + 1;
+		} else if ((utf8[i] & 0xE0) == 0xC0) {
+			if (i + 1 < n) {
+				res.push_back(((utf8[i] & 0x1F) << 6) | (utf8[i + 1] & 0x3F));
+			} else {
+				throw ArgumentException(U"The sequence is truncated.");
+			}
+		} else if ((utf8[i] & 0xF0) == 0xE0) {
+			if (i + 2 < n) {
+				res.push_back(((utf8[i] & 0x0F) << 12) |
+							  ((utf8[i + 1] & 0x3F) << 6) |
+							  (utf8[i + 2] & 0x3F));
+			} else {
+				throw ArgumentException(U"The sequence is truncated.");
+			}
+		} else if ((utf8[i] & 0xF8) ==0xF0) {
+			if (i + 3 < n) {
+				res.push_back(
+					((utf8[i] & 0x07) << 18) | ((utf8[i + 1] & 0x3F) << 12) |
+					((utf8[i + 2] & 0x3F) << 6) | (utf8[i + 3] & 0x3F));
+			} else {
+				throw ArgumentException(U"The sequence is truncated.");
+			}
+		} else {
+			throw ArgumentException(U"Illegal starting byte");
+		}
+	}
+	return res;
+}
 } // namespace cygni

@@ -17,6 +17,7 @@ class SourceDocument {
 public:
 	std::string filePath;
 	std::string fileName;
+	SourceDocument(std::string filePath, std::string fileName);
 };
 
 class SourceLocation {
@@ -99,16 +100,18 @@ public:
 class ParameterExpression : public Expression {
 public:
 	std::u32string name;
+
 	ParameterExpression(SourceLocation location, std::u32string name,
 						TypePtr type);
 };
 
 class VariableDefinitionExpression : public Expression {
 public:
-	ParameterExpression variable;
+	std::shared_ptr<ParameterExpression> variable;
 	ExpPtr value;
 	VariableDefinitionExpression(SourceLocation location,
-								 ParameterExpression variable, ExpPtr value);
+								 std::shared_ptr<ParameterExpression> variable,
+								 ExpPtr value);
 };
 
 class FieldDef {
@@ -130,13 +133,14 @@ public:
 	AccessModifier modifier;
 	bool isStatic;
 	std::u32string name;
-	std::vector<ParameterExpression> parameters;
+	std::vector<std::shared_ptr<ParameterExpression>> parameters;
 	TypePtr returnType;
 	ExpPtr body;
 
 	MethodDef() = default;
 	MethodDef(SourceLocation location, AccessModifier modifier, bool isStatic,
-			  std::u32string name, std::vector<ParameterExpression> parameters,
+			  std::u32string name,
+			  std::vector<std::shared_ptr<ParameterExpression>> parameters,
 			  TypePtr returnType, ExpPtr body);
 };
 
@@ -147,16 +151,6 @@ public:
 	ExpList arguments;
 	MethodCallExpression(SourceLocation location, ExpPtr object,
 						 std::shared_ptr<MethodDef> method, ExpList arguments);
-};
-
-class ConstructorInfo {};
-
-class NewExpression : public Expression {
-public:
-	ConstructorInfo constructorInfo;
-	ExpList arguments;
-	NewExpression(SourceLocation location, ConstructorInfo constructorInfo,
-				  ExpList arguments);
 };
 
 class ReturnExpression : public Expression {
@@ -172,6 +166,16 @@ public:
 	WhileExpression(SourceLocation location, ExpPtr condition, ExpPtr body);
 };
 
+class ConstructorInfo {};
+
+class NewExpression : public Expression {
+public:
+	ConstructorInfo constructorInfo;
+	ExpList arguments;
+	NewExpression(SourceLocation location, ConstructorInfo constructorInfo,
+				  ExpList arguments);
+};
+
 class ClassInfo {
 public:
 	bool isModule;
@@ -184,9 +188,9 @@ public:
 
 class Program {
 public:
-	std::string path;
+	std::shared_ptr<SourceDocument> document;
 	Table<std::u32string, std::shared_ptr<ClassInfo>> classes;
-	explicit Program(std::string path);
+	explicit Program(std::shared_ptr<SourceDocument> document);
 
 	void AddClass(std::shared_ptr<ClassInfo> info);
 

@@ -28,6 +28,9 @@
     <ClCompile Include="D:\Documents\Compiler Construction\TypedCygni\Cygni\src\sources\Utility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="D:\Documents\Compiler Construction\TypedCygni\Cygni\src\sources\Visitor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="D:\Documents\Compiler Construction\TypedCygni\Cygni\CMakeLists.txt" />

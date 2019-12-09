@@ -78,7 +78,7 @@ public:
 
 	MethodDef ParseMethodDefinition(AccessModifier modifier, bool isStatic);
 
-	ParameterExpression ParseParameter();
+	std::shared_ptr<ParameterExpression> ParseParameter();
 
 	std::shared_ptr<Type> ParseType();
 

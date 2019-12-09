@@ -1,6 +1,11 @@
 #include "Expression.hpp"
 
 namespace cygni {
+
+SourceDocument::SourceDocument(std::string filePath, std::string fileName)
+	: filePath{filePath}, fileName{fileName} {
+}
+
 SourceLocation::SourceLocation()
 	: document(), startLine{0}, startCol{0}, endLine{0}, endCol{0} {
 }
@@ -13,7 +18,7 @@ SourceLocation::SourceLocation::SourceLocation(
 }
 
 Expression::Expression(SourceLocation location, ExpressionType nodeType)
-	: location{location} {
+	: location{location}, nodeType{nodeType} {
 	static int currentId = 0;
 	this->id			 = currentId;
 	currentId++;
@@ -78,7 +83,8 @@ ParameterExpression::ParameterExpression(SourceLocation location,
 }
 
 VariableDefinitionExpression::VariableDefinitionExpression(
-	SourceLocation location, ParameterExpression variable, ExpPtr value)
+	SourceLocation location, std::shared_ptr<ParameterExpression> variable,
+	ExpPtr value)
 	: Expression(location, ExpressionType::VariableDefinition),
 	  variable{variable}, value{value} {
 }
@@ -90,10 +96,11 @@ FieldDef::FieldDef(SourceLocation location, AccessModifier modifier,
 	  type{type}, value{value} {
 }
 
-MethodDef::MethodDef(SourceLocation location, AccessModifier modifier,
-					 bool isStatic, std::u32string name,
-					 std::vector<ParameterExpression> parameters,
-					 TypePtr returnType, ExpPtr body)
+MethodDef::MethodDef(
+	SourceLocation location, AccessModifier modifier, bool isStatic,
+	std::u32string name,
+	std::vector<std::shared_ptr<ParameterExpression>> parameters,
+	TypePtr returnType, ExpPtr body)
 	: location{location}, modifier{modifier}, isStatic{isStatic}, name{name},
 	  parameters{parameters}, returnType{returnType}, body{body} {
 }
@@ -109,10 +116,12 @@ ReturnExpression::ReturnExpression(SourceLocation location, ExpPtr value)
 
 WhileExpression::WhileExpression(SourceLocation location, ExpPtr condition,
 								 ExpPtr body)
-	:Expression(location,ExpressionType::While), condition{condition}, body{body} {
+	: Expression(location, ExpressionType::While), condition{condition},
+	  body{body} {
 }
 
-Program::Program(std::string path) : path{path} {
+Program::Program(std::shared_ptr<SourceDocument> document)
+	: document{document} {
 }
 
 void Program::AddClass(std::shared_ptr<ClassInfo> info) {
