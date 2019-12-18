@@ -1,5 +1,6 @@
 #ifndef CYGNI_EXCEPTION_HPP
 #define CYGNI_EXCEPTION_HPP
+#include "SourceLocation.hpp"
 #include <string>
 
 namespace cygni {
@@ -41,6 +42,17 @@ public:
 	NotImplementedException() = default;
 	explicit NotImplementedException(const std::u32string& message)
 		: message{message} {
+	}
+};
+
+class TypeException {
+public:
+	SourceLocation location;
+	std::u32string message;
+
+	TypeException() = default;
+	TypeException(SourceLocation location, const std::u32string& message)
+		: location{location}, message{message} {
 	}
 };
 

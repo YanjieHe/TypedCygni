@@ -21,6 +21,8 @@ public:
 	void Put(std::u32string key, std::any value);
 };
 
+using ScopePtr = std::shared_ptr<Scope>;
+
 } // namespace cygni
 
 #endif CYGNI_SCOPE_HPP

@@ -23,11 +23,58 @@ public:
 	json VisitInvocation(std::shared_ptr<InvocationExpression> node);
 	void AttachNodeInformation(json& obj, ExpPtr node);
 	json VisitProgram(const Program& program);
+	std::vector<json> VisitArgumentList(const std::vector<ExpPtr>& arguments);
 };
 
-class LocalVariableCollector {
+// class LocalVariableCollector {
+// public:
+// 	void VisitExpression(ExpPtr node);
+// 	void VisitProgram(Program& program);
+// 	void VisitMethodDef(MethodDef& method);
+// 	void VisitBlockExpression(std::shared_ptr<BlockExpression> node);
+// };
+
+class TypeChecker {
 public:
-	void VisitExpression(ExpPtr node);
+	class Rule {
+	public:
+		std::u32string functionName;
+		std::vector<TypePtr> parameters;
+		TypePtr returnType;
+
+		Rule(std::u32string functionName, std::vector<TypePtr> parameters, TypePtr returnType);
+	};
+
+	class RuleSet {
+	public:
+		std::unordered_map<std::u32string, std::vector<Rule>> rules;
+
+		RuleSet() = default;
+
+		void Add(std::u32string functionName,
+						std::vector<TypePtr> parameters, TypePtr returnType);
+		
+		std::optional<TypePtr> Match(std::u32string functionName, std::vector<TypePtr> parameters);
+	};
+
+	RuleSet ruleSet;
+
+	TypeChecker();
+
+	TypePtr VisitBinary(std::shared_ptr<BinaryExpression> node, ScopePtr scope);
+	TypePtr VisitBlock(std::shared_ptr<BlockExpression> node);
+	TypePtr VisitExpression(ExpPtr node, ScopePtr scope);
+	TypePtr VisitConstant(std::shared_ptr<ConstantExpression> node);
+	TypePtr VisitClassInfo(std::shared_ptr<ClassInfo> info);
+	TypePtr VisitFieldDef(const FieldDef& field);
+	TypePtr VisitMethodDef(const MethodDef& method);
+	TypePtr VisitParameter(std::shared_ptr<ParameterExpression> parameter);
+	TypePtr VisitReturn(std::shared_ptr<ReturnExpression> node);
+	TypePtr VisitConditional(std::shared_ptr<ConditionalExpression> node);
+	TypePtr VisitDefault(std::shared_ptr<DefaultExpression> node);
+	TypePtr VisitInvocation(std::shared_ptr<InvocationExpression> node);
+	void VisitProgram(const Program& program);
+	TypePtr Attach(ExpPtr node, TypePtr type);
 };
 
 } // namespace cygni

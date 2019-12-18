@@ -19,6 +19,9 @@
     <ClCompile Include="D:\Documents\Compiler Construction\TypedCygni\Cygni\src\sources\Scope.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="D:\Documents\Compiler Construction\TypedCygni\Cygni\src\sources\SourceLocation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="D:\Documents\Compiler Construction\TypedCygni\Cygni\src\sources\Token.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

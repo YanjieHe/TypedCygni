@@ -9,6 +9,15 @@ namespace cygni {
 class Type;
 using TypePtr = std::shared_ptr<Type>;
 
+class UnknownType;
+class Int32Type;
+class Int64Type;
+class Float32Type;
+class Float64Type;
+class CharType;
+class BooleanType;
+class StringType;
+
 class Type {
 public:
 	TypeCode typeCode;
@@ -16,6 +25,12 @@ public:
 	explicit Type(TypeCode typeCode);
 
 	virtual std::u32string ToString() const;
+	virtual bool Equals(TypePtr other) const;
+
+	static std::shared_ptr<Int32Type> Int32();
+	static std::shared_ptr<Int64Type> Int64();
+	static std::shared_ptr<Float32Type> Float32();
+	static std::shared_ptr<Float64Type> Float64();
 };
 
 class UnknownType : public Type {
@@ -64,6 +79,8 @@ public:
 	explicit ObjectType(std::u32string name);
 	
 	std::u32string ToString() const override;
+
+	bool Equals(TypePtr other) const override;
 };
 
 class ArrayType : public Type {
@@ -72,6 +89,8 @@ public:
 	explicit ArrayType(TypePtr elementType);
 
 	std::u32string ToString() const override;
+	
+	bool Equals(TypePtr other) const override;
 };
 
 class FieldTypeInfo {

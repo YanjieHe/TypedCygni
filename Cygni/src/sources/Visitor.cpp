@@ -91,11 +91,7 @@ json AstToJsonSerialization::VisitParameter(
 
 json AstToJsonSerialization::VisitBlock(std::shared_ptr<BlockExpression> node) {
 	json obj;
-	std::vector<json> expressionsJson;
-	for (ExpPtr exp : node->expressions) {
-		expressionsJson.push_back(VisitExpression(exp));
-	}
-	obj["expressions"] = expressionsJson;
+	obj["expressions"] = VisitArgumentList(node->expressions);
 	AttachNodeInformation(obj, node);
 	return obj;
 }
@@ -130,11 +126,7 @@ json AstToJsonSerialization::VisitInvocation(
 	json obj;
 	AttachNodeInformation(obj, node);
 	obj["expression"] = VisitExpression(node->expression);
-	std::vector<json> argumentsJson;
-	for (const auto& argument : node->arguments) {
-		argumentsJson.push_back(VisitExpression(argument));
-	}
-	obj["arguments"] = argumentsJson;
+	obj["arguments"]  = VisitArgumentList(node->arguments);
 	return obj;
 }
 
@@ -192,6 +184,142 @@ json AstToJsonSerialization::VisitProgram(const Program& program) {
 	return obj;
 }
 
+std::vector<json> AstToJsonSerialization::VisitArgumentList(
+	const std::vector<ExpPtr>& arguments) {
+	std::vector<json> argumentsJson;
+	for (const auto& argument : arguments) {
+		argumentsJson.push_back(VisitExpression(argument));
+	}
+	return argumentsJson;
+}
 
+// void LocalVariableCollector::VisitProgram(Program& program) {
+// 	for (auto& info : program.classes.values) {
+// 		for (auto& method : info->methods.values) {
+// 			VisitMethodDef(method);
+// 		}
+// 	}
+// }
+
+// void LocalVariableCollector::VisitMethodDef(MethodDef& method) {
+// 	// TO DO
+// }
+
+// void LocalVariableCollector::
+// VisitBlockExpression(std::shared_ptr<BlockExpression> node) {
+
+// }
+
+TypeChecker::Rule::Rule(std::u32string functionName,
+						std::vector<TypePtr> parameters, TypePtr returnType)
+	: functionName{functionName}, parameters{parameters}, returnType{
+															  returnType} {
+}
+
+void TypeChecker::RuleSet::Add(std::u32string functionName,
+							   std::vector<TypePtr> parameters,
+							   TypePtr returnType) {
+	Rule rule{functionName, parameters, returnType};
+	if (rules.find(functionName) != rules.end()) {
+		rules[functionName].push_back(rule);
+	} else {
+		rules.insert({functionName, {rule}});
+	}
+}
+
+std::optional<TypePtr>
+	TypeChecker::RuleSet::Match(std::u32string functionName,
+								std::vector<TypePtr> parameters) {
+	auto matchOneRule = [&parameters](const Rule& rule) -> bool {
+		if (rule.parameters.size() == parameters.size()) {
+			int n = rule.parameters.size();
+			for (int i = 0; i < n; i++) {
+				if (!(rule.parameters[i]->Equals(parameters[i]))) {
+					return false;
+				}
+			}
+			return true;
+		} else {
+			return false;
+		}
+	};
+	if (rules.find(functionName) != rules.end()) {
+		for (const auto& rule : rules[functionName]) {
+			if (matchOneRule(rule)) {
+				return rule.returnType;
+			}
+		}
+		return std::optional<TypePtr>();
+	} else {
+		return std::optional<TypePtr>();
+	}
+}
+
+TypeChecker::TypeChecker() {
+	ruleSet.Add(U"+", {Type::Int32(), Type::Int32()}, Type::Int32());
+	ruleSet.Add(U"+", {Type::Int64(), Type::Int64()}, Type::Int64());
+
+	ruleSet.Add(U"-", {Type::Int32(), Type::Int32()}, Type::Int32());
+	ruleSet.Add(U"-", {Type::Int64(), Type::Int64()}, Type::Int64());
+
+	ruleSet.Add(U"*", {Type::Int32(), Type::Int32()}, Type::Int32());
+	ruleSet.Add(U"*", {Type::Int64(), Type::Int64()}, Type::Int64());
+
+	ruleSet.Add(U"/", {Type::Int32(), Type::Int32()}, Type::Int32());
+	ruleSet.Add(U"/", {Type::Int64(), Type::Int64()}, Type::Int64());
+}
+
+TypePtr TypeChecker::VisitBinary(std::shared_ptr<BinaryExpression> node,
+								 ScopePtr scope) {
+	auto left  = VisitExpression(node->left, scope);
+	auto right = VisitExpression(node->right, scope);
+	if (node->nodeType == ExpressionType::Add) {
+		if (auto res = ruleSet.Match(U"+", {left, right})) {
+			return Attach(node, *res);
+		} else {
+			throw TypeException(node->location, U"type mismatch: +");
+		}
+	} else if (node->nodeType == ExpressionType::Subtract) {
+		if (auto res = ruleSet.Match(U"-", {left, right})) {
+			return Attach(node, *res);
+		} else {
+			throw TypeException(node->location, U"type mismatch: -");
+		}
+	} else if (node->nodeType == ExpressionType::Multiply) {
+		if (auto res = ruleSet.Match(U"*", {left, right})) {
+			return Attach(node, *res);
+		} else {
+			throw TypeException(node->location, U"type mismatch: *");
+		}
+	} else if (node->nodeType == ExpressionType::Divide) {
+		if (auto res = ruleSet.Match(U"+", {left, right})) {
+			return Attach(node, *res);
+		} else {
+			throw TypeException(node->location, U"type mismatch: /");
+		}
+	} else {
+		throw NotImplementedException();
+	}
+}
+
+TypePtr TypeChecker::Attach(ExpPtr node, TypePtr type) {
+	node->type = type;
+	return type;
+}
+
+TypePtr TypeChecker::VisitExpression(ExpPtr node, ScopePtr scope) {
+	switch (node->nodeType) {
+	case ExpressionType::Add:
+		return VisitBinary(std::static_pointer_cast<BinaryExpression>(node), scope);
+	case ExpressionType::Subtract:
+		return VisitBinary(std::static_pointer_cast<BinaryExpression>(node), scope);
+	case ExpressionType::Multiply:
+		return VisitBinary(std::static_pointer_cast<BinaryExpression>(node), scope);
+	case ExpressionType::Divide:
+		return VisitBinary(std::static_pointer_cast<BinaryExpression>(node), scope);
+	default:
+		throw NotImplementedException();
+	}
+}
 
 } // namespace cygni

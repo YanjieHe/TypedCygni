@@ -3,6 +3,7 @@
 #include "Enum.hpp"
 #include "PreDef.hpp"
 #include "Scope.hpp"
+#include "SourceLocation.hpp"
 #include "Type.hpp"
 #include <memory>
 #include <string>
@@ -12,26 +13,6 @@ namespace cygni {
 class Expression;
 using ExpPtr  = std::shared_ptr<Expression>;
 using ExpList = std::vector<std::shared_ptr<Expression>>;
-
-class SourceDocument {
-public:
-	std::string filePath;
-	std::string fileName;
-	SourceDocument(std::string filePath, std::string fileName);
-};
-
-class SourceLocation {
-public:
-	std::shared_ptr<SourceDocument> document;
-	int startLine;
-	int startCol;
-	int endLine;
-	int endCol;
-
-	SourceLocation();
-	SourceLocation(std::shared_ptr<SourceDocument> document, int startLine,
-				   int startCol, int endLine, int endCol);
-};
 
 class Expression {
 public:
