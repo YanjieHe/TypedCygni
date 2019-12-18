@@ -103,7 +103,8 @@ enum class ExpressionType {
 	Loop,
 	Goto,
 	VariableDefinition,
-	While
+	While,
+	Break
 };
 
 enum class AccessModifier { Public, Private, Protected };
@@ -113,13 +114,13 @@ enum class TypeCode {
 	Boolean,
 	Byte,
 	Char,
-	Double,
+	Float64,
 	Empty,
 	Int16,
 	Int32,
 	Int64,
 	Object,
-	Single,
+	Float32,
 	String,
 	UInt16,
 	UInt32,
@@ -314,6 +315,8 @@ public:
 			return U"VariableDefinition";
 		case ExpressionType::While:
 			return U"While";
+		case ExpressionType::Break:
+			return U"Break";
 
 		default:
 			std::cout << __FUNCTION__ << std::endl;
@@ -350,8 +353,8 @@ public:
 			return U"Byte";
 		case TypeCode::Char:
 			return U"Char";
-		case TypeCode::Double:
-			return U"Double";
+		case TypeCode::Float32:
+			return U"Float32";
 		case TypeCode::Empty:
 			return U"Empty";
 		case TypeCode::Int16:
@@ -362,8 +365,8 @@ public:
 			return U"Int64";
 		case TypeCode::Object:
 			return U"Object";
-		case TypeCode::Single:
-			return U"Single";
+		case TypeCode::Float64:
+			return U"Float64";
 		case TypeCode::String:
 			return U"String";
 		case TypeCode::UInt16:

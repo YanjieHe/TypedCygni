@@ -33,9 +33,14 @@ public:
 	Int64Type();
 };
 
-class DoubleType : public Type {
+class Float32Type : public Type {
 public:
-	DoubleType();
+	Float32Type();
+};
+
+class Float64Type : public Type {
+public:
+	Float64Type();
 };
 
 class CharType : public Type {

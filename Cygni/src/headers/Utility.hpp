@@ -22,6 +22,8 @@ int HexToInt(std::u32string hex);
 
 std::string utf32_to_utf8(const std::u32string& utf32);
 
+std::u32string utf8_to_utf32(const std::string& utf8);
+
 template <typename TKey, typename TValue> class Table {
 public:
 	std::vector<TValue> values;
@@ -54,8 +56,6 @@ public:
 		return map.find(key) != map.end();
 	}
 };
-
-std::u32string utf8_to_utf32(const std::string& utf8);
 
 } // namespace cygni
 

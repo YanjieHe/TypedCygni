@@ -17,7 +17,10 @@ Int32Type::Int32Type() : Type(TypeCode::Int32) {
 Int64Type::Int64Type() : Type(TypeCode::Int64) {
 }
 
-DoubleType::DoubleType() : Type(TypeCode::Double) {
+Float32Type::Float32Type(): Type(TypeCode::Float32){
+
+}
+Float64Type::Float64Type() : Type(TypeCode::Float64) {
 }
 
 CharType::CharType() : Type(TypeCode::Char) {

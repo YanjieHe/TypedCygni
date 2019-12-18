@@ -221,7 +221,7 @@ ExpPtr Parser::ParseFactor() {
 		const Token& start = Look();
 		Advance();
 		return std::make_shared<ConstantExpression>(
-			GetLoc(start), std::make_shared<DoubleType>(), v);
+			GetLoc(start), std::make_shared<Float64Type>(), v);
 	} else if (Look().tag == Tag::String) {
 		std::u32string v   = Look().text;
 		const Token& start = Look();
@@ -384,7 +384,10 @@ std::shared_ptr<Type> Parser::ParseType() {
 	static std::unordered_map<std::u32string, std::shared_ptr<Type>>
 		basicTypes = {{U"Int", std::make_shared<Int32Type>()},
 					  {U"Long", std::make_shared<Int64Type>()},
-					  {U"Bool", std::make_shared<BooleanType>()}};
+					  {U"Bool", std::make_shared<BooleanType>()},
+					  {U"Float", std::make_shared<Float32Type>()},
+					  {U"Double", std::make_shared<Float64Type>()},
+					  {U"Char", std::make_shared<CharType>()}};
 	if (basicTypes.find(name) != basicTypes.end()) {
 		return basicTypes[name];
 	} else {

@@ -159,6 +159,11 @@ public:
 	ReturnExpression(SourceLocation location, ExpPtr value);
 };
 
+class BreakExpression : public Expression {
+public:
+	BreakExpression(SourceLocation location);
+};
+
 class WhileExpression : public Expression {
 public:
 	ExpPtr condition;

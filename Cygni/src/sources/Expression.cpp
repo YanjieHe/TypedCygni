@@ -22,7 +22,8 @@ Expression::Expression(SourceLocation location, ExpressionType nodeType)
 	static int currentId = 0;
 	this->id			 = currentId;
 	currentId++;
-	static std::shared_ptr<UnknownType> unknownType = std::make_shared<UnknownType>();
+	static std::shared_ptr<UnknownType> unknownType =
+		std::make_shared<UnknownType>();
 	this->type = unknownType;
 }
 
@@ -114,6 +115,10 @@ ClassInfo::ClassInfo(SourceLocation location, bool isModule,
 
 ReturnExpression::ReturnExpression(SourceLocation location, ExpPtr value)
 	: Expression(location, ExpressionType::Return), value{value} {
+}
+
+BreakExpression::BreakExpression(SourceLocation location)
+	: Expression(location, ExpressionType::Break) {
 }
 
 WhileExpression::WhileExpression(SourceLocation location, ExpPtr condition,
