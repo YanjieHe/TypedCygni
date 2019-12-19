@@ -333,4 +333,27 @@ TypePtr TypeChecker::VisitBlock(std::shared_ptr<BlockExpression> node,
 	}
 	return Type::Void();
 }
+
+TypePtr TypeChecker::VisitConstant(std::shared_ptr<ConstantExpression> node) {
+	return node->type;
+}
+
+TypePtr TypeChecker::VisitClassInfo(std::shared_ptr<ClassInfo> info) {
+	for (const auto& field : info->fields.values) {
+		auto type = VisitExpression(field.value, scope);
+		if (!field.type->Equals(type)) {
+			throw TypeException(field.location, U"field type mismatch");
+		}
+	}
+	for (const auto& method : info->methods.values) {
+	}
+	return Type::Void();
+}
+
+TypePtr TypeChecker::VisitMethodDef(const MethodDef& method, ScopePtr scope) {
+	// TO DO
+	VisitExpression(method.body, scope);
+	return Type::Void();
+}
+
 } // namespace cygni
