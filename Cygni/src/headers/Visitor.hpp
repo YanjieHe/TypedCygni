@@ -62,7 +62,7 @@ public:
 	TypeChecker();
 
 	TypePtr VisitBinary(std::shared_ptr<BinaryExpression> node, ScopePtr scope);
-	TypePtr VisitBlock(std::shared_ptr<BlockExpression> node);
+	TypePtr VisitBlock(std::shared_ptr<BlockExpression> node, ScopePtr scope);
 	TypePtr VisitExpression(ExpPtr node, ScopePtr scope);
 	TypePtr VisitConstant(std::shared_ptr<ConstantExpression> node);
 	TypePtr VisitClassInfo(std::shared_ptr<ClassInfo> info);

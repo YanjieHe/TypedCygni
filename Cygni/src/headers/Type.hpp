@@ -17,6 +17,7 @@ class Float64Type;
 class CharType;
 class BooleanType;
 class StringType;
+class VoidType;
 
 class Type {
 public:
@@ -31,6 +32,7 @@ public:
 	static std::shared_ptr<Int64Type> Int64();
 	static std::shared_ptr<Float32Type> Float32();
 	static std::shared_ptr<Float64Type> Float64();
+	static std::shared_ptr<VoidType> Void();
 };
 
 class UnknownType : public Type {
@@ -73,11 +75,16 @@ public:
 	StringType();
 };
 
+class VoidType : public Type {
+public:
+	VoidType();
+};
+
 class ObjectType : public Type {
 public:
 	std::u32string name;
 	explicit ObjectType(std::u32string name);
-	
+
 	std::u32string ToString() const override;
 
 	bool Equals(TypePtr other) const override;
@@ -89,7 +96,7 @@ public:
 	explicit ArrayType(TypePtr elementType);
 
 	std::u32string ToString() const override;
-	
+
 	bool Equals(TypePtr other) const override;
 };
 

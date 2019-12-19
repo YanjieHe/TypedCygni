@@ -28,6 +28,10 @@ std::shared_ptr<Float64Type> Type::Float64() {
 	static std::shared_ptr<Float64Type> type = std::make_shared<Float64Type>();
 	return type;
 }
+std::shared_ptr<VoidType> Type::Void() {
+	static std::shared_ptr<VoidType> type = std::make_shared<VoidType>();
+	return type;
+}
 UnknownType::UnknownType() : Type(TypeCode::Unknown) {
 }
 
@@ -49,6 +53,9 @@ BooleanType::BooleanType() : Type(TypeCode::Boolean) {
 }
 
 StringType::StringType() : Type(TypeCode::String) {
+}
+
+VoidType::VoidType() : Type(TypeCode::Void) {
 }
 
 ObjectType::ObjectType(std::u32string name)

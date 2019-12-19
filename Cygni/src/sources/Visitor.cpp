@@ -310,16 +310,27 @@ TypePtr TypeChecker::Attach(ExpPtr node, TypePtr type) {
 TypePtr TypeChecker::VisitExpression(ExpPtr node, ScopePtr scope) {
 	switch (node->nodeType) {
 	case ExpressionType::Add:
-		return VisitBinary(std::static_pointer_cast<BinaryExpression>(node), scope);
+		return VisitBinary(std::static_pointer_cast<BinaryExpression>(node),
+						   scope);
 	case ExpressionType::Subtract:
-		return VisitBinary(std::static_pointer_cast<BinaryExpression>(node), scope);
+		return VisitBinary(std::static_pointer_cast<BinaryExpression>(node),
+						   scope);
 	case ExpressionType::Multiply:
-		return VisitBinary(std::static_pointer_cast<BinaryExpression>(node), scope);
+		return VisitBinary(std::static_pointer_cast<BinaryExpression>(node),
+						   scope);
 	case ExpressionType::Divide:
-		return VisitBinary(std::static_pointer_cast<BinaryExpression>(node), scope);
+		return VisitBinary(std::static_pointer_cast<BinaryExpression>(node),
+						   scope);
 	default:
 		throw NotImplementedException();
 	}
 }
 
+TypePtr TypeChecker::VisitBlock(std::shared_ptr<BlockExpression> node,
+								ScopePtr scope) {
+	for (const auto& exp : node->expressions) {
+		VisitExpression(exp, scope);
+	}
+	return Type::Void();
+}
 } // namespace cygni

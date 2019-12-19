@@ -111,6 +111,7 @@ enum class AccessModifier { Public, Private, Protected };
 
 enum class TypeCode {
 	Unknown,
+	Void,
 	Boolean,
 	Byte,
 	Char,
