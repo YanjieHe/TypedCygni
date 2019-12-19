@@ -67,7 +67,7 @@ public:
 	TypePtr VisitConstant(std::shared_ptr<ConstantExpression> node);
 	TypePtr VisitClassInfo(std::shared_ptr<ClassInfo> info);
 	TypePtr VisitFieldDef(const FieldDef& field);
-	TypePtr VisitMethodDef(const MethodDef& method);
+	TypePtr VisitMethodDef(const MethodDef& method, ScopePtr scope);
 	TypePtr VisitParameter(std::shared_ptr<ParameterExpression> parameter);
 	TypePtr VisitReturn(std::shared_ptr<ReturnExpression> node);
 	TypePtr VisitConditional(std::shared_ptr<ConditionalExpression> node);
