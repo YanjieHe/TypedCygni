@@ -61,18 +61,18 @@ public:
 
 	TypeChecker();
 
-	TypePtr VisitBinary(std::shared_ptr<BinaryExpression> node, ScopePtr scope);
-	TypePtr VisitBlock(std::shared_ptr<BlockExpression> node, ScopePtr scope);
-	TypePtr VisitExpression(ExpPtr node, ScopePtr scope);
+	TypePtr VisitBinary(std::shared_ptr<BinaryExpression> node, ScopePtr scope, Program& program, ClassInfo& info);
+	TypePtr VisitBlock(std::shared_ptr<BlockExpression> node, ScopePtr scope, Program& program, ClassInfo& info);
+	TypePtr VisitExpression(ExpPtr node, ScopePtr scope, Program& program, ClassInfo& info);
 	TypePtr VisitConstant(std::shared_ptr<ConstantExpression> node);
-	TypePtr VisitClassInfo(std::shared_ptr<ClassInfo> info);
-	TypePtr VisitFieldDef(const FieldDef& field);
-	TypePtr VisitMethodDef(const MethodDef& method, ScopePtr scope);
-	TypePtr VisitParameter(std::shared_ptr<ParameterExpression> parameter);
-	TypePtr VisitReturn(std::shared_ptr<ReturnExpression> node);
-	TypePtr VisitConditional(std::shared_ptr<ConditionalExpression> node);
+	TypePtr VisitClassInfo(std::shared_ptr<ClassInfo> info, ScopePtr scope, Program& program, ClassInfo& info);
+	TypePtr VisitFieldDef(const FieldDef& field, Program& program, ClassInfo& info);
+	TypePtr VisitMethodDef(const MethodDef& method, ScopePtr scope, Program& program, ClassInfo& info);
+	TypePtr VisitParameter(std::shared_ptr<ParameterExpression> parameter, Program& program, ClassInfo& info);
+	TypePtr VisitReturn(std::shared_ptr<ReturnExpression> node, ScopePtr scope, Program& program, ClassInfo& info);
+	TypePtr VisitConditional(std::shared_ptr<ConditionalExpression> node, Program& program, ClassInfo& info);
 	TypePtr VisitDefault(std::shared_ptr<DefaultExpression> node);
-	TypePtr VisitInvocation(std::shared_ptr<InvocationExpression> node);
+	TypePtr VisitInvocation(std::shared_ptr<InvocationExpression> node, Program& program, ClassInfo& info);
 	void VisitProgram(const Program& program);
 	TypePtr Attach(ExpPtr node, TypePtr type);
 };

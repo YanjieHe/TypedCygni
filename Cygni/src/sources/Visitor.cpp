@@ -270,7 +270,7 @@ TypeChecker::TypeChecker() {
 }
 
 TypePtr TypeChecker::VisitBinary(std::shared_ptr<BinaryExpression> node,
-								 ScopePtr scope) {
+								 ScopePtr scope, Program& program, ClassInfo& info) {
 	auto left  = VisitExpression(node->left, scope);
 	auto right = VisitExpression(node->right, scope);
 	if (node->nodeType == ExpressionType::Add) {
@@ -307,7 +307,7 @@ TypePtr TypeChecker::Attach(ExpPtr node, TypePtr type) {
 	return type;
 }
 
-TypePtr TypeChecker::VisitExpression(ExpPtr node, ScopePtr scope) {
+TypePtr TypeChecker::VisitExpression(ExpPtr node, ScopePtr scope, Program& program, ClassInfo& info) {
 	switch (node->nodeType) {
 	case ExpressionType::Add:
 		return VisitBinary(std::static_pointer_cast<BinaryExpression>(node),
@@ -327,7 +327,7 @@ TypePtr TypeChecker::VisitExpression(ExpPtr node, ScopePtr scope) {
 }
 
 TypePtr TypeChecker::VisitBlock(std::shared_ptr<BlockExpression> node,
-								ScopePtr scope) {
+								ScopePtr scope, Program& program, ClassInfo& info) {
 	for (const auto& exp : node->expressions) {
 		VisitExpression(exp, scope);
 	}
@@ -338,7 +338,7 @@ TypePtr TypeChecker::VisitConstant(std::shared_ptr<ConstantExpression> node) {
 	return node->type;
 }
 
-TypePtr TypeChecker::VisitClassInfo(std::shared_ptr<ClassInfo> info) {
+TypePtr TypeChecker::VisitClassInfo(std::shared_ptr<ClassInfo> info, ScopePtr scop, Program& program, ClassInfo& infoe) {
 	for (const auto& field : info->fields.values) {
 		auto type = VisitExpression(field.value, scope);
 		if (!field.type->Equals(type)) {
@@ -346,14 +346,25 @@ TypePtr TypeChecker::VisitClassInfo(std::shared_ptr<ClassInfo> info) {
 		}
 	}
 	for (const auto& method : info->methods.values) {
+		VisitMethodDef(method, scope);
 	}
 	return Type::Void();
 }
 
-TypePtr TypeChecker::VisitMethodDef(const MethodDef& method, ScopePtr scope) {
+TypePtr TypeChecker::VisitMethodDef(const MethodDef& method, ScopePtr scope, Program& program, ClassInfo& info) {
 	// TO DO
-	VisitExpression(method.body, scope);
+	ScopePtr newScope{scope};
+	for (const auto& parameter : method.parameters) {
+		newScope->Put(parameter->name, parameter->type);
+	}
+	VisitExpression(method.body, newScope);
 	return Type::Void();
+}
+
+
+TypePtr TypeChecker::VisitReturn(std::shared_ptr<ReturnExpression> node, ScopePtr scope, Program& program, ClassInfo& info) {
+	TypePtr returnType = VisitExpression(node->value, scope);
+	return returnType;
 }
 
 } // namespace cygni

@@ -16,7 +16,7 @@ public:
     
 	explicit Scope(std::shared_ptr<Scope> parent);
 
-	std::optional<std::any> Find(std::u32string key);
+	std::optional<std::any> Get(std::u32string key);
 
 	void Put(std::u32string key, std::any value);
 };
