@@ -19,6 +19,8 @@ public:
 	std::optional<std::any> Get(std::u32string key);
 
 	void Put(std::u32string key, std::any value);
+
+	std::optional<std::any> GetInLocal(std::u32string key);
 };
 
 using ScopePtr = std::shared_ptr<Scope>;

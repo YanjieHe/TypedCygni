@@ -32,16 +32,16 @@ void CompileProgram(std::string path, std::string outputJsonPath) {
 						 std::istreambuf_iterator<char>()};
 		std::u32string utf32Code = cygni::utf8_to_utf32(code);
 		cout << cygni::utf32_to_utf8(utf32Code) << endl;
-		cout << "文件读取成功！" << endl;
+		cout << "Successfully load file!" << endl;
 		cygni::Lexer lexer(utf32Code);
 		auto tokens = lexer.ReadAll();
-		cout << "词法分析完成！" << endl;
+		cout << "Complete lexical analysis!" << endl;
 		ViewTokens(tokens);
 
 		auto document = std::make_shared<cygni::SourceDocument>(path, path);
 		cygni::Parser parser(tokens, document);
 		auto program = parser.ParseProgram();
-		cout << "语法分析完成！" << endl;
+		cout << "Complete Syntax Analysis!" << endl;
 
 		cygni::AstToJsonSerialization astToJson;
 		auto jsonObj  = astToJson.VisitProgram(program);
@@ -49,13 +49,12 @@ void CompileProgram(std::string path, std::string outputJsonPath) {
 		WriteText(outputJsonPath, jsonText);
 		
 	} else {
-		cout << "文件读取失败！" << endl;
+		cout << "Fail to load the file!" << endl;
 	}
 }
 
 int main(int argc, char** argv) {
 	cout << "Hello Cygni!" << endl;
-	std::u32string s = U"如何从零写一个正则表达式引擎？";
 	try {
 		CompileProgram("factorial.cyg", "factorial.json");
 	} catch (cygni::ArgumentException& ex) {

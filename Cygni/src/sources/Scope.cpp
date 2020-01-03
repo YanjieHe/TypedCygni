@@ -19,4 +19,12 @@ std::optional<std::any> Scope::Get(std::u32string key) {
 void Scope::Put(std::u32string key, std::any value) {
 	table.Add(key, value);
 }
+
+std::optional<std::any> Scope::GetInLocal(std::u32string key) {
+	if (table.ContainsKey(key)) {
+		return table.GetValueByKey(key);
+	} else {
+		return std::optional<std::any>();
+	}
 }
+} // namespace cygni

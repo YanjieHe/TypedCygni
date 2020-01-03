@@ -4,7 +4,9 @@
 #include "Utility.hpp"
 #include <memory>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
+
 namespace cygni {
 class Type;
 using TypePtr = std::shared_ptr<Type>;
@@ -18,6 +20,7 @@ class CharType;
 class BooleanType;
 class StringType;
 class VoidType;
+class ObjectType;
 
 class Type {
 public:
@@ -33,6 +36,7 @@ public:
 	static std::shared_ptr<Float32Type> Float32();
 	static std::shared_ptr<Float64Type> Float64();
 	static std::shared_ptr<VoidType> Void();
+	static std::shared_ptr<BooleanType> Boolean();
 };
 
 class UnknownType : public Type {
@@ -130,5 +134,24 @@ public:
 	std::vector<TypeParameter> parameters;
 };
 
+} // namespace cygni
+
+template <> struct std::hash<cygni::TypePtr> {
+public:
+	size_t operator()(const cygni::TypePtr& type) const {
+		if (type->typeCode == cygni::TypeCode::Object) {
+			return static_cast<size_t>(type->typeCode);
+		} else {
+			return static_cast<size_t>(type->typeCode);
+		}
+	}
+};
+
+namespace cygni {
+
+class UnionType {
+public:
+	std::unordered_set<TypePtr> types;
+};
 } // namespace cygni
 #endif // CYGNI_TYPE_HPP

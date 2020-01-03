@@ -270,7 +270,7 @@ TypeChecker::TypeChecker() {
 }
 
 TypePtr TypeChecker::VisitBinary(std::shared_ptr<BinaryExpression> node,
-								 ScopePtr scope, Program& program, ClassInfo& info) {
+								 ScopePtr scope) {
 	auto left  = VisitExpression(node->left, scope);
 	auto right = VisitExpression(node->right, scope);
 	if (node->nodeType == ExpressionType::Add) {
@@ -302,12 +302,21 @@ TypePtr TypeChecker::VisitBinary(std::shared_ptr<BinaryExpression> node,
 	}
 }
 
+TypePtr TypeChecker::VisitBlock(std::shared_ptr<BlockExpression> node,
+								ScopePtr scope) {
+	TypePtr result = Type::Void();
+	for (const auto& exp : node->expressions) {
+		result = VisitExpression(exp, scope);
+	}
+	return result;
+}
+
 TypePtr TypeChecker::Attach(ExpPtr node, TypePtr type) {
 	node->type = type;
 	return type;
 }
 
-TypePtr TypeChecker::VisitExpression(ExpPtr node, ScopePtr scope, Program& program, ClassInfo& info) {
+TypePtr TypeChecker::VisitExpression(ExpPtr node, ScopePtr scope) {
 	switch (node->nodeType) {
 	case ExpressionType::Add:
 		return VisitBinary(std::static_pointer_cast<BinaryExpression>(node),
@@ -326,24 +335,16 @@ TypePtr TypeChecker::VisitExpression(ExpPtr node, ScopePtr scope, Program& progr
 	}
 }
 
-TypePtr TypeChecker::VisitBlock(std::shared_ptr<BlockExpression> node,
-								ScopePtr scope, Program& program, ClassInfo& info) {
-	for (const auto& exp : node->expressions) {
-		VisitExpression(exp, scope);
-	}
-	return Type::Void();
-}
-
 TypePtr TypeChecker::VisitConstant(std::shared_ptr<ConstantExpression> node) {
 	return node->type;
 }
 
-TypePtr TypeChecker::VisitClassInfo(std::shared_ptr<ClassInfo> info, ScopePtr scop, Program& program, ClassInfo& infoe) {
+TypePtr TypeChecker::VisitClassInfo(std::shared_ptr<ClassInfo> info,
+									ScopePtr outerScope) {
+	ScopePtr scope{outerScope};
+
 	for (const auto& field : info->fields.values) {
-		auto type = VisitExpression(field.value, scope);
-		if (!field.type->Equals(type)) {
-			throw TypeException(field.location, U"field type mismatch");
-		}
+		VisitFieldDef(field, scope);
 	}
 	for (const auto& method : info->methods.values) {
 		VisitMethodDef(method, scope);
@@ -351,20 +352,46 @@ TypePtr TypeChecker::VisitClassInfo(std::shared_ptr<ClassInfo> info, ScopePtr sc
 	return Type::Void();
 }
 
-TypePtr TypeChecker::VisitMethodDef(const MethodDef& method, ScopePtr scope, Program& program, ClassInfo& info) {
-	// TO DO
-	ScopePtr newScope{scope};
-	for (const auto& parameter : method.parameters) {
-		newScope->Put(parameter->name, parameter->type);
+TypePtr TypeChecker::VisitFieldDef(const FieldDef& field, ScopePtr scope) {
+	auto type = VisitExpression(field.value, scope);
+	if (!field.type->Equals(type)) {
+		throw TypeException(field.location, U"field type mismatch");
+	} else {
+		scope->Put(field.name, field.type);
+		return field.type;
 	}
-	VisitExpression(method.body, newScope);
-	return Type::Void();
 }
 
+TypePtr TypeChecker::VisitMethodDef(const MethodDef& method,
+									ScopePtr outerScope) {
+	// TO DO
+	ScopePtr scope{outerScope};
+	for (const auto& parameter : method.parameters) {
+		scope->Put(parameter->name, parameter->type);
+	}
+	return VisitExpression(method.body, scope);
+}
 
-TypePtr TypeChecker::VisitReturn(std::shared_ptr<ReturnExpression> node, ScopePtr scope, Program& program, ClassInfo& info) {
+TypePtr TypeChecker::VisitParameter(std::shared_ptr<ParameterExpression> parameter){
+	return parameter->type;
+}
+
+TypePtr TypeChecker::VisitReturn(std::shared_ptr<ReturnExpression> node,
+								 ScopePtr scope) {
 	TypePtr returnType = VisitExpression(node->value, scope);
 	return returnType;
+}
+
+TypePtr TypeChecker::VisitConditional(std::shared_ptr<ConditionalExpression> node, ScopePtr scope) {
+	auto condition = VisitExpression(node->condition, scope);
+	auto ifTrue = VisitExpression(node->ifTrue, scope);
+	auto ifFalse = VisitExpression(node->ifFalse, scope);
+	if (condition->Equals(Type::Boolean())) {
+		// TO DO
+		return Type::Void();
+	} else {
+		throw TypeException(node->condition->location, U"condition type must be boolean");
+	}
 }
 
 } // namespace cygni

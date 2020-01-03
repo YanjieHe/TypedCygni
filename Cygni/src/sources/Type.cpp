@@ -32,6 +32,10 @@ std::shared_ptr<VoidType> Type::Void() {
 	static std::shared_ptr<VoidType> type = std::make_shared<VoidType>();
 	return type;
 }
+std::shared_ptr<BooleanType> Type::Boolean() {
+	static std::shared_ptr<BooleanType> type = std::make_shared<BooleanType>();
+	return type;
+}
 UnknownType::UnknownType() : Type(TypeCode::Unknown) {
 }
 
