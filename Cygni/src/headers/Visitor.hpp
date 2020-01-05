@@ -68,11 +68,11 @@ public:
 	TypePtr VisitClassInfo(std::shared_ptr<ClassInfo> info, ScopePtr outerScope);
 	TypePtr VisitFieldDef(const FieldDef& field, ScopePtr scope);
 	TypePtr VisitMethodDef(const MethodDef& method, ScopePtr outerScope);
-	TypePtr VisitParameter(std::shared_ptr<ParameterExpression> parameter);
+	TypePtr VisitParameter(std::shared_ptr<ParameterExpression> parameter, ScopePtr scope);
 	TypePtr VisitReturn(std::shared_ptr<ReturnExpression> node, ScopePtr scope);
 	TypePtr VisitConditional(std::shared_ptr<ConditionalExpression> node, ScopePtr scope);
 	TypePtr VisitDefault(std::shared_ptr<DefaultExpression> node);
-	TypePtr VisitInvocation(std::shared_ptr<InvocationExpression> node);
+	TypePtr VisitInvocation(std::shared_ptr<InvocationExpression> node, ScopePtr scope);
 	void VisitProgram(const Program& program);
 	TypePtr Attach(ExpPtr node, TypePtr type);
 };

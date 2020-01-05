@@ -21,6 +21,7 @@ class BooleanType;
 class StringType;
 class VoidType;
 class ObjectType;
+class UnionType;
 
 class Type {
 public:
@@ -37,6 +38,8 @@ public:
 	static std::shared_ptr<Float64Type> Float64();
 	static std::shared_ptr<VoidType> Void();
 	static std::shared_ptr<BooleanType> Boolean();
+
+	static std::shared_ptr<UnionType> Unify(const std::vector<TypePtr> types);
 };
 
 class UnknownType : public Type {
@@ -104,24 +107,14 @@ public:
 	bool Equals(TypePtr other) const override;
 };
 
-class FieldTypeInfo {
+class FunctionType : public Type {
 public:
-	std::u32string name;
-	TypePtr type;
-};
-
-class MethodTypeInfo {
-public:
-	std::u32string name;
 	std::vector<TypePtr> parameters;
 	TypePtr returnType;
-};
 
-class ClassTypeInfo {
-public:
-	Table<std::u32string, FieldTypeInfo> fields;
-	Table<std::u32string, MethodTypeInfo> methods;
-	ClassTypeInfo() = default;
+	FunctionType(std::vector<TypePtr> parameters, TypePtr returnType);
+
+	bool Match(const std::vector<TypePtr>& args) const;
 };
 
 class TypeParameter {
@@ -147,11 +140,20 @@ public:
 	}
 };
 
+template <> struct std::equal_to<cygni::TypePtr> {
+public:
+	bool operator()(const cygni::TypePtr& x, const cygni::TypePtr& y) const {
+		return x->Equals(y);
+	}
+};
+
 namespace cygni {
 
-class UnionType {
+class UnionType : public Type {
 public:
-	std::unordered_set<TypePtr> types;
+	std::unordered_set<TypePtr, std::hash<TypePtr>, std::equal_to<TypePtr>>
+		types;
+	UnionType();
 };
 } // namespace cygni
 #endif // CYGNI_TYPE_HPP

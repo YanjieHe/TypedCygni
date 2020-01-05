@@ -36,6 +36,20 @@ std::shared_ptr<BooleanType> Type::Boolean() {
 	static std::shared_ptr<BooleanType> type = std::make_shared<BooleanType>();
 	return type;
 }
+std::shared_ptr<UnionType> Type::Unify(const std::vector<TypePtr> types) {
+	std::shared_ptr<UnionType> unionType = std::make_shared<UnionType>();
+	for (const auto& type : types) {
+		if (type->typeCode == TypeCode::Union) {
+			auto otherUnionType = std::static_pointer_cast<UnionType>(type);
+			for (const auto& _type : otherUnionType->types) {
+				unionType->types.insert(_type);
+			}
+		} else {
+			unionType->types.insert(type);
+		}
+	}
+	return unionType;
+}
 UnknownType::UnknownType() : Type(TypeCode::Unknown) {
 }
 
@@ -47,6 +61,7 @@ Int64Type::Int64Type() : Type(TypeCode::Int64) {
 
 Float32Type::Float32Type() : Type(TypeCode::Float32) {
 }
+
 Float64Type::Float64Type() : Type(TypeCode::Float64) {
 }
 
@@ -95,6 +110,27 @@ bool ArrayType::Equals(TypePtr other) const {
 
 std::u32string ArrayType::ToString() const {
 	return U"Array[" + elementType->ToString() + U"]";
+}
+
+FunctionType::FunctionType(std::vector<TypePtr> parameters, TypePtr returnType)
+	: Type(TypeCode::Function), parameters{parameters}, returnType{returnType} {
+}
+
+bool FunctionType::Match(const std::vector<TypePtr>& args) const {
+	if (args.size() == parameters.size()) {
+		int n = args.size();
+		for (int i = 0; i < n; i++) {
+			if (!parameters[i]->Equals(args[i])) {
+				return false;
+			}
+		}
+		return true;
+	} else {
+		return false;
+	}
+}
+
+UnionType::UnionType() : Type(TypeCode::Union) {
 }
 
 } // namespace cygni

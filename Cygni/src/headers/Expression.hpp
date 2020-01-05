@@ -117,6 +117,7 @@ public:
 	std::vector<std::shared_ptr<ParameterExpression>> parameters;
 	TypePtr returnType;
 	ExpPtr body;
+	TypePtr signature;
 
 	MethodDef() = default;
 	MethodDef(SourceLocation location, AccessModifier modifier, bool isStatic,

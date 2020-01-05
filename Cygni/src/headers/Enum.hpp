@@ -126,7 +126,10 @@ enum class TypeCode {
 	UInt16,
 	UInt32,
 	UInt64,
-	Array
+	Array,
+	Union,
+	Function
+
 };
 template <typename TEnum> class Enum {
 public:
@@ -378,6 +381,10 @@ public:
 			return U"UInt64";
 		case TypeCode::Array:
 			return U"Array";
+		case TypeCode::Union:
+			return U"Union";
+		case TypeCode::Function:
+			return U"Function";
 
 		default:
 			std::cout << __FUNCTION__ << std::endl;

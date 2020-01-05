@@ -1,5 +1,6 @@
 #include "Visitor.hpp"
 #include "Exception.hpp"
+#include <algorithm>
 namespace cygni {
 
 json AstToJsonSerialization::VisitSourceLocation(SourceLocation location) {
@@ -347,6 +348,9 @@ TypePtr TypeChecker::VisitClassInfo(std::shared_ptr<ClassInfo> info,
 		VisitFieldDef(field, scope);
 	}
 	for (const auto& method : info->methods.values) {
+		scope->Put(method.name, method.signature);
+	}
+	for (const auto& method : info->methods.values) {
 		VisitMethodDef(method, scope);
 	}
 	return Type::Void();
@@ -364,7 +368,6 @@ TypePtr TypeChecker::VisitFieldDef(const FieldDef& field, ScopePtr scope) {
 
 TypePtr TypeChecker::VisitMethodDef(const MethodDef& method,
 									ScopePtr outerScope) {
-	// TO DO
 	ScopePtr scope{outerScope};
 	for (const auto& parameter : method.parameters) {
 		scope->Put(parameter->name, parameter->type);
@@ -372,8 +375,17 @@ TypePtr TypeChecker::VisitMethodDef(const MethodDef& method,
 	return VisitExpression(method.body, scope);
 }
 
-TypePtr TypeChecker::VisitParameter(std::shared_ptr<ParameterExpression> parameter){
-	return parameter->type;
+TypePtr
+	TypeChecker::VisitParameter(std::shared_ptr<ParameterExpression> parameter,
+								ScopePtr scope) {
+	auto result = scope->Get(parameter->name);
+	if (result) {
+		auto type = std::any_cast<TypePtr>(*result);
+		Attach(parameter, type);
+		return type;
+	} else {
+		throw TypeException(parameter->location, U"parameter name not found");
+	}
 }
 
 TypePtr TypeChecker::VisitReturn(std::shared_ptr<ReturnExpression> node,
@@ -382,15 +394,49 @@ TypePtr TypeChecker::VisitReturn(std::shared_ptr<ReturnExpression> node,
 	return returnType;
 }
 
-TypePtr TypeChecker::VisitConditional(std::shared_ptr<ConditionalExpression> node, ScopePtr scope) {
+TypePtr	TypeChecker::VisitConditional(std::shared_ptr<ConditionalExpression> node,
+								  ScopePtr scope) {
 	auto condition = VisitExpression(node->condition, scope);
-	auto ifTrue = VisitExpression(node->ifTrue, scope);
-	auto ifFalse = VisitExpression(node->ifFalse, scope);
+	auto ifTrue	= VisitExpression(node->ifTrue, scope);
+	auto ifFalse   = VisitExpression(node->ifFalse, scope);
 	if (condition->Equals(Type::Boolean())) {
-		// TO DO
-		return Type::Void();
+		if (ifTrue->Equals(ifFalse)) {
+			Attach(node, ifTrue);
+			return ifTrue;
+		} else {
+			auto resultType =
+				Type::Unify(std::vector<TypePtr>{ifTrue, ifFalse});
+			Attach(node, resultType);
+			return resultType;
+		}
 	} else {
-		throw TypeException(node->condition->location, U"condition type must be boolean");
+		throw TypeException(node->condition->location,
+							U"condition type must be boolean");
+	}
+}
+
+TypePtr TypeChecker::VisitDefault(std::shared_ptr<DefaultExpression> node) {
+	return node->type;
+}
+
+TypePtr TypeChecker::VisitInvocation(std::shared_ptr<InvocationExpression> node,
+									 ScopePtr scope) {
+	auto exp = VisitExpression(node->expression, scope);
+	std::vector<TypePtr> args(node->arguments.size());
+	std::transform(node->arguments.begin(), node->arguments.end(), args.begin(),
+				   [this, &scope](const ExpPtr& arg) -> TypePtr {
+					   return VisitExpression(arg, scope);
+				   });
+	if (exp->typeCode == TypeCode::Function) {
+		auto functionType = std::static_pointer_cast<FunctionType>(exp);
+		if (functionType->Match(args)) {
+			return functionType->returnType;
+		} else {
+			throw TypeException(node->location,
+								U"function call arguments type do not match");
+		}
+	} else {
+		throw TypeException(node->location, U"expression is not a function");
 	}
 }
 

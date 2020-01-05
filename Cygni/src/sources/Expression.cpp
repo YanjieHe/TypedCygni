@@ -1,4 +1,5 @@
 #include "Expression.hpp"
+#include <algorithm>
 
 namespace cygni {
 
@@ -91,6 +92,14 @@ MethodDef::MethodDef(
 	TypePtr returnType, ExpPtr body)
 	: location{location}, modifier{modifier}, isStatic{isStatic}, name{name},
 	  parameters{parameters}, returnType{returnType}, body{body} {
+	std::vector<TypePtr> parameterTypes(parameters.size());
+	std::transform(
+		parameters.begin(), parameters.end(), parameterTypes.begin(),
+		[](const std::shared_ptr<ParameterExpression>& p) -> TypePtr {
+			return p->type;
+		});
+	this->signature =
+		std::make_shared<FunctionType>(parameterTypes, returnType);
 }
 
 ClassInfo::ClassInfo(SourceLocation location, bool isModule,
