@@ -67,7 +67,7 @@ public:
 
 class DefaultExpression : public Expression {
 public:
-	DefaultExpression(SourceLocation location);
+	DefaultExpression(SourceLocation location, TypePtr type);
 };
 
 class InvocationExpression : public Expression {

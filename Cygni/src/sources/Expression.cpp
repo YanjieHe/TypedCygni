@@ -41,8 +41,9 @@ ConditionalExpression::ConditionalExpression(SourceLocation location,
 	  ifTrue{ifTrue}, ifFalse{ifFalse} {
 }
 
-DefaultExpression::DefaultExpression(SourceLocation location)
+DefaultExpression::DefaultExpression(SourceLocation location, TypePtr type)
 	: Expression(location, ExpressionType::Default) {
+	this->type = type;
 }
 
 InvocationExpression::InvocationExpression(SourceLocation location,

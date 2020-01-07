@@ -268,6 +268,9 @@ TypeChecker::TypeChecker() {
 
 	ruleSet.Add(U"/", {Type::Int32(), Type::Int32()}, Type::Int32());
 	ruleSet.Add(U"/", {Type::Int64(), Type::Int64()}, Type::Int64());
+
+	ruleSet.Add(U"==", {Type::Int32(), Type::Int32()}, Type::Boolean());
+	ruleSet.Add(U"==", {Type::Int64(), Type::Int64()}, Type::Boolean());
 }
 
 TypePtr TypeChecker::VisitBinary(std::shared_ptr<BinaryExpression> node,
@@ -298,6 +301,12 @@ TypePtr TypeChecker::VisitBinary(std::shared_ptr<BinaryExpression> node,
 		} else {
 			throw TypeException(node->location, U"type mismatch: /");
 		}
+	} else if (node->nodeType == ExpressionType::Equal) {
+		if (auto res = ruleSet.Match(U"==", {left, right})) {
+			return Attach(node, *res);
+		} else {
+			throw TypeException(node->location, U"type mismatch: ==");
+		}
 	} else {
 		throw NotImplementedException();
 	}
@@ -309,6 +318,7 @@ TypePtr TypeChecker::VisitBlock(std::shared_ptr<BlockExpression> node,
 	for (const auto& exp : node->expressions) {
 		result = VisitExpression(exp, scope);
 	}
+	Attach(node, result);
 	return result;
 }
 
@@ -318,19 +328,35 @@ TypePtr TypeChecker::Attach(ExpPtr node, TypePtr type) {
 }
 
 TypePtr TypeChecker::VisitExpression(ExpPtr node, ScopePtr scope) {
+	std::cout << "msg: "
+			  << cygni::utf32_to_utf8(
+					 Enum<ExpressionType>::ToString(node->nodeType))
+			  << std::endl;
 	switch (node->nodeType) {
 	case ExpressionType::Add:
-		return VisitBinary(std::static_pointer_cast<BinaryExpression>(node),
-						   scope);
 	case ExpressionType::Subtract:
-		return VisitBinary(std::static_pointer_cast<BinaryExpression>(node),
-						   scope);
 	case ExpressionType::Multiply:
-		return VisitBinary(std::static_pointer_cast<BinaryExpression>(node),
-						   scope);
 	case ExpressionType::Divide:
+	case ExpressionType::Equal:
 		return VisitBinary(std::static_pointer_cast<BinaryExpression>(node),
 						   scope);
+	case ExpressionType::Block:
+		return VisitBlock(std::static_pointer_cast<BlockExpression>(node),
+						  scope);
+	case ExpressionType::Constant:
+		return VisitConstant(
+			std::static_pointer_cast<ConstantExpression>(node));
+	case ExpressionType::Parameter:
+		return VisitParameter(
+			std::static_pointer_cast<ParameterExpression>(node), scope);
+	case ExpressionType::Conditional:
+		return VisitConditional(
+			std::static_pointer_cast<ConditionalExpression>(node), scope);
+	case ExpressionType::Default:
+		return VisitDefault(std::static_pointer_cast<DefaultExpression>(node));
+	case ExpressionType::Invoke:
+		return VisitInvocation(
+			std::static_pointer_cast<InvocationExpression>(node), scope);
 	default:
 		throw NotImplementedException();
 	}
@@ -375,8 +401,7 @@ TypePtr TypeChecker::VisitMethodDef(const MethodDef& method,
 	return VisitExpression(method.body, scope);
 }
 
-TypePtr
-	TypeChecker::VisitParameter(std::shared_ptr<ParameterExpression> parameter,
+TypePtr	TypeChecker::VisitParameter(std::shared_ptr<ParameterExpression> parameter,
 								ScopePtr scope) {
 	auto result = scope->Get(parameter->name);
 	if (result) {
@@ -394,7 +419,8 @@ TypePtr TypeChecker::VisitReturn(std::shared_ptr<ReturnExpression> node,
 	return returnType;
 }
 
-TypePtr	TypeChecker::VisitConditional(std::shared_ptr<ConditionalExpression> node,
+TypePtr
+	TypeChecker::VisitConditional(std::shared_ptr<ConditionalExpression> node,
 								  ScopePtr scope) {
 	auto condition = VisitExpression(node->condition, scope);
 	auto ifTrue	= VisitExpression(node->ifTrue, scope);
@@ -430,6 +456,7 @@ TypePtr TypeChecker::VisitInvocation(std::shared_ptr<InvocationExpression> node,
 	if (exp->typeCode == TypeCode::Function) {
 		auto functionType = std::static_pointer_cast<FunctionType>(exp);
 		if (functionType->Match(args)) {
+			Attach(node, functionType->returnType);
 			return functionType->returnType;
 		} else {
 			throw TypeException(node->location,
@@ -439,5 +466,9 @@ TypePtr TypeChecker::VisitInvocation(std::shared_ptr<InvocationExpression> node,
 		throw TypeException(node->location, U"expression is not a function");
 	}
 }
-
+void TypeChecker::VisitProgram(const Program& program, ScopePtr scope) {
+	for (const auto& _class : program.classes.values) {
+		VisitClassInfo(_class, scope);
+	}
+}
 } // namespace cygni

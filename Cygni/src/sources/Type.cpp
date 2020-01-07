@@ -36,19 +36,31 @@ std::shared_ptr<BooleanType> Type::Boolean() {
 	static std::shared_ptr<BooleanType> type = std::make_shared<BooleanType>();
 	return type;
 }
-std::shared_ptr<UnionType> Type::Unify(const std::vector<TypePtr> types) {
-	std::shared_ptr<UnionType> unionType = std::make_shared<UnionType>();
-	for (const auto& type : types) {
-		if (type->typeCode == TypeCode::Union) {
-			auto otherUnionType = std::static_pointer_cast<UnionType>(type);
-			for (const auto& _type : otherUnionType->types) {
-				unionType->types.insert(_type);
+std::shared_ptr<UnknownType> Type::Unknown() {
+	static std::shared_ptr<UnknownType> type = std::make_shared<UnknownType>();
+	return type;
+}
+std::shared_ptr<Type> Type::Unify(const std::vector<TypePtr> types) {
+	// Assume that the number of types is greater than 0
+	if (std::equal(types.begin() + 1, types.end(), types.begin(),
+				   [](const TypePtr& x, const TypePtr& y) -> bool {
+					   return x->Equals(y);
+				   })) {
+		return types.front();
+	} else {
+		std::shared_ptr<UnionType> unionType = std::make_shared<UnionType>();
+		for (const auto& type : types) {
+			if (type->typeCode == TypeCode::Union) {
+				auto otherUnionType = std::static_pointer_cast<UnionType>(type);
+				for (const auto& _type : otherUnionType->types) {
+					unionType->types.insert(_type);
+				}
+			} else {
+				unionType->types.insert(type);
 			}
-		} else {
-			unionType->types.insert(type);
 		}
+		return unionType;
 	}
-	return unionType;
 }
 UnknownType::UnknownType() : Type(TypeCode::Unknown) {
 }

@@ -73,7 +73,7 @@ public:
 	TypePtr VisitConditional(std::shared_ptr<ConditionalExpression> node, ScopePtr scope);
 	TypePtr VisitDefault(std::shared_ptr<DefaultExpression> node);
 	TypePtr VisitInvocation(std::shared_ptr<InvocationExpression> node, ScopePtr scope);
-	void VisitProgram(const Program& program);
+	void VisitProgram(const Program& program, ScopePtr scope);
 	TypePtr Attach(ExpPtr node, TypePtr type);
 };
 

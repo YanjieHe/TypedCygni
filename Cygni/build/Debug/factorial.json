@@ -20,7 +20,7 @@
                                         },
                                         "name": "n",
                                         "nodeType": "Parameter",
-                                        "type": "Unknown"
+                                        "type": "Int32"
                                     },
                                     "location": {
                                         "endCol": 20,
@@ -41,107 +41,96 @@
                                         "nodeType": "Constant",
                                         "type": "Int32"
                                     },
-                                    "type": "Unknown"
+                                    "type": "Boolean"
                                 },
-                                "id": 16,
+                                "id": 14,
                                 "ifFalse": {
                                     "expressions": [
                                         {
-                                            "id": 14,
+                                            "id": 12,
+                                            "left": {
+                                                "id": 6,
+                                                "location": {
+                                                    "endCol": 16,
+                                                    "endLine": 10,
+                                                    "startCol": 14,
+                                                    "startLine": 10
+                                                },
+                                                "name": "n",
+                                                "nodeType": "Parameter",
+                                                "type": "Int32"
+                                            },
                                             "location": {
                                                 "endCol": 10,
                                                 "endLine": 11,
-                                                "startCol": 19,
+                                                "startCol": 14,
                                                 "startLine": 10
                                             },
-                                            "nodeType": "Return",
-                                            "type": "Unknown",
-                                            "value": {
-                                                "id": 13,
-                                                "left": {
+                                            "nodeType": "Multiply",
+                                            "right": {
+                                                "arguments": [
+                                                    {
+                                                        "id": 10,
+                                                        "left": {
+                                                            "id": 8,
+                                                            "location": {
+                                                                "endCol": 30,
+                                                                "endLine": 10,
+                                                                "startCol": 28,
+                                                                "startLine": 10
+                                                            },
+                                                            "name": "n",
+                                                            "nodeType": "Parameter",
+                                                            "type": "Int32"
+                                                        },
+                                                        "location": {
+                                                            "endCol": 33,
+                                                            "endLine": 10,
+                                                            "startCol": 28,
+                                                            "startLine": 10
+                                                        },
+                                                        "nodeType": "Subtract",
+                                                        "right": {
+                                                            "constant": "1",
+                                                            "id": 9,
+                                                            "location": {
+                                                                "endCol": 33,
+                                                                "endLine": 10,
+                                                                "startCol": 32,
+                                                                "startLine": 10
+                                                            },
+                                                            "nodeType": "Constant",
+                                                            "type": "Int32"
+                                                        },
+                                                        "type": "Int32"
+                                                    }
+                                                ],
+                                                "expression": {
                                                     "id": 7,
                                                     "location": {
-                                                        "endCol": 23,
+                                                        "endCol": 27,
                                                         "endLine": 10,
-                                                        "startCol": 21,
+                                                        "startCol": 26,
                                                         "startLine": 10
                                                     },
-                                                    "name": "n",
+                                                    "name": "Factorial",
                                                     "nodeType": "Parameter",
-                                                    "type": "Unknown"
+                                                    "type": "Function"
                                                 },
+                                                "id": 11,
                                                 "location": {
                                                     "endCol": 10,
                                                     "endLine": 11,
-                                                    "startCol": 21,
+                                                    "startCol": 27,
                                                     "startLine": 10
                                                 },
-                                                "nodeType": "Multiply",
-                                                "right": {
-                                                    "arguments": [
-                                                        {
-                                                            "id": 11,
-                                                            "left": {
-                                                                "id": 9,
-                                                                "location": {
-                                                                    "endCol": 37,
-                                                                    "endLine": 10,
-                                                                    "startCol": 35,
-                                                                    "startLine": 10
-                                                                },
-                                                                "name": "n",
-                                                                "nodeType": "Parameter",
-                                                                "type": "Unknown"
-                                                            },
-                                                            "location": {
-                                                                "endCol": 40,
-                                                                "endLine": 10,
-                                                                "startCol": 35,
-                                                                "startLine": 10
-                                                            },
-                                                            "nodeType": "Subtract",
-                                                            "right": {
-                                                                "constant": "1",
-                                                                "id": 10,
-                                                                "location": {
-                                                                    "endCol": 40,
-                                                                    "endLine": 10,
-                                                                    "startCol": 39,
-                                                                    "startLine": 10
-                                                                },
-                                                                "nodeType": "Constant",
-                                                                "type": "Int32"
-                                                            },
-                                                            "type": "Unknown"
-                                                        }
-                                                    ],
-                                                    "expression": {
-                                                        "id": 8,
-                                                        "location": {
-                                                            "endCol": 34,
-                                                            "endLine": 10,
-                                                            "startCol": 33,
-                                                            "startLine": 10
-                                                        },
-                                                        "name": "Factorial",
-                                                        "nodeType": "Parameter",
-                                                        "type": "Unknown"
-                                                    },
-                                                    "id": 12,
-                                                    "location": {
-                                                        "endCol": 10,
-                                                        "endLine": 11,
-                                                        "startCol": 34,
-                                                        "startLine": 10
-                                                    },
-                                                    "nodeType": "Invoke",
-                                                    "type": "Unknown"
-                                                },
-                                                "type": "Unknown"
-                                            }
+                                                "nodeType": "Invoke",
+                                                "type": "Int32"
+                                            },
+                                            "type": "Int32"
                                         }
                                     ],
-                                    "id": 15,
+                                    "id": 13,
                                     "location": {
                                         "endCol": 6,
                                         "endLine": 12,
@@ -149,35 +138,24 @@
                                         "startLine": 9
                                     },
                                     "nodeType": "Block",
-                                    "type": "Unknown"
+                                    "type": "Int32"
                                 },
                                 "ifTrue": {
                                     "expressions": [
                                         {
-                                            "id": 5,
+                                            "constant": "1",
+                                            "id": 4,
                                             "location": {
                                                 "endCol": 10,
                                                 "endLine": 7,
-                                                "startCol": 19,
+                                                "startCol": 14,
                                                 "startLine": 6
                                             },
-                                            "nodeType": "Return",
-                                            "type": "Unknown",
-                                            "value": {
-                                                "constant": "1",
-                                                "id": 4,
-                                                "location": {
-                                                    "endCol": 10,
-                                                    "endLine": 7,
-                                                    "startCol": 21,
-                                                    "startLine": 6
-                                                },
-                                                "nodeType": "Constant",
-                                                "type": "Int32"
-                                            }
+                                            "nodeType": "Constant",
+                                            "type": "Int32"
                                         }
                                     ],
-                                    "id": 6,
+                                    "id": 5,
                                     "location": {
                                         "endCol": 13,
                                         "endLine": 8,
@@ -185,7 +163,7 @@
                                         "startLine": 5
                                     },
                                     "nodeType": "Block",
-                                    "type": "Unknown"
+                                    "type": "Int32"
                                 },
                                 "location": {
                                     "endCol": 6,
@@ -194,10 +172,10 @@
                                     "startLine": 4
                                 },
                                 "nodeType": "Conditional",
-                                "type": "Unknown"
+                                "type": "Int32"
                             }
                         ],
-                        "id": 17,
+                        "id": 15,
                         "location": {
                             "endCol": 2,
                             "endLine": 13,
@@ -205,7 +183,7 @@
                             "startLine": 3
                         },
                         "nodeType": "Block",
-                        "type": "Unknown"
+                        "type": "Int32"
                     },
                     "isStatic": true,
                     "location": {
@@ -219,14 +197,14 @@
                         {
                             "id": 0,
                             "location": {
-                                "endCol": 27,
+                                "endCol": 26,
                                 "endLine": 2,
                                 "startCol": 20,
                                 "startLine": 2
                             },
                             "name": "n",
                             "nodeType": "Parameter",
-                            "type": "Int64"
+                            "type": "Int32"
                         }
                     ]
                 }

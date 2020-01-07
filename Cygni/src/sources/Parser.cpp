@@ -25,8 +25,6 @@ ExpPtr Parser::Statement() {
 		return IfStatement();
 	case Tag::Var:
 		return ParseVar();
-	case Tag::Return:
-		return ParseReturn();
 	case Tag::While:
 		return ParseWhile();
 	default:
@@ -199,6 +197,8 @@ ExpPtr Parser::ParsePostfix() {
 			}
 		} else if (Look().tag == Tag::LeftBracket) {
 			// TO DO
+		} else if (Look().tag == Tag::Dot) {
+			// TO DO
 		}
 	}
 	return x;
@@ -277,7 +277,7 @@ ExpPtr Parser::IfStatement() {
 				GetLoc(start), condition, ifTrue, chunk);
 		}
 	} else {
-		auto empty = std::make_shared<DefaultExpression>(GetLoc(Look()));
+		auto empty = std::make_shared<DefaultExpression>(GetLoc(Look()), Type::Void());
 		return std::make_shared<ConditionalExpression>(GetLoc(start), condition,
 													   ifTrue, empty);
 	}
@@ -299,7 +299,7 @@ ExpPtr Parser::ParseVar() {
 			return std::make_shared<VariableDefinitionExpression>(
 				GetLoc(start), variable, value);
 		} else {
-			auto value	= std::make_shared<DefaultExpression>(GetLoc(Look()));
+			auto value	= std::make_shared<DefaultExpression>(GetLoc(Look()), Type::Unknown());
 			auto variable = std::make_shared<ParameterExpression>(
 				GetLoc(Look()), name, type);
 			return std::make_shared<VariableDefinitionExpression>(
@@ -325,7 +325,7 @@ std::shared_ptr<VariableDefinitionExpression> Parser::ParseVarDeclaration() {
 	auto type = ParseType();
 	auto variable =
 		std::make_shared<ParameterExpression>(GetLoc(Look()), name, type);
-	auto value = std::make_shared<DefaultExpression>(GetLoc(Look()));
+	auto value = std::make_shared<DefaultExpression>(GetLoc(Look()), Type::Unknown());
 	return std::make_shared<VariableDefinitionExpression>(GetLoc(start),
 														  variable, value);
 }
@@ -342,7 +342,7 @@ FieldDef Parser::ParseFieldDefinition(AccessModifier modifier, bool isStatic) {
 		auto value = ParseOr();
 		return FieldDef(GetLoc(start), modifier, isStatic, name, type, value);
 	} else {
-		auto value = std::make_shared<DefaultExpression>(GetLoc(Look()));
+		auto value = std::make_shared<DefaultExpression>(GetLoc(Look()), Type::Unknown());
 		return FieldDef(GetLoc(start), modifier, isStatic, name, type, value);
 	}
 }

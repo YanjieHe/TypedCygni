@@ -1,13 +1,14 @@
-module App {
-    def Factorial(n: Long): Long
+module App
+{
+    def Factorial(n: Int): Int
     {
         if (n == 0)
         {
-            return 1
+            1
         }
         else
         {
-            return n * Factorial(n - 1)
+            n * Factorial(n - 1)
         }
     }
 }

@@ -43,11 +43,16 @@ void CompileProgram(std::string path, std::string outputJsonPath) {
 		auto program = parser.ParseProgram();
 		cout << "Complete Syntax Analysis!" << endl;
 
+		cygni::TypeChecker typeChecker;
+		cygni::ScopePtr scope = std::make_shared<cygni::Scope>();
+		typeChecker.VisitProgram(program, scope);
+		cout << "Complete Type Checking!" << endl;
+
 		cygni::AstToJsonSerialization astToJson;
 		auto jsonObj  = astToJson.VisitProgram(program);
 		auto jsonText = jsonObj.dump();
 		WriteText(outputJsonPath, jsonText);
-		
+
 	} else {
 		cout << "Fail to load the file!" << endl;
 	}
@@ -62,6 +67,8 @@ int main(int argc, char** argv) {
 	} catch (cygni::LexicalException& ex) {
 		cout << cygni::utf32_to_utf8(ex.message) << endl;
 	} catch (cygni::ParserException& ex) {
+		cout << cygni::utf32_to_utf8(ex.message) << endl;
+	} catch (cygni::TypeException& ex) {
 		cout << cygni::utf32_to_utf8(ex.message) << endl;
 	}
 	// cygni::Lexer lexer(U"var a = '\\x0058'");

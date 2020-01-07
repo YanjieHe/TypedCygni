@@ -38,8 +38,9 @@ public:
 	static std::shared_ptr<Float64Type> Float64();
 	static std::shared_ptr<VoidType> Void();
 	static std::shared_ptr<BooleanType> Boolean();
+	static std::shared_ptr<UnknownType> Unknown();
 
-	static std::shared_ptr<UnionType> Unify(const std::vector<TypePtr> types);
+	static std::shared_ptr<Type> Unify(const std::vector<TypePtr> types);
 };
 
 class UnknownType : public Type {
