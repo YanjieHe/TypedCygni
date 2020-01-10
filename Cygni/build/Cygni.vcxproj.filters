@@ -4,9 +4,6 @@
     <ClCompile Include="D:\Documents\Compiler Construction\TypedCygni\Cygni\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Documents\Compiler Construction\TypedCygni\Cygni\src\sources\Enum.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="D:\Documents\Compiler Construction\TypedCygni\Cygni\src\sources\Expression.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

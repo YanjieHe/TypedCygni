@@ -67,6 +67,7 @@ enum class Tag {
 	Private,
 	Protected,
 	Module,
+	Package,
 	Eof
 };
 
@@ -240,6 +241,8 @@ public:
 			return U"Protected";
 		case Tag::Module:
 			return U"Module";
+		case Tag::Package:
+			return U"Package";
 		case Tag::Eof:
 			return U"Eof";
 		default:
@@ -351,6 +354,8 @@ public:
 		switch (typeCode) {
 		case TypeCode::Unknown:
 			return U"Unknown";
+		case TypeCode::Void:
+			return U"Void";
 		case TypeCode::Boolean:
 			return U"Boolean";
 		case TypeCode::Byte:

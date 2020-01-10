@@ -70,10 +70,14 @@ int main(int argc, char** argv) {
 		CompileProgram("factorial.cyg", "factorial.json");
 	} catch (cygni::ArgumentException& ex) {
 		cout << cygni::utf32_to_utf8(ex.message) << endl;
+	}  catch (cygni::NotImplementedException& ex) {
+		cout << cygni::utf32_to_utf8(ex.message) << endl;
 	} catch (cygni::LexicalException& ex) {
-		cout << cygni::utf32_to_utf8(ex.message) << endl;
+		cout << "Syntax Error: (" << (ex.line + 1) << ", " << (ex.column + 1)
+			 << ") " << cygni::utf32_to_utf8(ex.message) << endl;
 	} catch (cygni::ParserException& ex) {
-		cout << cygni::utf32_to_utf8(ex.message) << endl;
+		cout << "Syntax Error: (" << (ex.line + 1) << ", " << (ex.column + 1)
+			 << ") " << cygni::utf32_to_utf8(ex.message) << endl;
 	} catch (cygni::TypeException& ex) {
 		cout << cygni::utf32_to_utf8(ex.message) << endl;
 	}

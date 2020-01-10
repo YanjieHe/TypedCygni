@@ -181,7 +181,8 @@ json AstToJsonSerialization::VisitProgram(const Program& program) {
 	for (const auto& info : program.classes.values) {
 		classesJson.push_back(VisitClassInfo(info));
 	}
-	obj["classes"] = classesJson;
+	obj["packageName"] = utf32_to_utf8(program.packageName);
+	obj["classes"]	 = classesJson;
 	return obj;
 }
 
@@ -314,12 +315,11 @@ TypePtr TypeChecker::VisitBinary(std::shared_ptr<BinaryExpression> node,
 
 TypePtr TypeChecker::VisitBlock(std::shared_ptr<BlockExpression> node,
 								ScopePtr scope) {
-	TypePtr result = Type::Void();
 	for (const auto& exp : node->expressions) {
-		result = VisitExpression(exp, scope);
+		VisitExpression(exp, scope);
 	}
-	Attach(node, result);
-	return result;
+	Attach(node, Type::Void());
+	return Type::Void();
 }
 
 TypePtr TypeChecker::Attach(ExpPtr node, TypePtr type) {
@@ -357,6 +357,9 @@ TypePtr TypeChecker::VisitExpression(ExpPtr node, ScopePtr scope) {
 	case ExpressionType::Invoke:
 		return VisitInvocation(
 			std::static_pointer_cast<InvocationExpression>(node), scope);
+	case ExpressionType::Return:
+		return VisitReturn(std::static_pointer_cast<ReturnExpression>(node),
+						   scope);
 	default:
 		throw NotImplementedException();
 	}
@@ -398,10 +401,12 @@ TypePtr TypeChecker::VisitMethodDef(const MethodDef& method,
 	for (const auto& parameter : method.parameters) {
 		scope->Put(parameter->name, parameter->type);
 	}
-	return VisitExpression(method.body, scope);
+	VisitExpression(method.body, scope);
+	return method.returnType;
 }
 
-TypePtr	TypeChecker::VisitParameter(std::shared_ptr<ParameterExpression> parameter,
+TypePtr
+	TypeChecker::VisitParameter(std::shared_ptr<ParameterExpression> parameter,
 								ScopePtr scope) {
 	auto result = scope->Get(parameter->name);
 	if (result) {
@@ -416,6 +421,7 @@ TypePtr	TypeChecker::VisitParameter(std::shared_ptr<ParameterExpression> paramet
 TypePtr TypeChecker::VisitReturn(std::shared_ptr<ReturnExpression> node,
 								 ScopePtr scope) {
 	TypePtr returnType = VisitExpression(node->value, scope);
+	Attach(node, returnType);
 	return returnType;
 }
 
@@ -426,15 +432,8 @@ TypePtr
 	auto ifTrue	= VisitExpression(node->ifTrue, scope);
 	auto ifFalse   = VisitExpression(node->ifFalse, scope);
 	if (condition->Equals(Type::Boolean())) {
-		if (ifTrue->Equals(ifFalse)) {
-			Attach(node, ifTrue);
-			return ifTrue;
-		} else {
-			auto resultType =
-				Type::Unify(std::vector<TypePtr>{ifTrue, ifFalse});
-			Attach(node, resultType);
-			return resultType;
-		}
+		Attach(node, Type::Void());
+		return Type::Void();
 	} else {
 		throw TypeException(node->condition->location,
 							U"condition type must be boolean");

@@ -9,6 +9,8 @@ Parser::Parser(std::vector<Token> tokens,
 
 Program Parser::ParseProgram() {
 	Program program(document);
+	std::u32string packageName = ParsePackageName();
+	program.packageName		   = packageName;
 	while (!IsEof()) {
 		if (Look().tag == Tag::Class) {
 			program.AddClass(ParseDefClass());
@@ -19,6 +21,12 @@ Program Parser::ParseProgram() {
 	return program;
 }
 
+std::u32string Parser::ParsePackageName() {
+	Match(Tag::Package);
+	const Token& token = Match(Tag::Identifier);
+	return token.text;
+}
+
 ExpPtr Parser::Statement() {
 	switch (Look().tag) {
 	case Tag::If:
@@ -27,6 +35,8 @@ ExpPtr Parser::Statement() {
 		return ParseVar();
 	case Tag::While:
 		return ParseWhile();
+	case Tag::Return:
+		return ParseReturn();
 	default:
 		return ParseAssign();
 	}
@@ -277,7 +287,8 @@ ExpPtr Parser::IfStatement() {
 				GetLoc(start), condition, ifTrue, chunk);
 		}
 	} else {
-		auto empty = std::make_shared<DefaultExpression>(GetLoc(Look()), Type::Void());
+		auto empty =
+			std::make_shared<DefaultExpression>(GetLoc(Look()), Type::Void());
 		return std::make_shared<ConditionalExpression>(GetLoc(start), condition,
 													   ifTrue, empty);
 	}
@@ -299,7 +310,8 @@ ExpPtr Parser::ParseVar() {
 			return std::make_shared<VariableDefinitionExpression>(
 				GetLoc(start), variable, value);
 		} else {
-			auto value	= std::make_shared<DefaultExpression>(GetLoc(Look()), Type::Unknown());
+			auto value	= std::make_shared<DefaultExpression>(GetLoc(Look()),
+																Type::Unknown());
 			auto variable = std::make_shared<ParameterExpression>(
 				GetLoc(Look()), name, type);
 			return std::make_shared<VariableDefinitionExpression>(
@@ -325,7 +337,8 @@ std::shared_ptr<VariableDefinitionExpression> Parser::ParseVarDeclaration() {
 	auto type = ParseType();
 	auto variable =
 		std::make_shared<ParameterExpression>(GetLoc(Look()), name, type);
-	auto value = std::make_shared<DefaultExpression>(GetLoc(Look()), Type::Unknown());
+	auto value =
+		std::make_shared<DefaultExpression>(GetLoc(Look()), Type::Unknown());
 	return std::make_shared<VariableDefinitionExpression>(GetLoc(start),
 														  variable, value);
 }
@@ -342,7 +355,8 @@ FieldDef Parser::ParseFieldDefinition(AccessModifier modifier, bool isStatic) {
 		auto value = ParseOr();
 		return FieldDef(GetLoc(start), modifier, isStatic, name, type, value);
 	} else {
-		auto value = std::make_shared<DefaultExpression>(GetLoc(Look()), Type::Unknown());
+		auto value = std::make_shared<DefaultExpression>(GetLoc(Look()),
+														 Type::Unknown());
 		return FieldDef(GetLoc(start), modifier, isStatic, name, type, value);
 	}
 }

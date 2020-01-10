@@ -24,9 +24,9 @@ public:
 		offset++;
 	}
 
-	Token Match(Tag tag) {
+	const Token& Match(Tag tag) {
 		if (tag == Look().tag) {
-			Token t = Look();
+			const Token& t = Look();
 			Advance();
 			return t;
 		} else {
@@ -43,6 +43,8 @@ public:
 	}
 
 	Program ParseProgram();
+
+	std::u32string ParsePackageName();
 
 	ExpPtr Statement();
 

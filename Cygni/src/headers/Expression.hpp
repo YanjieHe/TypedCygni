@@ -175,6 +175,7 @@ public:
 
 class Program {
 public:
+std::u32string packageName;
 	std::shared_ptr<SourceDocument> document;
 	Table<std::u32string, std::shared_ptr<ClassInfo>> classes;
 	explicit Program(std::shared_ptr<SourceDocument> document);
