@@ -28,26 +28,32 @@ void WriteText(std::string path, std::string text) {
 void CompileProgram(std::string path, std::string outputJsonPath) {
 	std::ifstream stream(path);
 	if (stream) {
+		/* pass 1: read code in text format */
 		std::string code{(std::istreambuf_iterator<char>(stream)),
 						 std::istreambuf_iterator<char>()};
 		std::u32string utf32Code = cygni::utf8_to_utf32(code);
 		cout << cygni::utf32_to_utf8(utf32Code) << endl;
 		cout << "Successfully load file!" << endl;
+
+		/* pass 2: tokenize code */
 		cygni::Lexer lexer(utf32Code);
 		auto tokens = lexer.ReadAll();
 		cout << "Complete lexical analysis!" << endl;
 		ViewTokens(tokens);
 
+		/* pass 3: parse the code and create an abstract syntax tree */
 		auto document = std::make_shared<cygni::SourceDocument>(path, path);
 		cygni::Parser parser(tokens, document);
 		auto program = parser.ParseProgram();
 		cout << "Complete Syntax Analysis!" << endl;
 
+		/* pass 4: check and infer types of each node */
 		cygni::TypeChecker typeChecker;
 		cygni::ScopePtr scope = std::make_shared<cygni::Scope>();
 		typeChecker.VisitProgram(program, scope);
 		cout << "Complete Type Checking!" << endl;
 
+		/* pass 5: convert the abstract syntax tree to json format */
 		cygni::AstToJsonSerialization astToJson;
 		auto jsonObj  = astToJson.VisitProgram(program);
 		auto jsonText = jsonObj.dump();
