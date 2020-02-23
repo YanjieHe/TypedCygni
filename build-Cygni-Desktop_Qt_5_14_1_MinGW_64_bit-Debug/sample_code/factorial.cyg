@@ -13,4 +13,12 @@ module App
             return n * Factorial(n - 1)
         }
     }
+
+    def Choose(x: Int): Boolean
+    {
+        if (x != 5) {
+            return true
+        }
+        return false
+    }
 }

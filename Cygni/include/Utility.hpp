@@ -20,9 +20,9 @@ inline static bool IsWhiteSpace(char32_t c) {
 
 int HexToInt(std::u32string hex);
 
-std::string utf32_to_utf8(const std::u32string& utf32);
+std::string UTF32ToUTF8(const std::u32string& utf32);
 
-std::u32string utf8_to_utf32(const std::string& utf8);
+std::u32string UTF8ToUTF32(const std::string& utf8);
 
 template <typename TKey, typename TValue> class Table {
 public:

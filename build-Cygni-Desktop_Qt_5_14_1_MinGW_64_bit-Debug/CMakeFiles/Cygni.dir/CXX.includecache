@@ -468,19 +468,27 @@ iostream
 string
 -
 
-D:/Documents/Compiler Construction/TypedCygni/Cygni/src/Expression.cpp
-Expression.hpp
-D:/Documents/Compiler Construction/TypedCygni/Cygni/src/Expression.hpp
-algorithm
+D:/Documents/Compiler Construction/TypedCygni/Cygni/src/Lexer.cpp
+Lexer.hpp
+D:/Documents/Compiler Construction/TypedCygni/Cygni/src/Lexer.hpp
+iostream
+-
+unordered_set
 -
 
 D:/Documents/Compiler Construction/TypedCygni/Cygni/src/Parser.cpp
 Parser.hpp
 D:/Documents/Compiler Construction/TypedCygni/Cygni/src/Parser.hpp
 
-D:/Documents/Compiler Construction/TypedCygni/Cygni/src/Scope.cpp
-Scope.hpp
-D:/Documents/Compiler Construction/TypedCygni/Cygni/src/Scope.hpp
+D:/Documents/Compiler Construction/TypedCygni/Cygni/src/Utility.cpp
+Utility.hpp
+D:/Documents/Compiler Construction/TypedCygni/Cygni/src/Utility.hpp
+Exception.hpp
+D:/Documents/Compiler Construction/TypedCygni/Cygni/src/Exception.hpp
+codecvt
+-
+locale
+-
 
 D:/Documents/Compiler Construction/TypedCygni/Cygni/src/Visitor.cpp
 Visitor.hpp

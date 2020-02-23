@@ -3,4 +3,7 @@ module App {
     {
         return x + y
     }
+
+    @Extern(libName = "libtest", EntryPoint = "print")
+    private def Print(text: String): Void
 }
