@@ -1,0 +1,1 @@
+/usr/bin/c++     CMakeFiles/Cygni.dir/test.cpp.o CMakeFiles/Cygni.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Lexer.cpp.o CMakeFiles/Cygni.dir/home/heyanjie/Documents/Projects/TypedCygni/Cygni/src/sources/Token.cpp.o  -o Cygni 

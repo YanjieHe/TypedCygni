@@ -1,3 +1,0 @@
-/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/cmake-build-test/CMakeFiles/rebuild_cache.dir
-/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/cmake-build-test/CMakeFiles/Cygni_Test.dir
-/home/heyanjie/Documents/Projects/TypedCygni/Cygni/test/cmake-build-test/CMakeFiles/edit_cache.dir

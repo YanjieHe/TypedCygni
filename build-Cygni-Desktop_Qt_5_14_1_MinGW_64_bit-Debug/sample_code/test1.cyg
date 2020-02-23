@@ -1,0 +1,6 @@
+module App {
+    def Add(x: Int, y: Int): Int
+    {
+        return x + y
+    }
+}

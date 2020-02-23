@@ -1,4 +1,0 @@
-D:/Documents/Compiler Construction/TypedCygni/Cygni/build/CMakeFiles/Cygni.dir
-D:/Documents/Compiler Construction/TypedCygni/Cygni/build/CMakeFiles/RUN_TESTS.dir
-D:/Documents/Compiler Construction/TypedCygni/Cygni/build/CMakeFiles/ALL_BUILD.dir
-D:/Documents/Compiler Construction/TypedCygni/Cygni/build/CMakeFiles/ZERO_CHECK.dir

@@ -1,0 +1,28 @@
+def Add(x: Int, y: Int): Int
+{
+    return x + y;
+}
+
+class Point
+{
+    var x: Int;
+    var y: Int;
+
+    def Move(dx: Int, dy: Int): Void
+    {
+        this.x = this.x + dx;
+        this.y = this.y + dy;
+    }
+}
+
+module Point
+{
+    def Create(x: Int, y: Int): Point
+    {
+        return new Point
+        {
+            x = x,
+            y = y
+        };
+    }
+}
