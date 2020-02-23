@@ -70,9 +70,13 @@ public:
 
   std::shared_ptr<VariableDefinitionExpression> ParseVarDeclaration();
 
-  FieldDef ParseFieldDefinition(AccessModifier modifier, bool isStatic);
+  FieldDef ParseFieldDefinition(AccessModifier modifier,
+                                std::vector<AnnotationInfo> annotations,
+                                bool isStatic);
 
-  MethodDef ParseMethodDefinition(AccessModifier modifier, bool isStatic);
+  MethodDef ParseMethodDefinition(AccessModifier modifier,
+                                  std::vector<AnnotationInfo> annotations,
+                                  bool isStatic);
 
   std::shared_ptr<ParameterExpression> ParseParameter();
 
@@ -91,6 +95,8 @@ public:
   AccessModifier ParseAccess();
 
   AnnotationInfo ParseAnnotation();
+
+  std::vector<AnnotationInfo> ParseAnnotationList();
 
   std::vector<ExpPtr> ParseArguments();
 };

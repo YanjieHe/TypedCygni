@@ -353,8 +353,8 @@
                         ],
                         "id": 29,
                         "location": {
-                            "endCol": 2,
-                            "endLine": 24,
+                            "endCol": 6,
+                            "endLine": 25,
                             "startCol": 6,
                             "startLine": 18
                         },
@@ -363,8 +363,8 @@
                     },
                     "isStatic": true,
                     "location": {
-                        "endCol": 2,
-                        "endLine": 24,
+                        "endCol": 6,
+                        "endLine": 25,
                         "startCol": 8,
                         "startLine": 17
                     },
@@ -381,6 +381,42 @@
                             "name": "x",
                             "nodeType": "Parameter",
                             "type": "Int32"
+                        }
+                    ]
+                },
+                {
+                    "accessModifier": "Private",
+                    "body": {
+                        "id": 33,
+                        "location": {
+                            "endCol": 2,
+                            "endLine": 27,
+                            "startCol": 2,
+                            "startLine": 27
+                        },
+                        "nodeType": "Default",
+                        "type": "Void"
+                    },
+                    "isStatic": true,
+                    "location": {
+                        "endCol": 2,
+                        "endLine": 27,
+                        "startCol": 16,
+                        "startLine": 26
+                    },
+                    "name": "Print",
+                    "parameters": [
+                        {
+                            "id": 32,
+                            "location": {
+                                "endCol": 36,
+                                "endLine": 26,
+                                "startCol": 27,
+                                "startLine": 26
+                            },
+                            "name": "text",
+                            "nodeType": "Parameter",
+                            "type": "String"
                         }
                     ]
                 }

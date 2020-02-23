@@ -95,17 +95,29 @@ public:
                                ExpPtr value);
 };
 
+class AnnotationInfo {
+public:
+  SourceLocation location;
+  std::u32string name;
+  std::vector<ExpPtr> arguments;
+
+  AnnotationInfo(SourceLocation location, std::u32string name,
+                 std::vector<ExpPtr> arguments);
+};
+
 class FieldDef {
 public:
   SourceLocation location;
   AccessModifier modifier;
   bool isStatic;
+  std::vector<AnnotationInfo> annotations;
   std::u32string name;
   TypePtr type;
   ExpPtr value;
   FieldDef() = default;
   FieldDef(SourceLocation location, AccessModifier modifier, bool isStatic,
-           std::u32string name, TypePtr type, ExpPtr value);
+           std::vector<AnnotationInfo> annotations, std::u32string name,
+           TypePtr type, ExpPtr value);
 };
 
 class MethodDef {
@@ -113,6 +125,7 @@ public:
   SourceLocation location;
   AccessModifier modifier;
   bool isStatic;
+  std::vector<AnnotationInfo> annotations;
   std::u32string name;
   std::vector<std::shared_ptr<ParameterExpression>> parameters;
   TypePtr returnType;
@@ -121,7 +134,7 @@ public:
 
   MethodDef() = default;
   MethodDef(SourceLocation location, AccessModifier modifier, bool isStatic,
-            std::u32string name,
+            std::vector<AnnotationInfo> annotations, std::u32string name,
             std::vector<std::shared_ptr<ParameterExpression>> parameters,
             TypePtr returnType, ExpPtr body);
 };
@@ -183,14 +196,6 @@ public:
   void AddClass(std::shared_ptr<ClassInfo> info);
 
   void AddModule(std::shared_ptr<ClassInfo> info);
-};
-
-class AnnotationInfo {
-public:
-  std::u32string name;
-  std::vector<ExpPtr> arguments;
-
-  AnnotationInfo(std::u32string name, std::vector<ExpPtr> arguments);
 };
 
 } // namespace cygni

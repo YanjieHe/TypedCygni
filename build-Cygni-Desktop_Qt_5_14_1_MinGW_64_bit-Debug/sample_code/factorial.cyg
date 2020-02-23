@@ -21,4 +21,7 @@ module App
         }
         return false
     }
+    
+    @Extern("libtest", "print")
+    private def Print(text: String): Void
 }

@@ -187,20 +187,8 @@ ExpPtr Parser::ParsePostfix() {
     const Token &start = Look();
 
     if (Look().tag == Tag::LeftParenthesis) {
-      vector<ExpPtr> arguments;
-      Match(Tag::LeftParenthesis);
-      if (Look().tag == Tag::RightParenthesis) {
-        Match(Tag::RightParenthesis);
-        x = std::make_shared<InvocationExpression>(GetLoc(start), x, arguments);
-      } else {
-        arguments.push_back(ParseOr());
-        while (!IsEof() && Look().tag != Tag::RightParenthesis) {
-          Match(Tag::Comma);
-          arguments.push_back(ParseOr());
-        }
-        Match(Tag::RightParenthesis);
-        x = std::make_shared<InvocationExpression>(GetLoc(start), x, arguments);
-      }
+      vector<ExpPtr> arguments = ParseArguments();
+      x = std::make_shared<InvocationExpression>(GetLoc(start), x, arguments);
     } else if (Look().tag == Tag::LeftBracket) {
       // TO DO
     } else if (Look().tag == Tag::Dot) {
@@ -339,7 +327,9 @@ std::shared_ptr<VariableDefinitionExpression> Parser::ParseVarDeclaration() {
                                                         value);
 }
 
-FieldDef Parser::ParseFieldDefinition(AccessModifier modifier, bool isStatic) {
+FieldDef Parser::ParseFieldDefinition(AccessModifier modifier,
+                                      std::vector<AnnotationInfo> annotations,
+                                      bool isStatic) {
   const Token &start = Look();
   Match(Tag::Var);
   Token t = Match(Tag::Identifier);
@@ -349,14 +339,17 @@ FieldDef Parser::ParseFieldDefinition(AccessModifier modifier, bool isStatic) {
   if (Look().tag == Tag::Assign) {
     Advance();
     auto value = ParseOr();
-    return FieldDef(GetLoc(start), modifier, isStatic, name, type, value);
+    return FieldDef(GetLoc(start), modifier, isStatic, annotations, name, type,
+                    value);
   } else {
     auto value =
         std::make_shared<DefaultExpression>(GetLoc(Look()), Type::Unknown());
-    return FieldDef(GetLoc(start), modifier, isStatic, name, type, value);
+    return FieldDef(GetLoc(start), modifier, isStatic, annotations, name, type,
+                    value);
   }
 }
 MethodDef Parser::ParseMethodDefinition(AccessModifier modifier,
+                                        std::vector<AnnotationInfo> annotations,
                                         bool isStatic) {
   const Token &start = Look();
   Match(Tag::Def);
@@ -374,9 +367,16 @@ MethodDef Parser::ParseMethodDefinition(AccessModifier modifier,
   Match(Tag::RightParenthesis);
   Match(Tag::Colon);
   auto returnType = ParseType();
-  auto body = ParseBlock();
-  return MethodDef(GetLoc(start), modifier, isStatic, name, parameters,
-                   returnType, body);
+  if (Look().tag == Tag::LeftBrace) {
+    auto body = ParseBlock();
+    return MethodDef(GetLoc(start), modifier, isStatic, annotations, name,
+                     parameters, returnType, body);
+  } else {
+    auto empty =
+        std::make_shared<DefaultExpression>(GetLoc(Look()), returnType);
+    return MethodDef(GetLoc(start), modifier, isStatic, annotations, name,
+                     parameters, returnType, empty);
+  }
 }
 
 std::shared_ptr<ParameterExpression> Parser::ParseParameter() {
@@ -439,15 +439,16 @@ std::shared_ptr<ClassInfo> Parser::ParseDefClass() {
   auto info = std::make_shared<ClassInfo>(GetLoc(start), false, name);
   Match(Tag::LeftBrace);
   while (!IsEof() && Look().tag != Tag::RightBrace) {
+    std::vector<AnnotationInfo> annotations = ParseAnnotationList();
     auto access = ParseAccess();
 
     if (Look().tag == Tag::Var) {
       // ParseVar field: Type
-      auto field = ParseFieldDefinition(access, false);
+      auto field = ParseFieldDefinition(access, annotations, false);
       info->fields.Add(field.name, field);
     } else if (Look().tag == Tag::Def) {
       // def method(args..) { }
-      auto method = ParseMethodDefinition(access, false);
+      auto method = ParseMethodDefinition(access, annotations, false);
       info->methods.Add(method.name, method);
     } else {
       throw ParserException(Look().line, Look().column, U"unexpected token");
@@ -464,15 +465,16 @@ std::shared_ptr<ClassInfo> Parser::ParseDefModule() {
   auto info = std::make_shared<ClassInfo>(GetLoc(start), true, name);
   Match(Tag::LeftBrace);
   while (!IsEof() && Look().tag != Tag::RightBrace) {
+    std::vector<AnnotationInfo> annotations = ParseAnnotationList();
     auto access = ParseAccess();
 
     if (Look().tag == Tag::Var) {
       // ParseVar field: Type
-      auto field = ParseFieldDefinition(access, true);
+      auto field = ParseFieldDefinition(access, annotations, true);
       info->fields.Add(field.name, field);
     } else if (Look().tag == Tag::Def) {
       // def method(args..) { }
-      auto method = ParseMethodDefinition(access, true);
+      auto method = ParseMethodDefinition(access, annotations, true);
       info->methods.Add(method.name, method);
     } else {
       throw ParserException(Look().line, Look().column, U"unexpected token");
@@ -497,25 +499,32 @@ AccessModifier Parser::ParseAccess() {
 AnnotationInfo Parser::ParseAnnotation() {
   const Token &start = Look();
   Match(Tag::At);
-  auto name = Match(Tag::Identifier);
+  auto name = Match(Tag::Identifier).text;
+  auto arguments = ParseArguments();
+  return AnnotationInfo(GetLoc(start), name, arguments);
+}
+
+std::vector<AnnotationInfo> Parser::ParseAnnotationList() {
+  std::vector<AnnotationInfo> annotations;
+  while (Look().tag == Tag::At) {
+    annotations.push_back(ParseAnnotation());
+  }
+  return annotations;
 }
 
 std::vector<ExpPtr> Parser::ParseArguments() {
-  // TO DO
-  //  vector<ExpPtr> arguments;
-  //  Match(Tag::LeftParenthesis);
-  //  if (Look().tag == Tag::RightParenthesis) {
-  //    Match(Tag::RightParenthesis);
-  //    x = std::make_shared<InvocationExpression>(GetLoc(start), x, arguments);
-  //  } else {
-  //    arguments.push_back(ParseOr());
-  //    while (!IsEof() && Look().tag != Tag::RightParenthesis) {
-  //      Match(Tag::Comma);
-  //      arguments.push_back(ParseOr());
-  //    }
-  //    Match(Tag::RightParenthesis);
-  //    x = std::make_shared<InvocationExpression>(GetLoc(start), x, arguments);
-  //  }
-  //  return arguments;
+  vector<ExpPtr> arguments;
+  Match(Tag::LeftParenthesis);
+  if (Look().tag == Tag::RightParenthesis) {
+    Match(Tag::RightParenthesis);
+  } else {
+    arguments.push_back(ParseOr());
+    while (!IsEof() && Look().tag != Tag::RightParenthesis) {
+      Match(Tag::Comma);
+      arguments.push_back(ParseOr());
+    }
+    Match(Tag::RightParenthesis);
+  }
+  return arguments;
 }
 } // namespace cygni

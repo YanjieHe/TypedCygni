@@ -73,18 +73,19 @@ VariableDefinitionExpression::VariableDefinitionExpression(
       variable{variable}, value{value} {}
 
 FieldDef::FieldDef(SourceLocation location, AccessModifier modifier,
-                   bool isStatic, std::u32string name, TypePtr type,
-                   ExpPtr value)
-    : location{location}, modifier{modifier}, isStatic{isStatic}, name{name},
-      type{type}, value{value} {}
+                   bool isStatic, std::vector<AnnotationInfo> annotations,
+                   std::u32string name, TypePtr type, ExpPtr value)
+    : location{location}, modifier{modifier}, isStatic{isStatic},
+      annotations{annotations}, name{name}, type{type}, value{value} {}
 
 MethodDef::MethodDef(
     SourceLocation location, AccessModifier modifier, bool isStatic,
-    std::u32string name,
+    std::vector<AnnotationInfo> annotations, std::u32string name,
     std::vector<std::shared_ptr<ParameterExpression>> parameters,
     TypePtr returnType, ExpPtr body)
-    : location{location}, modifier{modifier}, isStatic{isStatic}, name{name},
-      parameters{parameters}, returnType{returnType}, body{body} {
+    : location{location}, modifier{modifier}, isStatic{isStatic},
+      annotations{annotations}, name{name}, parameters{parameters},
+      returnType{returnType}, body{body} {
   std::vector<TypePtr> parameterTypes(parameters.size());
   std::transform(parameters.begin(), parameters.end(), parameterTypes.begin(),
                  [](const std::shared_ptr<ParameterExpression> &p) -> TypePtr {
@@ -119,8 +120,8 @@ void Program::AddModule(std::shared_ptr<ClassInfo> info) {
   classes.Add(info->name, info);
 }
 
-AnnotationInfo::AnnotationInfo(std::u32string name,
+AnnotationInfo::AnnotationInfo(SourceLocation location, std::u32string name,
                                std::vector<ExpPtr> arguments)
-    : name{name}, arguments{arguments} {}
+    : location{location}, name{name}, arguments{arguments} {}
 
 } // namespace cygni
