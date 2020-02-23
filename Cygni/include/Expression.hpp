@@ -139,6 +139,14 @@ public:
             TypePtr returnType, ExpPtr body);
 };
 
+class MemberAccessExpression : public Expression {
+public:
+  ExpPtr object;
+  std::u32string field;
+  MemberAccessExpression(SourceLocation location, ExpPtr object,
+                         std::u32string field);
+};
+
 class MethodCallExpression : public Expression {
 public:
   ExpPtr object;

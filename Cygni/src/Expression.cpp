@@ -124,4 +124,10 @@ AnnotationInfo::AnnotationInfo(SourceLocation location, std::u32string name,
                                std::vector<ExpPtr> arguments)
     : location{location}, name{name}, arguments{arguments} {}
 
+MemberAccessExpression::MemberAccessExpression(SourceLocation location,
+                                               ExpPtr object,
+                                               std::u32string field)
+    : Expression(location, ExpressionType::MemberAccess), object{object},
+      field{field} {}
+
 } // namespace cygni

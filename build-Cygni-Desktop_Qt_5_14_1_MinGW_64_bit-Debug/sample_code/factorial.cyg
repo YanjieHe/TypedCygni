@@ -2,14 +2,18 @@ package ConsoleApplication
 
 module IO
 {
-    @Extern("libtest", "print")
-    private def Print(text: String): Void
+    @Extern("libtest", "print_int")
+    private def PrintInt(i: Int): Void
+
+    @Extern("libtest", "print_text")
+    private def PrintText(s: String): Void
 }
 
 module App
 {
     def Factorial(n: Int): Int
     {
+        IO.Print(n)
         if (n == 0)
         {
             return 1

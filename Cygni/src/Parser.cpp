@@ -192,7 +192,9 @@ ExpPtr Parser::ParsePostfix() {
     } else if (Look().tag == Tag::LeftBracket) {
       // TO DO
     } else if (Look().tag == Tag::Dot) {
-      // TO DO
+      Match(Tag::Dot);
+      auto name = Match(Tag::Identifier).text;
+      x = std::make_shared<MemberAccessExpression>(GetLoc(start), x, name);
     }
   }
   return x;
