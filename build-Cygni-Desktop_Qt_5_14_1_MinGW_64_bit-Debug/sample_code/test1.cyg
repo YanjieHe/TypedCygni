@@ -1,9 +1,10 @@
-module App {
+module App
+{
     def Add(x: Int, y: Int): Int
     {
         return x + y
     }
 
-    @Extern(libName = "libtest", EntryPoint = "print")
+    @Extern("libtest", "print")
     private def Print(text: String): Void
 }

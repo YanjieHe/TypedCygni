@@ -6,95 +6,93 @@
 namespace cygni {
 class Parser {
 public:
-	std::vector<Token> tokens;
-	std::shared_ptr<SourceDocument> document;
-	int offset;
+  std::vector<Token> tokens;
+  std::shared_ptr<SourceDocument> document;
+  int offset;
 
-	Parser(std::vector<Token> tokens, std::shared_ptr<SourceDocument> document);
+  Parser(std::vector<Token> tokens, std::shared_ptr<SourceDocument> document);
 
-	inline bool IsEof() const {
-		return Look().tag == Tag::Eof;
-	}
+  inline bool IsEof() const { return Look().tag == Tag::Eof; }
 
-	inline const Token& Look() const {
-		return tokens[offset];
-	}
+  inline const Token &Look() const { return tokens[offset]; }
 
-	inline void Advance() {
-		offset++;
-	}
+  inline void Advance() { offset++; }
 
-	const Token& Match(Tag tag) {
-		if (tag == Look().tag) {
-			const Token& t = Look();
-			Advance();
-			return t;
-		} else {
-			std::u32string message = U"expecting '" + Enum<Tag>::ToString(tag) +
-									 U"', got '" +
-									 Enum<Tag>::ToString(Look().tag) + U"'";
-			throw ParserException(Look().line, Look().column, message);
-		}
-	}
+  const Token &Match(Tag tag) {
+    if (tag == Look().tag) {
+      const Token &t = Look();
+      Advance();
+      return t;
+    } else {
+      std::u32string message = U"expecting '" + Enum<Tag>::ToString(tag) +
+                               U"', got '" + Enum<Tag>::ToString(Look().tag) +
+                               U"'";
+      throw ParserException(Look().line, Look().column, message);
+    }
+  }
 
-	inline SourceLocation GetLoc(const Token& token) const {
-		return SourceLocation{document, token.line, token.column, Look().line,
-							  Look().column};
-	}
+  inline SourceLocation GetLoc(const Token &token) const {
+    return SourceLocation{document, token.line, token.column, Look().line,
+                          Look().column};
+  }
 
-	Program ParseProgram();
+  Program ParseProgram();
 
-	std::u32string ParsePackageName();
+  std::u32string ParsePackageName();
 
-	ExpPtr Statement();
+  ExpPtr Statement();
 
-	ExpPtr ParseAssign();
+  ExpPtr ParseAssign();
 
-	ExpPtr ParseOr();
+  ExpPtr ParseOr();
 
-	ExpPtr ParseAnd();
+  ExpPtr ParseAnd();
 
-	ExpPtr ParseEquality();
+  ExpPtr ParseEquality();
 
-	ExpPtr ParseRelation();
+  ExpPtr ParseRelation();
 
-	ExpPtr ParseExpr();
+  ExpPtr ParseExpr();
 
-	ExpPtr ParseTerm();
+  ExpPtr ParseTerm();
 
-	ExpPtr ParseUnary();
+  ExpPtr ParseUnary();
 
-	ExpPtr ParsePostfix();
+  ExpPtr ParsePostfix();
 
-	ExpPtr ParseFactor();
+  ExpPtr ParseFactor();
 
-	ExpPtr ParseBlock();
+  ExpPtr ParseBlock();
 
-	ExpPtr IfStatement();
+  ExpPtr IfStatement();
 
-	ExpPtr ParseVar();
+  ExpPtr ParseVar();
 
-	std::shared_ptr<VariableDefinitionExpression> ParseVarDeclaration();
+  std::shared_ptr<VariableDefinitionExpression> ParseVarDeclaration();
 
-	FieldDef ParseFieldDefinition(AccessModifier modifier, bool isStatic);
+  FieldDef ParseFieldDefinition(AccessModifier modifier, bool isStatic);
 
-	MethodDef ParseMethodDefinition(AccessModifier modifier, bool isStatic);
+  MethodDef ParseMethodDefinition(AccessModifier modifier, bool isStatic);
 
-	std::shared_ptr<ParameterExpression> ParseParameter();
+  std::shared_ptr<ParameterExpression> ParseParameter();
 
-	std::shared_ptr<Type> ParseType();
+  std::shared_ptr<Type> ParseType();
 
-	ExpPtr ParseReturn();
+  ExpPtr ParseReturn();
 
-	std::vector<std::shared_ptr<Type>> ParseTypeArguments();
+  std::vector<std::shared_ptr<Type>> ParseTypeArguments();
 
-	ExpPtr ParseWhile();
+  ExpPtr ParseWhile();
 
-	std::shared_ptr<ClassInfo> ParseDefClass();
+  std::shared_ptr<ClassInfo> ParseDefClass();
 
-	std::shared_ptr<ClassInfo> ParseDefModule();
+  std::shared_ptr<ClassInfo> ParseDefModule();
 
-	AccessModifier ParseAccess();
+  AccessModifier ParseAccess();
+
+  AnnotationInfo ParseAnnotation();
+
+  std::vector<ExpPtr> ParseArguments();
 };
 } // namespace cygni
 #endif // CYGNI_PARSER_HPP
