@@ -1,5 +1,11 @@
 package ConsoleApplication
 
+module IO
+{
+    @Extern("libtest", "print")
+    private def Print(text: String): Void
+}
+
 module App
 {
     def Factorial(n: Int): Int
@@ -21,7 +27,4 @@ module App
         }
         return false
     }
-    
-    @Extern("libtest", "print")
-    private def Print(text: String): Void
 }

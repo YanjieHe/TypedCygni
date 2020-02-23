@@ -61,6 +61,7 @@ json AstToJsonSerialization::VisitFieldDef(const FieldDef &field) {
   obj["location"] = VisitSourceLocation(field.location);
   obj["accessModifier"] =
       UTF32ToUTF8(Enum<AccessModifier>::ToString(field.modifier));
+  obj["annotations"] = VisitAnnotationList(field.annotations);
   obj["name"] = UTF32ToUTF8(field.name);
   obj["value"] = VisitExpression(field.value);
   return obj;
@@ -73,6 +74,7 @@ json AstToJsonSerialization::VisitMethodDef(const MethodDef &method) {
   obj["location"] = VisitSourceLocation(method.location);
   obj["accessModifier"] =
       UTF32ToUTF8(Enum<AccessModifier>::ToString(method.modifier));
+  obj["annotations"] = VisitAnnotationList(method.annotations);
   obj["name"] = UTF32ToUTF8(method.name);
 
   std::vector<json> parametersJson;
@@ -193,6 +195,19 @@ std::vector<json> AstToJsonSerialization::VisitArgumentList(
     argumentsJson.push_back(VisitExpression(argument));
   }
   return argumentsJson;
+}
+
+std::vector<json> AstToJsonSerialization::VisitAnnotationList(
+    const std::vector<AnnotationInfo> &annotations) {
+  std::vector<json> annotationList;
+  for (const auto &annotation : annotations) {
+    json obj;
+    obj["location"] = VisitSourceLocation(annotation.location);
+    obj["name"] = UTF32ToUTF8(annotation.name);
+    obj["arguments"] = VisitArgumentList(annotation.arguments);
+    annotationList.push_back(obj);
+  }
+  return annotationList;
 }
 
 // void LocalVariableCollector::VisitProgram(Program& program) {

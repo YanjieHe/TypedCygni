@@ -8,22 +8,24 @@ using json = nlohmann::json;
 
 class AstToJsonSerialization {
 public:
-	json VisitSourceLocation(SourceLocation location);
-	json VisitBinary(std::shared_ptr<BinaryExpression> node);
-	json VisitBlock(std::shared_ptr<BlockExpression> node);
-	json VisitExpression(ExpPtr node);
-	json VisitConstant(std::shared_ptr<ConstantExpression> node);
-	json VisitClassInfo(std::shared_ptr<ClassInfo> info);
-	json VisitFieldDef(const FieldDef& field);
-	json VisitMethodDef(const MethodDef& method);
-	json VisitParameter(std::shared_ptr<ParameterExpression> parameter);
-	json VisitReturn(std::shared_ptr<ReturnExpression> node);
-	json VisitConditional(std::shared_ptr<ConditionalExpression> node);
-	json VisitDefault(std::shared_ptr<DefaultExpression> node);
-	json VisitInvocation(std::shared_ptr<InvocationExpression> node);
-	void AttachNodeInformation(json& obj, ExpPtr node);
-	json VisitProgram(const Program& program);
-	std::vector<json> VisitArgumentList(const std::vector<ExpPtr>& arguments);
+  json VisitSourceLocation(SourceLocation location);
+  json VisitBinary(std::shared_ptr<BinaryExpression> node);
+  json VisitBlock(std::shared_ptr<BlockExpression> node);
+  json VisitExpression(ExpPtr node);
+  json VisitConstant(std::shared_ptr<ConstantExpression> node);
+  json VisitClassInfo(std::shared_ptr<ClassInfo> info);
+  json VisitFieldDef(const FieldDef &field);
+  json VisitMethodDef(const MethodDef &method);
+  json VisitParameter(std::shared_ptr<ParameterExpression> parameter);
+  json VisitReturn(std::shared_ptr<ReturnExpression> node);
+  json VisitConditional(std::shared_ptr<ConditionalExpression> node);
+  json VisitDefault(std::shared_ptr<DefaultExpression> node);
+  json VisitInvocation(std::shared_ptr<InvocationExpression> node);
+  void AttachNodeInformation(json &obj, ExpPtr node);
+  json VisitProgram(const Program &program);
+  std::vector<json> VisitArgumentList(const std::vector<ExpPtr> &arguments);
+  std::vector<json>
+  VisitAnnotationList(const std::vector<AnnotationInfo> &annotations);
 };
 
 // class LocalVariableCollector {
@@ -36,45 +38,50 @@ public:
 
 class TypeChecker {
 public:
-	class Rule {
-	public:
-		std::u32string functionName;
-		std::vector<TypePtr> parameters;
-		TypePtr returnType;
+  class Rule {
+  public:
+    std::u32string functionName;
+    std::vector<TypePtr> parameters;
+    TypePtr returnType;
 
-		Rule(std::u32string functionName, std::vector<TypePtr> parameters, TypePtr returnType);
-	};
+    Rule(std::u32string functionName, std::vector<TypePtr> parameters,
+         TypePtr returnType);
+  };
 
-	class RuleSet {
-	public:
-		std::unordered_map<std::u32string, std::vector<Rule>> rules;
+  class RuleSet {
+  public:
+    std::unordered_map<std::u32string, std::vector<Rule>> rules;
 
-		RuleSet() = default;
+    RuleSet() = default;
 
-		void Add(std::u32string functionName,
-						std::vector<TypePtr> parameters, TypePtr returnType);
-		
-		std::optional<TypePtr> Match(std::u32string functionName, std::vector<TypePtr> parameters);
-	};
+    void Add(std::u32string functionName, std::vector<TypePtr> parameters,
+             TypePtr returnType);
 
-	RuleSet ruleSet;
+    std::optional<TypePtr> Match(std::u32string functionName,
+                                 std::vector<TypePtr> parameters);
+  };
 
-	TypeChecker();
+  RuleSet ruleSet;
 
-	TypePtr VisitBinary(std::shared_ptr<BinaryExpression> node, ScopePtr scope);
-	TypePtr VisitBlock(std::shared_ptr<BlockExpression> node, ScopePtr scope);
-	TypePtr VisitExpression(ExpPtr node, ScopePtr scope);
-	TypePtr VisitConstant(std::shared_ptr<ConstantExpression> node);
-	TypePtr VisitClassInfo(std::shared_ptr<ClassInfo> info, ScopePtr outerScope);
-	TypePtr VisitFieldDef(const FieldDef& field, ScopePtr scope);
-	TypePtr VisitMethodDef(const MethodDef& method, ScopePtr outerScope);
-	TypePtr VisitParameter(std::shared_ptr<ParameterExpression> parameter, ScopePtr scope);
-	TypePtr VisitReturn(std::shared_ptr<ReturnExpression> node, ScopePtr scope);
-	TypePtr VisitConditional(std::shared_ptr<ConditionalExpression> node, ScopePtr scope);
-	TypePtr VisitDefault(std::shared_ptr<DefaultExpression> node);
-	TypePtr VisitInvocation(std::shared_ptr<InvocationExpression> node, ScopePtr scope);
-	void VisitProgram(const Program& program, ScopePtr scope);
-	TypePtr Attach(ExpPtr node, TypePtr type);
+  TypeChecker();
+
+  TypePtr VisitBinary(std::shared_ptr<BinaryExpression> node, ScopePtr scope);
+  TypePtr VisitBlock(std::shared_ptr<BlockExpression> node, ScopePtr scope);
+  TypePtr VisitExpression(ExpPtr node, ScopePtr scope);
+  TypePtr VisitConstant(std::shared_ptr<ConstantExpression> node);
+  TypePtr VisitClassInfo(std::shared_ptr<ClassInfo> info, ScopePtr outerScope);
+  TypePtr VisitFieldDef(const FieldDef &field, ScopePtr scope);
+  TypePtr VisitMethodDef(const MethodDef &method, ScopePtr outerScope);
+  TypePtr VisitParameter(std::shared_ptr<ParameterExpression> parameter,
+                         ScopePtr scope);
+  TypePtr VisitReturn(std::shared_ptr<ReturnExpression> node, ScopePtr scope);
+  TypePtr VisitConditional(std::shared_ptr<ConditionalExpression> node,
+                           ScopePtr scope);
+  TypePtr VisitDefault(std::shared_ptr<DefaultExpression> node);
+  TypePtr VisitInvocation(std::shared_ptr<InvocationExpression> node,
+                          ScopePtr scope);
+  void VisitProgram(const Program &program, ScopePtr scope);
+  TypePtr Attach(ExpPtr node, TypePtr type);
 };
 
 } // namespace cygni
