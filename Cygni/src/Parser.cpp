@@ -241,6 +241,8 @@ ExpPtr Parser::ParseFactor() {
     Advance();
     return std::make_shared<ParameterExpression>(
         GetLoc(start), name, std::make_shared<UnknownType>());
+  } else if (Look().tag == Tag::New) {
+    return ParseNewExpression();
   } else {
     throw ParserException(Look().line, Look().column, U"factor");
   }
@@ -439,7 +441,7 @@ std::shared_ptr<ClassInfo> Parser::ParseDefClass() {
   const Token &start = Look();
   Match(Tag::Class);
   auto name = Match(Tag::Identifier).text;
-  auto info = std::make_shared<ClassInfo>(GetLoc(start), false, name);
+  auto info = std::make_shared<ClassInfo>(GetLoc(start), name);
   Match(Tag::LeftBrace);
   while (!IsEof() && Look().tag != Tag::RightBrace) {
     std::vector<AnnotationInfo> annotations = ParseAnnotationList();
@@ -461,11 +463,11 @@ std::shared_ptr<ClassInfo> Parser::ParseDefClass() {
   return info;
 }
 
-std::shared_ptr<ClassInfo> Parser::ParseDefModule() {
+std::shared_ptr<ModuleInfo> Parser::ParseDefModule() {
   const Token &start = Look();
   Match(Tag::Module);
   auto name = Match(Tag::Identifier).text;
-  auto info = std::make_shared<ClassInfo>(GetLoc(start), true, name);
+  auto info = std::make_shared<ModuleInfo>(GetLoc(start), name);
   Match(Tag::LeftBrace);
   while (!IsEof() && Look().tag != Tag::RightBrace) {
     std::vector<AnnotationInfo> annotations = ParseAnnotationList();
@@ -529,5 +531,17 @@ std::vector<ExpPtr> Parser::ParseArguments() {
     Match(Tag::RightParenthesis);
   }
   return arguments;
+}
+
+std::shared_ptr<NewExpression> Parser::ParseNewExpression() {
+  const auto &start = Look();
+  Match(Tag::New);
+  auto name = Match(Tag::Identifier).text;
+  if (Look().tag != Tag::LeftParenthesis) {
+    return std::make_shared<NewExpression>(GetLoc(start), name, ExpList{});
+  } else {
+    throw ParserException(Look().line, Look().column,
+                          U"not supported new expression");
+  }
 }
 } // namespace cygni

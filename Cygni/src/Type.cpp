@@ -142,4 +142,19 @@ bool ClassType::Equals(TypePtr other) const {
   }
 }
 
+ModuleType::ModuleType(std::u32string name)
+    : Type(TypeCode::Module), name{name} {}
+
+std::u32string ModuleType::ToString() const { return name; }
+
+bool ModuleType::Equals(TypePtr other) const {
+  if (typeCode == other->typeCode) {
+    std::shared_ptr<ModuleType> moduleType =
+        std::static_pointer_cast<ModuleType>(other);
+    return name == moduleType->name;
+  } else {
+    return false;
+  }
+}
+
 } // namespace cygni

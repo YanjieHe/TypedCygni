@@ -139,6 +139,23 @@ public:
             TypePtr returnType, ExpPtr body);
 };
 
+class ConstructorInfo {
+public:
+  SourceLocation location;
+  AccessModifier modifier;
+  std::vector<AnnotationInfo> annotations;
+  std::u32string name;
+  std::vector<std::shared_ptr<ParameterExpression>> parameters;
+  TypePtr returnType;
+  ExpPtr body;
+  TypePtr signature;
+  ConstructorInfo() = default;
+  ConstructorInfo(SourceLocation location, AccessModifier modifier,
+                  std::vector<AnnotationInfo> annotations, std::u32string name,
+                  std::vector<std::shared_ptr<ParameterExpression>> parameters,
+                  TypePtr returnType, ExpPtr body);
+};
+
 class MemberAccessExpression : public Expression {
 public:
   ExpPtr object;
@@ -174,36 +191,44 @@ public:
   WhileExpression(SourceLocation location, ExpPtr condition, ExpPtr body);
 };
 
-class ConstructorInfo {};
-
 class NewExpression : public Expression {
 public:
-  ConstructorInfo constructorInfo;
+  std::u32string name;
   ExpList arguments;
-  NewExpression(SourceLocation location, ConstructorInfo constructorInfo,
+  NewExpression(SourceLocation location, std::u32string name,
                 ExpList arguments);
 };
 
 class ClassInfo {
 public:
-  bool isModule;
+  SourceLocation location;
   std::u32string name;
   Table<std::u32string, FieldDef> fields;
   Table<std::u32string, MethodDef> methods;
   ClassInfo() = default;
-  ClassInfo(SourceLocation location, bool isModule, std::u32string name);
+  ClassInfo(SourceLocation location, std::u32string name);
 };
 
+class ModuleInfo {
+public:
+  SourceLocation location;
+  std::u32string name;
+  Table<std::u32string, FieldDef> fields;
+  Table<std::u32string, MethodDef> methods;
+  ModuleInfo() = default;
+  ModuleInfo(SourceLocation location, std::u32string name);
+};
 class Program {
 public:
   std::u32string packageName;
   std::shared_ptr<SourceDocument> document;
   Table<std::u32string, std::shared_ptr<ClassInfo>> classes;
+  Table<std::u32string, std::shared_ptr<ModuleInfo>> modules;
   explicit Program(std::shared_ptr<SourceDocument> document);
 
   void AddClass(std::shared_ptr<ClassInfo> info);
 
-  void AddModule(std::shared_ptr<ClassInfo> info);
+  void AddModule(std::shared_ptr<ModuleInfo> info);
 };
 
 } // namespace cygni

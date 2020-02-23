@@ -9,6 +9,17 @@ module IO
     private def PrintText(s: String): Void
 }
 
+class Point
+{
+    var x: Int
+    var y: Int
+}
+
+module Point
+{
+
+}
+
 module App
 {
     def Factorial(n: Int): Int
@@ -30,5 +41,10 @@ module App
             return true
         }
         return false
+    }
+
+    def Main(): Void
+    {
+        var point = new Point
     }
 }

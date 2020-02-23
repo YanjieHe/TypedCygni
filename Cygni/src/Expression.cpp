@@ -53,12 +53,12 @@ MethodCallExpression::MethodCallExpression(SourceLocation location,
                                            std::shared_ptr<MethodDef> method,
                                            ExpList arguments)
     : Expression(location, ExpressionType::MethodCall), object{object},
-      method{method}, arguments{arguments} {};
+      method{method}, arguments{arguments} {}
 
-NewExpression::NewExpression(SourceLocation location,
-                             ConstructorInfo constructorInfo, ExpList arguments)
-    : Expression(location, ExpressionType::New),
-      constructorInfo{constructorInfo}, arguments{arguments} {}
+NewExpression::NewExpression(SourceLocation location, std::u32string name,
+                             ExpList arguments)
+    : Expression(location, ExpressionType::New), name{name}, arguments{
+                                                                 arguments} {}
 
 ParameterExpression::ParameterExpression(SourceLocation location,
                                          std::u32string name, TypePtr type)
@@ -66,7 +66,7 @@ ParameterExpression::ParameterExpression(SourceLocation location,
   this->type = type;
 }
 
-VariableDefinitionExpression::VariableDefinitionExpression(
+VarDefExpression::VarDefExpression(
     SourceLocation location, std::shared_ptr<ParameterExpression> variable,
     ExpPtr value)
     : Expression(location, ExpressionType::VariableDefinition),
@@ -94,9 +94,11 @@ MethodDef::MethodDef(
   this->signature = std::make_shared<FunctionType>(parameterTypes, returnType);
 }
 
-ClassInfo::ClassInfo(SourceLocation location, bool isModule,
-                     std::u32string name)
-    : isModule{isModule}, name{name} {}
+ClassInfo::ClassInfo(SourceLocation location, std::u32string name)
+    : location{location}, name{name} {}
+
+ModuleInfo::ModuleInfo(SourceLocation location, std::u32string name)
+    : location{location}, name{name} {}
 
 ReturnExpression::ReturnExpression(SourceLocation location, ExpPtr value)
     : Expression(location, ExpressionType::Return), value{value} {}
@@ -116,8 +118,8 @@ void Program::AddClass(std::shared_ptr<ClassInfo> info) {
   classes.Add(info->name, info);
 }
 
-void Program::AddModule(std::shared_ptr<ClassInfo> info) {
-  classes.Add(info->name, info);
+void Program::AddModule(std::shared_ptr<ModuleInfo> info) {
+  modules.Add(info->name, info);
 }
 
 AnnotationInfo::AnnotationInfo(SourceLocation location, std::u32string name,
@@ -129,5 +131,20 @@ MemberAccessExpression::MemberAccessExpression(SourceLocation location,
                                                std::u32string field)
     : Expression(location, ExpressionType::MemberAccess), object{object},
       field{field} {}
+
+ConstructorInfo::ConstructorInfo(
+    SourceLocation location, AccessModifier modifier,
+    std::vector<AnnotationInfo> annotations, std::u32string name,
+    std::vector<std::shared_ptr<ParameterExpression>> parameters,
+    TypePtr returnType, ExpPtr body)
+    : location{location}, modifier{modifier}, annotations{annotations},
+      name{name}, parameters{parameters}, returnType{returnType}, body{body} {
+  std::vector<TypePtr> parameterTypes(parameters.size());
+  std::transform(parameters.begin(), parameters.end(), parameterTypes.begin(),
+                 [](const std::shared_ptr<ParameterExpression> &p) -> TypePtr {
+                   return p->type;
+                 });
+  this->signature = std::make_shared<FunctionType>(parameterTypes, returnType);
+}
 
 } // namespace cygni

@@ -34,11 +34,27 @@ json AstToJsonSerialization::VisitConstant(
 
 json AstToJsonSerialization::VisitClassInfo(std::shared_ptr<ClassInfo> info) {
   json obj;
-  if (info->isModule) {
-    obj["nodeType"] = "module";
-  } else {
-    obj["nodeType"] = "class";
+  obj["nodeType"] = "class";
+  obj["name"] = UTF32ToUTF8(info->name);
+
+  std::vector<json> fieldsJson;
+  for (const auto &field : info->fields.values) {
+    fieldsJson.push_back(VisitFieldDef(field));
   }
+  obj["fields"] = fieldsJson;
+
+  std::vector<json> methodsJson;
+  for (const auto &method : info->methods.values) {
+    methodsJson.push_back(VisitMethodDef(method));
+  }
+  obj["methods"] = methodsJson;
+  return obj;
+}
+
+json AstToJsonSerialization::VisitModuleInfo(std::shared_ptr<ModuleInfo> info) {
+  json obj;
+  obj["nodeType"] = "module";
+
   obj["name"] = UTF32ToUTF8(info->name);
 
   std::vector<json> fieldsJson;
@@ -63,6 +79,7 @@ json AstToJsonSerialization::VisitFieldDef(const FieldDef &field) {
       UTF32ToUTF8(Enum<AccessModifier>::ToString(field.modifier));
   obj["annotations"] = VisitAnnotationList(field.annotations);
   obj["name"] = UTF32ToUTF8(field.name);
+  obj["type"] = UTF32ToUTF8(field.type->ToString());
   obj["value"] = VisitExpression(field.value);
   return obj;
 }
@@ -83,6 +100,7 @@ json AstToJsonSerialization::VisitMethodDef(const MethodDef &method) {
   }
   obj["parameters"] = parametersJson;
   obj["body"] = VisitExpression(method.body);
+  obj["type"] = UTF32ToUTF8(method.signature->ToString());
 
   return obj;
 }
@@ -145,6 +163,24 @@ json AstToJsonSerialization::VisitMemberAccess(
   return obj;
 }
 
+json AstToJsonSerialization::VisitNewExpression(
+    std::shared_ptr<NewExpression> node) {
+  json obj;
+  AttachNodeInformation(obj, node);
+  obj["class"] = UTF32ToUTF8(node->name);
+  obj["arguments"] = VisitArgumentList(node->arguments);
+  return obj;
+}
+
+json AstToJsonSerialization::VisitVarDefExpression(
+    std::shared_ptr<VarDefExpression> node) {
+  json obj;
+  AttachNodeInformation(obj, node);
+  obj["variable"] = VisitExpression(node->variable);
+  obj["value"] = VisitExpression(node->value);
+  return obj;
+}
+
 void AstToJsonSerialization::AttachNodeInformation(json &obj, ExpPtr node) {
   obj["id"] = node->id;
   obj["location"] = VisitSourceLocation(node->location);
@@ -184,6 +220,11 @@ json AstToJsonSerialization::VisitExpression(ExpPtr node) {
   case ExpressionType::MemberAccess:
     return VisitMemberAccess(
         std::static_pointer_cast<MemberAccessExpression>(node));
+  case ExpressionType::New:
+    return VisitNewExpression(std::static_pointer_cast<NewExpression>(node));
+  case ExpressionType::VariableDefinition:
+    return VisitVarDefExpression(
+        std::static_pointer_cast<VarDefExpression>(node));
   default:
     throw NotImplementedException();
   }
@@ -195,8 +236,13 @@ json AstToJsonSerialization::VisitProgram(const Program &program) {
   for (const auto &info : program.classes.values) {
     classesJson.push_back(VisitClassInfo(info));
   }
+  std::vector<json> moduleJson;
+  for (const auto &info : program.modules.values) {
+    moduleJson.push_back(VisitModuleInfo(info));
+  }
   obj["packageName"] = UTF32ToUTF8(program.packageName);
   obj["classes"] = classesJson;
+  obj["modules"] = moduleJson;
   return obj;
 }
 
@@ -396,6 +442,9 @@ TypePtr TypeChecker::VisitExpression(ExpPtr node, ScopePtr scope) {
   case ExpressionType::MemberAccess:
     return VisitMemberAccess(
         std::static_pointer_cast<MemberAccessExpression>(node), scope);
+  case ExpressionType::New:
+    return VisitNewExpression(std::static_pointer_cast<NewExpression>(node),
+                              scope);
   default:
     throw NotImplementedException();
   }
@@ -421,13 +470,34 @@ TypePtr TypeChecker::VisitClassInfo(std::shared_ptr<ClassInfo> info,
   return Type::Void();
 }
 
+TypePtr TypeChecker::VisitModuleInfo(std::shared_ptr<ModuleInfo> info,
+                                     ScopePtr outerScope) {
+  ScopePtr scope{outerScope};
+
+  for (const auto &field : info->fields.values) {
+    VisitFieldDef(field, scope);
+  }
+  for (const auto &method : info->methods.values) {
+    scope->Put(method.name, method.signature);
+  }
+  for (const auto &method : info->methods.values) {
+    VisitMethodDef(method, scope);
+  }
+  return Type::Void();
+}
+
 TypePtr TypeChecker::VisitFieldDef(const FieldDef &field, ScopePtr scope) {
-  auto type = VisitExpression(field.value, scope);
-  if (!field.type->Equals(type)) {
-    throw TypeException(field.location, U"field type mismatch");
-  } else {
+  if (field.value->nodeType == ExpressionType::Default) {
     scope->Put(field.name, field.type);
     return field.type;
+  } else {
+    auto type = VisitExpression(field.value, scope);
+    if (!field.type->Equals(type)) {
+      throw TypeException(field.location, U"field type mismatch");
+    } else {
+      scope->Put(field.name, field.type);
+      return field.type;
+    }
   }
 }
 
@@ -457,7 +527,6 @@ TypeChecker::VisitParameter(std::shared_ptr<ParameterExpression> parameter,
 
 TypePtr TypeChecker::VisitReturn(std::shared_ptr<ReturnExpression> node,
                                  ScopePtr scope) {
-  cout << "return" << endl;
   TypePtr returnType = VisitExpression(node->value, scope);
   Attach(node, returnType);
   return returnType;
@@ -466,7 +535,6 @@ TypePtr TypeChecker::VisitReturn(std::shared_ptr<ReturnExpression> node,
 TypePtr
 TypeChecker::VisitConditional(std::shared_ptr<ConditionalExpression> node,
                               ScopePtr scope) {
-  cout << "conditional" << endl;
   auto condition = VisitExpression(node->condition, scope);
   auto ifTrue = VisitExpression(node->ifTrue, scope);
   auto ifFalse = VisitExpression(node->ifFalse, scope);
@@ -509,20 +577,45 @@ TypePtr
 TypeChecker::VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node,
                                ScopePtr scope) {
   TypePtr object = VisitExpression(node->object, scope);
-  if (object->typeCode == TypeCode::Class) {
+  if (object->typeCode == TypeCode::Module) {
+    std::shared_ptr<ModuleType> moduleType =
+        std::static_pointer_cast<ModuleType>(object);
+    const auto &moduleInfo = program.modules.GetValueByKey(moduleType->name);
+    if (moduleInfo->fields.ContainsKey(node->field)) {
+      auto field = moduleInfo->fields.GetValueByKey(node->field);
+      if (field.isStatic) {
+        node->type = field.type;
+        return field.type;
+      } else {
+        throw TypeException(node->location, U"access non-static field");
+      }
+    } else if (moduleInfo->methods.ContainsKey(node->field)) {
+      auto method = moduleInfo->methods.GetValueByKey(node->field);
+      if (method.isStatic) {
+        node->type = method.signature;
+        return method.signature;
+      } else {
+        throw TypeException(node->location, U"access non-static method");
+      }
+    } else {
+      throw TypeException(node->location, U"undefined field");
+    }
+  } else if (object->typeCode == TypeCode::Class) {
     std::shared_ptr<ClassType> classType =
         std::static_pointer_cast<ClassType>(object);
     const auto &classInfo = program.classes.GetValueByKey(classType->name);
     if (classInfo->fields.ContainsKey(node->field)) {
       auto field = classInfo->fields.GetValueByKey(node->field);
-      if (field.isStatic) {
+      if (!field.isStatic) {
+        node->type = field.type;
         return field.type;
       } else {
         throw TypeException(node->location, U"access non-static field");
       }
     } else if (classInfo->methods.ContainsKey(node->field)) {
       auto method = classInfo->methods.GetValueByKey(node->field);
-      if (method.isStatic) {
+      if (!method.isStatic) {
+        node->type = method.signature;
         return method.signature;
       } else {
         throw TypeException(node->location, U"access non-static method");
@@ -535,13 +628,33 @@ TypeChecker::VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node,
   }
 }
 
+TypePtr TypeChecker::VisitNewExpression(std::shared_ptr<NewExpression> node,
+                                        ScopePtr scope) {
+  // TO DO: arguments
+  if (program.classes.ContainsKey(node->name)) {
+    auto type = std::make_shared<ClassType>(node->name);
+    node->type = type;
+    return type;
+  } else {
+    throw TypeException(node->location,
+                        U"error new expression: undefined class");
+  }
+}
+
 void TypeChecker::VisitProgram(ScopePtr scope) {
   for (const auto &_class : program.classes.values) {
     TypePtr classType = std::make_shared<ClassType>(_class->name);
     scope->Put(_class->name, classType);
   }
+  for (const auto &module : program.modules.values) {
+    TypePtr moduleType = std::make_shared<ModuleType>(module->name);
+    scope->Put(module->name, moduleType);
+  }
   for (const auto &_class : program.classes.values) {
     VisitClassInfo(_class, scope);
+  }
+  for (const auto &module : program.modules.values) {
+    VisitModuleInfo(module, scope);
   }
 }
 } // namespace cygni

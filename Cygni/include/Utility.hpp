@@ -46,7 +46,7 @@ public:
 
   int GetIndexByKey(const TKey &key) { return map[key]; }
 
-  bool ContainsKey(const TKey &key) { return map.find(key) != map.end(); }
+  bool ContainsKey(const TKey &key) const { return map.find(key) != map.end(); }
 };
 
 } // namespace cygni

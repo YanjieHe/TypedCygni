@@ -64,6 +64,7 @@ enum class Tag {
   UpperBound,
 
   Class,
+  New,
   Private,
   Protected,
   Module,
@@ -124,6 +125,7 @@ enum class TypeCode {
   Int64,
   Object,
   Class,
+  Module,
   Float32,
   String,
   UInt16,
@@ -237,6 +239,8 @@ public:
       return U"UpperBound";
     case Tag::Class:
       return U"Class";
+    case Tag::New:
+      return U"New";
     case Tag::Private:
       return U"Private";
     case Tag::Protected:
@@ -380,6 +384,8 @@ public:
       return U"Object";
     case TypeCode::Class:
       return U"Class";
+    case TypeCode::Module:
+      return U"Module";
     case TypeCode::Float64:
       return U"Float64";
     case TypeCode::String:

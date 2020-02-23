@@ -90,7 +90,7 @@ public:
 
   std::shared_ptr<ClassInfo> ParseDefClass();
 
-  std::shared_ptr<ClassInfo> ParseDefModule();
+  std::shared_ptr<ModuleInfo> ParseDefModule();
 
   AccessModifier ParseAccess();
 
@@ -99,6 +99,8 @@ public:
   std::vector<AnnotationInfo> ParseAnnotationList();
 
   std::vector<ExpPtr> ParseArguments();
+
+  std::shared_ptr<NewExpression> ParseNewExpression();
 };
 } // namespace cygni
 #endif // CYGNI_PARSER_HPP

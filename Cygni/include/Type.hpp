@@ -107,6 +107,15 @@ public:
   bool Equals(TypePtr other) const override;
 };
 
+class ModuleType : public Type {
+public:
+  std::u32string name;
+  explicit ModuleType(std::u32string name);
+
+  std::u32string ToString() const override;
+  bool Equals(TypePtr other) const override;
+};
+
 class ArrayType : public Type {
 public:
   TypePtr elementType;

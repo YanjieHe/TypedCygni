@@ -14,6 +14,7 @@ public:
   json VisitExpression(ExpPtr node);
   json VisitConstant(std::shared_ptr<ConstantExpression> node);
   json VisitClassInfo(std::shared_ptr<ClassInfo> info);
+  json VisitModuleInfo(std::shared_ptr<ModuleInfo> info);
   json VisitFieldDef(const FieldDef &field);
   json VisitMethodDef(const MethodDef &method);
   json VisitParameter(std::shared_ptr<ParameterExpression> parameter);
@@ -22,6 +23,8 @@ public:
   json VisitDefault(std::shared_ptr<DefaultExpression> node);
   json VisitInvocation(std::shared_ptr<InvocationExpression> node);
   json VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node);
+  json VisitNewExpression(std::shared_ptr<NewExpression> node);
+  json VisitVarDefExpression(std::shared_ptr<VarDefExpression> node);
   void AttachNodeInformation(json &obj, ExpPtr node);
   json VisitProgram(const Program &program);
   std::vector<json> VisitArgumentList(const std::vector<ExpPtr> &arguments);
@@ -71,6 +74,8 @@ public:
   TypePtr VisitExpression(ExpPtr node, ScopePtr scope);
   TypePtr VisitConstant(std::shared_ptr<ConstantExpression> node);
   TypePtr VisitClassInfo(std::shared_ptr<ClassInfo> info, ScopePtr outerScope);
+  TypePtr VisitModuleInfo(std::shared_ptr<ModuleInfo> info,
+                          ScopePtr outerScope);
   TypePtr VisitFieldDef(const FieldDef &field, ScopePtr scope);
   TypePtr VisitMethodDef(const MethodDef &method, ScopePtr outerScope);
   TypePtr VisitParameter(std::shared_ptr<ParameterExpression> parameter,
@@ -83,6 +88,8 @@ public:
                           ScopePtr scope);
   TypePtr VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node,
                             ScopePtr scope);
+  TypePtr VisitNewExpression(std::shared_ptr<NewExpression> node,
+                             ScopePtr scope);
   void VisitProgram(ScopePtr scope);
   TypePtr Attach(ExpPtr node, TypePtr type);
 };
