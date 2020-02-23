@@ -13,7 +13,7 @@ module App
 {
     def Factorial(n: Int): Int
     {
-        IO.Print(n)
+        IO.PrintInt(n)
         if (n == 0)
         {
             return 1

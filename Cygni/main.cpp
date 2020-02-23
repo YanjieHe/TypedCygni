@@ -48,9 +48,9 @@ void CompileProgram(std::string path, std::string outputJsonPath) {
     cout << "Complete Syntax Analysis!" << endl;
 
     /* pass 4: check and infer types of each node */
-    cygni::TypeChecker typeChecker;
+    cygni::TypeChecker typeChecker(program);
     cygni::ScopePtr scope = std::make_shared<cygni::Scope>();
-    typeChecker.VisitProgram(program, scope);
+    typeChecker.VisitProgram(scope);
     cout << "Complete Type Checking!" << endl;
 
     /* pass 5: convert the abstract syntax tree to json format */

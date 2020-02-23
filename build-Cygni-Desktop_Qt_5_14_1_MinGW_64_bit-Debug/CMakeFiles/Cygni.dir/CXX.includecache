@@ -6,10 +6,6 @@
 
 #IncludeRegexTransform: 
 
-D:/Documents/Compiler Construction/TypedCygni/Cygni/include/Constants.hpp
-string
--
-
 D:/Documents/Compiler Construction/TypedCygni/Cygni/include/Enum.hpp
 PreDef.hpp
 D:/Documents/Compiler Construction/TypedCygni/Cygni/include/PreDef.hpp
@@ -35,26 +31,6 @@ memory
 -
 string
 -
-
-D:/Documents/Compiler Construction/TypedCygni/Cygni/include/Lexer.hpp
-Constants.hpp
-D:/Documents/Compiler Construction/TypedCygni/Cygni/include/Constants.hpp
-Exception.hpp
-D:/Documents/Compiler Construction/TypedCygni/Cygni/include/Exception.hpp
-Token.hpp
-D:/Documents/Compiler Construction/TypedCygni/Cygni/include/Token.hpp
-Utility.hpp
-D:/Documents/Compiler Construction/TypedCygni/Cygni/include/Utility.hpp
-vector
--
-
-D:/Documents/Compiler Construction/TypedCygni/Cygni/include/Parser.hpp
-Exception.hpp
-D:/Documents/Compiler Construction/TypedCygni/Cygni/include/Exception.hpp
-Expression.hpp
-D:/Documents/Compiler Construction/TypedCygni/Cygni/include/Expression.hpp
-Token.hpp
-D:/Documents/Compiler Construction/TypedCygni/Cygni/include/Token.hpp
 
 D:/Documents/Compiler Construction/TypedCygni/Cygni/include/PreDef.hpp
 iostream
@@ -83,12 +59,6 @@ memory
 -
 string
 -
-
-D:/Documents/Compiler Construction/TypedCygni/Cygni/include/Token.hpp
-Enum.hpp
-D:/Documents/Compiler Construction/TypedCygni/Cygni/include/Enum.hpp
-PreDef.hpp
-D:/Documents/Compiler Construction/TypedCygni/Cygni/include/PreDef.hpp
 
 D:/Documents/Compiler Construction/TypedCygni/Cygni/include/Type.hpp
 Enum.hpp
@@ -451,32 +421,6 @@ limits
 -
 type_traits
 -
-
-D:/Documents/Compiler Construction/TypedCygni/Cygni/main.cpp
-Expression.hpp
-D:/Documents/Compiler Construction/TypedCygni/Cygni/Expression.hpp
-Lexer.hpp
-D:/Documents/Compiler Construction/TypedCygni/Cygni/Lexer.hpp
-Parser.hpp
-D:/Documents/Compiler Construction/TypedCygni/Cygni/Parser.hpp
-Visitor.hpp
-D:/Documents/Compiler Construction/TypedCygni/Cygni/Visitor.hpp
-fstream
--
-iostream
--
-string
--
-
-D:/Documents/Compiler Construction/TypedCygni/Cygni/src/Expression.cpp
-Expression.hpp
-D:/Documents/Compiler Construction/TypedCygni/Cygni/src/Expression.hpp
-algorithm
--
-
-D:/Documents/Compiler Construction/TypedCygni/Cygni/src/Parser.cpp
-Parser.hpp
-D:/Documents/Compiler Construction/TypedCygni/Cygni/src/Parser.hpp
 
 D:/Documents/Compiler Construction/TypedCygni/Cygni/src/Visitor.cpp
 Visitor.hpp

@@ -21,6 +21,7 @@ public:
   json VisitConditional(std::shared_ptr<ConditionalExpression> node);
   json VisitDefault(std::shared_ptr<DefaultExpression> node);
   json VisitInvocation(std::shared_ptr<InvocationExpression> node);
+  json VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node);
   void AttachNodeInformation(json &obj, ExpPtr node);
   json VisitProgram(const Program &program);
   std::vector<json> VisitArgumentList(const std::vector<ExpPtr> &arguments);
@@ -62,8 +63,8 @@ public:
   };
 
   RuleSet ruleSet;
-
-  TypeChecker();
+  const Program &program;
+  TypeChecker(const Program &program);
 
   TypePtr VisitBinary(std::shared_ptr<BinaryExpression> node, ScopePtr scope);
   TypePtr VisitBlock(std::shared_ptr<BlockExpression> node, ScopePtr scope);
@@ -80,7 +81,9 @@ public:
   TypePtr VisitDefault(std::shared_ptr<DefaultExpression> node);
   TypePtr VisitInvocation(std::shared_ptr<InvocationExpression> node,
                           ScopePtr scope);
-  void VisitProgram(const Program &program, ScopePtr scope);
+  TypePtr VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node,
+                            ScopePtr scope);
+  void VisitProgram(ScopePtr scope);
   TypePtr Attach(ExpPtr node, TypePtr type);
 };
 

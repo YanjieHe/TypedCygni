@@ -123,6 +123,7 @@ enum class TypeCode {
   Int32,
   Int64,
   Object,
+  Class,
   Float32,
   String,
   UInt16,
@@ -377,6 +378,8 @@ public:
       return U"Int64";
     case TypeCode::Object:
       return U"Object";
+    case TypeCode::Class:
+      return U"Class";
     case TypeCode::Float64:
       return U"Float64";
     case TypeCode::String:

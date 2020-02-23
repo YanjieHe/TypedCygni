@@ -183,7 +183,8 @@ ExpPtr Parser::ParseUnary() {
 
 ExpPtr Parser::ParsePostfix() {
   auto x = ParseFactor();
-  while (Look().tag == Tag::LeftParenthesis || Look().tag == Tag::LeftBracket) {
+  while (Look().tag == Tag::LeftParenthesis || Look().tag == Tag::LeftBracket ||
+         Look().tag == Tag::Dot) {
     const Token &start = Look();
 
     if (Look().tag == Tag::LeftParenthesis) {

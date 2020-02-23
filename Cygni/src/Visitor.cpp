@@ -136,6 +136,15 @@ json AstToJsonSerialization::VisitInvocation(
   return obj;
 }
 
+json AstToJsonSerialization::VisitMemberAccess(
+    std::shared_ptr<MemberAccessExpression> node) {
+  json obj;
+  AttachNodeInformation(obj, node);
+  obj["object"] = VisitExpression(node->object);
+  obj["fieldName"] = UTF32ToUTF8(node->field);
+  return obj;
+}
+
 void AstToJsonSerialization::AttachNodeInformation(json &obj, ExpPtr node) {
   obj["id"] = node->id;
   obj["location"] = VisitSourceLocation(node->location);
@@ -172,6 +181,9 @@ json AstToJsonSerialization::VisitExpression(ExpPtr node) {
   case ExpressionType::Invoke:
     return VisitInvocation(
         std::static_pointer_cast<InvocationExpression>(node));
+  case ExpressionType::MemberAccess:
+    return VisitMemberAccess(
+        std::static_pointer_cast<MemberAccessExpression>(node));
   default:
     throw NotImplementedException();
   }
@@ -271,7 +283,8 @@ TypeChecker::RuleSet::Match(std::u32string functionName,
   }
 }
 
-TypeChecker::TypeChecker() {
+TypeChecker::TypeChecker(const Program &program) : program{program} {
+
   ruleSet.Add(U"+", {Type::Int32(), Type::Int32()}, Type::Int32());
   ruleSet.Add(U"+", {Type::Int64(), Type::Int64()}, Type::Int64());
 
@@ -380,6 +393,9 @@ TypePtr TypeChecker::VisitExpression(ExpPtr node, ScopePtr scope) {
                            scope);
   case ExpressionType::Return:
     return VisitReturn(std::static_pointer_cast<ReturnExpression>(node), scope);
+  case ExpressionType::MemberAccess:
+    return VisitMemberAccess(
+        std::static_pointer_cast<MemberAccessExpression>(node), scope);
   default:
     throw NotImplementedException();
   }
@@ -488,7 +504,42 @@ TypePtr TypeChecker::VisitInvocation(std::shared_ptr<InvocationExpression> node,
     throw TypeException(node->location, U"expression is not a function");
   }
 }
-void TypeChecker::VisitProgram(const Program &program, ScopePtr scope) {
+
+TypePtr
+TypeChecker::VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node,
+                               ScopePtr scope) {
+  TypePtr object = VisitExpression(node->object, scope);
+  if (object->typeCode == TypeCode::Class) {
+    std::shared_ptr<ClassType> classType =
+        std::static_pointer_cast<ClassType>(object);
+    const auto &classInfo = program.classes.GetValueByKey(classType->name);
+    if (classInfo->fields.ContainsKey(node->field)) {
+      auto field = classInfo->fields.GetValueByKey(node->field);
+      if (field.isStatic) {
+        return field.type;
+      } else {
+        throw TypeException(node->location, U"access non-static field");
+      }
+    } else if (classInfo->methods.ContainsKey(node->field)) {
+      auto method = classInfo->methods.GetValueByKey(node->field);
+      if (method.isStatic) {
+        return method.signature;
+      } else {
+        throw TypeException(node->location, U"access non-static method");
+      }
+    } else {
+      throw TypeException(node->location, U"undefined field");
+    }
+  } else {
+    throw TypeException(node->location, U"object does not have any field");
+  }
+}
+
+void TypeChecker::VisitProgram(ScopePtr scope) {
+  for (const auto &_class : program.classes.values) {
+    TypePtr classType = std::make_shared<ClassType>(_class->name);
+    scope->Put(_class->name, classType);
+  }
   for (const auto &_class : program.classes.values) {
     VisitClassInfo(_class, scope);
   }
