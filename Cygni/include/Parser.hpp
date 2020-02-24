@@ -68,7 +68,7 @@ public:
 
   ExpPtr ParseVar();
 
-  std::shared_ptr<VariableDefinitionExpression> ParseVarDeclaration();
+  std::shared_ptr<VarDefExpression> ParseVarDeclaration();
 
   FieldDef ParseFieldDefinition(AccessModifier modifier,
                                 std::vector<AnnotationInfo> annotations,

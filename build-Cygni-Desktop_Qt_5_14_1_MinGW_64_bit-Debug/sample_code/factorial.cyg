@@ -17,7 +17,13 @@ class Point
 
 module Point
 {
-
+    def Create(x: Int, y: Int): Point
+    {
+        var point: Point = new Point
+        point.x = x
+        point.y = y
+        return point
+    }
 }
 
 module App
@@ -45,6 +51,6 @@ module App
 
     def Main(): Void
     {
-        var point = new Point
+        var point: Point = Point.Create(6, 19)
     }
 }

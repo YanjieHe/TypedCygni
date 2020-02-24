@@ -68,9 +68,11 @@ ParameterExpression::ParameterExpression(SourceLocation location,
 
 VarDefExpression::VarDefExpression(
     SourceLocation location, std::shared_ptr<ParameterExpression> variable,
-    ExpPtr value)
+    TypePtr type, ExpPtr value)
     : Expression(location, ExpressionType::VariableDefinition),
-      variable{variable}, value{value} {}
+      variable{variable}, value{value} {
+  this->type = type;
+}
 
 FieldDef::FieldDef(SourceLocation location, AccessModifier modifier,
                    bool isStatic, std::vector<AnnotationInfo> annotations,

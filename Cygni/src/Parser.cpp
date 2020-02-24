@@ -296,15 +296,15 @@ ExpPtr Parser::ParseVar() {
       auto value = ParseOr();
       auto variable =
           std::make_shared<ParameterExpression>(GetLoc(Look()), name, type);
-      return std::make_shared<VariableDefinitionExpression>(GetLoc(start),
-                                                            variable, value);
+      return std::make_shared<VarDefExpression>(GetLoc(start), variable, type,
+                                                value);
     } else {
       auto value =
           std::make_shared<DefaultExpression>(GetLoc(Look()), Type::Unknown());
       auto variable =
           std::make_shared<ParameterExpression>(GetLoc(Look()), name, type);
-      return std::make_shared<VariableDefinitionExpression>(GetLoc(start),
-                                                            variable, value);
+      return std::make_shared<VarDefExpression>(GetLoc(start), variable, type,
+                                                value);
     }
   } else {
     Match(Tag::Assign);
@@ -312,12 +312,12 @@ ExpPtr Parser::ParseVar() {
     auto value = ParseOr();
     auto variable =
         std::make_shared<ParameterExpression>(GetLoc(Look()), name, type);
-    return std::make_shared<VariableDefinitionExpression>(GetLoc(start),
-                                                          variable, value);
+    return std::make_shared<VarDefExpression>(GetLoc(start), variable, type,
+                                              value);
   }
 }
 
-std::shared_ptr<VariableDefinitionExpression> Parser::ParseVarDeclaration() {
+std::shared_ptr<VarDefExpression> Parser::ParseVarDeclaration() {
   const Token &start = Look();
   Match(Tag::Var);
   Token t = Match(Tag::Identifier);
@@ -326,10 +326,10 @@ std::shared_ptr<VariableDefinitionExpression> Parser::ParseVarDeclaration() {
   auto type = ParseType();
   auto variable =
       std::make_shared<ParameterExpression>(GetLoc(Look()), name, type);
-  auto value =
-      std::make_shared<DefaultExpression>(GetLoc(Look()), Type::Unknown());
-  return std::make_shared<VariableDefinitionExpression>(GetLoc(start), variable,
-                                                        value);
+
+  auto value = std::make_shared<DefaultExpression>(GetLoc(Look()), type);
+  return std::make_shared<VarDefExpression>(GetLoc(start), variable, type,
+                                            value);
 }
 
 FieldDef Parser::ParseFieldDefinition(AccessModifier modifier,
@@ -406,7 +406,7 @@ std::shared_ptr<Type> Parser::ParseType() {
   if (basicTypes.find(name) != basicTypes.end()) {
     return basicTypes[name];
   } else {
-    return std::make_shared<ObjectType>(name);
+    return std::make_shared<ClassType>(name);
   }
 }
 

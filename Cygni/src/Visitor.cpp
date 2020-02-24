@@ -200,6 +200,7 @@ json AstToJsonSerialization::VisitExpression(ExpPtr node) {
   case ExpressionType::LessThanOrEqual:
   case ExpressionType::Equal:
   case ExpressionType::NotEqual:
+  case ExpressionType::Assign:
     return VisitBinary(std::static_pointer_cast<BinaryExpression>(node));
   case ExpressionType::Constant:
     return VisitConstant(std::static_pointer_cast<ConstantExpression>(node));
@@ -390,6 +391,12 @@ TypePtr TypeChecker::VisitBinary(std::shared_ptr<BinaryExpression> node,
     } else {
       throw TypeException(node->location, U"type mismatch: !=");
     }
+  } else if (node->nodeType == ExpressionType::Assign) {
+    if (left->Equals(right)) {
+      return Attach(node, left);
+    } else {
+      throw TypeException(node->location, U"type mismtach: =");
+    }
   } else {
     throw NotImplementedException();
   }
@@ -421,6 +428,7 @@ TypePtr TypeChecker::VisitExpression(ExpPtr node, ScopePtr scope) {
   case ExpressionType::Divide:
   case ExpressionType::Equal:
   case ExpressionType::NotEqual:
+  case ExpressionType::Assign:
     return VisitBinary(std::static_pointer_cast<BinaryExpression>(node), scope);
   case ExpressionType::Block:
     return VisitBlock(std::static_pointer_cast<BlockExpression>(node), scope);
@@ -445,6 +453,9 @@ TypePtr TypeChecker::VisitExpression(ExpPtr node, ScopePtr scope) {
   case ExpressionType::New:
     return VisitNewExpression(std::static_pointer_cast<NewExpression>(node),
                               scope);
+  case ExpressionType::VariableDefinition:
+    return VisitVarDefExpression(
+        std::static_pointer_cast<VarDefExpression>(node), scope);
   default:
     throw NotImplementedException();
   }
@@ -641,11 +652,22 @@ TypePtr TypeChecker::VisitNewExpression(std::shared_ptr<NewExpression> node,
   }
 }
 
-void TypeChecker::VisitProgram(ScopePtr scope) {
-  for (const auto &_class : program.classes.values) {
-    TypePtr classType = std::make_shared<ClassType>(_class->name);
-    scope->Put(_class->name, classType);
+TypePtr
+TypeChecker::VisitVarDefExpression(std::shared_ptr<VarDefExpression> node,
+                                   ScopePtr scope) {
+  TypePtr value = VisitExpression(node->value, scope);
+  //  cout << UTF32ToUTF8(value->ToString()) << endl;
+  //  cout << UTF32ToUTF8(node->type->ToString()) << endl;
+  if (node->type->Equals(value)) {
+    scope->Put(node->variable->name, node->type);
+    return node->type;
+  } else {
+    throw TypeException(node->location,
+                        U"variable initialization type mismatch");
   }
+}
+
+void TypeChecker::VisitProgram(ScopePtr scope) {
   for (const auto &module : program.modules.values) {
     TypePtr moduleType = std::make_shared<ModuleType>(module->name);
     scope->Put(module->name, moduleType);

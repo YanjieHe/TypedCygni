@@ -86,13 +86,13 @@ public:
                       TypePtr type);
 };
 
-class VariableDefinitionExpression : public Expression {
+class VarDefExpression : public Expression {
 public:
   std::shared_ptr<ParameterExpression> variable;
   ExpPtr value;
-  VariableDefinitionExpression(SourceLocation location,
-                               std::shared_ptr<ParameterExpression> variable,
-                               ExpPtr value);
+  VarDefExpression(SourceLocation location,
+                   std::shared_ptr<ParameterExpression> variable, TypePtr type,
+                   ExpPtr value);
 };
 
 class AnnotationInfo {

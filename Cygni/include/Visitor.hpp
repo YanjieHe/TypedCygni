@@ -90,6 +90,8 @@ public:
                             ScopePtr scope);
   TypePtr VisitNewExpression(std::shared_ptr<NewExpression> node,
                              ScopePtr scope);
+  TypePtr VisitVarDefExpression(std::shared_ptr<VarDefExpression> node,
+                                ScopePtr scope);
   void VisitProgram(ScopePtr scope);
   TypePtr Attach(ExpPtr node, TypePtr type);
 };
