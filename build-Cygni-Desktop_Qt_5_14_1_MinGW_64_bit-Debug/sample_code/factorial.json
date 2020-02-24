@@ -433,64 +433,15 @@
                     "body": {
                         "expressions": [
                             {
-                                "arguments": [
-                                    {
-                                        "id": 29,
-                                        "location": {
-                                            "endCol": 23,
-                                            "endLine": 33,
-                                            "startCol": 22,
-                                            "startLine": 33
-                                        },
-                                        "name": "n",
-                                        "nodeType": "Parameter",
-                                        "type": "Int32"
-                                    }
-                                ],
-                                "expression": {
-                                    "fieldName": "PrintInt",
-                                    "id": 28,
-                                    "location": {
-                                        "endCol": 21,
-                                        "endLine": 33,
-                                        "startCol": 12,
-                                        "startLine": 33
-                                    },
-                                    "nodeType": "MemberAccess",
-                                    "object": {
+                                "condition": {
+                                    "id": 29,
+                                    "left": {
                                         "id": 27,
                                         "location": {
-                                            "endCol": 12,
-                                            "endLine": 33,
-                                            "startCol": 11,
-                                            "startLine": 33
-                                        },
-                                        "name": "IO",
-                                        "nodeType": "Parameter",
-                                        "type": "IO"
-                                    },
-                                    "type": "Function"
-                                },
-                                "id": 30,
-                                "location": {
-                                    "endCol": 11,
-                                    "endLine": 34,
-                                    "startCol": 21,
-                                    "startLine": 33
-                                },
-                                "nodeType": "Invoke",
-                                "type": "Void"
-                            },
-                            {
-                                "condition": {
-                                    "id": 33,
-                                    "left": {
-                                        "id": 31,
-                                        "location": {
                                             "endCol": 17,
-                                            "endLine": 34,
+                                            "endLine": 33,
                                             "startCol": 14,
-                                            "startLine": 34
+                                            "startLine": 33
                                         },
                                         "name": "n",
                                         "nodeType": "Parameter",
@@ -498,47 +449,47 @@
                                     },
                                     "location": {
                                         "endCol": 20,
-                                        "endLine": 34,
+                                        "endLine": 33,
                                         "startCol": 14,
-                                        "startLine": 34
+                                        "startLine": 33
                                     },
                                     "nodeType": "Equal",
                                     "right": {
                                         "constant": "0",
-                                        "id": 32,
+                                        "id": 28,
                                         "location": {
                                             "endCol": 20,
-                                            "endLine": 34,
+                                            "endLine": 33,
                                             "startCol": 19,
-                                            "startLine": 34
+                                            "startLine": 33
                                         },
                                         "nodeType": "Constant",
                                         "type": "Int32"
                                     },
                                     "type": "Boolean"
                                 },
-                                "id": 46,
+                                "id": 42,
                                 "ifFalse": {
                                     "expressions": [
                                         {
-                                            "id": 44,
+                                            "id": 40,
                                             "location": {
                                                 "endCol": 10,
-                                                "endLine": 41,
+                                                "endLine": 40,
                                                 "startCol": 19,
-                                                "startLine": 40
+                                                "startLine": 39
                                             },
                                             "nodeType": "Return",
                                             "type": "Int32",
                                             "value": {
-                                                "id": 43,
+                                                "id": 39,
                                                 "left": {
-                                                    "id": 37,
+                                                    "id": 33,
                                                     "location": {
                                                         "endCol": 23,
-                                                        "endLine": 40,
+                                                        "endLine": 39,
                                                         "startCol": 21,
-                                                        "startLine": 40
+                                                        "startLine": 39
                                                     },
                                                     "name": "n",
                                                     "nodeType": "Parameter",
@@ -546,22 +497,22 @@
                                                 },
                                                 "location": {
                                                     "endCol": 10,
-                                                    "endLine": 41,
+                                                    "endLine": 40,
                                                     "startCol": 21,
-                                                    "startLine": 40
+                                                    "startLine": 39
                                                 },
                                                 "nodeType": "Multiply",
                                                 "right": {
                                                     "arguments": [
                                                         {
-                                                            "id": 41,
+                                                            "id": 37,
                                                             "left": {
-                                                                "id": 39,
+                                                                "id": 35,
                                                                 "location": {
                                                                     "endCol": 37,
-                                                                    "endLine": 40,
+                                                                    "endLine": 39,
                                                                     "startCol": 35,
-                                                                    "startLine": 40
+                                                                    "startLine": 39
                                                                 },
                                                                 "name": "n",
                                                                 "nodeType": "Parameter",
@@ -569,19 +520,19 @@
                                                             },
                                                             "location": {
                                                                 "endCol": 40,
-                                                                "endLine": 40,
+                                                                "endLine": 39,
                                                                 "startCol": 35,
-                                                                "startLine": 40
+                                                                "startLine": 39
                                                             },
                                                             "nodeType": "Subtract",
                                                             "right": {
                                                                 "constant": "1",
-                                                                "id": 40,
+                                                                "id": 36,
                                                                 "location": {
                                                                     "endCol": 40,
-                                                                    "endLine": 40,
+                                                                    "endLine": 39,
                                                                     "startCol": 39,
-                                                                    "startLine": 40
+                                                                    "startLine": 39
                                                                 },
                                                                 "nodeType": "Constant",
                                                                 "type": "Int32"
@@ -590,23 +541,23 @@
                                                         }
                                                     ],
                                                     "expression": {
-                                                        "id": 38,
+                                                        "id": 34,
                                                         "location": {
                                                             "endCol": 34,
-                                                            "endLine": 40,
+                                                            "endLine": 39,
                                                             "startCol": 33,
-                                                            "startLine": 40
+                                                            "startLine": 39
                                                         },
                                                         "name": "Factorial",
                                                         "nodeType": "Parameter",
                                                         "type": "Function"
                                                     },
-                                                    "id": 42,
+                                                    "id": 38,
                                                     "location": {
                                                         "endCol": 10,
-                                                        "endLine": 41,
+                                                        "endLine": 40,
                                                         "startCol": 34,
-                                                        "startLine": 40
+                                                        "startLine": 39
                                                     },
                                                     "nodeType": "Invoke",
                                                     "type": "Int32"
@@ -615,12 +566,12 @@
                                             }
                                         }
                                     ],
-                                    "id": 45,
+                                    "id": 41,
                                     "location": {
                                         "endCol": 6,
-                                        "endLine": 42,
+                                        "endLine": 41,
                                         "startCol": 10,
-                                        "startLine": 39
+                                        "startLine": 38
                                     },
                                     "nodeType": "Block",
                                     "type": "Void"
@@ -628,53 +579,53 @@
                                 "ifTrue": {
                                     "expressions": [
                                         {
-                                            "id": 35,
+                                            "id": 31,
                                             "location": {
                                                 "endCol": 10,
-                                                "endLine": 37,
+                                                "endLine": 36,
                                                 "startCol": 19,
-                                                "startLine": 36
+                                                "startLine": 35
                                             },
                                             "nodeType": "Return",
                                             "type": "Int32",
                                             "value": {
                                                 "constant": "1",
-                                                "id": 34,
+                                                "id": 30,
                                                 "location": {
                                                     "endCol": 10,
-                                                    "endLine": 37,
+                                                    "endLine": 36,
                                                     "startCol": 21,
-                                                    "startLine": 36
+                                                    "startLine": 35
                                                 },
                                                 "nodeType": "Constant",
                                                 "type": "Int32"
                                             }
                                         }
                                     ],
-                                    "id": 36,
+                                    "id": 32,
                                     "location": {
                                         "endCol": 13,
-                                        "endLine": 38,
+                                        "endLine": 37,
                                         "startCol": 10,
-                                        "startLine": 35
+                                        "startLine": 34
                                     },
                                     "nodeType": "Block",
                                     "type": "Void"
                                 },
                                 "location": {
                                     "endCol": 6,
-                                    "endLine": 42,
+                                    "endLine": 41,
                                     "startCol": 11,
-                                    "startLine": 34
+                                    "startLine": 33
                                 },
                                 "nodeType": "Conditional",
                                 "type": "Void"
                             }
                         ],
-                        "id": 47,
+                        "id": 43,
                         "location": {
                             "endCol": 8,
-                            "endLine": 44,
+                            "endLine": 43,
                             "startCol": 6,
                             "startLine": 32
                         },
@@ -684,7 +635,7 @@
                     "isStatic": true,
                     "location": {
                         "endCol": 8,
-                        "endLine": 44,
+                        "endLine": 43,
                         "startCol": 8,
                         "startLine": 31
                     },
@@ -712,14 +663,14 @@
                         "expressions": [
                             {
                                 "condition": {
-                                    "id": 51,
+                                    "id": 47,
                                     "left": {
-                                        "id": 49,
+                                        "id": 45,
                                         "location": {
                                             "endCol": 17,
-                                            "endLine": 46,
+                                            "endLine": 45,
                                             "startCol": 14,
-                                            "startLine": 46
+                                            "startLine": 45
                                         },
                                         "name": "x",
                                         "nodeType": "Parameter",
@@ -727,33 +678,33 @@
                                     },
                                     "location": {
                                         "endCol": 20,
-                                        "endLine": 46,
+                                        "endLine": 45,
                                         "startCol": 14,
-                                        "startLine": 46
+                                        "startLine": 45
                                     },
                                     "nodeType": "NotEqual",
                                     "right": {
                                         "constant": "5",
-                                        "id": 50,
+                                        "id": 46,
                                         "location": {
                                             "endCol": 20,
-                                            "endLine": 46,
+                                            "endLine": 45,
                                             "startCol": 19,
-                                            "startLine": 46
+                                            "startLine": 45
                                         },
                                         "nodeType": "Constant",
                                         "type": "Int32"
                                     },
                                     "type": "Boolean"
                                 },
-                                "id": 56,
+                                "id": 52,
                                 "ifFalse": {
-                                    "id": 55,
+                                    "id": 51,
                                     "location": {
                                         "endCol": 15,
-                                        "endLine": 49,
+                                        "endLine": 48,
                                         "startCol": 15,
-                                        "startLine": 49
+                                        "startLine": 48
                                     },
                                     "nodeType": "Default",
                                     "type": "Void"
@@ -761,78 +712,78 @@
                                 "ifTrue": {
                                     "expressions": [
                                         {
-                                            "id": 53,
+                                            "id": 49,
                                             "location": {
                                                 "endCol": 10,
-                                                "endLine": 48,
+                                                "endLine": 47,
                                                 "startCol": 19,
-                                                "startLine": 47
+                                                "startLine": 46
                                             },
                                             "nodeType": "Return",
                                             "type": "Boolean",
                                             "value": {
                                                 "constant": "true",
-                                                "id": 52,
+                                                "id": 48,
                                                 "location": {
                                                     "endCol": 10,
-                                                    "endLine": 48,
+                                                    "endLine": 47,
                                                     "startCol": 24,
-                                                    "startLine": 47
+                                                    "startLine": 46
                                                 },
                                                 "nodeType": "Constant",
                                                 "type": "Boolean"
                                             }
                                         }
                                     ],
-                                    "id": 54,
+                                    "id": 50,
                                     "location": {
                                         "endCol": 15,
-                                        "endLine": 49,
+                                        "endLine": 48,
                                         "startCol": 22,
-                                        "startLine": 46
+                                        "startLine": 45
                                     },
                                     "nodeType": "Block",
                                     "type": "Void"
                                 },
                                 "location": {
                                     "endCol": 15,
-                                    "endLine": 49,
+                                    "endLine": 48,
                                     "startCol": 11,
-                                    "startLine": 46
+                                    "startLine": 45
                                 },
                                 "nodeType": "Conditional",
                                 "type": "Void"
                             },
                             {
-                                "id": 58,
+                                "id": 54,
                                 "location": {
                                     "endCol": 6,
-                                    "endLine": 50,
+                                    "endLine": 49,
                                     "startCol": 15,
-                                    "startLine": 49
+                                    "startLine": 48
                                 },
                                 "nodeType": "Return",
                                 "type": "Boolean",
                                 "value": {
                                     "constant": "false",
-                                    "id": 57,
+                                    "id": 53,
                                     "location": {
                                         "endCol": 6,
-                                        "endLine": 50,
+                                        "endLine": 49,
                                         "startCol": 21,
-                                        "startLine": 49
+                                        "startLine": 48
                                     },
                                     "nodeType": "Constant",
                                     "type": "Boolean"
                                 }
                             }
                         ],
-                        "id": 59,
+                        "id": 55,
                         "location": {
                             "endCol": 8,
-                            "endLine": 52,
+                            "endLine": 51,
                             "startCol": 6,
-                            "startLine": 45
+                            "startLine": 44
                         },
                         "nodeType": "Block",
                         "type": "Void"
@@ -840,19 +791,19 @@
                     "isStatic": true,
                     "location": {
                         "endCol": 8,
-                        "endLine": 52,
+                        "endLine": 51,
                         "startCol": 8,
-                        "startLine": 44
+                        "startLine": 43
                     },
                     "name": "Choose",
                     "parameters": [
                         {
-                            "id": 48,
+                            "id": 44,
                             "location": {
                                 "endCol": 23,
-                                "endLine": 44,
+                                "endLine": 43,
                                 "startCol": 17,
-                                "startLine": 44
+                                "startLine": 43
                             },
                             "name": "x",
                             "nodeType": "Parameter",
@@ -867,12 +818,12 @@
                     "body": {
                         "expressions": [
                             {
-                                "id": 66,
+                                "id": 62,
                                 "location": {
                                     "endCol": 6,
-                                    "endLine": 55,
+                                    "endLine": 54,
                                     "startCol": 12,
-                                    "startLine": 54
+                                    "startLine": 53
                                 },
                                 "nodeType": "VariableDefinition",
                                 "type": "Point",
@@ -880,24 +831,24 @@
                                     "arguments": [
                                         {
                                             "constant": "6",
-                                            "id": 62,
+                                            "id": 58,
                                             "location": {
                                                 "endCol": 43,
-                                                "endLine": 54,
+                                                "endLine": 53,
                                                 "startCol": 42,
-                                                "startLine": 54
+                                                "startLine": 53
                                             },
                                             "nodeType": "Constant",
                                             "type": "Int32"
                                         },
                                         {
                                             "constant": "19",
-                                            "id": 63,
+                                            "id": 59,
                                             "location": {
                                                 "endCol": 47,
-                                                "endLine": 54,
+                                                "endLine": 53,
                                                 "startCol": 46,
-                                                "startLine": 54
+                                                "startLine": 53
                                             },
                                             "nodeType": "Constant",
                                             "type": "Int32"
@@ -905,21 +856,21 @@
                                     ],
                                     "expression": {
                                         "fieldName": "Create",
-                                        "id": 61,
+                                        "id": 57,
                                         "location": {
                                             "endCol": 41,
-                                            "endLine": 54,
+                                            "endLine": 53,
                                             "startCol": 34,
-                                            "startLine": 54
+                                            "startLine": 53
                                         },
                                         "nodeType": "MemberAccess",
                                         "object": {
-                                            "id": 60,
+                                            "id": 56,
                                             "location": {
                                                 "endCol": 34,
-                                                "endLine": 54,
+                                                "endLine": 53,
                                                 "startCol": 33,
-                                                "startLine": 54
+                                                "startLine": 53
                                             },
                                             "name": "Point",
                                             "nodeType": "Parameter",
@@ -927,23 +878,23 @@
                                         },
                                         "type": "Function"
                                     },
-                                    "id": 64,
+                                    "id": 60,
                                     "location": {
                                         "endCol": 6,
-                                        "endLine": 55,
+                                        "endLine": 54,
                                         "startCol": 41,
-                                        "startLine": 54
+                                        "startLine": 53
                                     },
                                     "nodeType": "Invoke",
                                     "type": "Point"
                                 },
                                 "variable": {
-                                    "id": 65,
+                                    "id": 61,
                                     "location": {
                                         "endCol": 6,
-                                        "endLine": 55,
+                                        "endLine": 54,
                                         "startCol": 6,
-                                        "startLine": 55
+                                        "startLine": 54
                                     },
                                     "name": "point",
                                     "nodeType": "Parameter",
@@ -951,12 +902,12 @@
                                 }
                             }
                         ],
-                        "id": 67,
+                        "id": 63,
                         "location": {
                             "endCol": 2,
-                            "endLine": 56,
+                            "endLine": 55,
                             "startCol": 6,
-                            "startLine": 53
+                            "startLine": 52
                         },
                         "nodeType": "Block",
                         "type": "Void"
@@ -964,9 +915,9 @@
                     "isStatic": true,
                     "location": {
                         "endCol": 2,
-                        "endLine": 56,
+                        "endLine": 55,
                         "startCol": 8,
-                        "startLine": 52
+                        "startLine": 51
                     },
                     "name": "Main",
                     "parameters": [],

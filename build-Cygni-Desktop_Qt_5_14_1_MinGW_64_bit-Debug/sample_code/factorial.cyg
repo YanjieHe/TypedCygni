@@ -30,7 +30,6 @@ module App
 {
     def Factorial(n: Int): Int
     {
-        IO.PrintInt(n)
         if (n == 0)
         {
             return 1

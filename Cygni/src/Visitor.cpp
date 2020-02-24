@@ -29,6 +29,7 @@ json AstToJsonSerialization::VisitConstant(
   json obj;
   AttachNodeInformation(obj, node);
   obj["constant"] = UTF32ToUTF8(node->constant);
+  obj["type"] = UTF32ToUTF8(node->type->ToString());
   return obj;
 }
 
