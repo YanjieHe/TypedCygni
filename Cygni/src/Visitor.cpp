@@ -38,15 +38,17 @@ json AstToJsonSerialization::VisitClassInfo(std::shared_ptr<ClassInfo> info) {
   obj["nodeType"] = "class";
   obj["name"] = UTF32ToUTF8(info->name);
 
-  std::vector<json> fieldsJson;
+  json fieldsJson;
   for (const auto &field : info->fields.values) {
-    fieldsJson.push_back(VisitFieldDef(field));
+    std::string name = UTF32ToUTF8(field.name);
+    fieldsJson[name] = VisitFieldDef(field);
   }
   obj["fields"] = fieldsJson;
 
-  std::vector<json> methodsJson;
+  json methodsJson;
   for (const auto &method : info->methods.values) {
-    methodsJson.push_back(VisitMethodDef(method));
+    std::string name = UTF32ToUTF8(method.name);
+    methodsJson[name] = VisitMethodDef(method);
   }
   obj["methods"] = methodsJson;
   return obj;
@@ -58,15 +60,17 @@ json AstToJsonSerialization::VisitModuleInfo(std::shared_ptr<ModuleInfo> info) {
 
   obj["name"] = UTF32ToUTF8(info->name);
 
-  std::vector<json> fieldsJson;
+  json fieldsJson;
   for (const auto &field : info->fields.values) {
-    fieldsJson.push_back(VisitFieldDef(field));
+    std::string name = UTF32ToUTF8(field.name);
+    fieldsJson[name] = VisitFieldDef(field);
   }
   obj["fields"] = fieldsJson;
 
-  std::vector<json> methodsJson;
+  json methodsJson;
   for (const auto &method : info->methods.values) {
-    methodsJson.push_back(VisitMethodDef(method));
+    std::string name = UTF32ToUTF8(method.name);
+    methodsJson[name] = VisitMethodDef(method);
   }
   obj["methods"] = methodsJson;
   return obj;
