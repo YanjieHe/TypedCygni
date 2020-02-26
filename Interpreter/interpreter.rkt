@@ -38,7 +38,8 @@
 (define (eval-constant node)
   (match (hash-ref node 'type)
     ["Int32" (string->number (hash-ref node 'constant))]
-    ["Boolean" (eq? "true" (hash-ref node 'constant))]))
+    ["Boolean" (string=? "true" (hash-ref node 'constant))]
+    ["String" (hash-ref node 'constant)]))
 
 
 (define (eval-binary node program scope function)
@@ -82,10 +83,9 @@
                               (string->symbol (hash-ref obj 'name)))])
         (if (hash-has-key? (hash-ref module 'fields) field)
             (hash-get module 'fields field 'value)
-            (let ([func-info
-              (hash-get module 'methods field)])
+            (let ([func-info (hash-get module 'methods field)])
               (lambda (args scope)
-               (eval-function func-info args program scope))
+                (eval-function func-info args program scope))
               )))
       (error "not supported object")))
                    
@@ -134,10 +134,24 @@
       (eval-extern-function func-info arguments program outer-scope)
       (eval-user-defined-function func-info arguments program outer-scope)))
 
-(define App (hash-ref
-             (hash-ref program 'modules)
-             'App))
+(define App (hash-get program 'modules 'App))
 (define Factorial
   (hash-get program 'modules 'App 'methods 'Factorial))
 (define global-scope (scope '() (make-hash)))
 (eval-function Factorial (list 10) program global-scope)
+
+
+(define Main
+  (hash-get program 'modules 'App 'methods 'Main))
+
+(define module-scope (scope
+                      global-scope
+                      (make-hash)))
+
+(for/list ([method-name (hash-keys (hash-ref App 'methods))])
+  (define func-info (hash-get App 'methods method-name))
+  (scope-put module-scope (hash-ref func-info 'name)
+             (lambda (args scope)
+               (eval-function func-info args program scope))))
+
+(eval-function Main (list) program module-scope)

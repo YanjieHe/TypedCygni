@@ -32,6 +32,14 @@ memory
 string
 -
 
+D:/Documents/Compiler Construction/TypedCygni/Cygni/include/Parser.hpp
+Exception.hpp
+D:/Documents/Compiler Construction/TypedCygni/Cygni/include/Exception.hpp
+Expression.hpp
+D:/Documents/Compiler Construction/TypedCygni/Cygni/include/Expression.hpp
+Token.hpp
+D:/Documents/Compiler Construction/TypedCygni/Cygni/include/Token.hpp
+
 D:/Documents/Compiler Construction/TypedCygni/Cygni/include/PreDef.hpp
 iostream
 -
@@ -59,6 +67,12 @@ memory
 -
 string
 -
+
+D:/Documents/Compiler Construction/TypedCygni/Cygni/include/Token.hpp
+Enum.hpp
+D:/Documents/Compiler Construction/TypedCygni/Cygni/include/Enum.hpp
+PreDef.hpp
+D:/Documents/Compiler Construction/TypedCygni/Cygni/include/PreDef.hpp
 
 D:/Documents/Compiler Construction/TypedCygni/Cygni/include/Type.hpp
 Enum.hpp
@@ -421,6 +435,10 @@ limits
 -
 type_traits
 -
+
+D:/Documents/Compiler Construction/TypedCygni/Cygni/src/Parser.cpp
+Parser.hpp
+D:/Documents/Compiler Construction/TypedCygni/Cygni/src/Parser.hpp
 
 D:/Documents/Compiler Construction/TypedCygni/Cygni/src/Visitor.cpp
 Visitor.hpp

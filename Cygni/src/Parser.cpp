@@ -402,7 +402,8 @@ std::shared_ptr<Type> Parser::ParseType() {
        {U"Bool", std::make_shared<BooleanType>()},
        {U"Float", std::make_shared<Float32Type>()},
        {U"Double", std::make_shared<Float64Type>()},
-       {U"Char", std::make_shared<CharType>()}};
+       {U"Char", std::make_shared<CharType>()},
+       {U"String", std::make_shared<StringType>()}};
   if (basicTypes.find(name) != basicTypes.end()) {
     return basicTypes[name];
   } else {

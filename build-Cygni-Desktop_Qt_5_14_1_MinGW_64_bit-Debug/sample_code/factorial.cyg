@@ -3,10 +3,10 @@ package ConsoleApplication
 module IO
 {
     @Extern("libtest", "print_int")
-    private def PrintInt(i: Int): Void
+    def PrintInt(i: Int): Void
 
     @Extern("libtest", "print_text")
-    private def PrintText(s: String): Void
+    def PrintText(s: String): Void
 }
 
 class Point
@@ -41,7 +41,7 @@ module App
         }
     }
 
-    def Choose(x: Int): Boolean
+    def Choose(x: Int): Bool
     {
         if (x != 5) {
             return true
@@ -49,8 +49,44 @@ module App
         return false
     }
 
+
+	def IsEven(n: Int): Bool
+	{
+		IO.PrintText("IsEven")
+		IO.PrintInt(n)
+		if (n == 0)
+		{
+			return true
+		}
+		else
+		{
+			return IsOdd(n - 1)
+		}
+	}
+	
+	def IsOdd(n: Int): Bool
+	{
+		IO.PrintText("IsOdd")
+		IO.PrintInt(n)
+		if (n == 0)
+		{
+			return false
+		}
+		else
+		{
+			return IsEven(n - 1)
+		}
+	}
+	
     def Main(): Void
     {
-        var point: Point = Point.Create(6, 19)
+		if (IsEven(10))
+		{
+			IO.PrintText("even number")
+		}
+		else
+		{
+			IO.PrintText("odd number")
+		}
     }
 }
