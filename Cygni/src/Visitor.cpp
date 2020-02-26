@@ -238,13 +238,15 @@ json AstToJsonSerialization::VisitExpression(ExpPtr node) {
 
 json AstToJsonSerialization::VisitProgram(const Program &program) {
   json obj;
-  std::vector<json> classesJson;
+  json classesJson;
   for (const auto &info : program.classes.values) {
-    classesJson.push_back(VisitClassInfo(info));
+    std::string name = UTF32ToUTF8(info->name);
+    classesJson[name] = VisitClassInfo(info);
   }
-  std::vector<json> moduleJson;
+  json moduleJson;
   for (const auto &info : program.modules.values) {
-    moduleJson.push_back(VisitModuleInfo(info));
+    std::string name = UTF32ToUTF8(info->name);
+    moduleJson[name] = VisitModuleInfo(info);
   }
   obj["packageName"] = UTF32ToUTF8(program.packageName);
   obj["classes"] = classesJson;
