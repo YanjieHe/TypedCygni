@@ -38,14 +38,14 @@ json AstToJsonSerialization::VisitClassInfo(std::shared_ptr<ClassInfo> info) {
   obj["nodeType"] = "class";
   obj["name"] = UTF32ToUTF8(info->name);
 
-  json fieldsJson;
+  json fieldsJson(std::unordered_map<std::string, json>{});
   for (const auto &field : info->fields.values) {
     std::string name = UTF32ToUTF8(field.name);
     fieldsJson[name] = VisitFieldDef(field);
   }
   obj["fields"] = fieldsJson;
 
-  json methodsJson;
+  json methodsJson(std::unordered_map<std::string, json>{});
   for (const auto &method : info->methods.values) {
     std::string name = UTF32ToUTF8(method.name);
     methodsJson[name] = VisitMethodDef(method);
@@ -60,14 +60,14 @@ json AstToJsonSerialization::VisitModuleInfo(std::shared_ptr<ModuleInfo> info) {
 
   obj["name"] = UTF32ToUTF8(info->name);
 
-  json fieldsJson;
+  json fieldsJson(std::unordered_map<std::string, json>{});
   for (const auto &field : info->fields.values) {
     std::string name = UTF32ToUTF8(field.name);
     fieldsJson[name] = VisitFieldDef(field);
   }
   obj["fields"] = fieldsJson;
 
-  json methodsJson;
+  json methodsJson(std::unordered_map<std::string, json>{});
   for (const auto &method : info->methods.values) {
     std::string name = UTF32ToUTF8(method.name);
     methodsJson[name] = VisitMethodDef(method);
@@ -238,12 +238,12 @@ json AstToJsonSerialization::VisitExpression(ExpPtr node) {
 
 json AstToJsonSerialization::VisitProgram(const Program &program) {
   json obj;
-  json classesJson;
+  json classesJson(std::unordered_map<std::string, json>{});
   for (const auto &info : program.classes.values) {
     std::string name = UTF32ToUTF8(info->name);
     classesJson[name] = VisitClassInfo(info);
   }
-  json moduleJson;
+  json moduleJson(std::unordered_map<std::string, json>{});
   for (const auto &info : program.modules.values) {
     std::string name = UTF32ToUTF8(info->name);
     moduleJson[name] = VisitModuleInfo(info);
@@ -263,15 +263,16 @@ std::vector<json> AstToJsonSerialization::VisitArgumentList(
   return argumentsJson;
 }
 
-std::vector<json> AstToJsonSerialization::VisitAnnotationList(
+json AstToJsonSerialization::VisitAnnotationList(
     const std::vector<AnnotationInfo> &annotations) {
-  std::vector<json> annotationList;
+  json annotationList(std::unordered_map<std::string, json>{});
   for (const auto &annotation : annotations) {
     json obj;
+    std::string name = UTF32ToUTF8(annotation.name);
     obj["location"] = VisitSourceLocation(annotation.location);
-    obj["name"] = UTF32ToUTF8(annotation.name);
+    obj["name"] = name;
     obj["arguments"] = VisitArgumentList(annotation.arguments);
-    annotationList.push_back(obj);
+    annotationList[name] = obj;
   }
   return annotationList;
 }

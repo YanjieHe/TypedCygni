@@ -28,8 +28,7 @@ public:
   void AttachNodeInformation(json &obj, ExpPtr node);
   json VisitProgram(const Program &program);
   std::vector<json> VisitArgumentList(const std::vector<ExpPtr> &arguments);
-  std::vector<json>
-  VisitAnnotationList(const std::vector<AnnotationInfo> &annotations);
+  json VisitAnnotationList(const std::vector<AnnotationInfo> &annotations);
 };
 
 // class LocalVariableCollector {
