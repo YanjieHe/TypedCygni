@@ -115,6 +115,7 @@ enum class AccessModifier { Public, Private, Protected };
 enum class TypeCode {
   Unknown,
   Void,
+  Any,
   Boolean,
   Byte,
   Char,
@@ -364,6 +365,8 @@ public:
       return U"Unknown";
     case TypeCode::Void:
       return U"Void";
+    case TypeCode::Any:
+      return U"Any";
     case TypeCode::Boolean:
       return U"Boolean";
     case TypeCode::Byte:

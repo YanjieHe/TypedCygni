@@ -37,6 +37,10 @@ std::shared_ptr<UnknownType> Type::Unknown() {
   static std::shared_ptr<UnknownType> type = std::make_shared<UnknownType>();
   return type;
 }
+std::shared_ptr<AnyType> Type::Any() {
+  static std::shared_ptr<AnyType> type = std::make_shared<AnyType>();
+  return type;
+}
 std::shared_ptr<Type> Type::Unify(const std::vector<TypePtr> types) {
   // Assume that the number of types is greater than 0
   if (std::equal(types.begin() + 1, types.end(), types.begin(),
@@ -76,6 +80,8 @@ BooleanType::BooleanType() : Type(TypeCode::Boolean) {}
 StringType::StringType() : Type(TypeCode::String) {}
 
 VoidType::VoidType() : Type(TypeCode::Void) {}
+
+AnyType::AnyType() : Type(TypeCode::Any) {}
 
 ObjectType::ObjectType(std::u32string name)
     : Type(TypeCode::Object), name{name} {}

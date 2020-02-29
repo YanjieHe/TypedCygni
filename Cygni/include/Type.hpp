@@ -22,6 +22,7 @@ class StringType;
 class VoidType;
 class ObjectType;
 class UnionType;
+class AnyType;
 
 class Type {
 public:
@@ -39,6 +40,7 @@ public:
   static std::shared_ptr<VoidType> Void();
   static std::shared_ptr<BooleanType> Boolean();
   static std::shared_ptr<UnknownType> Unknown();
+  static std::shared_ptr<AnyType> Any();
 
   static std::shared_ptr<Type> Unify(const std::vector<TypePtr> types);
 };
@@ -86,6 +88,11 @@ public:
 class VoidType : public Type {
 public:
   VoidType();
+};
+
+class AnyType : public Type {
+public:
+  AnyType();
 };
 
 class ObjectType : public Type {

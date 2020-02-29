@@ -291,22 +291,21 @@ ExpPtr Parser::ParseVar() {
   if (Look().tag == Tag::Colon) {
     Match(Tag::Colon);
     auto type = ParseType();
-    if (Look().tag == Tag::Assign) {
+    if (Look().tag == Tag::Assign) { /* var x: Int = 46 */
       Match(Tag::Assign);
       auto value = ParseOr();
       auto variable =
           std::make_shared<ParameterExpression>(GetLoc(Look()), name, type);
       return std::make_shared<VarDefExpression>(GetLoc(start), variable, type,
                                                 value);
-    } else {
-      auto value =
-          std::make_shared<DefaultExpression>(GetLoc(Look()), Type::Unknown());
+    } else { /* var x: Int */
+      auto value = std::make_shared<DefaultExpression>(GetLoc(Look()), type);
       auto variable =
           std::make_shared<ParameterExpression>(GetLoc(Look()), name, type);
       return std::make_shared<VarDefExpression>(GetLoc(start), variable, type,
                                                 value);
     }
-  } else {
+  } else { /* var x = 46 */
     Match(Tag::Assign);
     auto type = std::make_shared<UnknownType>();
     auto value = ParseOr();
@@ -315,21 +314,6 @@ ExpPtr Parser::ParseVar() {
     return std::make_shared<VarDefExpression>(GetLoc(start), variable, type,
                                               value);
   }
-}
-
-std::shared_ptr<VarDefExpression> Parser::ParseVarDeclaration() {
-  const Token &start = Look();
-  Match(Tag::Var);
-  Token t = Match(Tag::Identifier);
-  auto name = t.text;
-  Match(Tag::Colon);
-  auto type = ParseType();
-  auto variable =
-      std::make_shared<ParameterExpression>(GetLoc(Look()), name, type);
-
-  auto value = std::make_shared<DefaultExpression>(GetLoc(Look()), type);
-  return std::make_shared<VarDefExpression>(GetLoc(start), variable, type,
-                                            value);
 }
 
 FieldDef Parser::ParseFieldDefinition(AccessModifier modifier,
@@ -353,6 +337,7 @@ FieldDef Parser::ParseFieldDefinition(AccessModifier modifier,
                     value);
   }
 }
+
 MethodDef Parser::ParseMethodDefinition(AccessModifier modifier,
                                         std::vector<AnnotationInfo> annotations,
                                         bool isStatic) {
@@ -403,7 +388,9 @@ std::shared_ptr<Type> Parser::ParseType() {
        {U"Float", std::make_shared<Float32Type>()},
        {U"Double", std::make_shared<Float64Type>()},
        {U"Char", std::make_shared<CharType>()},
-       {U"String", std::make_shared<StringType>()}};
+       {U"String", std::make_shared<StringType>()},
+       {U"Any", std::make_shared<AnyType>()},
+       {U"Void", std::make_shared<VoidType>()}};
   if (basicTypes.find(name) != basicTypes.end()) {
     return basicTypes[name];
   } else {
