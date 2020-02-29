@@ -120,7 +120,7 @@ json AstToJsonSerialization::VisitParameter(
 
 json AstToJsonSerialization::VisitBlock(std::shared_ptr<BlockExpression> node) {
   json obj;
-  obj["expressions"] = VisitArgumentList(node->expressions);
+  obj["expressions"] = VisitExpressionList(node->expressions);
   AttachNodeInformation(obj, node);
   return obj;
 }
@@ -255,10 +255,18 @@ json AstToJsonSerialization::VisitProgram(const Program &program) {
 }
 
 std::vector<json> AstToJsonSerialization::VisitArgumentList(
-    const std::vector<ExpPtr> &arguments) {
+    const std::vector<Argument> &arguments) {
   std::vector<json> argumentsJson;
   for (const auto &argument : arguments) {
-    argumentsJson.push_back(VisitExpression(argument));
+    json arg;
+    if (argument.name) {
+      arg["name"] = UTF32ToUTF8(*(argument.name));
+      arg["value"] = VisitExpression(argument.value);
+    } else {
+      arg["name"] = "";
+      arg["value"] = VisitExpression(argument.value);
+    }
+    argumentsJson.push_back(arg);
   }
   return argumentsJson;
 }
@@ -275,6 +283,15 @@ json AstToJsonSerialization::VisitAnnotationList(
     annotationList[name] = obj;
   }
   return annotationList;
+}
+
+std::vector<json> AstToJsonSerialization::VisitExpressionList(
+    const std::vector<ExpPtr> &expressions) {
+  std::vector<json> expressionList;
+  for (const auto &exp : expressions) {
+    expressionList.push_back(VisitExpression(exp));
+  }
+  return expressionList;
 }
 
 // void LocalVariableCollector::VisitProgram(Program& program) {
@@ -572,11 +589,12 @@ TypePtr TypeChecker::VisitDefault(std::shared_ptr<DefaultExpression> node) {
 
 TypePtr TypeChecker::VisitInvocation(std::shared_ptr<InvocationExpression> node,
                                      ScopePtr scope) {
+  // TO DO: named arguments
   auto exp = VisitExpression(node->expression, scope);
   std::vector<TypePtr> args(node->arguments.size());
   std::transform(node->arguments.begin(), node->arguments.end(), args.begin(),
-                 [this, &scope](const ExpPtr &arg) -> TypePtr {
-                   return VisitExpression(arg, scope);
+                 [this, &scope](const Argument &arg) -> TypePtr {
+                   return VisitExpression(arg.value, scope);
                  });
   if (exp->typeCode == TypeCode::Function) {
     auto functionType = std::static_pointer_cast<FunctionType>(exp);
@@ -597,25 +615,16 @@ TypeChecker::VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node,
                                ScopePtr scope) {
   TypePtr object = VisitExpression(node->object, scope);
   if (object->typeCode == TypeCode::Module) {
-    std::shared_ptr<ModuleType> moduleType =
-        std::static_pointer_cast<ModuleType>(object);
+    auto moduleType = std::static_pointer_cast<ModuleType>(object);
     const auto &moduleInfo = program.modules.GetValueByKey(moduleType->name);
     if (moduleInfo->fields.ContainsKey(node->field)) {
       auto field = moduleInfo->fields.GetValueByKey(node->field);
-      if (field.isStatic) {
-        node->type = field.type;
-        return field.type;
-      } else {
-        throw TypeException(node->location, U"access non-static field");
-      }
+      node->type = field.type;
+      return field.type;
     } else if (moduleInfo->methods.ContainsKey(node->field)) {
       auto method = moduleInfo->methods.GetValueByKey(node->field);
-      if (method.isStatic) {
-        node->type = method.signature;
-        return method.signature;
-      } else {
-        throw TypeException(node->location, U"access non-static method");
-      }
+      node->type = method.signature;
+      return method.signature;
     } else {
       throw TypeException(node->location, U"undefined field");
     }
@@ -625,20 +634,11 @@ TypeChecker::VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node,
     const auto &classInfo = program.classes.GetValueByKey(classType->name);
     if (classInfo->fields.ContainsKey(node->field)) {
       auto field = classInfo->fields.GetValueByKey(node->field);
-      if (!field.isStatic) {
-        node->type = field.type;
-        return field.type;
-      } else {
-        throw TypeException(node->location, U"access non-static field");
-      }
+      node->type = field.type;
+      return field.type;
     } else if (classInfo->methods.ContainsKey(node->field)) {
       auto method = classInfo->methods.GetValueByKey(node->field);
-      if (!method.isStatic) {
-        node->type = method.signature;
-        return method.signature;
-      } else {
-        throw TypeException(node->location, U"access non-static method");
-      }
+      node->type = method.signature;
     } else {
       throw TypeException(node->location, U"undefined field");
     }

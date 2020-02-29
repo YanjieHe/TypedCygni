@@ -70,12 +70,22 @@ public:
   DefaultExpression(SourceLocation location, TypePtr type);
 };
 
+class Argument {
+public:
+  std::optional<std::u32string> name;
+  ExpPtr value;
+
+  Argument() = default;
+  explicit Argument(ExpPtr value);
+  Argument(std::optional<std::u32string> name, ExpPtr value);
+};
+
 class InvocationExpression : public Expression {
 public:
   ExpPtr expression;
-  ExpList arguments;
+  std::vector<Argument> arguments;
   InvocationExpression(SourceLocation location, ExpPtr expression,
-                       ExpList arguments);
+                       std::vector<Argument> arguments);
 };
 
 class ParameterExpression : public Expression {
@@ -99,10 +109,10 @@ class AnnotationInfo {
 public:
   SourceLocation location;
   std::u32string name;
-  std::vector<ExpPtr> arguments;
+  std::vector<Argument> arguments;
 
   AnnotationInfo(SourceLocation location, std::u32string name,
-                 std::vector<ExpPtr> arguments);
+                 std::vector<Argument> arguments);
 };
 
 class FieldDef {
@@ -194,9 +204,9 @@ public:
 class NewExpression : public Expression {
 public:
   std::u32string name;
-  ExpList arguments;
+  std::vector<Argument> arguments;
   NewExpression(SourceLocation location, std::u32string name,
-                ExpList arguments);
+                std::vector<Argument> arguments);
 };
 
 class ClassInfo {

@@ -18,6 +18,8 @@ public:
 
   inline void Advance() { offset++; }
 
+  inline void Back() { offset--; }
+
   const Token &Match(Tag tag) {
     if (tag == Look().tag) {
       const Token &t = Look();
@@ -96,9 +98,11 @@ public:
 
   std::vector<AnnotationInfo> ParseAnnotationList();
 
-  std::vector<ExpPtr> ParseArguments();
+  std::vector<Argument> ParseArguments();
 
   std::shared_ptr<NewExpression> ParseNewExpression();
+
+  Argument ParseArgument();
 };
 } // namespace cygni
 #endif // CYGNI_PARSER_HPP

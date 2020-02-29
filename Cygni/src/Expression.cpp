@@ -44,7 +44,7 @@ DefaultExpression::DefaultExpression(SourceLocation location, TypePtr type)
 
 InvocationExpression::InvocationExpression(SourceLocation location,
                                            ExpPtr expression,
-                                           std::vector<ExpPtr> arguments)
+                                           std::vector<Argument> arguments)
     : Expression(location, ExpressionType::Invoke),
       expression{expression}, arguments{arguments} {}
 
@@ -56,7 +56,7 @@ MethodCallExpression::MethodCallExpression(SourceLocation location,
       method{method}, arguments{arguments} {}
 
 NewExpression::NewExpression(SourceLocation location, std::u32string name,
-                             ExpList arguments)
+                             std::vector<Argument> arguments)
     : Expression(location, ExpressionType::New), name{name}, arguments{
                                                                  arguments} {}
 
@@ -125,7 +125,7 @@ void Program::AddModule(std::shared_ptr<ModuleInfo> info) {
 }
 
 AnnotationInfo::AnnotationInfo(SourceLocation location, std::u32string name,
-                               std::vector<ExpPtr> arguments)
+                               std::vector<Argument> arguments)
     : location{location}, name{name}, arguments{arguments} {}
 
 MemberAccessExpression::MemberAccessExpression(SourceLocation location,
@@ -148,5 +148,10 @@ ConstructorInfo::ConstructorInfo(
                  });
   this->signature = std::make_shared<FunctionType>(parameterTypes, returnType);
 }
+
+Argument::Argument(ExpPtr value) : name(), value{value} {}
+
+Argument::Argument(std::optional<std::u32string> name, ExpPtr value)
+    : name{name}, value{value} {}
 
 } // namespace cygni

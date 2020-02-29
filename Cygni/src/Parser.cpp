@@ -188,7 +188,7 @@ ExpPtr Parser::ParsePostfix() {
     const Token &start = Look();
 
     if (Look().tag == Tag::LeftParenthesis) {
-      vector<ExpPtr> arguments = ParseArguments();
+      auto arguments = ParseArguments();
       x = std::make_shared<InvocationExpression>(GetLoc(start), x, arguments);
     } else if (Look().tag == Tag::LeftBracket) {
       // TO DO
@@ -321,18 +321,16 @@ FieldDef Parser::ParseFieldDefinition(AccessModifier modifier,
                                       bool isStatic) {
   const Token &start = Look();
   Match(Tag::Var);
-  Token t = Match(Tag::Identifier);
-  auto name = t.text;
+  auto name = Match(Tag::Identifier).text;
   Match(Tag::Colon);
   auto type = ParseType();
   if (Look().tag == Tag::Assign) {
-    Advance();
+    Match(Tag::Assign);
     auto value = ParseOr();
     return FieldDef(GetLoc(start), modifier, isStatic, annotations, name, type,
                     value);
   } else {
-    auto value =
-        std::make_shared<DefaultExpression>(GetLoc(Look()), Type::Unknown());
+    auto value = std::make_shared<DefaultExpression>(GetLoc(Look()), type);
     return FieldDef(GetLoc(start), modifier, isStatic, annotations, name, type,
                     value);
   }
@@ -505,16 +503,16 @@ std::vector<AnnotationInfo> Parser::ParseAnnotationList() {
   return annotations;
 }
 
-std::vector<ExpPtr> Parser::ParseArguments() {
-  vector<ExpPtr> arguments;
+std::vector<Argument> Parser::ParseArguments() {
+  vector<Argument> arguments;
   Match(Tag::LeftParenthesis);
   if (Look().tag == Tag::RightParenthesis) {
     Match(Tag::RightParenthesis);
   } else {
-    arguments.push_back(ParseOr());
+    arguments.push_back(ParseArgument());
     while (!IsEof() && Look().tag != Tag::RightParenthesis) {
       Match(Tag::Comma);
-      arguments.push_back(ParseOr());
+      arguments.push_back(ParseArgument());
     }
     Match(Tag::RightParenthesis);
   }
@@ -526,10 +524,29 @@ std::shared_ptr<NewExpression> Parser::ParseNewExpression() {
   Match(Tag::New);
   auto name = Match(Tag::Identifier).text;
   if (Look().tag != Tag::LeftParenthesis) {
-    return std::make_shared<NewExpression>(GetLoc(start), name, ExpList{});
+    return std::make_shared<NewExpression>(GetLoc(start), name,
+                                           std::vector<Argument>{});
   } else {
     throw ParserException(Look().line, Look().column,
                           U"not supported new expression");
+  }
+}
+
+Argument Parser::ParseArgument() {
+  if (Look().tag == Tag::Identifier) {
+    auto name = Match(Tag::Identifier).text;
+    if (Look().tag == Tag::Assign) {
+      Match(Tag::Assign);
+      ExpPtr value = ParseOr();
+      return Argument(name, value);
+    } else {
+      Back();
+      ExpPtr value = ParseOr();
+      return Argument(name, value);
+    }
+  } else {
+    ExpPtr value = ParseOr();
+    return Argument(value);
   }
 }
 } // namespace cygni

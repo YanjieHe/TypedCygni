@@ -27,8 +27,9 @@ public:
   json VisitVarDefExpression(std::shared_ptr<VarDefExpression> node);
   void AttachNodeInformation(json &obj, ExpPtr node);
   json VisitProgram(const Program &program);
-  std::vector<json> VisitArgumentList(const std::vector<ExpPtr> &arguments);
+  std::vector<json> VisitArgumentList(const std::vector<Argument> &arguments);
   json VisitAnnotationList(const std::vector<AnnotationInfo> &annotations);
+  std::vector<json> VisitExpressionList(const std::vector<ExpPtr> &expressions);
 };
 
 // class LocalVariableCollector {
