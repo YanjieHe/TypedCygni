@@ -186,6 +186,15 @@ json AstToJsonSerialization::VisitVarDefExpression(
   return obj;
 }
 
+json AstToJsonSerialization::VisitWhileLoop(
+    std::shared_ptr<WhileExpression> node) {
+  json obj;
+  AttachNodeInformation(obj, node);
+  obj["condition"] = VisitExpression(node->condition);
+  obj["body"] = VisitExpression(node->body);
+  return obj;
+}
+
 void AstToJsonSerialization::AttachNodeInformation(json &obj, ExpPtr node) {
   obj["id"] = node->id;
   obj["location"] = VisitSourceLocation(node->location);
@@ -231,6 +240,8 @@ json AstToJsonSerialization::VisitExpression(ExpPtr node) {
   case ExpressionType::VariableDefinition:
     return VisitVarDefExpression(
         std::static_pointer_cast<VarDefExpression>(node));
+  case ExpressionType::While:
+    return VisitWhileLoop(std::static_pointer_cast<WhileExpression>(node));
   default:
     throw NotImplementedException();
   }
@@ -416,12 +427,6 @@ TypePtr TypeChecker::VisitBinary(std::shared_ptr<BinaryExpression> node,
     } else {
       throw TypeException(node->location, U"type mismatch: !=");
     }
-  } else if (node->nodeType == ExpressionType::Assign) {
-    if (left->Equals(right)) {
-      return Attach(node, left);
-    } else {
-      throw TypeException(node->location, U"type mismtach: =");
-    }
   } else {
     throw NotImplementedException();
   }
@@ -441,6 +446,33 @@ TypePtr TypeChecker::Attach(ExpPtr node, TypePtr type) {
   return type;
 }
 
+TypePtr TypeChecker::VisitAssign(std::shared_ptr<BinaryExpression> node,
+                                 ScopePtr scope) {
+  if (node->left->nodeType == ExpressionType::Parameter) {
+    auto left = VisitExpression(node->left, scope);
+    auto right = VisitExpression(node->right, scope);
+    if (left->Equals(right)) {
+      node->type = Type::Void();
+      return Type::Void();
+    } else {
+      throw TypeException(node->location, U"type mismtach: =");
+    }
+  } else if (node->left->nodeType == ExpressionType::MemberAccess) {
+    auto left = VisitExpression(node->left, scope);
+    auto right = VisitExpression(node->right, scope);
+    if (left->Equals(right)) {
+      node->type = Type::Void();
+      return Type::Void();
+    } else {
+      throw TypeException(node->location,
+                          U"type mismtach: assignment to field");
+    }
+  } else {
+    throw TypeException(node->location,
+                        U"cannot assign to the left expression");
+  }
+}
+
 TypePtr TypeChecker::VisitExpression(ExpPtr node, ScopePtr scope) {
   //	std::cout << "msg: "
   //			  << cygni::UTF32ToUTF8(
@@ -453,8 +485,9 @@ TypePtr TypeChecker::VisitExpression(ExpPtr node, ScopePtr scope) {
   case ExpressionType::Divide:
   case ExpressionType::Equal:
   case ExpressionType::NotEqual:
-  case ExpressionType::Assign:
     return VisitBinary(std::static_pointer_cast<BinaryExpression>(node), scope);
+  case ExpressionType::Assign:
+    return VisitAssign(std::static_pointer_cast<BinaryExpression>(node), scope);
   case ExpressionType::Block:
     return VisitBlock(std::static_pointer_cast<BlockExpression>(node), scope);
   case ExpressionType::Constant:
@@ -664,8 +697,6 @@ TypePtr
 TypeChecker::VisitVarDefExpression(std::shared_ptr<VarDefExpression> node,
                                    ScopePtr scope) {
   TypePtr value = VisitExpression(node->value, scope);
-  //  cout << UTF32ToUTF8(value->ToString()) << endl;
-  //  cout << UTF32ToUTF8(node->type->ToString()) << endl;
   if (node->type->Equals(value)) {
     scope->Put(node->variable->name, node->type);
     return node->type;

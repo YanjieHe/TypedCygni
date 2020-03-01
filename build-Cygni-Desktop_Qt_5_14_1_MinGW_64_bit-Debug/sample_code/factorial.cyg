@@ -43,6 +43,7 @@ module App
 
     def Choose(x: Int): Bool
     {
+		var point = Point.Create(3, 5)
         if (x != 5) {
             return true
         }

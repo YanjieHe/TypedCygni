@@ -25,6 +25,7 @@ public:
   json VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node);
   json VisitNewExpression(std::shared_ptr<NewExpression> node);
   json VisitVarDefExpression(std::shared_ptr<VarDefExpression> node);
+  json VisitWhileLoop(std::shared_ptr<WhileExpression> node);
   void AttachNodeInformation(json &obj, ExpPtr node);
   json VisitProgram(const Program &program);
   std::vector<json> VisitArgumentList(const std::vector<Argument> &arguments);
@@ -94,6 +95,7 @@ public:
                                 ScopePtr scope);
   void VisitProgram(ScopePtr scope);
   TypePtr Attach(ExpPtr node, TypePtr type);
+  TypePtr VisitAssign(std::shared_ptr<BinaryExpression> node, ScopePtr scope);
 };
 
 } // namespace cygni
