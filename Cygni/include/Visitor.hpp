@@ -33,6 +33,10 @@ public:
   std::vector<json> VisitExpressionList(const std::vector<ExpPtr> &expressions);
 };
 
+class TreeTraverser {
+public:
+};
+
 // class LocalVariableCollector {
 // public:
 // 	void VisitExpression(ExpPtr node);
