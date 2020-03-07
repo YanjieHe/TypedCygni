@@ -711,7 +711,11 @@ TypePtr
 TypeChecker::VisitVarDefExpression(std::shared_ptr<VarDefExpression> node,
                                    ScopePtr scope) {
   TypePtr value = VisitExpression(node->value, scope);
-  if (node->type->Equals(value)) {
+  if (node->type->typeCode == TypeCode::Unknown) {
+    node->type = value;
+    scope->Put(node->variable->name, node->type);
+    return node->type;
+  } else if (node->type->Equals(value)) {
     scope->Put(node->variable->name, node->type);
     return node->type;
   } else {
