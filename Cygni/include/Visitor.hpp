@@ -100,6 +100,7 @@ public:
   void VisitProgram(ScopePtr scope);
   TypePtr Attach(ExpPtr node, TypePtr type);
   TypePtr VisitAssign(std::shared_ptr<BinaryExpression> node, ScopePtr scope);
+  TypePtr VisitWhile(std::shared_ptr<WhileExpression> node, ScopePtr scope);
 };
 
 } // namespace cygni

@@ -473,6 +473,18 @@ TypePtr TypeChecker::VisitAssign(std::shared_ptr<BinaryExpression> node,
   }
 }
 
+TypePtr TypeChecker::VisitWhile(std::shared_ptr<WhileExpression> node,
+                                ScopePtr scope) {
+  TypePtr condition = VisitExpression(node->condition, scope);
+  if (condition->typeCode == TypeCode::Boolean) {
+    VisitExpression(node->body, scope);
+    return Type::Void();
+  } else {
+    throw TypeException(node->location,
+                        U"while condition must be boolean type");
+  }
+}
+
 TypePtr TypeChecker::VisitExpression(ExpPtr node, ScopePtr scope) {
   //	std::cout << "msg: "
   //			  << cygni::UTF32ToUTF8(
@@ -514,6 +526,8 @@ TypePtr TypeChecker::VisitExpression(ExpPtr node, ScopePtr scope) {
   case ExpressionType::VariableDefinition:
     return VisitVarDefExpression(
         std::static_pointer_cast<VarDefExpression>(node), scope);
+  case ExpressionType::While:
+    return VisitWhile(std::static_pointer_cast<WhileExpression>(node), scope);
   default:
     throw NotImplementedException();
   }
