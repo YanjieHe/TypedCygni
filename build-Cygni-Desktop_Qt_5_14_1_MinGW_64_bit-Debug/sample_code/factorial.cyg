@@ -30,7 +30,6 @@ module App
 {
     def Factorial(n: Int): Int
     {
-		IO.PrintInt(n)
         if (n == 0)
         {
             return 1
@@ -53,8 +52,6 @@ module App
 
 	def IsEven(n: Int): Bool
 	{
-		IO.PrintText("IsEven")
-		IO.PrintInt(n)
 		if (n == 0)
 		{
 			return true
@@ -67,8 +64,6 @@ module App
 	
 	def IsOdd(n: Int): Bool
 	{
-		IO.PrintText("IsOdd")
-		IO.PrintInt(n)
 		if (n == 0)
 		{
 			return false
@@ -81,7 +76,7 @@ module App
 	
     def Main(): Void
     {
-		if (IsEven(10))
+		if (IsEven(11))
 		{
 			IO.PrintText("even number")
 		}

@@ -51,7 +51,8 @@
 (define (eval-invoke node program scope)
   (define function (evaluate (hash-ref node 'expression) program scope))
   (define arguments (for/list ([argument (hash-ref node 'arguments)])
-                      (evaluate argument program scope)))
+                (define val (hash-ref argument 'value))
+                      (evaluate val program scope)))
   (function arguments scope))
 
 
@@ -111,11 +112,11 @@
 (define (eval-extern-function func-info arguments program outer-scope)
   (define annotations (hash-ref func-info 'annotations))
   (define extern (hash-ref annotations 'Extern))
-  (define func-name (hash-ref (list-ref (hash-ref extern 'arguments) 1) 'constant))
+  (define first-arg (list-ref (hash-ref extern 'arguments) 1))
+  (define func-name (hash-get first-arg 'value 'constant))
   (match func-name
     ["print_int" (apply displayln arguments)]
-    ["print_text" (apply displayln arguments)]
-    ))
+    ["print_text" (apply displayln arguments)]))
 
 
 (define (eval-user-defined-function func-info arguments program outer-scope)
@@ -134,9 +135,16 @@
       (eval-extern-function func-info arguments program outer-scope)
       (eval-user-defined-function func-info arguments program outer-scope)))
 
+
+(define (pass) '())
+
+(define (eval-module module-info program outer-scope)
+  (pass))
+
 (define App (hash-get program 'modules 'App))
 (define Factorial
   (hash-get program 'modules 'App 'methods 'Factorial))
+
 (define global-scope (scope '() (make-hash)))
 (eval-function Factorial (list 10) program global-scope)
 
