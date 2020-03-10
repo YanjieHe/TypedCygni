@@ -3,6 +3,8 @@
 (require json)
 (require racket/match)
 
+; ******************** Load AST ********************
+
 (define code-path
   "../build-Cygni-Desktop_Qt_5_14_1_MinGW_64_bit-Debug/sample_code/factorial.json")  
 
@@ -11,6 +13,7 @@
     (lambda () (read-json))))
 
 
+; ******************** Scope ********************
 (struct scope
   (parent
    table))
@@ -27,7 +30,7 @@
   (define table (scope-table scope))
   (hash-set! table key value))
 
-
+; ******************** Hash Table Utility ********************
 (define (hash-get hash-table . keys)
   (if (null? keys)
       hash-table
@@ -35,6 +38,7 @@
              (hash-ref hash-table (car keys))
              (cdr keys))))
 
+; ******************** Evaluation ********************
 (define (eval-constant node)
   (match (hash-ref node 'type)
     ["Int32" (string->number (hash-ref node 'constant))]
@@ -86,8 +90,7 @@
             (hash-get module 'fields field 'value)
             (let ([func-info (hash-get module 'methods field)])
               (lambda (args scope)
-                (eval-function func-info args program scope))
-              )))
+                (eval-function func-info args program scope)))))
       (error "not supported object")))
                    
 (define (evaluate node program scope)
@@ -105,9 +108,8 @@
     ["Parameter" (eval-parameter node program scope)]
     ["Block" (eval-block node program scope)]
     ["Conditional" (eval-if node program scope)]
-    ["MemberAccess" (eval-member-access node program scope)]
-    )
-  )
+    ["MemberAccess" (eval-member-access node program scope)]))
+
 
 (define (eval-extern-function func-info arguments program outer-scope)
   (define annotations (hash-ref func-info 'annotations))
@@ -141,13 +143,13 @@
 (define (eval-module module-info program outer-scope)
   (pass))
 
+; ******************** Run AST ********************
 (define App (hash-get program 'modules 'App))
 (define Factorial
   (hash-get program 'modules 'App 'methods 'Factorial))
 
 (define global-scope (scope '() (make-hash)))
-(eval-function Factorial (list 10) program global-scope)
-
+; (eval-function Factorial (list 10) program global-scope)
 
 (define Main
   (hash-get program 'modules 'App 'methods 'Main))
