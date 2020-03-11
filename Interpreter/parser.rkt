@@ -43,6 +43,8 @@
     ["Boolean" (string=? "true" (hash-ref node 'constant))]
     ["String" (hash-ref node 'constant)])))
 
+(: (parse-binary-exp (-> JSExpr AST)))
+(define )
 ; TO DO
 (define (parse-expr expr-json)
   (define node-type (hash-ref expr-json 'nodeType))
