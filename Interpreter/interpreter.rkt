@@ -141,7 +141,13 @@
 (define (pass) '())
 
 (define (eval-module module-info program outer-scope)
-  (pass))
+  (define module-data (make-hash))
+  (for/list [(field (hash-ref module-info 'fields))]
+    (hash-set! module-data (hash-ref field 'name) (evaluate (hash-ref field 'value))))
+  (for/list [(method (hash-ref module-info 'methods))]
+    (hash-set! module-data (hash-ref method 'name) (evaluate (hash-ref method 'value))))
+  module-data)
+
 
 ; ******************** Run AST ********************
 (define App (hash-get program 'modules 'App))
@@ -161,7 +167,7 @@
 (for/list ([method-name (hash-keys (hash-ref App 'methods))])
   (define func-info (hash-get App 'methods method-name))
   (scope-put module-scope (hash-ref func-info 'name)
-             (lambda (args scope)
-               (eval-function func-info args program scope))))
+    (lambda (args scope)
+      (eval-function func-info args program scope))))
 
 (eval-function Main (list) program module-scope)
