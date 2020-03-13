@@ -44,22 +44,24 @@
       (let ([name (cast (hash-ref class-json 'name) String)]
             [fields : (HashTable String Field) (make-hash)]
             [methods : (HashTable String Function) (make-hash)]
-            [fields-json (hash-ref class-json 'fields)]
-            [methods-json (hash-ref class-json 'methods)])
-        (if (and (list? fields-json) (list? methods-json))
-            (begin
-              (for-each (lambda (field-json)
-                          (let ([field (parse-field
-                                        (cast field-json JSExpr))])
-                            (hash-set! fields (Field-name field) field)))
-                        fields-json)
-              (for-each (lambda (method-json)
-                          (let ([method (parse-func-def
-                                         (cast method-json JSExpr))])
-                            (hash-set! methods (Function-name method) method)))
-                        methods-json)
-              (Class name fields methods))
-            (error "class fields or methods json format")))
+            [fields-json (cast (hash-ref class-json 'fields) (HashTable Symbol JSExpr))]
+            [methods-json (cast (hash-ref class-json 'methods) (HashTable Symbol JSExpr))])
+        (begin
+          (for-each (lambda (field-symbol)
+                      (let* ([field-symbol (cast field-symbol Symbol)]
+                             [field-json (hash-ref fields-json field-symbol)]
+                             [field (parse-field
+                                     (cast field-json JSExpr))])
+                        (hash-set! fields (Field-name field) field)))
+                    (hash-keys fields-json))
+          (for-each (lambda (method-symbol)
+                      (let* ([method-symbol (cast method-symbol Symbol)]
+                             [method-json (hash-ref methods-json method-symbol)]
+                             [method (parse-func-def
+                                      (cast method-json JSExpr))])
+                        (hash-set! methods (Function-name method) method)))
+                    (hash-keys methods-json))
+          (Class name fields methods)))
       (error "class json format")))
 
 
@@ -131,7 +133,10 @@
   (define ann-json (cast input-json (HashTable Symbol JSExpr)))
   (define name (cast (hash-ref ann-json 'name) String))
   (define constant-list
-    (map parse-constant (cast (hash-ref ann-json 'arguments) (Listof JSExpr))))
+    (map (lambda (input-json)
+           (define constant-json (hash-ref (cast input-json (HashTable Symbol JSExpr)) 'value))
+           (parse-constant constant-json))
+         (cast (hash-ref ann-json 'arguments) (Listof JSExpr))))
   (Annotation name constant-list))
 
 
@@ -152,7 +157,8 @@
       (let ([location (parse-location (hash-ref constant-json 'location))])
         (Constant location
                   (match (hash-ref constant-json 'type)
-                    ["Int32" (cast (hash-ref constant-json 'constant) Number)]
+                    ["Int32" (string->number
+                              (cast (hash-ref constant-json 'constant) String))]
                     ["Boolean" (string=? "true"
                                          (cast (hash-ref constant-json 'constant) String))]
                     ["String" (hash-ref constant-json 'constant)])))
@@ -164,10 +170,10 @@
   (define binary-json (if (hash? input-json)
                           input-json
                           (error "binary expression json format")))
-  (define location (parse-location binary-json))
+  (define location (parse-location (hash-ref binary-json 'location)))
   (define left (parse-expr (hash-ref binary-json 'left)))
   (define right (parse-expr (hash-ref binary-json 'right)))
-  ((match (hash-ref binary-json 'type)
+  ((match (hash-ref binary-json 'nodeType)
      ["Add" Add]
      ["Subtract" Subtract]
      ["Multiply" Multiply]
@@ -191,6 +197,68 @@
          (cast (hash-ref block-json 'expressions) (Listof JSExpr))))
   (Block location expressions))
 
+(: parse-var-def (-> JSExpr VariableDefinition))
+(define (parse-var-def input-json)
+  (define var-def-json (cast input-json (HashTable Symbol JSExpr)))
+  (define location (parse-location (hash-ref var-def-json 'location)))
+  (define name (parse-name (hash-ref var-def-json 'variable)))
+  (define value (parse-expr (hash-ref var-def-json 'value)))
+  (VariableDefinition
+   location name value))
+
+
+(: parse-name (-> JSExpr Name))
+(define (parse-name input-json)
+  (define name-json (cast input-json (HashTable Symbol JSExpr)))
+  (define location (parse-location (hash-ref name-json 'location)))
+  (define name (cast (hash-ref name-json 'name) String))
+  (Name location name))
+
+
+(: parse-new (-> JSExpr New))
+(define (parse-new input-json)
+  (define new-json (cast input-json (HashTable Symbol JSExpr)))
+  (define location (parse-location (hash-ref new-json 'location)))
+  (New location))
+
+
+(: parse-assign (-> JSExpr Assign))
+(define (parse-assign input-json)
+  (define assign-json (cast input-json (HashTable Symbol JSExpr)))
+  (define location (parse-location (hash-ref assign-json 'location)))
+  (Assign location))
+
+
+(: parse-return (-> JSExpr Return))
+(define (parse-return input-json)
+  (define return-json (cast input-json (HashTable Symbol JSExpr)))
+  (define location (parse-location (hash-ref return-json 'location)))
+  (Return location))
+
+(: parse-invoke (-> JSExpr Invoke))
+(define (parse-invoke input-json)
+  (define invoke-json (cast input-json (HashTable Symbol JSExpr)))
+  (define location (parse-location (hash-ref invoke-json 'location)))
+  (Invoke location))
+
+
+(: parse-conditional (-> JSExpr Conditional))
+(define (parse-conditional input-json)
+  (define conditional-json (cast input-json (HashTable Symbol JSExpr)))
+  (define location (parse-location (hash-ref conditional-json 'location)))
+  (define condition (parse-expr (hash-ref conditional-json 'condition)))
+  (define if-true (parse-expr (hash-ref conditional-json 'ifTrue)))
+  (define if-false (parse-expr (hash-ref conditional-json 'ifFalse)))
+  (Conditional location condition if-true if-false))
+
+
+(: parse-default (-> JSExpr Default))
+(define (parse-default input-json)
+  (define default-json (cast input-json (HashTable Symbol JSExpr)))
+  (define location (parse-location (hash-ref default-json 'location)))
+  (Default location))
+
+
 (: parse-expr (-> JSExpr AST))
 (define (parse-expr input-json)
   (define expr-json (if (hash? input-json)
@@ -212,6 +280,14 @@
     ["Equal" (parse-binary-exp expr-json)]
     ["NotEqual" (parse-binary-exp expr-json)]
     ["Block" (parse-block expr-json)]
+    ["VariableDefinition" (parse-var-def expr-json)]
+    ["New" (parse-new expr-json)]
+    ["Assign" (parse-assign expr-json)]
+    ["Return" (parse-return expr-json)]
+    ["Invoke" (parse-invoke expr-json)]
+    ["Conditional" (parse-conditional expr-json)]
+    ["Default" (parse-default expr-json)]
+    ["Parameter" (parse-name expr-json)]
     [_ (error "not supported node type" node-type)]))
 
 

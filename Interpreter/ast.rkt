@@ -28,7 +28,15 @@
                   LE
                   EQ
                   NE
-                  Block))
+                  Block
+                  VariableDefinition
+                  Name
+                  New
+                  Assign
+                  Return
+                  Invoke
+                  Conditional
+                  Default))
 
 (struct Call (
   [location : Location]
@@ -97,6 +105,39 @@
 (struct Block
   ([location : Location]
    [expressions : (Listof AST)]))
+
+(struct VariableDefinition
+  ([location : Location]
+   [name : Name]
+   [value : AST]))
+
+(struct Name
+  ([location : Location]
+   [name : String]))
+
+(struct New
+  ([location : Location]))
+
+(struct Assign
+  ([location : Location]))
+
+
+(struct Return
+  ([location : Location]))
+
+
+(struct Invoke
+  ([location : Location]))
+
+
+(struct Conditional
+  ([location : Location]
+   [condition : AST]
+   [if-true : AST]
+   [if-false : AST]))
+
+(struct Default
+  ([location : Location]))
 
 (struct Annotation
   ([name : String]
