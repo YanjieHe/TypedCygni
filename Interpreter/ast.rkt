@@ -15,7 +15,20 @@
   [end-line : Integer]
   [end-col : Integer]))
 
-(define-type AST (U Constant Call))
+(define-type AST (U
+                  Constant
+                  Add
+                  Subtract
+                  Multiply
+                  Divide
+                  Modulo
+                  GT
+                  LT
+                  GE
+                  LE
+                  EQ
+                  NE
+                  Block))
 
 (struct Call (
   [location : Location]
@@ -81,10 +94,18 @@
     [location : Location]
     [val : Any]))
 
+(struct Block
+  ([location : Location]
+   [expressions : (Listof AST)]))
+
+(struct Annotation
+  ([name : String]
+   [arguments : (Listof Constant)]))
+
 (struct Function (
     [location : Location]
     [name : String]
-    [annotations : (Listof Constant)]
+    [annotations : (Listof Annotation)]
     [parameters : (Listof String)]
     [body : AST]))
 
@@ -109,6 +130,7 @@
   (hash-set! table key value))
 
 (struct Field (
+    [location : Location]
     [name : String]
     [value : AST]))
 

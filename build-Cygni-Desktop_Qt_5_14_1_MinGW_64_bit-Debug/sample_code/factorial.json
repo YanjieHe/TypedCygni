@@ -1,1 +1,1552 @@
-{"classes":{"Point":{"fields":{"x":{"accessModifier":"Public","annotations":{},"isStatic":false,"location":{"endCol":8,"endLine":15,"startCol":8,"startLine":14},"name":"x","type":"Int32","value":{"id":8,"location":{"endCol":8,"endLine":15,"startCol":8,"startLine":15},"nodeType":"Default","type":"Int32"}},"y":{"accessModifier":"Public","annotations":{},"isStatic":false,"location":{"endCol":2,"endLine":16,"startCol":8,"startLine":15},"name":"y","type":"Int32","value":{"id":9,"location":{"endCol":2,"endLine":16,"startCol":2,"startLine":16},"nodeType":"Default","type":"Int32"}}},"methods":{},"name":"Point","nodeType":"class"}},"modules":{"App":{"fields":{},"methods":{"Choose":{"accessModifier":"Public","annotations":{},"body":{"expressions":[{"id":51,"location":{"endCol":11,"endLine":46,"startCol":6,"startLine":45},"nodeType":"VariableDefinition","type":"Point","value":{"arguments":[{"name":"","value":{"constant":"3","id":47,"location":{"endCol":30,"endLine":45,"startCol":29,"startLine":45},"nodeType":"Constant","type":"Int32"}},{"name":"","value":{"constant":"5","id":48,"location":{"endCol":33,"endLine":45,"startCol":32,"startLine":45},"nodeType":"Constant","type":"Int32"}}],"expression":{"fieldName":"Create","id":46,"location":{"endCol":28,"endLine":45,"startCol":21,"startLine":45},"nodeType":"MemberAccess","object":{"id":45,"location":{"endCol":21,"endLine":45,"startCol":20,"startLine":45},"name":"Point","nodeType":"Parameter","type":"Point"},"type":"Function"},"id":49,"location":{"endCol":11,"endLine":46,"startCol":28,"startLine":45},"nodeType":"Invoke","type":"Point"},"variable":{"id":50,"location":{"endCol":11,"endLine":46,"startCol":11,"startLine":46},"name":"point","nodeType":"Parameter","type":"Unknown"}},{"condition":{"id":54,"left":{"id":52,"location":{"endCol":17,"endLine":46,"startCol":14,"startLine":46},"name":"x","nodeType":"Parameter","type":"Int32"},"location":{"endCol":20,"endLine":46,"startCol":14,"startLine":46},"nodeType":"NotEqual","right":{"constant":"5","id":53,"location":{"endCol":20,"endLine":46,"startCol":19,"startLine":46},"nodeType":"Constant","type":"Int32"},"type":"Boolean"},"id":59,"ifFalse":{"id":58,"location":{"endCol":15,"endLine":49,"startCol":15,"startLine":49},"nodeType":"Default","type":"Void"},"ifTrue":{"expressions":[{"id":56,"location":{"endCol":10,"endLine":48,"startCol":19,"startLine":47},"nodeType":"Return","type":"Boolean","value":{"constant":"true","id":55,"location":{"endCol":10,"endLine":48,"startCol":24,"startLine":47},"nodeType":"Constant","type":"Boolean"}}],"id":57,"location":{"endCol":15,"endLine":49,"startCol":22,"startLine":46},"nodeType":"Block","type":"Void"},"location":{"endCol":15,"endLine":49,"startCol":11,"startLine":46},"nodeType":"Conditional","type":"Void"},{"id":61,"location":{"endCol":6,"endLine":50,"startCol":15,"startLine":49},"nodeType":"Return","type":"Boolean","value":{"constant":"false","id":60,"location":{"endCol":6,"endLine":50,"startCol":21,"startLine":49},"nodeType":"Constant","type":"Boolean"}}],"id":62,"location":{"endCol":5,"endLine":53,"startCol":6,"startLine":44},"nodeType":"Block","type":"Void"},"isStatic":true,"location":{"endCol":5,"endLine":53,"startCol":8,"startLine":43},"name":"Choose","parameters":[{"id":44,"location":{"endCol":23,"endLine":43,"startCol":17,"startLine":43},"name":"x","nodeType":"Parameter","type":"Int32"}],"type":"Function"},"Factorial":{"accessModifier":"Public","annotations":{},"body":{"expressions":[{"condition":{"id":29,"left":{"id":27,"location":{"endCol":17,"endLine":33,"startCol":14,"startLine":33},"name":"n","nodeType":"Parameter","type":"Int32"},"location":{"endCol":20,"endLine":33,"startCol":14,"startLine":33},"nodeType":"Equal","right":{"constant":"0","id":28,"location":{"endCol":20,"endLine":33,"startCol":19,"startLine":33},"nodeType":"Constant","type":"Int32"},"type":"Boolean"},"id":42,"ifFalse":{"expressions":[{"id":40,"location":{"endCol":10,"endLine":40,"startCol":19,"startLine":39},"nodeType":"Return","type":"Int32","value":{"id":39,"left":{"id":33,"location":{"endCol":23,"endLine":39,"startCol":21,"startLine":39},"name":"n","nodeType":"Parameter","type":"Int32"},"location":{"endCol":10,"endLine":40,"startCol":21,"startLine":39},"nodeType":"Multiply","right":{"arguments":[{"name":"n","value":{"id":37,"left":{"id":35,"location":{"endCol":37,"endLine":39,"startCol":35,"startLine":39},"name":"n","nodeType":"Parameter","type":"Int32"},"location":{"endCol":40,"endLine":39,"startCol":35,"startLine":39},"nodeType":"Subtract","right":{"constant":"1","id":36,"location":{"endCol":40,"endLine":39,"startCol":39,"startLine":39},"nodeType":"Constant","type":"Int32"},"type":"Int32"}}],"expression":{"id":34,"location":{"endCol":34,"endLine":39,"startCol":33,"startLine":39},"name":"Factorial","nodeType":"Parameter","type":"Function"},"id":38,"location":{"endCol":10,"endLine":40,"startCol":34,"startLine":39},"nodeType":"Invoke","type":"Int32"},"type":"Int32"}}],"id":41,"location":{"endCol":6,"endLine":41,"startCol":10,"startLine":38},"nodeType":"Block","type":"Void"},"ifTrue":{"expressions":[{"id":31,"location":{"endCol":10,"endLine":36,"startCol":19,"startLine":35},"nodeType":"Return","type":"Int32","value":{"constant":"1","id":30,"location":{"endCol":10,"endLine":36,"startCol":21,"startLine":35},"nodeType":"Constant","type":"Int32"}}],"id":32,"location":{"endCol":13,"endLine":37,"startCol":10,"startLine":34},"nodeType":"Block","type":"Void"},"location":{"endCol":6,"endLine":41,"startCol":11,"startLine":33},"nodeType":"Conditional","type":"Void"}],"id":43,"location":{"endCol":8,"endLine":43,"startCol":6,"startLine":32},"nodeType":"Block","type":"Void"},"isStatic":true,"location":{"endCol":8,"endLine":43,"startCol":8,"startLine":31},"name":"Factorial","parameters":[{"id":26,"location":{"endCol":26,"endLine":31,"startCol":20,"startLine":31},"name":"n","nodeType":"Parameter","type":"Int32"}],"type":"Function"},"IsEven":{"accessModifier":"Public","annotations":{},"body":{"expressions":[{"condition":{"id":66,"left":{"id":64,"location":{"endCol":11,"endLine":55,"startCol":8,"startLine":55},"name":"n","nodeType":"Parameter","type":"Int32"},"location":{"endCol":14,"endLine":55,"startCol":8,"startLine":55},"nodeType":"Equal","right":{"constant":"0","id":65,"location":{"endCol":14,"endLine":55,"startCol":13,"startLine":55},"nodeType":"Constant","type":"Int32"},"type":"Boolean"},"id":77,"ifFalse":{"expressions":[{"id":75,"location":{"endCol":4,"endLine":62,"startCol":10,"startLine":61},"nodeType":"Return","type":"Boolean","value":{"arguments":[{"name":"n","value":{"id":73,"left":{"id":71,"location":{"endCol":20,"endLine":61,"startCol":18,"startLine":61},"name":"n","nodeType":"Parameter","type":"Int32"},"location":{"endCol":23,"endLine":61,"startCol":18,"startLine":61},"nodeType":"Subtract","right":{"constant":"1","id":72,"location":{"endCol":23,"endLine":61,"startCol":22,"startLine":61},"nodeType":"Constant","type":"Int32"},"type":"Int32"}}],"expression":{"id":70,"location":{"endCol":17,"endLine":61,"startCol":16,"startLine":61},"name":"IsOdd","nodeType":"Parameter","type":"Function"},"id":74,"location":{"endCol":4,"endLine":62,"startCol":17,"startLine":61},"nodeType":"Invoke","type":"Boolean"}}],"id":76,"location":{"endCol":3,"endLine":63,"startCol":4,"startLine":60},"nodeType":"Block","type":"Void"},"ifTrue":{"expressions":[{"id":68,"location":{"endCol":4,"endLine":58,"startCol":10,"startLine":57},"nodeType":"Return","type":"Boolean","value":{"constant":"true","id":67,"location":{"endCol":4,"endLine":58,"startCol":15,"startLine":57},"nodeType":"Constant","type":"Boolean"}}],"id":69,"location":{"endCol":7,"endLine":59,"startCol":4,"startLine":56},"nodeType":"Block","type":"Void"},"location":{"endCol":3,"endLine":63,"startCol":5,"startLine":55},"nodeType":"Conditional","type":"Void"}],"id":78,"location":{"endCol":5,"endLine":65,"startCol":3,"startLine":54},"nodeType":"Block","type":"Void"},"isStatic":true,"location":{"endCol":5,"endLine":65,"startCol":5,"startLine":53},"name":"IsEven","parameters":[{"id":63,"location":{"endCol":20,"endLine":53,"startCol":14,"startLine":53},"name":"n","nodeType":"Parameter","type":"Int32"}],"type":"Function"},"IsOdd":{"accessModifier":"Public","annotations":{},"body":{"expressions":[{"condition":{"id":82,"left":{"id":80,"location":{"endCol":11,"endLine":67,"startCol":8,"startLine":67},"name":"n","nodeType":"Parameter","type":"Int32"},"location":{"endCol":14,"endLine":67,"startCol":8,"startLine":67},"nodeType":"Equal","right":{"constant":"0","id":81,"location":{"endCol":14,"endLine":67,"startCol":13,"startLine":67},"nodeType":"Constant","type":"Int32"},"type":"Boolean"},"id":93,"ifFalse":{"expressions":[{"id":91,"location":{"endCol":4,"endLine":74,"startCol":10,"startLine":73},"nodeType":"Return","type":"Boolean","value":{"arguments":[{"name":"n","value":{"id":89,"left":{"id":87,"location":{"endCol":21,"endLine":73,"startCol":19,"startLine":73},"name":"n","nodeType":"Parameter","type":"Int32"},"location":{"endCol":24,"endLine":73,"startCol":19,"startLine":73},"nodeType":"Subtract","right":{"constant":"1","id":88,"location":{"endCol":24,"endLine":73,"startCol":23,"startLine":73},"nodeType":"Constant","type":"Int32"},"type":"Int32"}}],"expression":{"id":86,"location":{"endCol":18,"endLine":73,"startCol":17,"startLine":73},"name":"IsEven","nodeType":"Parameter","type":"Function"},"id":90,"location":{"endCol":4,"endLine":74,"startCol":18,"startLine":73},"nodeType":"Invoke","type":"Boolean"}}],"id":92,"location":{"endCol":3,"endLine":75,"startCol":4,"startLine":72},"nodeType":"Block","type":"Void"},"ifTrue":{"expressions":[{"id":84,"location":{"endCol":4,"endLine":70,"startCol":10,"startLine":69},"nodeType":"Return","type":"Boolean","value":{"constant":"false","id":83,"location":{"endCol":4,"endLine":70,"startCol":16,"startLine":69},"nodeType":"Constant","type":"Boolean"}}],"id":85,"location":{"endCol":7,"endLine":71,"startCol":4,"startLine":68},"nodeType":"Block","type":"Void"},"location":{"endCol":3,"endLine":75,"startCol":5,"startLine":67},"nodeType":"Conditional","type":"Void"}],"id":94,"location":{"endCol":8,"endLine":77,"startCol":3,"startLine":66},"nodeType":"Block","type":"Void"},"isStatic":true,"location":{"endCol":8,"endLine":77,"startCol":5,"startLine":65},"name":"IsOdd","parameters":[{"id":79,"location":{"endCol":19,"endLine":65,"startCol":13,"startLine":65},"name":"n","nodeType":"Parameter","type":"Int32"}],"type":"Function"},"Main":{"accessModifier":"Public","annotations":{},"body":{"expressions":[{"condition":{"arguments":[{"name":"","value":{"constant":"11","id":96,"location":{"endCol":17,"endLine":79,"startCol":16,"startLine":79},"nodeType":"Constant","type":"Int32"}}],"expression":{"id":95,"location":{"endCol":14,"endLine":79,"startCol":13,"startLine":79},"name":"IsEven","nodeType":"Parameter","type":"Function"},"id":97,"location":{"endCol":18,"endLine":79,"startCol":14,"startLine":79},"nodeType":"Invoke","type":"Boolean"},"id":108,"ifFalse":{"expressions":[{"arguments":[{"name":"","value":{"constant":"odd number","id":105,"location":{"endCol":30,"endLine":85,"startCol":29,"startLine":85},"nodeType":"Constant","type":"String"}}],"expression":{"fieldName":"PrintText","id":104,"location":{"endCol":17,"endLine":85,"startCol":7,"startLine":85},"nodeType":"MemberAccess","object":{"id":103,"location":{"endCol":7,"endLine":85,"startCol":6,"startLine":85},"name":"IO","nodeType":"Parameter","type":"IO"},"type":"Function"},"id":106,"location":{"endCol":4,"endLine":86,"startCol":17,"startLine":85},"nodeType":"Invoke","type":"Void"}],"id":107,"location":{"endCol":6,"endLine":87,"startCol":4,"startLine":84},"nodeType":"Block","type":"Void"},"ifTrue":{"expressions":[{"arguments":[{"name":"","value":{"constant":"even number","id":100,"location":{"endCol":31,"endLine":81,"startCol":30,"startLine":81},"nodeType":"Constant","type":"String"}}],"expression":{"fieldName":"PrintText","id":99,"location":{"endCol":17,"endLine":81,"startCol":7,"startLine":81},"nodeType":"MemberAccess","object":{"id":98,"location":{"endCol":7,"endLine":81,"startCol":6,"startLine":81},"name":"IO","nodeType":"Parameter","type":"IO"},"type":"Function"},"id":101,"location":{"endCol":4,"endLine":82,"startCol":17,"startLine":81},"nodeType":"Invoke","type":"Void"}],"id":102,"location":{"endCol":7,"endLine":83,"startCol":4,"startLine":80},"nodeType":"Block","type":"Void"},"location":{"endCol":6,"endLine":87,"startCol":5,"startLine":79},"nodeType":"Conditional","type":"Void"}],"id":109,"location":{"endCol":2,"endLine":88,"startCol":6,"startLine":78},"nodeType":"Block","type":"Void"},"isStatic":true,"location":{"endCol":2,"endLine":88,"startCol":8,"startLine":77},"name":"Main","parameters":[],"type":"Function"}},"name":"App","nodeType":"module"},"IO":{"fields":{},"methods":{"PrintInt":{"accessModifier":"Public","annotations":{"Extern":{"arguments":[{"name":"","value":{"constant":"libtest","id":0,"location":{"endCol":23,"endLine":5,"startCol":22,"startLine":5},"nodeType":"Constant","type":"String"}},{"name":"","value":{"constant":"print_int","id":1,"location":{"endCol":36,"endLine":5,"startCol":35,"startLine":5},"nodeType":"Constant","type":"String"}}],"location":{"endCol":8,"endLine":6,"startCol":6,"startLine":5},"name":"Extern"}},"body":{"id":3,"location":{"endCol":6,"endLine":8,"startCol":6,"startLine":8},"nodeType":"Default","type":"Void"},"isStatic":true,"location":{"endCol":6,"endLine":8,"startCol":8,"startLine":6},"name":"PrintInt","parameters":[{"id":2,"location":{"endCol":25,"endLine":6,"startCol":19,"startLine":6},"name":"i","nodeType":"Parameter","type":"Int32"}],"type":"Function"},"PrintText":{"accessModifier":"Public","annotations":{"Extern":{"arguments":[{"name":"","value":{"constant":"libtest","id":4,"location":{"endCol":23,"endLine":8,"startCol":22,"startLine":8},"nodeType":"Constant","type":"String"}},{"name":"","value":{"constant":"print_text","id":5,"location":{"endCol":37,"endLine":8,"startCol":36,"startLine":8},"nodeType":"Constant","type":"String"}}],"location":{"endCol":8,"endLine":9,"startCol":6,"startLine":8},"name":"Extern"}},"body":{"id":7,"location":{"endCol":2,"endLine":10,"startCol":2,"startLine":10},"nodeType":"Default","type":"Void"},"isStatic":true,"location":{"endCol":2,"endLine":10,"startCol":8,"startLine":9},"name":"PrintText","parameters":[{"id":6,"location":{"endCol":29,"endLine":9,"startCol":20,"startLine":9},"name":"s","nodeType":"Parameter","type":"String"}],"type":"Function"}},"name":"IO","nodeType":"module"},"Point":{"fields":{},"methods":{"Create":{"accessModifier":"Public","annotations":{},"body":{"expressions":[{"id":14,"location":{"endCol":14,"endLine":23,"startCol":12,"startLine":22},"nodeType":"VariableDefinition","type":"Point","value":{"arguments":[],"class":"Point","id":12,"location":{"endCol":14,"endLine":23,"startCol":31,"startLine":22},"nodeType":"New","type":"Point"},"variable":{"id":13,"location":{"endCol":14,"endLine":23,"startCol":14,"startLine":23},"name":"point","nodeType":"Parameter","type":"Point"}},{"id":18,"left":{"fieldName":"x","id":16,"location":{"endCol":18,"endLine":23,"startCol":15,"startLine":23},"nodeType":"MemberAccess","object":{"id":15,"location":{"endCol":15,"endLine":23,"startCol":14,"startLine":23},"name":"point","nodeType":"Parameter","type":"Point"},"type":"Int32"},"location":{"endCol":14,"endLine":24,"startCol":14,"startLine":23},"nodeType":"Assign","right":{"id":17,"location":{"endCol":14,"endLine":24,"startCol":20,"startLine":23},"name":"x","nodeType":"Parameter","type":"Int32"},"type":"Void"},{"id":22,"left":{"fieldName":"y","id":20,"location":{"endCol":18,"endLine":24,"startCol":15,"startLine":24},"nodeType":"MemberAccess","object":{"id":19,"location":{"endCol":15,"endLine":24,"startCol":14,"startLine":24},"name":"point","nodeType":"Parameter","type":"Point"},"type":"Int32"},"location":{"endCol":15,"endLine":25,"startCol":14,"startLine":24},"nodeType":"Assign","right":{"id":21,"location":{"endCol":15,"endLine":25,"startCol":20,"startLine":24},"name":"y","nodeType":"Parameter","type":"Int32"},"type":"Void"},{"id":24,"location":{"endCol":6,"endLine":26,"startCol":15,"startLine":25},"nodeType":"Return","type":"Point","value":{"id":23,"location":{"endCol":6,"endLine":26,"startCol":21,"startLine":25},"name":"point","nodeType":"Parameter","type":"Point"}}],"id":25,"location":{"endCol":2,"endLine":27,"startCol":6,"startLine":21},"nodeType":"Block","type":"Void"},"isStatic":true,"location":{"endCol":2,"endLine":27,"startCol":8,"startLine":20},"name":"Create","parameters":[{"id":10,"location":{"endCol":23,"endLine":20,"startCol":17,"startLine":20},"name":"x","nodeType":"Parameter","type":"Int32"},{"id":11,"location":{"endCol":31,"endLine":20,"startCol":25,"startLine":20},"name":"y","nodeType":"Parameter","type":"Int32"}],"type":"Function"}},"name":"Point","nodeType":"module"}},"packageName":"ConsoleApplication"}
+{
+  "classes": {
+    "Point": {
+      "fields": {
+        "x": {
+          "accessModifier": "Public",
+          "annotations": {},
+          "isStatic": false,
+          "location": {
+            "endCol": 8,
+            "endLine": 15,
+            "startCol": 8,
+            "startLine": 14
+          },
+          "name": "x",
+          "type": "Int32",
+          "value": {
+            "id": 8,
+            "location": {
+              "endCol": 8,
+              "endLine": 15,
+              "startCol": 8,
+              "startLine": 15
+            },
+            "nodeType": "Default",
+            "type": "Int32"
+          }
+        },
+        "y": {
+          "accessModifier": "Public",
+          "annotations": {},
+          "isStatic": false,
+          "location": {
+            "endCol": 2,
+            "endLine": 16,
+            "startCol": 8,
+            "startLine": 15
+          },
+          "name": "y",
+          "type": "Int32",
+          "value": {
+            "id": 9,
+            "location": {
+              "endCol": 2,
+              "endLine": 16,
+              "startCol": 2,
+              "startLine": 16
+            },
+            "nodeType": "Default",
+            "type": "Int32"
+          }
+        }
+      },
+      "methods": {},
+      "name": "Point",
+      "nodeType": "class"
+    }
+  },
+  "modules": {
+    "App": {
+      "fields": {},
+      "methods": {
+        "Choose": {
+          "accessModifier": "Public",
+          "annotations": {},
+          "body": {
+            "expressions": [
+              {
+                "id": 51,
+                "location": {
+                  "endCol": 11,
+                  "endLine": 46,
+                  "startCol": 6,
+                  "startLine": 45
+                },
+                "nodeType": "VariableDefinition",
+                "type": "Point",
+                "value": {
+                  "arguments": [
+                    {
+                      "name": "",
+                      "value": {
+                        "constant": "3",
+                        "id": 47,
+                        "location": {
+                          "endCol": 30,
+                          "endLine": 45,
+                          "startCol": 29,
+                          "startLine": 45
+                        },
+                        "nodeType": "Constant",
+                        "type": "Int32"
+                      }
+                    },
+                    {
+                      "name": "",
+                      "value": {
+                        "constant": "5",
+                        "id": 48,
+                        "location": {
+                          "endCol": 33,
+                          "endLine": 45,
+                          "startCol": 32,
+                          "startLine": 45
+                        },
+                        "nodeType": "Constant",
+                        "type": "Int32"
+                      }
+                    }
+                  ],
+                  "expression": {
+                    "fieldName": "Create",
+                    "id": 46,
+                    "location": {
+                      "endCol": 28,
+                      "endLine": 45,
+                      "startCol": 21,
+                      "startLine": 45
+                    },
+                    "nodeType": "MemberAccess",
+                    "object": {
+                      "id": 45,
+                      "location": {
+                        "endCol": 21,
+                        "endLine": 45,
+                        "startCol": 20,
+                        "startLine": 45
+                      },
+                      "name": "Point",
+                      "nodeType": "Parameter",
+                      "type": "Point"
+                    },
+                    "type": "Function"
+                  },
+                  "id": 49,
+                  "location": {
+                    "endCol": 11,
+                    "endLine": 46,
+                    "startCol": 28,
+                    "startLine": 45
+                  },
+                  "nodeType": "Invoke",
+                  "type": "Point"
+                },
+                "variable": {
+                  "id": 50,
+                  "location": {
+                    "endCol": 11,
+                    "endLine": 46,
+                    "startCol": 11,
+                    "startLine": 46
+                  },
+                  "name": "point",
+                  "nodeType": "Parameter",
+                  "type": "Unknown"
+                }
+              },
+              {
+                "condition": {
+                  "id": 54,
+                  "left": {
+                    "id": 52,
+                    "location": {
+                      "endCol": 17,
+                      "endLine": 46,
+                      "startCol": 14,
+                      "startLine": 46
+                    },
+                    "name": "x",
+                    "nodeType": "Parameter",
+                    "type": "Int32"
+                  },
+                  "location": {
+                    "endCol": 20,
+                    "endLine": 46,
+                    "startCol": 14,
+                    "startLine": 46
+                  },
+                  "nodeType": "NotEqual",
+                  "right": {
+                    "constant": "5",
+                    "id": 53,
+                    "location": {
+                      "endCol": 20,
+                      "endLine": 46,
+                      "startCol": 19,
+                      "startLine": 46
+                    },
+                    "nodeType": "Constant",
+                    "type": "Int32"
+                  },
+                  "type": "Boolean"
+                },
+                "id": 59,
+                "ifFalse": {
+                  "id": 58,
+                  "location": {
+                    "endCol": 15,
+                    "endLine": 49,
+                    "startCol": 15,
+                    "startLine": 49
+                  },
+                  "nodeType": "Default",
+                  "type": "Void"
+                },
+                "ifTrue": {
+                  "expressions": [
+                    {
+                      "id": 56,
+                      "location": {
+                        "endCol": 10,
+                        "endLine": 48,
+                        "startCol": 19,
+                        "startLine": 47
+                      },
+                      "nodeType": "Return",
+                      "type": "Boolean",
+                      "value": {
+                        "constant": "true",
+                        "id": 55,
+                        "location": {
+                          "endCol": 10,
+                          "endLine": 48,
+                          "startCol": 24,
+                          "startLine": 47
+                        },
+                        "nodeType": "Constant",
+                        "type": "Boolean"
+                      }
+                    }
+                  ],
+                  "id": 57,
+                  "location": {
+                    "endCol": 15,
+                    "endLine": 49,
+                    "startCol": 22,
+                    "startLine": 46
+                  },
+                  "nodeType": "Block",
+                  "type": "Void"
+                },
+                "location": {
+                  "endCol": 15,
+                  "endLine": 49,
+                  "startCol": 11,
+                  "startLine": 46
+                },
+                "nodeType": "Conditional",
+                "type": "Void"
+              },
+              {
+                "id": 61,
+                "location": {
+                  "endCol": 6,
+                  "endLine": 50,
+                  "startCol": 15,
+                  "startLine": 49
+                },
+                "nodeType": "Return",
+                "type": "Boolean",
+                "value": {
+                  "constant": "false",
+                  "id": 60,
+                  "location": {
+                    "endCol": 6,
+                    "endLine": 50,
+                    "startCol": 21,
+                    "startLine": 49
+                  },
+                  "nodeType": "Constant",
+                  "type": "Boolean"
+                }
+              }
+            ],
+            "id": 62,
+            "location": {
+              "endCol": 5,
+              "endLine": 53,
+              "startCol": 6,
+              "startLine": 44
+            },
+            "nodeType": "Block",
+            "type": "Void"
+          },
+          "isStatic": true,
+          "location": {
+            "endCol": 5,
+            "endLine": 53,
+            "startCol": 8,
+            "startLine": 43
+          },
+          "name": "Choose",
+          "parameters": [
+            {
+              "id": 44,
+              "location": {
+                "endCol": 23,
+                "endLine": 43,
+                "startCol": 17,
+                "startLine": 43
+              },
+              "name": "x",
+              "nodeType": "Parameter",
+              "type": "Int32"
+            }
+          ],
+          "type": "Function"
+        },
+        "Factorial": {
+          "accessModifier": "Public",
+          "annotations": {},
+          "body": {
+            "expressions": [
+              {
+                "condition": {
+                  "id": 29,
+                  "left": {
+                    "id": 27,
+                    "location": {
+                      "endCol": 17,
+                      "endLine": 33,
+                      "startCol": 14,
+                      "startLine": 33
+                    },
+                    "name": "n",
+                    "nodeType": "Parameter",
+                    "type": "Int32"
+                  },
+                  "location": {
+                    "endCol": 20,
+                    "endLine": 33,
+                    "startCol": 14,
+                    "startLine": 33
+                  },
+                  "nodeType": "Equal",
+                  "right": {
+                    "constant": "0",
+                    "id": 28,
+                    "location": {
+                      "endCol": 20,
+                      "endLine": 33,
+                      "startCol": 19,
+                      "startLine": 33
+                    },
+                    "nodeType": "Constant",
+                    "type": "Int32"
+                  },
+                  "type": "Boolean"
+                },
+                "id": 42,
+                "ifFalse": {
+                  "expressions": [
+                    {
+                      "id": 40,
+                      "location": {
+                        "endCol": 10,
+                        "endLine": 40,
+                        "startCol": 19,
+                        "startLine": 39
+                      },
+                      "nodeType": "Return",
+                      "type": "Int32",
+                      "value": {
+                        "id": 39,
+                        "left": {
+                          "id": 33,
+                          "location": {
+                            "endCol": 23,
+                            "endLine": 39,
+                            "startCol": 21,
+                            "startLine": 39
+                          },
+                          "name": "n",
+                          "nodeType": "Parameter",
+                          "type": "Int32"
+                        },
+                        "location": {
+                          "endCol": 10,
+                          "endLine": 40,
+                          "startCol": 21,
+                          "startLine": 39
+                        },
+                        "nodeType": "Multiply",
+                        "right": {
+                          "arguments": [
+                            {
+                              "name": "n",
+                              "value": {
+                                "id": 37,
+                                "left": {
+                                  "id": 35,
+                                  "location": {
+                                    "endCol": 37,
+                                    "endLine": 39,
+                                    "startCol": 35,
+                                    "startLine": 39
+                                  },
+                                  "name": "n",
+                                  "nodeType": "Parameter",
+                                  "type": "Int32"
+                                },
+                                "location": {
+                                  "endCol": 40,
+                                  "endLine": 39,
+                                  "startCol": 35,
+                                  "startLine": 39
+                                },
+                                "nodeType": "Subtract",
+                                "right": {
+                                  "constant": "1",
+                                  "id": 36,
+                                  "location": {
+                                    "endCol": 40,
+                                    "endLine": 39,
+                                    "startCol": 39,
+                                    "startLine": 39
+                                  },
+                                  "nodeType": "Constant",
+                                  "type": "Int32"
+                                },
+                                "type": "Int32"
+                              }
+                            }
+                          ],
+                          "expression": {
+                            "id": 34,
+                            "location": {
+                              "endCol": 34,
+                              "endLine": 39,
+                              "startCol": 33,
+                              "startLine": 39
+                            },
+                            "name": "Factorial",
+                            "nodeType": "Parameter",
+                            "type": "Function"
+                          },
+                          "id": 38,
+                          "location": {
+                            "endCol": 10,
+                            "endLine": 40,
+                            "startCol": 34,
+                            "startLine": 39
+                          },
+                          "nodeType": "Invoke",
+                          "type": "Int32"
+                        },
+                        "type": "Int32"
+                      }
+                    }
+                  ],
+                  "id": 41,
+                  "location": {
+                    "endCol": 6,
+                    "endLine": 41,
+                    "startCol": 10,
+                    "startLine": 38
+                  },
+                  "nodeType": "Block",
+                  "type": "Void"
+                },
+                "ifTrue": {
+                  "expressions": [
+                    {
+                      "id": 31,
+                      "location": {
+                        "endCol": 10,
+                        "endLine": 36,
+                        "startCol": 19,
+                        "startLine": 35
+                      },
+                      "nodeType": "Return",
+                      "type": "Int32",
+                      "value": {
+                        "constant": "1",
+                        "id": 30,
+                        "location": {
+                          "endCol": 10,
+                          "endLine": 36,
+                          "startCol": 21,
+                          "startLine": 35
+                        },
+                        "nodeType": "Constant",
+                        "type": "Int32"
+                      }
+                    }
+                  ],
+                  "id": 32,
+                  "location": {
+                    "endCol": 13,
+                    "endLine": 37,
+                    "startCol": 10,
+                    "startLine": 34
+                  },
+                  "nodeType": "Block",
+                  "type": "Void"
+                },
+                "location": {
+                  "endCol": 6,
+                  "endLine": 41,
+                  "startCol": 11,
+                  "startLine": 33
+                },
+                "nodeType": "Conditional",
+                "type": "Void"
+              }
+            ],
+            "id": 43,
+            "location": {
+              "endCol": 8,
+              "endLine": 43,
+              "startCol": 6,
+              "startLine": 32
+            },
+            "nodeType": "Block",
+            "type": "Void"
+          },
+          "isStatic": true,
+          "location": {
+            "endCol": 8,
+            "endLine": 43,
+            "startCol": 8,
+            "startLine": 31
+          },
+          "name": "Factorial",
+          "parameters": [
+            {
+              "id": 26,
+              "location": {
+                "endCol": 26,
+                "endLine": 31,
+                "startCol": 20,
+                "startLine": 31
+              },
+              "name": "n",
+              "nodeType": "Parameter",
+              "type": "Int32"
+            }
+          ],
+          "type": "Function"
+        },
+        "IsEven": {
+          "accessModifier": "Public",
+          "annotations": {},
+          "body": {
+            "expressions": [
+              {
+                "condition": {
+                  "id": 66,
+                  "left": {
+                    "id": 64,
+                    "location": {
+                      "endCol": 11,
+                      "endLine": 55,
+                      "startCol": 8,
+                      "startLine": 55
+                    },
+                    "name": "n",
+                    "nodeType": "Parameter",
+                    "type": "Int32"
+                  },
+                  "location": {
+                    "endCol": 14,
+                    "endLine": 55,
+                    "startCol": 8,
+                    "startLine": 55
+                  },
+                  "nodeType": "Equal",
+                  "right": {
+                    "constant": "0",
+                    "id": 65,
+                    "location": {
+                      "endCol": 14,
+                      "endLine": 55,
+                      "startCol": 13,
+                      "startLine": 55
+                    },
+                    "nodeType": "Constant",
+                    "type": "Int32"
+                  },
+                  "type": "Boolean"
+                },
+                "id": 77,
+                "ifFalse": {
+                  "expressions": [
+                    {
+                      "id": 75,
+                      "location": {
+                        "endCol": 4,
+                        "endLine": 62,
+                        "startCol": 10,
+                        "startLine": 61
+                      },
+                      "nodeType": "Return",
+                      "type": "Boolean",
+                      "value": {
+                        "arguments": [
+                          {
+                            "name": "n",
+                            "value": {
+                              "id": 73,
+                              "left": {
+                                "id": 71,
+                                "location": {
+                                  "endCol": 20,
+                                  "endLine": 61,
+                                  "startCol": 18,
+                                  "startLine": 61
+                                },
+                                "name": "n",
+                                "nodeType": "Parameter",
+                                "type": "Int32"
+                              },
+                              "location": {
+                                "endCol": 23,
+                                "endLine": 61,
+                                "startCol": 18,
+                                "startLine": 61
+                              },
+                              "nodeType": "Subtract",
+                              "right": {
+                                "constant": "1",
+                                "id": 72,
+                                "location": {
+                                  "endCol": 23,
+                                  "endLine": 61,
+                                  "startCol": 22,
+                                  "startLine": 61
+                                },
+                                "nodeType": "Constant",
+                                "type": "Int32"
+                              },
+                              "type": "Int32"
+                            }
+                          }
+                        ],
+                        "expression": {
+                          "id": 70,
+                          "location": {
+                            "endCol": 17,
+                            "endLine": 61,
+                            "startCol": 16,
+                            "startLine": 61
+                          },
+                          "name": "IsOdd",
+                          "nodeType": "Parameter",
+                          "type": "Function"
+                        },
+                        "id": 74,
+                        "location": {
+                          "endCol": 4,
+                          "endLine": 62,
+                          "startCol": 17,
+                          "startLine": 61
+                        },
+                        "nodeType": "Invoke",
+                        "type": "Boolean"
+                      }
+                    }
+                  ],
+                  "id": 76,
+                  "location": {
+                    "endCol": 3,
+                    "endLine": 63,
+                    "startCol": 4,
+                    "startLine": 60
+                  },
+                  "nodeType": "Block",
+                  "type": "Void"
+                },
+                "ifTrue": {
+                  "expressions": [
+                    {
+                      "id": 68,
+                      "location": {
+                        "endCol": 4,
+                        "endLine": 58,
+                        "startCol": 10,
+                        "startLine": 57
+                      },
+                      "nodeType": "Return",
+                      "type": "Boolean",
+                      "value": {
+                        "constant": "true",
+                        "id": 67,
+                        "location": {
+                          "endCol": 4,
+                          "endLine": 58,
+                          "startCol": 15,
+                          "startLine": 57
+                        },
+                        "nodeType": "Constant",
+                        "type": "Boolean"
+                      }
+                    }
+                  ],
+                  "id": 69,
+                  "location": {
+                    "endCol": 7,
+                    "endLine": 59,
+                    "startCol": 4,
+                    "startLine": 56
+                  },
+                  "nodeType": "Block",
+                  "type": "Void"
+                },
+                "location": {
+                  "endCol": 3,
+                  "endLine": 63,
+                  "startCol": 5,
+                  "startLine": 55
+                },
+                "nodeType": "Conditional",
+                "type": "Void"
+              }
+            ],
+            "id": 78,
+            "location": {
+              "endCol": 5,
+              "endLine": 65,
+              "startCol": 3,
+              "startLine": 54
+            },
+            "nodeType": "Block",
+            "type": "Void"
+          },
+          "isStatic": true,
+          "location": {
+            "endCol": 5,
+            "endLine": 65,
+            "startCol": 5,
+            "startLine": 53
+          },
+          "name": "IsEven",
+          "parameters": [
+            {
+              "id": 63,
+              "location": {
+                "endCol": 20,
+                "endLine": 53,
+                "startCol": 14,
+                "startLine": 53
+              },
+              "name": "n",
+              "nodeType": "Parameter",
+              "type": "Int32"
+            }
+          ],
+          "type": "Function"
+        },
+        "IsOdd": {
+          "accessModifier": "Public",
+          "annotations": {},
+          "body": {
+            "expressions": [
+              {
+                "condition": {
+                  "id": 82,
+                  "left": {
+                    "id": 80,
+                    "location": {
+                      "endCol": 11,
+                      "endLine": 67,
+                      "startCol": 8,
+                      "startLine": 67
+                    },
+                    "name": "n",
+                    "nodeType": "Parameter",
+                    "type": "Int32"
+                  },
+                  "location": {
+                    "endCol": 14,
+                    "endLine": 67,
+                    "startCol": 8,
+                    "startLine": 67
+                  },
+                  "nodeType": "Equal",
+                  "right": {
+                    "constant": "0",
+                    "id": 81,
+                    "location": {
+                      "endCol": 14,
+                      "endLine": 67,
+                      "startCol": 13,
+                      "startLine": 67
+                    },
+                    "nodeType": "Constant",
+                    "type": "Int32"
+                  },
+                  "type": "Boolean"
+                },
+                "id": 93,
+                "ifFalse": {
+                  "expressions": [
+                    {
+                      "id": 91,
+                      "location": {
+                        "endCol": 4,
+                        "endLine": 74,
+                        "startCol": 10,
+                        "startLine": 73
+                      },
+                      "nodeType": "Return",
+                      "type": "Boolean",
+                      "value": {
+                        "arguments": [
+                          {
+                            "name": "n",
+                            "value": {
+                              "id": 89,
+                              "left": {
+                                "id": 87,
+                                "location": {
+                                  "endCol": 21,
+                                  "endLine": 73,
+                                  "startCol": 19,
+                                  "startLine": 73
+                                },
+                                "name": "n",
+                                "nodeType": "Parameter",
+                                "type": "Int32"
+                              },
+                              "location": {
+                                "endCol": 24,
+                                "endLine": 73,
+                                "startCol": 19,
+                                "startLine": 73
+                              },
+                              "nodeType": "Subtract",
+                              "right": {
+                                "constant": "1",
+                                "id": 88,
+                                "location": {
+                                  "endCol": 24,
+                                  "endLine": 73,
+                                  "startCol": 23,
+                                  "startLine": 73
+                                },
+                                "nodeType": "Constant",
+                                "type": "Int32"
+                              },
+                              "type": "Int32"
+                            }
+                          }
+                        ],
+                        "expression": {
+                          "id": 86,
+                          "location": {
+                            "endCol": 18,
+                            "endLine": 73,
+                            "startCol": 17,
+                            "startLine": 73
+                          },
+                          "name": "IsEven",
+                          "nodeType": "Parameter",
+                          "type": "Function"
+                        },
+                        "id": 90,
+                        "location": {
+                          "endCol": 4,
+                          "endLine": 74,
+                          "startCol": 18,
+                          "startLine": 73
+                        },
+                        "nodeType": "Invoke",
+                        "type": "Boolean"
+                      }
+                    }
+                  ],
+                  "id": 92,
+                  "location": {
+                    "endCol": 3,
+                    "endLine": 75,
+                    "startCol": 4,
+                    "startLine": 72
+                  },
+                  "nodeType": "Block",
+                  "type": "Void"
+                },
+                "ifTrue": {
+                  "expressions": [
+                    {
+                      "id": 84,
+                      "location": {
+                        "endCol": 4,
+                        "endLine": 70,
+                        "startCol": 10,
+                        "startLine": 69
+                      },
+                      "nodeType": "Return",
+                      "type": "Boolean",
+                      "value": {
+                        "constant": "false",
+                        "id": 83,
+                        "location": {
+                          "endCol": 4,
+                          "endLine": 70,
+                          "startCol": 16,
+                          "startLine": 69
+                        },
+                        "nodeType": "Constant",
+                        "type": "Boolean"
+                      }
+                    }
+                  ],
+                  "id": 85,
+                  "location": {
+                    "endCol": 7,
+                    "endLine": 71,
+                    "startCol": 4,
+                    "startLine": 68
+                  },
+                  "nodeType": "Block",
+                  "type": "Void"
+                },
+                "location": {
+                  "endCol": 3,
+                  "endLine": 75,
+                  "startCol": 5,
+                  "startLine": 67
+                },
+                "nodeType": "Conditional",
+                "type": "Void"
+              }
+            ],
+            "id": 94,
+            "location": {
+              "endCol": 8,
+              "endLine": 77,
+              "startCol": 3,
+              "startLine": 66
+            },
+            "nodeType": "Block",
+            "type": "Void"
+          },
+          "isStatic": true,
+          "location": {
+            "endCol": 8,
+            "endLine": 77,
+            "startCol": 5,
+            "startLine": 65
+          },
+          "name": "IsOdd",
+          "parameters": [
+            {
+              "id": 79,
+              "location": {
+                "endCol": 19,
+                "endLine": 65,
+                "startCol": 13,
+                "startLine": 65
+              },
+              "name": "n",
+              "nodeType": "Parameter",
+              "type": "Int32"
+            }
+          ],
+          "type": "Function"
+        },
+        "Main": {
+          "accessModifier": "Public",
+          "annotations": {},
+          "body": {
+            "expressions": [
+              {
+                "condition": {
+                  "arguments": [
+                    {
+                      "name": "",
+                      "value": {
+                        "constant": "11",
+                        "id": 96,
+                        "location": {
+                          "endCol": 17,
+                          "endLine": 79,
+                          "startCol": 16,
+                          "startLine": 79
+                        },
+                        "nodeType": "Constant",
+                        "type": "Int32"
+                      }
+                    }
+                  ],
+                  "expression": {
+                    "id": 95,
+                    "location": {
+                      "endCol": 14,
+                      "endLine": 79,
+                      "startCol": 13,
+                      "startLine": 79
+                    },
+                    "name": "IsEven",
+                    "nodeType": "Parameter",
+                    "type": "Function"
+                  },
+                  "id": 97,
+                  "location": {
+                    "endCol": 18,
+                    "endLine": 79,
+                    "startCol": 14,
+                    "startLine": 79
+                  },
+                  "nodeType": "Invoke",
+                  "type": "Boolean"
+                },
+                "id": 108,
+                "ifFalse": {
+                  "expressions": [
+                    {
+                      "arguments": [
+                        {
+                          "name": "",
+                          "value": {
+                            "constant": "odd number",
+                            "id": 105,
+                            "location": {
+                              "endCol": 30,
+                              "endLine": 85,
+                              "startCol": 29,
+                              "startLine": 85
+                            },
+                            "nodeType": "Constant",
+                            "type": "String"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "fieldName": "PrintText",
+                        "id": 104,
+                        "location": {
+                          "endCol": 17,
+                          "endLine": 85,
+                          "startCol": 7,
+                          "startLine": 85
+                        },
+                        "nodeType": "MemberAccess",
+                        "object": {
+                          "id": 103,
+                          "location": {
+                            "endCol": 7,
+                            "endLine": 85,
+                            "startCol": 6,
+                            "startLine": 85
+                          },
+                          "name": "IO",
+                          "nodeType": "Parameter",
+                          "type": "IO"
+                        },
+                        "type": "Function"
+                      },
+                      "id": 106,
+                      "location": {
+                        "endCol": 4,
+                        "endLine": 86,
+                        "startCol": 17,
+                        "startLine": 85
+                      },
+                      "nodeType": "Invoke",
+                      "type": "Void"
+                    }
+                  ],
+                  "id": 107,
+                  "location": {
+                    "endCol": 6,
+                    "endLine": 87,
+                    "startCol": 4,
+                    "startLine": 84
+                  },
+                  "nodeType": "Block",
+                  "type": "Void"
+                },
+                "ifTrue": {
+                  "expressions": [
+                    {
+                      "arguments": [
+                        {
+                          "name": "",
+                          "value": {
+                            "constant": "even number",
+                            "id": 100,
+                            "location": {
+                              "endCol": 31,
+                              "endLine": 81,
+                              "startCol": 30,
+                              "startLine": 81
+                            },
+                            "nodeType": "Constant",
+                            "type": "String"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "fieldName": "PrintText",
+                        "id": 99,
+                        "location": {
+                          "endCol": 17,
+                          "endLine": 81,
+                          "startCol": 7,
+                          "startLine": 81
+                        },
+                        "nodeType": "MemberAccess",
+                        "object": {
+                          "id": 98,
+                          "location": {
+                            "endCol": 7,
+                            "endLine": 81,
+                            "startCol": 6,
+                            "startLine": 81
+                          },
+                          "name": "IO",
+                          "nodeType": "Parameter",
+                          "type": "IO"
+                        },
+                        "type": "Function"
+                      },
+                      "id": 101,
+                      "location": {
+                        "endCol": 4,
+                        "endLine": 82,
+                        "startCol": 17,
+                        "startLine": 81
+                      },
+                      "nodeType": "Invoke",
+                      "type": "Void"
+                    }
+                  ],
+                  "id": 102,
+                  "location": {
+                    "endCol": 7,
+                    "endLine": 83,
+                    "startCol": 4,
+                    "startLine": 80
+                  },
+                  "nodeType": "Block",
+                  "type": "Void"
+                },
+                "location": {
+                  "endCol": 6,
+                  "endLine": 87,
+                  "startCol": 5,
+                  "startLine": 79
+                },
+                "nodeType": "Conditional",
+                "type": "Void"
+              }
+            ],
+            "id": 109,
+            "location": {
+              "endCol": 2,
+              "endLine": 88,
+              "startCol": 6,
+              "startLine": 78
+            },
+            "nodeType": "Block",
+            "type": "Void"
+          },
+          "isStatic": true,
+          "location": {
+            "endCol": 2,
+            "endLine": 88,
+            "startCol": 8,
+            "startLine": 77
+          },
+          "name": "Main",
+          "parameters": [],
+          "type": "Function"
+        }
+      },
+      "name": "App",
+      "nodeType": "module"
+    },
+    "IO": {
+      "fields": {},
+      "methods": {
+        "PrintInt": {
+          "accessModifier": "Public",
+          "annotations": {
+            "Extern": {
+              "arguments": [
+                {
+                  "name": "",
+                  "value": {
+                    "constant": "libtest",
+                    "id": 0,
+                    "location": {
+                      "endCol": 23,
+                      "endLine": 5,
+                      "startCol": 22,
+                      "startLine": 5
+                    },
+                    "nodeType": "Constant",
+                    "type": "String"
+                  }
+                },
+                {
+                  "name": "",
+                  "value": {
+                    "constant": "print_int",
+                    "id": 1,
+                    "location": {
+                      "endCol": 36,
+                      "endLine": 5,
+                      "startCol": 35,
+                      "startLine": 5
+                    },
+                    "nodeType": "Constant",
+                    "type": "String"
+                  }
+                }
+              ],
+              "location": {
+                "endCol": 8,
+                "endLine": 6,
+                "startCol": 6,
+                "startLine": 5
+              },
+              "name": "Extern"
+            }
+          },
+          "body": {
+            "id": 3,
+            "location": {
+              "endCol": 6,
+              "endLine": 8,
+              "startCol": 6,
+              "startLine": 8
+            },
+            "nodeType": "Default",
+            "type": "Void"
+          },
+          "isStatic": true,
+          "location": {
+            "endCol": 6,
+            "endLine": 8,
+            "startCol": 8,
+            "startLine": 6
+          },
+          "name": "PrintInt",
+          "parameters": [
+            {
+              "id": 2,
+              "location": {
+                "endCol": 25,
+                "endLine": 6,
+                "startCol": 19,
+                "startLine": 6
+              },
+              "name": "i",
+              "nodeType": "Parameter",
+              "type": "Int32"
+            }
+          ],
+          "type": "Function"
+        },
+        "PrintText": {
+          "accessModifier": "Public",
+          "annotations": {
+            "Extern": {
+              "arguments": [
+                {
+                  "name": "",
+                  "value": {
+                    "constant": "libtest",
+                    "id": 4,
+                    "location": {
+                      "endCol": 23,
+                      "endLine": 8,
+                      "startCol": 22,
+                      "startLine": 8
+                    },
+                    "nodeType": "Constant",
+                    "type": "String"
+                  }
+                },
+                {
+                  "name": "",
+                  "value": {
+                    "constant": "print_text",
+                    "id": 5,
+                    "location": {
+                      "endCol": 37,
+                      "endLine": 8,
+                      "startCol": 36,
+                      "startLine": 8
+                    },
+                    "nodeType": "Constant",
+                    "type": "String"
+                  }
+                }
+              ],
+              "location": {
+                "endCol": 8,
+                "endLine": 9,
+                "startCol": 6,
+                "startLine": 8
+              },
+              "name": "Extern"
+            }
+          },
+          "body": {
+            "id": 7,
+            "location": {
+              "endCol": 2,
+              "endLine": 10,
+              "startCol": 2,
+              "startLine": 10
+            },
+            "nodeType": "Default",
+            "type": "Void"
+          },
+          "isStatic": true,
+          "location": {
+            "endCol": 2,
+            "endLine": 10,
+            "startCol": 8,
+            "startLine": 9
+          },
+          "name": "PrintText",
+          "parameters": [
+            {
+              "id": 6,
+              "location": {
+                "endCol": 29,
+                "endLine": 9,
+                "startCol": 20,
+                "startLine": 9
+              },
+              "name": "s",
+              "nodeType": "Parameter",
+              "type": "String"
+            }
+          ],
+          "type": "Function"
+        }
+      },
+      "name": "IO",
+      "nodeType": "module"
+    },
+    "Point": {
+      "fields": {},
+      "methods": {
+        "Create": {
+          "accessModifier": "Public",
+          "annotations": {},
+          "body": {
+            "expressions": [
+              {
+                "id": 14,
+                "location": {
+                  "endCol": 14,
+                  "endLine": 23,
+                  "startCol": 12,
+                  "startLine": 22
+                },
+                "nodeType": "VariableDefinition",
+                "type": "Point",
+                "value": {
+                  "arguments": [],
+                  "class": "Point",
+                  "id": 12,
+                  "location": {
+                    "endCol": 14,
+                    "endLine": 23,
+                    "startCol": 31,
+                    "startLine": 22
+                  },
+                  "nodeType": "New",
+                  "type": "Point"
+                },
+                "variable": {
+                  "id": 13,
+                  "location": {
+                    "endCol": 14,
+                    "endLine": 23,
+                    "startCol": 14,
+                    "startLine": 23
+                  },
+                  "name": "point",
+                  "nodeType": "Parameter",
+                  "type": "Point"
+                }
+              },
+              {
+                "id": 18,
+                "left": {
+                  "fieldName": "x",
+                  "id": 16,
+                  "location": {
+                    "endCol": 18,
+                    "endLine": 23,
+                    "startCol": 15,
+                    "startLine": 23
+                  },
+                  "nodeType": "MemberAccess",
+                  "object": {
+                    "id": 15,
+                    "location": {
+                      "endCol": 15,
+                      "endLine": 23,
+                      "startCol": 14,
+                      "startLine": 23
+                    },
+                    "name": "point",
+                    "nodeType": "Parameter",
+                    "type": "Point"
+                  },
+                  "type": "Int32"
+                },
+                "location": {
+                  "endCol": 14,
+                  "endLine": 24,
+                  "startCol": 14,
+                  "startLine": 23
+                },
+                "nodeType": "Assign",
+                "right": {
+                  "id": 17,
+                  "location": {
+                    "endCol": 14,
+                    "endLine": 24,
+                    "startCol": 20,
+                    "startLine": 23
+                  },
+                  "name": "x",
+                  "nodeType": "Parameter",
+                  "type": "Int32"
+                },
+                "type": "Void"
+              },
+              {
+                "id": 22,
+                "left": {
+                  "fieldName": "y",
+                  "id": 20,
+                  "location": {
+                    "endCol": 18,
+                    "endLine": 24,
+                    "startCol": 15,
+                    "startLine": 24
+                  },
+                  "nodeType": "MemberAccess",
+                  "object": {
+                    "id": 19,
+                    "location": {
+                      "endCol": 15,
+                      "endLine": 24,
+                      "startCol": 14,
+                      "startLine": 24
+                    },
+                    "name": "point",
+                    "nodeType": "Parameter",
+                    "type": "Point"
+                  },
+                  "type": "Int32"
+                },
+                "location": {
+                  "endCol": 15,
+                  "endLine": 25,
+                  "startCol": 14,
+                  "startLine": 24
+                },
+                "nodeType": "Assign",
+                "right": {
+                  "id": 21,
+                  "location": {
+                    "endCol": 15,
+                    "endLine": 25,
+                    "startCol": 20,
+                    "startLine": 24
+                  },
+                  "name": "y",
+                  "nodeType": "Parameter",
+                  "type": "Int32"
+                },
+                "type": "Void"
+              },
+              {
+                "id": 24,
+                "location": {
+                  "endCol": 6,
+                  "endLine": 26,
+                  "startCol": 15,
+                  "startLine": 25
+                },
+                "nodeType": "Return",
+                "type": "Point",
+                "value": {
+                  "id": 23,
+                  "location": {
+                    "endCol": 6,
+                    "endLine": 26,
+                    "startCol": 21,
+                    "startLine": 25
+                  },
+                  "name": "point",
+                  "nodeType": "Parameter",
+                  "type": "Point"
+                }
+              }
+            ],
+            "id": 25,
+            "location": {
+              "endCol": 2,
+              "endLine": 27,
+              "startCol": 6,
+              "startLine": 21
+            },
+            "nodeType": "Block",
+            "type": "Void"
+          },
+          "isStatic": true,
+          "location": {
+            "endCol": 2,
+            "endLine": 27,
+            "startCol": 8,
+            "startLine": 20
+          },
+          "name": "Create",
+          "parameters": [
+            {
+              "id": 10,
+              "location": {
+                "endCol": 23,
+                "endLine": 20,
+                "startCol": 17,
+                "startLine": 20
+              },
+              "name": "x",
+              "nodeType": "Parameter",
+              "type": "Int32"
+            },
+            {
+              "id": 11,
+              "location": {
+                "endCol": 31,
+                "endLine": 20,
+                "startCol": 25,
+                "startLine": 20
+              },
+              "name": "y",
+              "nodeType": "Parameter",
+              "type": "Int32"
+            }
+          ],
+          "type": "Function"
+        }
+      },
+      "name": "Point",
+      "nodeType": "module"
+    }
+  },
+  "packageName": "ConsoleApplication"
+}
