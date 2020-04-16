@@ -523,12 +523,20 @@ std::shared_ptr<NewExpression> Parser::ParseNewExpression() {
   const auto &start = Look();
   Match(Tag::New);
   auto name = Match(Tag::Identifier).text;
-  if (Look().tag != Tag::LeftParenthesis) {
+  if (Look().tag != Tag::LeftBrace) {
     return std::make_shared<NewExpression>(GetLoc(start), name,
                                            std::vector<Argument>{});
   } else {
-    throw ParserException(Look().line, Look().column,
-                          U"not supported new expression");
+	  Match(Tag::LeftBrace);
+	  std::vector<Argument> arguments;
+	  arguments.push_back(ParseArgument());
+	  while (!IsEof() && Look().tag != Tag::RightBrace) {
+		  Match(Tag::Comma);
+		  arguments.push_back(ParseArgument());
+	  }
+	  Match(Tag::RightBrace);
+	  return std::make_shared<NewExpression>(GetLoc(start), name,
+		  arguments);
   }
 }
 

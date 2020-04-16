@@ -1,0 +1,98 @@
+package ConsoleApplication
+
+module IO
+{
+    @Extern("libtest", "print_int")
+    def PrintInt(i: Int): Void
+
+    @Extern("libtest", "print_text")
+    def PrintText(s: String): Void
+}
+
+class Point
+{
+    var x: Int
+    var y: Int
+
+    def Move(dx: Int, dy: Int): Void
+    {
+        this.x = this.x + dx
+        this.y = this.y + dy
+    }
+}
+
+module Point
+{
+    def Create(x: Int, y: Int): Point
+    {
+        var point: Point = new Point {
+            x = x,
+            y = y
+        }
+        point.x = x
+        point.y = y
+        return point
+    }
+}
+
+module App
+{
+    def Factorial(n: Int): Int
+    {
+        if (n == 0)
+        {
+            return 1
+        }
+        else
+        {
+            return n * Factorial(n - 1)
+        }
+    }
+
+    def Choose(x: Int): Bool
+    {
+		var point = Point.Create(3, 5)
+        if (x != 5)
+        {
+            return true
+        }
+        return false
+    }
+
+
+	def IsEven(n: Int): Bool
+	{
+		if (n == 0)
+		{
+			return true
+		}
+		else
+		{
+			return IsOdd(n - 1)
+		}
+	}
+	
+	def IsOdd(n: Int): Bool
+	{
+		if (n == 0)
+		{
+			return false
+		}
+		else
+		{
+			return IsEven(n - 1)
+		}
+	}
+	
+    def Main(): Void
+    {
+		if (IsEven(11))
+		{
+			IO.PrintText("even number")
+		}
+		else
+		{
+			IO.PrintText("odd number")
+		}
+    }
+}

@@ -19,7 +19,10 @@ module Point
 {
     def Create(x: Int, y: Int): Point
     {
-        var point: Point = new Point
+        var point: Point = new Point {
+            x = x,
+            y = y
+        }
         point.x = x
         point.y = y
         return point
