@@ -11,6 +11,31 @@
 #include <memory>
 
 namespace cygni {
+	class ConstantKey {
+	public:
+		TypeCode typeCode;
+		std::u32string constant;
+	};
+}
+
+namespace std {
+	template<>
+	struct hash<cygni::ConstantKey> {
+		std::hash<int> h1;
+		std::hash<std::u32string> h2;
+		std::size_t operator()(const cygni::ConstantKey& key) const {
+			return h1(static_cast<int>(key.typeCode)) ^ (h2(key.constant) << 1);
+		}
+	};
+
+	template <>
+	struct equal_to<cygni::ConstantKey> {
+		bool operator()(const cygni::ConstantKey& lhs, const cygni::ConstantKey& rhs) const {
+			return lhs.typeCode == rhs.typeCode && lhs.constant == rhs.constant;
+		}
+	};
+}
+namespace cygni {
 
 	class Expression;
 	using ExpPtr = std::shared_ptr<Expression>;
@@ -32,6 +57,8 @@ namespace cygni {
 		ConstantExpression(SourceLocation location, TypePtr type,
 			std::u32string constant);
 	};
+
+
 
 	class BinaryExpression : public Expression {
 	public:
@@ -154,6 +181,7 @@ namespace cygni {
 		TypePtr signature;
 
 		std::vector<std::shared_ptr<VarDefExpression>> localVariables;
+		std::unordered_map<ConstantKey, int> constantMap;
 
 		MethodDef() = default;
 		MethodDef(SourceLocation location, AccessModifier modifier, bool isStatic,
@@ -255,4 +283,5 @@ namespace cygni {
 	};
 
 } // namespace cygni
+
 #endif // CYGNI_EXPRESSION_HPP

@@ -143,6 +143,12 @@ namespace cygni {
 		void VisitWhileExpression(std::shared_ptr<WhileExpression> node, ScopePtr scope);
 		void VisitProgram(Program& program);
 	};
+
+	class ConstantCollector {
+	public:
+		void VisitMethodDef(MethodDef &method);
+		void VisitProgram(Program& program);
+	};
 } // namespace cygni
 
 #endif // CYGNI_VISITOR_HPP

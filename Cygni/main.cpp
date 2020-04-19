@@ -63,7 +63,12 @@ void CompileProgram(std::string path, std::string outputJsonPath) {
 	variableLocator.VisitProgram(program);
 	cout << "Complete Local Variable Locatoring!" << endl;
 
-    /* pass 7: convert the abstract syntax tree to json format */
+	/* pass 7: collect constants */
+	cygni::ConstantCollector constantCollector;
+	constantCollector.VisitProgram(program);
+	cout << "Complete Constant Collection!" << endl;
+
+    /* pass 8: convert the abstract syntax tree to json format */
     cygni::AstToJsonSerialization astToJson;
     auto jsonObj = astToJson.VisitProgram(program);
     auto jsonText = jsonObj.dump();

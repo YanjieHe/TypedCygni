@@ -1100,4 +1100,37 @@ namespace cygni {
 			VisitModuleInfo(module, scope);
 		}
 	}
+	void ConstantCollector::VisitMethodDef(MethodDef & method)
+	{
+		std::function<bool(ExpPtr)> filter = [](ExpPtr node) {
+			return node->nodeType == ExpressionType::Constant;
+		};
+		TreeTraverser traverser(filter);
+		std::vector<ExpPtr> nodeList;
+		traverser.VisitExpression(method.body, nodeList);
+		std::unordered_set<ConstantKey> constantSet;
+		for (auto exp : nodeList) {
+			auto node = std::static_pointer_cast<ConstantExpression>(exp);
+			ConstantKey key{ node->type->typeCode, node->constant };
+			constantSet.insert(key);
+		}
+		int index = 0;
+		for (auto key : constantSet) {
+			method.constantMap.insert({ key, index });
+			index++;
+		}
+	}
+	void ConstantCollector::VisitProgram(Program & program)
+	{
+		for (auto& _class : program.classes.values) {
+			for (auto& method : _class->methods.values) {
+				VisitMethodDef(method);
+			}
+		}
+		for (auto& module : program.modules.values) {
+			for (auto& method : module->methods.values) {
+				VisitMethodDef(method);
+			}
+		}
+	}
 } // namespace cygni
