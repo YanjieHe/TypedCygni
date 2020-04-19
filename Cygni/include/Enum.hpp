@@ -1,7 +1,8 @@
 #ifndef CYGNI_ENUM_HPP
 #define CYGNI_ENUM_HPP
 
-#include "PreDef.hpp"
+#include <string>
+#include <iostream>
 
 namespace cygni {
 enum class Tag {

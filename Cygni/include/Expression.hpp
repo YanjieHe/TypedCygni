@@ -1,12 +1,14 @@
 #ifndef CYGNI_EXPRESSION_HPP
 #define CYGNI_EXPRESSION_HPP
 #include "Enum.hpp"
-#include "PreDef.hpp"
 #include "Scope.hpp"
 #include "SourceLocation.hpp"
 #include "Type.hpp"
-#include <memory>
+#include <iostream>
 #include <string>
+#include <unordered_map>
+#include <vector>
+#include <memory>
 
 namespace cygni {
 

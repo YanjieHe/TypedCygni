@@ -94,6 +94,7 @@ int main(int argc, char **argv) {
          << (ex.location.startCol + 1) << ") " << cygni::UTF32ToUTF8(ex.message)
          << endl;
   }
+  cout << "Press any key to close..." << endl;
   cin.get();
   // cygni::Lexer lexer(U"var a = '\\x0058'");
   // try {

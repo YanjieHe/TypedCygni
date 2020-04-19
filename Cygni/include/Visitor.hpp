@@ -93,8 +93,6 @@ namespace cygni {
 		TypePtr VisitWhile(std::shared_ptr<WhileExpression> node, ScopePtr scope);
 	};
 
-
-
 	class TreeTraverser {
 	public:
 		std::function<bool(ExpPtr)> filter;
