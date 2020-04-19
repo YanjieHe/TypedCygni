@@ -107,6 +107,11 @@ namespace cygni {
 		obj["body"] = VisitExpression(method.body);
 		obj["type"] = UTF32ToUTF8(method.signature->ToString());
 
+		std::vector<json> localVarsJson;
+		for (const auto& localVar : method.localVariables) {
+			localVarsJson.push_back(VisitVarDefExpression(localVar));
+		}
+		obj["localVariables"] = localVarsJson;
 		return obj;
 	}
 
@@ -115,6 +120,7 @@ namespace cygni {
 		json obj;
 		obj["name"] = UTF32ToUTF8(parameter->name);
 		AttachNodeInformation(obj, parameter);
+		obj["parameterLocation"] = VisitParameterLocation(parameter->parameterLocation);
 		return obj;
 	}
 
@@ -306,6 +312,14 @@ namespace cygni {
 		return expressionList;
 	}
 
+	json AstToJsonSerialization::VisitParameterLocation(const ParameterLocation & location)
+	{
+		json obj;
+		obj["parameterType"] = UTF32ToUTF8(Enum<ParameterType>::ToString(location.type));
+		obj["offset"] = location.offset;
+		return obj;
+	}
+
 	TypeChecker::Rule::Rule(std::u32string functionName,
 		std::vector<TypePtr> parameters, TypePtr returnType)
 		: functionName{ functionName }, parameters{ parameters }, returnType{
@@ -357,21 +371,34 @@ namespace cygni {
 
 		ruleSet.Add(U"+", { Type::Int32(), Type::Int32() }, Type::Int32());
 		ruleSet.Add(U"+", { Type::Int64(), Type::Int64() }, Type::Int64());
+		ruleSet.Add(U"+", { Type::Float32(), Type::Float32() }, Type::Float32());
+		ruleSet.Add(U"+", { Type::Float64(), Type::Float64() }, Type::Float64());
 
 		ruleSet.Add(U"-", { Type::Int32(), Type::Int32() }, Type::Int32());
 		ruleSet.Add(U"-", { Type::Int64(), Type::Int64() }, Type::Int64());
+		ruleSet.Add(U"-", { Type::Float32(), Type::Float32() }, Type::Float32());
+		ruleSet.Add(U"-", { Type::Float64(), Type::Float64() }, Type::Float64());
 
 		ruleSet.Add(U"*", { Type::Int32(), Type::Int32() }, Type::Int32());
 		ruleSet.Add(U"*", { Type::Int64(), Type::Int64() }, Type::Int64());
+		ruleSet.Add(U"*", { Type::Float32(), Type::Float32() }, Type::Float32());
+		ruleSet.Add(U"*", { Type::Float64(), Type::Float64() }, Type::Float64());
 
 		ruleSet.Add(U"/", { Type::Int32(), Type::Int32() }, Type::Int32());
 		ruleSet.Add(U"/", { Type::Int64(), Type::Int64() }, Type::Int64());
+		ruleSet.Add(U"/", { Type::Float32(), Type::Float32() }, Type::Float32());
+		ruleSet.Add(U"/", { Type::Float64(), Type::Float64() }, Type::Float64());
 
 		ruleSet.Add(U"==", { Type::Int32(), Type::Int32() }, Type::Boolean());
 		ruleSet.Add(U"==", { Type::Int64(), Type::Int64() }, Type::Boolean());
+		ruleSet.Add(U"==", { Type::Float32(), Type::Float32() }, Type::Float32());
+		ruleSet.Add(U"==", { Type::Float64(), Type::Float64() }, Type::Float64());
 
 		ruleSet.Add(U"!=", { Type::Int32(), Type::Int32() }, Type::Boolean());
 		ruleSet.Add(U"!=", { Type::Int64(), Type::Int64() }, Type::Boolean());
+		ruleSet.Add(U"!=", { Type::Float32(), Type::Float32() }, Type::Float32());
+		ruleSet.Add(U"!=", { Type::Float64(), Type::Float64() }, Type::Float64());
+
 	}
 
 	TypePtr TypeChecker::VisitBinary(std::shared_ptr<BinaryExpression> node,
@@ -432,7 +459,8 @@ namespace cygni {
 	}
 
 	TypePtr TypeChecker::VisitBlock(std::shared_ptr<BlockExpression> node,
-		ScopePtr scope) {
+		ScopePtr outerScope) {
+		ScopePtr scope = std::make_shared<Scope>(outerScope);
 		for (const auto &exp : node->expressions) {
 			VisitExpression(exp, scope);
 		}
@@ -490,10 +518,6 @@ namespace cygni {
 	}
 
 	TypePtr TypeChecker::VisitExpression(ExpPtr node, ScopePtr scope) {
-		//	std::cout << "msg: "
-		//			  << cygni::UTF32ToUTF8(
-		//					 Enum<ExpressionType>::ToString(node->nodeType))
-		//			  << std::endl;
 		switch (node->nodeType) {
 		case ExpressionType::Add:
 		case ExpressionType::Subtract:
@@ -559,7 +583,7 @@ namespace cygni {
 
 	TypePtr TypeChecker::VisitModuleInfo(std::shared_ptr<ModuleInfo> info,
 		ScopePtr outerScope) {
-		ScopePtr scope{ outerScope };
+		ScopePtr scope = std::make_shared<Scope>(outerScope);
 
 		for (const auto &field : info->fields.values) {
 			VisitFieldDef(field, scope);
@@ -750,10 +774,12 @@ namespace cygni {
 		if (node->type->typeCode == TypeCode::Unknown) {
 			node->type = value;
 			scope->Put(node->variable->name, node->type);
+			node->variable->type = node->type;
 			return node->type;
 		}
 		else if (node->type->Equals(value)) {
 			scope->Put(node->variable->name, node->type);
+			node->variable->type = node->type;
 			return node->type;
 		}
 		else {
@@ -771,6 +797,306 @@ namespace cygni {
 			VisitClassInfo(_class, scope);
 		}
 		for (const auto &module : program.modules.values) {
+			VisitModuleInfo(module, scope);
+		}
+	}
+
+	TreeTraverser::TreeTraverser(std::function<bool(ExpPtr)> filter) :filter{ filter }
+	{
+	}
+
+	void TreeTraverser::VisitExpression(ExpPtr node, std::vector<ExpPtr>& nodeList) {
+		if (filter(node)) {
+			nodeList.push_back(node);
+		}
+		switch (node->nodeType) {
+		case ExpressionType::Add:
+		case ExpressionType::Subtract:
+		case ExpressionType::Multiply:
+		case ExpressionType::Divide:
+		case ExpressionType::GreaterThan:
+		case ExpressionType::LessThan:
+		case ExpressionType::GreaterThanOrEqual:
+		case ExpressionType::LessThanOrEqual:
+		case ExpressionType::Equal:
+		case ExpressionType::NotEqual:
+		case ExpressionType::Assign:
+			VisitBinary(std::static_pointer_cast<BinaryExpression>(node), nodeList);
+			return;
+		case ExpressionType::Constant:
+			return;
+		case ExpressionType::Block:
+			VisitBlock(std::static_pointer_cast<BlockExpression>(node), nodeList);
+			return;
+		case ExpressionType::Return:
+			return VisitReturn(std::static_pointer_cast<ReturnExpression>(node), nodeList);
+		case ExpressionType::Parameter:
+			return;
+		case ExpressionType::Conditional:
+			VisitConditional(
+				std::static_pointer_cast<ConditionalExpression>(node), nodeList);
+			return;
+		case ExpressionType::Default:
+			return;
+		case ExpressionType::Invoke:
+			VisitInvocation(
+				std::static_pointer_cast<InvocationExpression>(node), nodeList);
+			return;
+		case ExpressionType::MemberAccess:
+			VisitMemberAccess(
+				std::static_pointer_cast<MemberAccessExpression>(node), nodeList);
+			return;
+		case ExpressionType::New:
+			VisitNewExpression(std::static_pointer_cast<NewExpression>(node), nodeList);
+			return;
+		case ExpressionType::VariableDefinition:
+			VisitVarDefExpression(
+				std::static_pointer_cast<VarDefExpression>(node), nodeList);
+			return;
+		case ExpressionType::While:
+			VisitWhileExpression(std::static_pointer_cast<WhileExpression>(node), nodeList);
+			return;
+		default:
+			throw NotImplementedException();
+		}
+	}
+	void TreeTraverser::VisitBinary(std::shared_ptr<BinaryExpression> node, std::vector<ExpPtr>& nodeList) {
+		VisitExpression(node->left, nodeList);
+		VisitExpression(node->right, nodeList);
+	}
+	void TreeTraverser::VisitBlock(std::shared_ptr<BlockExpression> node, std::vector<ExpPtr>& nodeList) {
+		for (auto exp : node->expressions) {
+			VisitExpression(exp, nodeList);
+		}
+	}
+	void TreeTraverser::VisitReturn(std::shared_ptr<ReturnExpression> node, std::vector<ExpPtr>& nodeList) {
+		VisitExpression(node->value, nodeList);
+	}
+	void TreeTraverser::VisitConditional(std::shared_ptr<ConditionalExpression> node, std::vector<ExpPtr>& nodeList) {
+		VisitExpression(node->condition, nodeList);
+		VisitExpression(node->ifTrue, nodeList);
+		VisitExpression(node->ifFalse, nodeList);
+	}
+	void TreeTraverser::VisitInvocation(std::shared_ptr<InvocationExpression> node, std::vector<ExpPtr>& nodeList) {
+		VisitExpression(node->expression, nodeList);
+		for (auto arg : node->arguments) {
+			VisitExpression(arg.value, nodeList);
+		}
+	}
+	void TreeTraverser::VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node, std::vector<ExpPtr>& nodeList)
+	{
+		VisitExpression(node->object, nodeList);
+	}
+	void TreeTraverser::VisitNewExpression(std::shared_ptr<NewExpression> node, std::vector<ExpPtr>& nodeList)
+	{
+		for (auto arg : node->arguments) {
+			VisitExpression(arg.value, nodeList);
+		}
+	}
+	void TreeTraverser::VisitVarDefExpression(std::shared_ptr<VarDefExpression> node, std::vector<ExpPtr>& nodeList)
+	{
+		VisitExpression(node->value, nodeList);
+	}
+	void TreeTraverser::VisitWhileExpression(std::shared_ptr<WhileExpression> node, std::vector<ExpPtr>& nodeList)
+	{
+		VisitExpression(node->condition, nodeList);
+		VisitExpression(node->body, nodeList);
+	}
+
+	void LocalVariableCollector::VisitMethodDef(MethodDef & method)
+	{
+		std::function<bool(ExpPtr)> filter = [](ExpPtr node) {
+			return node->nodeType == ExpressionType::VariableDefinition;
+		};
+		TreeTraverser traverser(filter);
+		std::vector<ExpPtr> nodeList;
+		traverser.VisitExpression(method.body, nodeList);
+		int offset = 0;
+		for (auto parameter : method.parameters) {
+			parameter->parameterLocation = ParameterLocation(ParameterType::LocalVariable, offset);
+			offset++;
+		}
+		for (auto node : nodeList) {
+			auto varDef = std::static_pointer_cast<VarDefExpression>(node);
+			varDef->variable->parameterLocation = ParameterLocation(ParameterType::LocalVariable, offset);
+			method.localVariables.push_back(varDef);
+			offset++;
+		}
+	}
+	void LocalVariableCollector::VisitProgram(Program & program)
+	{
+		for (auto& _class : program.classes.values) {
+			for (auto& method : _class->methods.values) {
+				VisitMethodDef(method);
+			}
+		}
+		for (auto& module : program.modules.values) {
+			for (auto& method : module->methods.values) {
+				VisitMethodDef(method);
+			}
+		}
+	}
+	void VariableLocator::VisitExpression(ExpPtr node, ScopePtr scope)
+	{
+		switch (node->nodeType) {
+		case ExpressionType::Add:
+		case ExpressionType::Subtract:
+		case ExpressionType::Multiply:
+		case ExpressionType::Divide:
+		case ExpressionType::GreaterThan:
+		case ExpressionType::LessThan:
+		case ExpressionType::GreaterThanOrEqual:
+		case ExpressionType::LessThanOrEqual:
+		case ExpressionType::Equal:
+		case ExpressionType::NotEqual:
+		case ExpressionType::Assign:
+			VisitBinary(std::static_pointer_cast<BinaryExpression>(node), scope);
+			return;
+		case ExpressionType::Block:
+			VisitBlock(std::static_pointer_cast<BlockExpression>(node), scope);
+			return;
+		case ExpressionType::Parameter:
+			VisitParameter(std::static_pointer_cast<ParameterExpression>(node), scope);
+			return;
+		case ExpressionType::Return:
+			VisitReturn(std::static_pointer_cast<ReturnExpression>(node), scope);
+			return;
+		case ExpressionType::Conditional:
+			VisitConditional(std::static_pointer_cast<ConditionalExpression>(node), scope);
+			return;
+		case ExpressionType::Invoke:
+			VisitInvocation(std::static_pointer_cast<InvocationExpression>(node), scope);
+			return;
+		case ExpressionType::MemberAccess:
+			VisitMemberAccess(std::static_pointer_cast<MemberAccessExpression>(node), scope);
+			return;
+		case ExpressionType::New:
+			VisitNewExpression(std::static_pointer_cast<NewExpression>(node), scope);
+			return;
+		case ExpressionType::VariableDefinition:
+			VisitVarDefExpression(std::static_pointer_cast<VarDefExpression>(node), scope);
+			return;
+		case ExpressionType::While:
+			VisitWhileExpression(std::static_pointer_cast<WhileExpression>(node), scope);
+			return;
+		case ExpressionType::Constant:
+		case ExpressionType::Default:
+			return;
+		default:
+			throw NotImplementedException();
+		}
+	}
+	void VariableLocator::VisitBlock(std::shared_ptr<BlockExpression> node, ScopePtr outerScope)
+	{
+		ScopePtr scope = std::make_shared<Scope>(outerScope);
+		for (auto exp : node->expressions) {
+			VisitExpression(exp, scope);
+		}
+	}
+	void VariableLocator::VisitBinary(std::shared_ptr<BinaryExpression> node, ScopePtr scope)
+	{
+		VisitExpression(node->left, scope);
+		VisitExpression(node->right, scope);
+	}
+	void VariableLocator::VisitClassInfo(std::shared_ptr<ClassInfo> info, ScopePtr outerScope)
+	{
+		auto scope = std::make_shared<Scope>(outerScope);
+		int offset = 0;
+		for (auto field : info->fields.values) {
+			scope->Put(field.name, ParameterLocation(ParameterType::ClassField, offset));
+			offset++;
+		}
+		offset = 0;
+		for (auto method : info->methods.values) {
+			scope->Put(method.name, ParameterLocation(ParameterType::ClassMethod, offset));
+		}
+		for (auto method : info->methods.values) {
+			VisitMethodDef(method, scope);
+		}
+	}
+	void VariableLocator::VisitModuleInfo(std::shared_ptr<ModuleInfo> info, ScopePtr outerScope)
+	{
+		auto scope = std::make_shared<Scope>(outerScope);
+		int offset = 0;
+		for (auto field : info->fields.values) {
+			scope->Put(field.name, ParameterLocation(ParameterType::ModuleField, offset));
+			offset++;
+		}
+		offset = 0;
+		for (auto method : info->methods.values) {
+			scope->Put(method.name, ParameterLocation(ParameterType::ModuleMethod, offset));
+		}
+		for (auto method : info->methods.values) {
+			VisitMethodDef(method, scope);
+		}
+	}
+	void VariableLocator::VisitMethodDef(const MethodDef & method, ScopePtr outerScope)
+	{
+		auto scope = std::make_shared<Scope>(outerScope);
+		for (auto parameter : method.parameters) {
+			auto location = parameter->parameterLocation;
+			scope->Put(parameter->name, location);
+		}
+		VisitExpression(method.body, scope);
+	}
+	void VariableLocator::VisitParameter(std::shared_ptr<ParameterExpression> parameter, ScopePtr scope)
+	{
+		if (auto value = scope->Get(parameter->name)) {
+			auto location = std::any_cast<ParameterLocation>(*value);
+			parameter->parameterLocation = location;
+		}
+		else {
+			throw TypeException(parameter->location, U"parameter '" + parameter->name + U"' is not defined");
+		}
+	}
+	void VariableLocator::VisitReturn(std::shared_ptr<ReturnExpression> node, ScopePtr scope)
+	{
+		VisitExpression(node->value, scope);
+	}
+	void VariableLocator::VisitConditional(std::shared_ptr<ConditionalExpression> node, ScopePtr scope)
+	{
+		VisitExpression(node->condition, scope);
+		VisitExpression(node->ifTrue, scope);
+		VisitExpression(node->ifFalse, scope);
+	}
+	void VariableLocator::VisitInvocation(std::shared_ptr<InvocationExpression> node, ScopePtr scope)
+	{
+		VisitExpression(node->expression, scope);
+		for (auto arg : node->arguments) {
+			VisitExpression(arg.value, scope);
+		}
+	}
+	void VariableLocator::VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node, ScopePtr scope)
+	{
+		VisitExpression(node->object, scope);
+	}
+	void VariableLocator::VisitNewExpression(std::shared_ptr<NewExpression> node, ScopePtr scope)
+	{
+		for (auto arg : node->arguments) {
+			VisitExpression(arg.value, scope);
+		}
+	}
+	void VariableLocator::VisitVarDefExpression(std::shared_ptr<VarDefExpression> node, ScopePtr scope)
+	{
+		scope->Put(node->variable->name, node->variable->parameterLocation);
+		VisitExpression(node->value, scope);
+	}
+	void VariableLocator::VisitWhileExpression(std::shared_ptr<WhileExpression> node, ScopePtr scope)
+	{
+		VisitExpression(node->condition, scope);
+		VisitExpression(node->body, scope);
+	}
+	void VariableLocator::VisitProgram(Program & program)
+	{
+		auto scope = std::make_shared<Scope>();
+		int offset = 0;
+		for (auto module : program.modules.values) {
+			scope->Put(module->name, ParameterLocation(ParameterType::ModuleName, offset));
+		}
+		for (auto _class : program.classes.values) {
+			VisitClassInfo(_class, scope);
+		}
+		for (auto module : program.modules.values) {
 			VisitModuleInfo(module, scope);
 		}
 	}

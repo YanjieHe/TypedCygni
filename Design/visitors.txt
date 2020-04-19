@@ -1,0 +1,25 @@
+output json: AstToJsonSerialization
+type checker: TypeChecker
+
+
+locate variable: VariableLocator
+
+def SumN(n: Int): Int
+{
+    var i = 1
+    var sum = 0
+    while (i <= n)
+    {
+        var k = 1
+        sum = sum + i * k
+        if (k == 1)
+        {
+            var m = 0
+            sum = sum + m
+        }
+    }
+    return sum
+}
+
+global variables: []
+local variables: [n, i, sum, [k, [m]]]

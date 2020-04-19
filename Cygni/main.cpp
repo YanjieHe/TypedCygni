@@ -53,11 +53,23 @@ void CompileProgram(std::string path, std::string outputJsonPath) {
     typeChecker.VisitProgram(scope);
     cout << "Complete Type Checking!" << endl;
 
-    /* pass 5: convert the abstract syntax tree to json format */
+	/* pass 5: collect local variables */
+	cygni::LocalVariableCollector localVariableCollector;
+	localVariableCollector.VisitProgram(program);
+	cout << "Complete Local Variable Collection!" << endl;
+
+	/* pass 6: locate variables */
+	cygni::VariableLocator variableLocator;
+	variableLocator.VisitProgram(program);
+	cout << "Complete Local Variable Locatoring!" << endl;
+
+    /* pass 7: convert the abstract syntax tree to json format */
     cygni::AstToJsonSerialization astToJson;
     auto jsonObj = astToJson.VisitProgram(program);
     auto jsonText = jsonObj.dump();
     WriteText(outputJsonPath, jsonText);
+
+	cout << "Output AST in JSON format!" << endl;
   } else {
     cout << "Fail to load the file!" << endl;
   }

@@ -55,7 +55,7 @@ private:
 
   void SkipWhitespaces();
 
-  void SkipComment();
+  void SkipComment(std::vector<Token>& tokens);
 
   void SkipSingleLineComment();
 

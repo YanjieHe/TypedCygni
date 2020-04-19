@@ -137,9 +137,24 @@ enum class TypeCode {
   Function
 
 };
+
+enum class ParameterType {
+	Unknown,
+	ModuleName,
+	ModuleField,
+	ModuleMethod,
+	ClassName,
+	ClassField,
+	ClassMethod,
+	LocalVariable
+};
+
 template <typename TEnum> class Enum {
 public:
-  static std::u32string ToString(TEnum);
+	static std::u32string ToString(TEnum) {
+		std::cout << __FUNCTION__ << std::endl;
+		exit(1);
+	}
 };
 
 template <> class Enum<Tag> {
@@ -411,6 +426,33 @@ public:
       exit(1);
     }
   }
+};
+
+template <> class Enum<ParameterType> {
+public:
+	static std::u32string ToString(ParameterType type) {
+		switch (type) {
+		case ParameterType::Unknown:
+			return U"Unknown";
+		case ParameterType::ModuleName:
+			return U"ModuleName";
+		case ParameterType::ModuleField:
+			return U"ModuleField";
+		case ParameterType::ModuleMethod:
+			return U"ModuleMethod";
+		case ParameterType::ClassName:
+			return U"ClassName";
+		case ParameterType::ClassField:
+			return U"ClassField";
+		case ParameterType::ClassMethod:
+			return U"ClassMethod";
+		case ParameterType::LocalVariable:
+			return U"LocalVariable";
+		default:
+			std::cout << __FUNCTION__ << std::endl;
+			exit(1);
+		}
+	}
 };
 
 } // namespace cygni
