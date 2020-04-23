@@ -11,9 +11,11 @@ namespace cygni
 	Program Parser::ParseProgram()
 	{
 		Program program(document);
+		Match(Tag::Package);
 		auto route = ParsePackageRoute();
 		program.route = route;
-		ImportStatements(program.importedPackages, program.typeAliases);
+		program.requiredPackages = ParseRequiredPackages();
+		program.typeAliases = ParseTypeAliases();
 		while (!IsEof())
 		{
 			if (Look().tag == Tag::Class)
@@ -32,7 +34,6 @@ namespace cygni
 
 	PackageRoute Parser::ParsePackageRoute()
 	{
-		Match(Tag::Package);
 		PackageRoute route;
 		route.push_back(Match(Tag::Identifier).text);
 		while (Look().tag == Tag::Dot)
@@ -718,46 +719,28 @@ namespace cygni
 			return Argument(value);
 		}
 	}
-	void Parser::ImportStatements(std::vector<PackageRoute>& importedPackages, std::unordered_map<std::u32string, TypeAlias>& typeAliases)
+	std::vector<PackageRoute> Parser::ParseRequiredPackages()
 	{
-		auto matchOneAlias = [this, &typeAliases](const PackageRoute& route) -> void
+		std::vector<PackageRoute> requiredPackages;
+		while (Look().tag == Tag::Require)
 		{
-			auto typeName = Match(Tag::Identifier).text;
-			Match(Tag::GoesTo);
-			auto alias = Match(Tag::Identifier).text;
-			typeAliases.insert({ alias, TypeAlias(route, typeName, alias) });
-		};
-		while (Look().tag == Tag::Import)
-		{
-			Match(Tag::Import);
-			PackageRoute route;
-			route.push_back(Match(Tag::Identifier).text);
-			bool isAlias = false;
-			while (Look().tag == Tag::Dot)
-			{
-				Match(Tag::Dot);
-				if (Look().tag == Tag::LeftBrace)
-				{
-					Match(Tag::LeftBrace);
-					matchOneAlias(route);
-					while (!IsEof() && Look().tag != Tag::RightBrace)
-					{
-						Match(Tag::Comma);
-						matchOneAlias(route);
-					}
-					Match(Tag::RightBrace);
-					isAlias = true;
-					break;
-				}
-				else
-				{
-					route.push_back(Match(Tag::Identifier).text);
-				}
-			}
-			if (!isAlias)
-			{
-				importedPackages.push_back(route);
-			}
+			Match(Tag::Require);
+			requiredPackages.push_back(ParsePackageRoute());
 		}
+		return requiredPackages;
+	}
+	std::unordered_map<std::u32string, TypeAlias> Parser::ParseTypeAliases()
+	{
+		std::unordered_map<std::u32string, TypeAlias> typeAliases;
+		while (Look().tag == Tag::Rename)
+		{
+			Match(Tag::Rename);
+			auto route = ParsePackageRoute();
+			auto alias = Match(Tag::Identifier).text;
+			auto originalName = route.back();
+			route.pop_back();
+			typeAliases.insert({ alias, TypeAlias(route, originalName, alias) });
+		}
+		return typeAliases;
 	}
 } // namespace cygni

@@ -60,6 +60,8 @@ namespace cygni {
 
 		Import,
 		Uses,
+		Require,
+		Rename,
 		GoesTo,
 
 		LowerBound,
@@ -318,6 +320,10 @@ namespace cygni {
 				return U"Import";
 			case Tag::Uses:
 				return U"Uses";
+			case Tag::Require:
+				return U"Require";
+			case Tag::Rename:
+				return U"Rename";
 			case Tag::GoesTo:
 				return  U"GoesTo";
 			case Tag::LowerBound:

@@ -333,7 +333,7 @@ namespace cygni
 	public:
 		std::shared_ptr<SourceDocument> document;
 		PackageRoute route;
-		std::vector<PackageRoute> importedPackages;
+		std::vector<PackageRoute> requiredPackages;
 		std::unordered_map<std::u32string, TypeAlias> typeAliases;
 		Table<std::u32string, std::shared_ptr<ClassInfo>> classes;
 		Table<std::u32string, std::shared_ptr<ModuleInfo>> modules;

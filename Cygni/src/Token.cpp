@@ -27,7 +27,9 @@ namespace cygni
 			{U"module", Tag::Module},
 			{U"protected", Tag::Protected},
 			{U"package", Tag::Package},
-			{U"import", Tag::Import}
+			{U"import", Tag::Import},
+			{U"Require", Tag::Require},
+			{U"Rename", Tag::Rename}
 		};
 		if (tag == Tag::Identifier)
 		{

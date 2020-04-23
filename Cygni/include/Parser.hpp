@@ -112,8 +112,8 @@ namespace cygni
 
 		Argument ParseArgument();
 
-		void ParseImport(std::vector<PackageRoute>& importedPackages,
-			std::unordered_map<std::u32string, TypeAlias>& typeAliases);
+		std::vector<PackageRoute> ParseRequiredPackages();
+		std::unordered_map<std::u32string, TypeAlias> ParseTypeAliases();
 	};
 } // namespace cygni
 #endif // CYGNI_PARSER_HPP
