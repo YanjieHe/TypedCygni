@@ -29,6 +29,7 @@ namespace cygni {
 		json VisitWhileLoop(std::shared_ptr<WhileExpression> node);
 		void AttachNodeInformation(json &obj, ExpPtr node);
 		json VisitProgram(const Program &program);
+		std::u32string VisitPackageRoute(const PackageRoute& route);
 		std::vector<json> VisitArgumentList(const std::vector<Argument> &arguments);
 		json VisitAnnotationList(const std::vector<AnnotationInfo> &annotations);
 		std::vector<json> VisitExpressionList(const std::vector<ExpPtr> &expressions);

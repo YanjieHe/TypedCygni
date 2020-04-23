@@ -3,106 +3,117 @@
 #include "Exception.hpp"
 #include "Expression.hpp"
 #include "Token.hpp"
-namespace cygni {
-class Parser {
-public:
-  std::vector<Token> tokens;
-  std::shared_ptr<SourceDocument> document;
-  int offset;
 
-  Parser(std::vector<Token> tokens, std::shared_ptr<SourceDocument> document);
+namespace cygni
+{
+	class Parser
+	{
+	public:
+		std::vector<Token> tokens;
+		std::shared_ptr<SourceDocument> document;
+		int offset;
 
-  inline bool IsEof() const { return Look().tag == Tag::Eof; }
+		Parser(std::vector<Token> tokens, std::shared_ptr<SourceDocument> document);
 
-  inline const Token &Look() const { return tokens[offset]; }
+		inline bool IsEof() const { return Look().tag == Tag::Eof; }
 
-  inline void Advance() { offset++; }
+		inline const Token &Look() const { return tokens[offset]; }
 
-  inline void Back() { offset--; }
+		inline void Advance() { offset++; }
 
-  const Token &Match(Tag tag) {
-    if (tag == Look().tag) {
-      const Token &t = Look();
-      Advance();
-      return t;
-    } else {
-      std::u32string message = U"expecting '" + Enum<Tag>::ToString(tag) +
-                               U"', got '" + Enum<Tag>::ToString(Look().tag) +
-                               U"'";
-      throw ParserException(Look().line, Look().column, message);
-    }
-  }
+		inline void Back() { offset--; }
 
-  inline SourceLocation GetLoc(const Token &token) const {
-    return SourceLocation{document, token.line, token.column, Look().line,
-                          Look().column};
-  }
+		const Token &Match(Tag tag)
+		{
+			if (tag == Look().tag)
+			{
+				const Token &t = Look();
+				Advance();
+				return t;
+			}
+			else
+			{
+				std::u32string message = U"expecting '" + Enum<Tag>::ToString(tag) +
+					U"', got '" + Enum<Tag>::ToString(Look().tag) +
+					U"'";
+				throw ParserException(Look().line, Look().column, message);
+			}
+		}
 
-  Program ParseProgram();
+		inline SourceLocation GetLoc(const Token &token) const
+		{
+			return SourceLocation{ document, token.line, token.column, Look().line,
+								  Look().column };
+		}
 
-  std::u32string ParsePackageName();
+		Program ParseProgram();
 
-  ExpPtr Statement();
+		PackageRoute ParsePackageRoute();
 
-  ExpPtr ParseAssign();
+		ExpPtr Statement();
 
-  ExpPtr ParseOr();
+		ExpPtr ParseAssign();
 
-  ExpPtr ParseAnd();
+		ExpPtr ParseOr();
 
-  ExpPtr ParseEquality();
+		ExpPtr ParseAnd();
 
-  ExpPtr ParseRelation();
+		ExpPtr ParseEquality();
 
-  ExpPtr ParseExpr();
+		ExpPtr ParseRelation();
 
-  ExpPtr ParseTerm();
+		ExpPtr ParseExpr();
 
-  ExpPtr ParseUnary();
+		ExpPtr ParseTerm();
 
-  ExpPtr ParsePostfix();
+		ExpPtr ParseUnary();
 
-  ExpPtr ParseFactor();
+		ExpPtr ParsePostfix();
 
-  ExpPtr ParseBlock();
+		ExpPtr ParseFactor();
 
-  ExpPtr IfStatement();
+		ExpPtr ParseBlock();
 
-  ExpPtr ParseVar();
+		ExpPtr IfStatement();
 
-  FieldDef ParseFieldDefinition(AccessModifier modifier,
-                                std::vector<AnnotationInfo> annotations,
-                                bool isStatic);
+		ExpPtr ParseVar();
 
-  MethodDef ParseMethodDefinition(AccessModifier modifier,
-                                  std::vector<AnnotationInfo> annotations,
-                                  bool isStatic);
+		FieldDef ParseFieldDefinition(AccessModifier modifier,
+			std::vector<AnnotationInfo> annotations,
+			bool isStatic);
 
-  std::shared_ptr<ParameterExpression> ParseParameter();
+		MethodDef ParseMethodDefinition(AccessModifier modifier,
+			std::vector<AnnotationInfo> annotations,
+			bool isStatic);
 
-  std::shared_ptr<Type> ParseType();
+		std::shared_ptr<ParameterExpression> ParseParameter();
 
-  ExpPtr ParseReturn();
+		std::shared_ptr<Type> ParseType();
 
-  std::vector<std::shared_ptr<Type>> ParseTypeArguments();
+		ExpPtr ParseReturn();
 
-  ExpPtr ParseWhile();
+		std::vector<std::shared_ptr<Type>> ParseTypeArguments();
 
-  std::shared_ptr<ClassInfo> ParseDefClass();
+		ExpPtr ParseWhile();
 
-  std::shared_ptr<ModuleInfo> ParseDefModule();
+		std::shared_ptr<ClassInfo> ParseDefClass();
 
-  AccessModifier ParseAccess();
+		std::shared_ptr<ModuleInfo> ParseDefModule();
 
-  AnnotationInfo ParseAnnotation();
+		AccessModifier ParseAccess();
 
-  std::vector<AnnotationInfo> ParseAnnotationList();
+		AnnotationInfo ParseAnnotation();
 
-  std::vector<Argument> ParseArguments();
+		std::vector<AnnotationInfo> ParseAnnotationList();
 
-  std::shared_ptr<NewExpression> ParseNewExpression();
+		std::vector<Argument> ParseArguments();
 
-  Argument ParseArgument();
-};
+		std::shared_ptr<NewExpression> ParseNewExpression();
+
+		Argument ParseArgument();
+
+		void ParseImport(std::vector<PackageRoute>& importedPackages,
+			std::unordered_map<std::u32string, TypeAlias>& typeAliases);
+	};
 } // namespace cygni
 #endif // CYGNI_PARSER_HPP

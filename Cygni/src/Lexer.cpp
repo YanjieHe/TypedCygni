@@ -2,39 +2,50 @@
 #include <iostream>
 #include <unordered_set>
 
-namespace cygni {
+namespace cygni
+{
 
 	Lexer::Lexer(const std::u32string &code)
 		: code{ code }, line{ 1 }, column{ 1 }, offset{ 0 } {}
 
-	std::vector<Token> Lexer::ReadAll() {
+	std::vector<Token> Lexer::ReadAll()
+	{
 		std::vector<Token> tokens;
 		static std::u32string opChars = U"+-*/%><=!()[]{}:,.;@";
 		static std::unordered_set<char32_t> opCharSet(opChars.begin(), opChars.end());
 		SkipWhitespaces();
-		while (!IsEof()) {
-			if (Peek() == U'/') {
+		while (!IsEof())
+		{
+			if (Peek() == U'/')
+			{
 				SkipComment(tokens);
 			}
-			else if (IsDigit(Peek())) {
+			else if (IsDigit(Peek()))
+			{
 				tokens.push_back(ReadInt());
 			}
-			else if (Peek() == SINGLE_QUOTE) {
+			else if (Peek() == SINGLE_QUOTE)
+			{
 				tokens.push_back(ReadCharacterLiteral());
 			}
-			else if (Peek() == DOUBLE_QUOTE) {
+			else if (Peek() == DOUBLE_QUOTE)
+			{
 				tokens.push_back(ReadString());
 			}
-			else if (opCharSet.find(Peek()) != opCharSet.end()) {
+			else if (opCharSet.find(Peek()) != opCharSet.end())
+			{
 				tokens.push_back(ReadOperator());
 			}
-			else if (IsLetter(Peek()) || Peek() == U'_') {
+			else if (IsLetter(Peek()) || Peek() == U'_')
+			{
 				tokens.push_back(ReadIdentifier());
 			}
-			else if (Peek() == U'@') {
+			else if (Peek() == U'@')
+			{
 				tokens.push_back(ReadAnnotation());
 			}
-			else {
+			else
+			{
 				throw LexicalException(line, column, U"unsupported token");
 			}
 			SkipWhitespaces();
@@ -43,60 +54,77 @@ namespace cygni {
 		return tokens;
 	}
 
-	Token Lexer::ReadInt() {
+	Token Lexer::ReadInt()
+	{
 		Reset();
 		ReadDecimalDigits();
-		if (IsEof()) {
+		if (IsEof())
+		{
 			return Token(line, column, Tag::Integer, builder);
 		}
-		else {
-			if (Peek() == U'.') {
+		else
+		{
+			if (Peek() == U'.')
+			{
 				Consume();
 				return ReadFloat();
 			}
-			else {
+			else
+			{
 				return Token(line, column, Tag::Integer, builder);
 			}
 		}
 	}
 
-	Token Lexer::ReadFloat() {
+	Token Lexer::ReadFloat()
+	{
 		ReadDecimalDigits();
-		if (IsEof()) {
+		if (IsEof())
+		{
 			return Token(line, column, Tag::Float, builder);
 		}
-		else {
-			if (Peek() == U'E' || Peek() == U'e') {
+		else
+		{
+			if (Peek() == U'E' || Peek() == U'e')
+			{
 				return ReadExponent();
 			}
-			else {
+			else
+			{
 				return Token(line, column, Tag::Float, builder);
 			}
 		}
 	}
 
-	Token Lexer::ReadExponent() {
+	Token Lexer::ReadExponent()
+	{
 		Match(U'E', U'e');
 
-		if (Peek() == U'+' || Peek() == U'-') {
+		if (Peek() == U'+' || Peek() == U'-')
+		{
 			Consume();
 		}
-		if (IsEof() || !IsDigit(Peek())) {
+		if (IsEof() || !IsDigit(Peek()))
+		{
 			throw LexicalException(line, column, U"float literal");
 		}
-		else {
+		else
+		{
 			ReadDecimalDigits();
 			return Token(line, column, Tag::Float, builder);
 		}
 	}
 
-	void Lexer::ReadDecimalDigits() {
-		while (!IsEof() && IsDigit(Peek())) {
+	void Lexer::ReadDecimalDigits()
+	{
+		while (!IsEof() && IsDigit(Peek()))
+		{
 			Consume();
 		}
 	}
 
-	Token Lexer::ReadCharacterLiteral() {
+	Token Lexer::ReadCharacterLiteral()
+	{
 		Reset();
 		MatchAndSkip(SINGLE_QUOTE);
 		ReadCharacter();
@@ -104,141 +132,182 @@ namespace cygni {
 		return Token(line, column, Tag::Character, builder);
 	}
 
-	void Lexer::ReadCharacter() {
-		if (IsEof()) {
+	void Lexer::ReadCharacter()
+	{
+		if (IsEof())
+		{
 			throw LexicalException(line, column, U"character literal");
 		}
-		else {
-			if (Peek() == BACKSLASH) {
+		else
+		{
+			if (Peek() == BACKSLASH)
+			{
 				MatchAndSkip(BACKSLASH);
 				ReadSimpleEscapeSequence();
 			}
-			else {
+			else
+			{
 				Consume();
 			}
 		}
 	}
 
-	void Lexer::ReadSimpleEscapeSequence() {
-		if (Peek() == U'x') {
+	void Lexer::ReadSimpleEscapeSequence()
+	{
+		if (Peek() == U'x')
+		{
 			ReadHexadecimalEscapeSequence();
 		}
-		else if (Peek() == U'u' || Peek() == U'U') {
+		else if (Peek() == U'u' || Peek() == U'U')
+		{
 			ReadUnicodeEscapeSequence();
 		}
-		else {
+		else
+		{
 			builder.push_back(UnescapedChar(Peek()));
 			Forward();
 		}
 	}
 
-	void Lexer::ReadHexadecimalEscapeSequence() {
+	void Lexer::ReadHexadecimalEscapeSequence()
+	{
 		MatchAndSkip(U'x');
 		std::u32string text;
-		if (IsHexDigit()) {
+		if (IsHexDigit())
+		{
 			text.push_back(Peek());
 			Forward();
 		}
-		else {
+		else
+		{
 			throw LexicalException(line, column, U"expecting an hex digit");
 		}
 
-		for (int i = 0; i < 3 && IsHexDigit(); i++) {
+		for (int i = 0; i < 3 && IsHexDigit(); i++)
+		{
 			text.push_back(Peek());
 			Forward();
 		}
-		try {
+		try
+		{
 			int val = HexToInt(text);
 			builder.push_back(static_cast<char32_t>(val));
 		}
-		catch (ArgumentException &) {
+		catch (ArgumentException &)
+		{
 			throw LexicalException(line, column, U"wrong format for hex digit");
 		}
 	}
 
-	void Lexer::ReadUnicodeEscapeSequence() {
+	void Lexer::ReadUnicodeEscapeSequence()
+	{
 		std::u32string text;
-		if (Peek() == U'u') {
+		if (Peek() == U'u')
+		{
 			Match(U'u');
-			for (int i = 0; i < 4; i++) {
-				if ((!IsEof()) && IsHexDigit()) {
+			for (int i = 0; i < 4; i++)
+			{
+				if ((!IsEof()) && IsHexDigit())
+				{
 					text.push_back(Peek());
 					Forward();
 				}
-				else {
+				else
+				{
 					throw LexicalException(line, column, U"expecting an hex digit");
 				}
 			}
 		}
-		else if (Peek() == U'U') {
+		else if (Peek() == U'U')
+		{
 			Match(U'U');
-			for (int i = 0; i < 8; i++) {
-				if ((!IsEof()) && IsHexDigit()) {
+			for (int i = 0; i < 8; i++)
+			{
+				if ((!IsEof()) && IsHexDigit())
+				{
 					text.push_back(Peek());
 					Forward();
 				}
-				else {
+				else
+				{
 					throw LexicalException(line, column, U"expecting an hex digit");
 				}
 			}
 		}
-		else {
+		else
+		{
 			throw LexicalException(line, column, U"expecting 'u' or 'U'");
 		}
-		try {
+		try
+		{
 			int val = HexToInt(text);
 			builder.push_back(static_cast<char32_t>(val));
 		}
-		catch (ArgumentException &) {
+		catch (ArgumentException &)
+		{
 			throw LexicalException(line, column, U"wrong format for hex digit");
 		}
 	}
 
-	Token Lexer::ReadAnnotation() {
+	Token Lexer::ReadAnnotation()
+	{
 		Match(U'@');
 		return Token(line, column, Tag::At, U"@");
 	}
 
-	bool Lexer::IsHexDigit() {
+	bool Lexer::IsHexDigit()
+	{
 		static std::u32string digits = U"0123456789abcdefABCDEF";
 		static std::unordered_set<char32_t> digitSet(digits.begin(), digits.end());
-		if (!IsEof()) {
+		if (!IsEof())
+		{
 			return digitSet.find(Peek()) != digitSet.end();
 		}
-		else {
+		else
+		{
 			return false;
 		}
 	}
 
-	Token Lexer::ReadString() {
+	Token Lexer::ReadString()
+	{
 		Reset();
 		Forward();
-		while (!IsEof() && Peek() != DOUBLE_QUOTE) {
-			if (Peek() == U'\\') {
+		while (!IsEof() && Peek() != DOUBLE_QUOTE)
+		{
+			if (Peek() == U'\\')
+			{
 				Forward();
-				if (IsEof()) {
+				if (IsEof())
+				{
 					throw LexicalException(line, column, U"string literal");
 				}
-				else {
+				else
+				{
 					builder.push_back(UnescapedChar(Peek()));
 					Forward();
 				}
 			}
-			else {
+			else
+			{
 				Consume();
 			}
 		}
-		if (IsEof()) {
+		if (IsEof())
+		{
 			throw LexicalException(line, column, U"string literal");
 		}
-		else {
+		else
+		{
 			Forward();
 			return Token(line, column, Tag::String, builder);
 		}
 	}
 
-	char32_t Lexer::UnescapedChar(char32_t c) {
-		switch (c) {
+	char32_t Lexer::UnescapedChar(char32_t c)
+	{
+		switch (c)
+		{
 		case U'b':
 			return U'\b';
 		case U'n':
@@ -260,16 +329,19 @@ namespace cygni {
 		}
 	}
 
-	Token Lexer::ReadIdentifier() {
+	Token Lexer::ReadIdentifier()
+	{
 		Reset();
 		Consume();
-		while (!IsEof() && IsIdentifierChar(Peek())) {
+		while (!IsEof() && IsIdentifierChar(Peek()))
+		{
 			Consume();
 		}
 		return Token(line, column, Tag::Identifier, builder);
 	}
 
-	Token Lexer::ReadOperator() {
+	Token Lexer::ReadOperator()
+	{
 		static std::unordered_map<std::u32string, Tag> operators = {
 			{U"+", Tag::Add},
 			{U"-", Tag::Subtract},
@@ -294,61 +366,77 @@ namespace cygni {
 			{U";", Tag::Semicolon},
 			{U"=", Tag::Assign},
 			{U"->", Tag::RightArrow},
+			{U"=>", Tag::GoesTo},
 			{U"@", Tag::At},
 			{U"<:", Tag::UpperBound},
-			{U":>", Tag::LowerBound} };
+			{U":>", Tag::LowerBound}
+		};
 
 		char32_t c1 = Peek();
 		std::u32string s1;
 		s1.push_back(c1);
 		Forward();
-		if (IsEof()) {
-			if (operators.find(s1) != operators.end()) {
+		if (IsEof())
+		{
+			if (operators.find(s1) != operators.end())
+			{
 				return Token(line, column, operators[s1], s1);
 			}
-			else {
+			else
+			{
 				throw LexicalException(line, column, U"operator literal");
 			}
 		}
-		else {
+		else
+		{
 			char32_t c2 = Peek();
 			std::u32string s12;
 			s12.push_back(c1);
 			s12.push_back(c2);
-			if (operators.find(s12) != operators.end()) {
+			if (operators.find(s12) != operators.end())
+			{
 				Forward();
 				return Token(line, column, operators[s12], s12);
 			}
-			else if (operators.find(s1) != operators.end()) {
+			else if (operators.find(s1) != operators.end())
+			{
 				return Token(line, column, operators[s1], s1);
 			}
-			else {
+			else
+			{
 				throw LexicalException(line, column, U"operator literal");
 			}
 		}
 	}
 
-	void Lexer::SkipWhitespaces() {
-		while (!IsEof() && IsWhiteSpace(Peek())) {
+	void Lexer::SkipWhitespaces()
+	{
+		while (!IsEof() && IsWhiteSpace(Peek()))
+		{
 			Forward();
 		}
 	}
 
 
-	void Lexer::SkipComment(std::vector<Token>& tokens) {
+	void Lexer::SkipComment(std::vector<Token>& tokens)
+	{
 		MatchAndSkip(U'/');
-		if (Peek() == U'/') {
+		if (Peek() == U'/')
+		{
 			SkipSingleLineComment();
 		}
-		else {
+		else
+		{
 			tokens.push_back(Token(line, column, Tag::Divide, U"/"));
 			//throw LexicalException(line, column, U"expecting '/' for comment");
 		}
 	}
 
-	void Lexer::SkipSingleLineComment() {
+	void Lexer::SkipSingleLineComment()
+	{
 		MatchAndSkip(U'/');
-		while ((!IsEof()) && Peek() != END_LINE) {
+		while ((!IsEof()) && Peek() != END_LINE)
+		{
 			Forward();
 		}
 	}

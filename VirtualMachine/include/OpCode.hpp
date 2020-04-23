@@ -51,7 +51,7 @@ typedef enum {
 	JUMP_IF_FALSE,
 	PUSH_MODULE,
 	PUSH_FUNCTION,
-	INOVKE,
+	INVOKE,
 	RETURN,
 	NEW,
 	SUPER,
@@ -163,8 +163,8 @@ static std::string OpCodeToString(OpCode code) {
 		return "PUSH_MODULE";
 	case PUSH_FUNCTION:
 		return "PUSH_FUNCTION";
-	case INOVKE:
-		return "INOVKE";
+	case INVOKE:
+		return "INVOKE";
 	case RETURN:
 		return "RETURN";
 	case NEW:

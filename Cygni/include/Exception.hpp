@@ -3,9 +3,11 @@
 #include "SourceLocation.hpp"
 #include <string>
 
-namespace cygni {
+namespace cygni
+{
 
-	class LexicalException {
+	class LexicalException
+	{
 	public:
 		int line;
 		int column;
@@ -15,14 +17,18 @@ namespace cygni {
 			: line{ line }, column{ column }, message{ message } {}
 	};
 
-	class ArgumentException {
+	class ArgumentException
+	{
 	public:
 		std::u32string message;
 		explicit ArgumentException(const std::u32string &message)
-			: message{ message } {}
+			: message{ message }
+		{
+		}
 	};
 
-	class ParserException {
+	class ParserException
+	{
 	public:
 		int line;
 		int column;
@@ -32,16 +38,20 @@ namespace cygni {
 			: line{ line }, column{ column }, message{ message } {}
 	};
 
-	class NotImplementedException {
+	class NotImplementedException
+	{
 	public:
 		std::u32string message;
 
 		NotImplementedException() : message{ U"Not Implemented Exception" } {}
 		explicit NotImplementedException(const std::u32string &message)
-			: message{ message } {}
+			: message{ message }
+		{
+		}
 	};
 
-	class TypeException {
+	class TypeException
+	{
 	public:
 		SourceLocation location;
 		std::u32string message;
@@ -51,13 +61,35 @@ namespace cygni {
 			: location{ location }, message{ message } {}
 	};
 
-	class CompilerException {
+	class SyntaxException
+	{
+	public:
+		SourceLocation location;
+		std::u32string message;
+
+		SyntaxException() = default;
+		SyntaxException(SourceLocation location, const std::u32string &message)
+			: location{ location }, message{ message } {}
+	};
+
+	class CompilerException
+	{
 	public:
 		SourceLocation location;
 		std::u32string message;
 		CompilerException() = default;
 		CompilerException(SourceLocation location, const std::u32string& message)
 			:location{ location }, message{ message }
+		{
+
+		}
+	};
+
+	class FileNotFoundException
+	{
+	public:
+		std::u32string message;
+		explicit FileNotFoundException(std::u32string fileName) :message{ U"Could not find file '" + fileName + U"'." }
 		{
 
 		}

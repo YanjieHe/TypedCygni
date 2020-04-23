@@ -5,43 +5,52 @@
 #include "SourceLocation.hpp"
 #include "Type.hpp"
 #include <iostream>
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include <memory>
 
-namespace cygni {
-	class ConstantKey {
+namespace cygni
+{
+	class ConstantKey
+	{
 	public:
 		TypeCode typeCode;
 		std::u32string constant;
 	};
 }
 
-namespace std {
-	template<>
-	struct hash<cygni::ConstantKey> {
+namespace std
+{
+	template <>
+	struct hash<cygni::ConstantKey>
+	{
 		std::hash<int> h1;
 		std::hash<std::u32string> h2;
-		std::size_t operator()(const cygni::ConstantKey& key) const {
+		std::size_t operator()(const cygni::ConstantKey& key) const
+		{
 			return h1(static_cast<int>(key.typeCode)) ^ (h2(key.constant) << 1);
 		}
 	};
 
 	template <>
-	struct equal_to<cygni::ConstantKey> {
-		bool operator()(const cygni::ConstantKey& lhs, const cygni::ConstantKey& rhs) const {
+	struct equal_to<cygni::ConstantKey>
+	{
+		bool operator()(const cygni::ConstantKey& lhs, const cygni::ConstantKey& rhs) const
+		{
 			return lhs.typeCode == rhs.typeCode && lhs.constant == rhs.constant;
 		}
 	};
 }
-namespace cygni {
+namespace cygni
+{
 
 	class Expression;
 	using ExpPtr = std::shared_ptr<Expression>;
 	using ExpList = std::vector<std::shared_ptr<Expression>>;
 
-	class Expression {
+	class Expression
+	{
 	public:
 		int id;
 		SourceLocation location;
@@ -51,16 +60,16 @@ namespace cygni {
 		Expression(SourceLocation location, ExpressionType nodeType);
 	};
 
-	class ConstantExpression : public Expression {
+	class ConstantExpression : public Expression
+	{
 	public:
 		std::u32string constant;
 		ConstantExpression(SourceLocation location, TypePtr type,
 			std::u32string constant);
 	};
 
-
-
-	class BinaryExpression : public Expression {
+	class BinaryExpression : public Expression
+	{
 	public:
 		ExpPtr left;
 		ExpPtr right;
@@ -69,7 +78,8 @@ namespace cygni {
 			ExpPtr left, ExpPtr right);
 	};
 
-	class UnaryExpression : public Expression {
+	class UnaryExpression : public Expression
+	{
 	public:
 		ExpPtr operand;
 
@@ -77,14 +87,16 @@ namespace cygni {
 			ExpPtr operand);
 	};
 
-	class BlockExpression : public Expression {
+	class BlockExpression : public Expression
+	{
 	public:
 		ExpList expressions;
 		std::shared_ptr<Scope> scope;
 		BlockExpression(SourceLocation location, ExpList expressions);
 	};
 
-	class ConditionalExpression : public Expression {
+	class ConditionalExpression : public Expression
+	{
 	public:
 		ExpPtr condition;
 		ExpPtr ifTrue;
@@ -94,12 +106,14 @@ namespace cygni {
 			ExpPtr ifTrue, ExpPtr ifFalse);
 	};
 
-	class DefaultExpression : public Expression {
+	class DefaultExpression : public Expression
+	{
 	public:
 		DefaultExpression(SourceLocation location, TypePtr type);
 	};
 
-	class Argument {
+	class Argument
+	{
 	public:
 		std::optional<std::u32string> name;
 		ExpPtr value;
@@ -109,7 +123,8 @@ namespace cygni {
 		Argument(std::optional<std::u32string> name, ExpPtr value);
 	};
 
-	class InvocationExpression : public Expression {
+	class InvocationExpression : public Expression
+	{
 	public:
 		ExpPtr expression;
 		std::vector<Argument> arguments;
@@ -117,7 +132,8 @@ namespace cygni {
 			std::vector<Argument> arguments);
 	};
 
-	class ParameterLocation {
+	class ParameterLocation
+	{
 	public:
 		ParameterType type;
 		int offset;
@@ -125,7 +141,8 @@ namespace cygni {
 		ParameterLocation(ParameterType type, int offset);
 	};
 
-	class ParameterExpression : public Expression {
+	class ParameterExpression : public Expression
+	{
 	public:
 		std::u32string name;
 		ParameterLocation parameterLocation;
@@ -133,7 +150,8 @@ namespace cygni {
 			TypePtr type);
 	};
 
-	class VarDefExpression : public Expression {
+	class VarDefExpression : public Expression
+	{
 	public:
 		std::shared_ptr<ParameterExpression> variable;
 		ExpPtr value;
@@ -143,7 +161,8 @@ namespace cygni {
 			ExpPtr value);
 	};
 
-	class AnnotationInfo {
+	class AnnotationInfo
+	{
 	public:
 		SourceLocation location;
 		std::u32string name;
@@ -153,7 +172,8 @@ namespace cygni {
 			std::vector<Argument> arguments);
 	};
 
-	class FieldDef {
+	class FieldDef
+	{
 	public:
 		SourceLocation location;
 		AccessModifier modifier;
@@ -168,7 +188,8 @@ namespace cygni {
 			TypePtr type, ExpPtr value);
 	};
 
-	class MethodDef {
+	class MethodDef
+	{
 	public:
 		SourceLocation location;
 		AccessModifier modifier;
@@ -190,7 +211,8 @@ namespace cygni {
 			TypePtr returnType, ExpPtr body);
 	};
 
-	class ConstructorInfo {
+	class ConstructorInfo
+	{
 	public:
 		SourceLocation location;
 		AccessModifier modifier;
@@ -207,7 +229,8 @@ namespace cygni {
 			TypePtr returnType, ExpPtr body);
 	};
 
-	class MemberAccessExpression : public Expression {
+	class MemberAccessExpression : public Expression
+	{
 	public:
 		ExpPtr object;
 		std::u32string field;
@@ -215,7 +238,8 @@ namespace cygni {
 			std::u32string field);
 	};
 
-	class MethodCallExpression : public Expression {
+	class MethodCallExpression : public Expression
+	{
 	public:
 		ExpPtr object;
 		std::shared_ptr<MethodDef> method;
@@ -224,25 +248,29 @@ namespace cygni {
 			std::shared_ptr<MethodDef> method, ExpList arguments);
 	};
 
-	class ReturnExpression : public Expression {
+	class ReturnExpression : public Expression
+	{
 	public:
 		ExpPtr value;
 		ReturnExpression(SourceLocation location, ExpPtr value);
 	};
 
-	class BreakExpression : public Expression {
+	class BreakExpression : public Expression
+	{
 	public:
 		BreakExpression(SourceLocation location);
 	};
 
-	class WhileExpression : public Expression {
+	class WhileExpression : public Expression
+	{
 	public:
 		ExpPtr condition;
 		ExpPtr body;
 		WhileExpression(SourceLocation location, ExpPtr condition, ExpPtr body);
 	};
 
-	class NewExpression : public Expression {
+	class NewExpression : public Expression
+	{
 	public:
 		std::u32string name;
 		std::vector<Argument> arguments;
@@ -250,7 +278,8 @@ namespace cygni {
 			std::vector<Argument> arguments);
 	};
 
-	class ClassInfo {
+	class ClassInfo
+	{
 	public:
 		SourceLocation location;
 		std::u32string name;
@@ -260,7 +289,8 @@ namespace cygni {
 		ClassInfo(SourceLocation location, std::u32string name);
 	};
 
-	class ModuleInfo {
+	class ModuleInfo
+	{
 	public:
 		SourceLocation location;
 		std::u32string name;
@@ -269,17 +299,53 @@ namespace cygni {
 		ModuleInfo() = default;
 		ModuleInfo(SourceLocation location, std::u32string name);
 	};
-	class Program {
+
+	using PackageRoute = std::vector<std::u32string>;
+
+	class TypeAlias
+	{
 	public:
-		std::u32string packageName;
-		std::shared_ptr<SourceDocument> document;
+		PackageRoute route;
+		std::u32string typeName;
+		std::u32string alias;
+
+		TypeAlias() = default;
+		TypeAlias(PackageRoute route, std::u32string typeName, std::u32string alias);
+	};
+
+	class Package : public std::enable_shared_from_this<Package>
+	{
+	public:
+		std::u32string name;
+		std::unordered_map<std::u32string, std::shared_ptr<Package>> subPackages;
+
 		Table<std::u32string, std::shared_ptr<ClassInfo>> classes;
 		Table<std::u32string, std::shared_ptr<ModuleInfo>> modules;
+
+		explicit Package(std::u32string name);
+
+		std::shared_ptr<Package> FindPackage(const SourceLocation& location, const PackageRoute& route, int index);
+		std::shared_ptr<Package> CreatePackage(const SourceLocation& location, const PackageRoute& route, int index);
+	};
+
+	class Program
+	{
+	public:
+		std::shared_ptr<SourceDocument> document;
+		PackageRoute route;
+		std::vector<PackageRoute> importedPackages;
+		std::unordered_map<std::u32string, TypeAlias> typeAliases;
+		Table<std::u32string, std::shared_ptr<ClassInfo>> classes;
+		Table<std::u32string, std::shared_ptr<ModuleInfo>> modules;
+
 		explicit Program(std::shared_ptr<SourceDocument> document);
+	};
 
-		void AddClass(std::shared_ptr<ClassInfo> info);
-
-		void AddModule(std::shared_ptr<ModuleInfo> info);
+	class Project
+	{
+	public:
+		Table<std::string, Program> programs;
+		std::unordered_map<std::u32string, std::shared_ptr<Package>> packages;
 	};
 
 } // namespace cygni

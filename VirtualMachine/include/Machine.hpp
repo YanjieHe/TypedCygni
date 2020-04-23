@@ -8,15 +8,13 @@
 class Machine {
 public:
 	std::vector<Value> stack;
-	std::vector<Byte>* code;
-	std::vector<Value>* constantPool;
 	Function* function;
 	Program* program;
 	int fp;
 	int sp;
 	int pc;
 	explicit Machine(int stackSize, Program* program);
-	void Run();
+	void Run(Function* entry);
 
 	inline uint16_t USHORT(std::vector<Byte>* bytes, int index)
 	{

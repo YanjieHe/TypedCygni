@@ -2,14 +2,16 @@
 #include <iostream>
 #include <unordered_map>
 
-namespace cygni {
+namespace cygni
+{
 	Token::Token() :line{ -1 }, column{ -1 }, tag{ Tag::Eof }, text{}
 	{
 	}
 	Token::Token(int line, int column, Tag tag, const std::u32string &text)
 		: line{ line }, column{ column }, tag{ IdentifyKeyword(tag, text) }, text{ text } {}
 
-	Tag Token::IdentifyKeyword(Tag tag, const std::u32string &text) {
+	Tag Token::IdentifyKeyword(Tag tag, const std::u32string &text)
+	{
 		static std::unordered_map<std::u32string, Tag> keywords = {
 			{U"if", Tag::If},
 			{U"else", Tag::Else},
@@ -24,16 +26,22 @@ namespace cygni {
 			{U"private", Tag::Private},
 			{U"module", Tag::Module},
 			{U"protected", Tag::Protected},
-			{U"package", Tag::Package} };
-		if (tag == Tag::Identifier) {
-			if (keywords.find(text) != keywords.end()) {
+			{U"package", Tag::Package},
+			{U"import", Tag::Import}
+		};
+		if (tag == Tag::Identifier)
+		{
+			if (keywords.find(text) != keywords.end())
+			{
 				return keywords[text];
 			}
-			else {
+			else
+			{
 				return tag;
 			}
 		}
-		else {
+		else
+		{
 			return tag;
 		}
 	}

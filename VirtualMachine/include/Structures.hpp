@@ -54,7 +54,7 @@ public:
 class Program {
 public:
 	std::vector<ClassInfo> classes;
-	std::vector<ModuleInfo> modules;
+	std::vector<Object*> modules;
 	Function* entry;
 };
 

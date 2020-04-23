@@ -4,9 +4,11 @@
 #include "Enum.hpp"
 #include <string>
 
-namespace cygni {
+namespace cygni
+{
 
-	class Token {
+	class Token
+	{
 	public:
 		int line;
 		int column;

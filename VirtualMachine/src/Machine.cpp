@@ -1,25 +1,23 @@
 #include "Machine.hpp"
 
 Machine::Machine(int stackSize, Program * program)
-	:stack(stackSize), code{ nullptr }, program{ program },
-	constantPool{ nullptr }, function{ nullptr },
+	:stack(stackSize), program{ program }, function{ nullptr },
 	fp{ -1 }, sp{ -1 }, pc{ 0 }
 {
 }
 
-void Machine::Run()
+void Machine::Run(Function* entry)
 {
-	Function* entry = program->entry;
 	function = entry;
-	code = &(entry->code);
-	constantPool = &(entry->constantPool);
+	std::vector<Byte>* code = &(entry->code);
+	std::vector<Value>* constantPool = &(entry->constantPool);
 	pc = 0;
 	fp = 0;
+	// arguments ... (fp) | local variables ... | last function | last pc | last fp
 	int index = fp + function->numArgs + function->locals + 1;
 	pc = stack[index + 1].u.i32_v;
 	fp = stack[index + 2].u.i32_v;
-	sp = stack[index + 3].u.i32_v;
-	sp = index + 4;
+	sp = index + 3;
 	while (true) {
 		Byte op = (*code)[pc];
 		switch (op) {
@@ -679,10 +677,12 @@ void Machine::Run()
 				sp--;
 				int index = fp + function->numArgs + function->locals + 1;
 				Function* lastFunction = (Function*)stack[index].u.obj;
+				sp = fp;
 				pc = stack[index + 1].u.i32_v;
 				fp = stack[index + 2].u.i32_v;
-				sp = stack[index + 3].u.i32_v;
 				stack[sp].u.i32_v = value;
+				code = &(lastFunction->code);
+				constantPool = &(lastFunction->constantPool);
 				break;
 			}
 			case TYPE_I64: {
@@ -690,10 +690,12 @@ void Machine::Run()
 				sp--;
 				int index = fp + function->numArgs + function->locals + 1;
 				Function* lastFunction = (Function*)stack[index].u.obj;
+				sp = fp;
 				pc = stack[index + 1].u.i32_v;
 				fp = stack[index + 2].u.i32_v;
-				sp = stack[index + 3].u.i32_v;
 				stack[sp].u.i64_v = value;
+				code = &(lastFunction->code);
+				constantPool = &(lastFunction->constantPool);
 				break;
 			}
 			case TYPE_F32: {
@@ -701,10 +703,12 @@ void Machine::Run()
 				sp--;
 				int index = fp + function->numArgs + function->locals + 1;
 				Function* lastFunction = (Function*)stack[index].u.obj;
+				sp = fp;
 				pc = stack[index + 1].u.i32_v;
 				fp = stack[index + 2].u.i32_v;
-				sp = stack[index + 3].u.i32_v;
 				stack[sp].u.f32_v = value;
+				code = &(lastFunction->code);
+				constantPool = &(lastFunction->constantPool);
 				break;
 			}
 			case TYPE_F64: {
@@ -712,14 +716,46 @@ void Machine::Run()
 				sp--;
 				int index = fp + function->numArgs + function->locals + 1;
 				Function* lastFunction = (Function*)stack[index].u.obj;
+				sp = fp;
 				pc = stack[index + 1].u.i32_v;
 				fp = stack[index + 2].u.i32_v;
-				sp = stack[index + 3].u.i32_v;
 				stack[sp].u.f64_v = value;
+				code = &(lastFunction->code);
+				constantPool = &(lastFunction->constantPool);
 				break;
 			}
 			}
 			pc = pc + 2;
+			break;
+		}
+		case INVOKE: {
+			Function* nextFunction = (Function*)stack[sp].u.obj;
+			sp--;
+			int currentPc = pc;
+			int currentFp = fp;
+			fp = sp - nextFunction->numArgs;
+			int index = fp + nextFunction->numArgs + nextFunction->locals + 1;
+			stack[index].u.obj = function;
+			stack[index + 1].u.i32_v = currentPc;
+			stack[index + 2].u.i32_v = currentFp;
+			function = nextFunction;
+			pc = 0;
+			sp = index + 3;
+			code = &(nextFunction->code);
+			constantPool = &(nextFunction->constantPool);
+			break;
+		}
+		case PUSH_MODULE: {
+			int16_t index = USHORT(code, pc + 1);
+			Object* moduleObject = program->modules.at(index);
+			sp++;
+			stack[sp].u.obj = moduleObject;
+			break;
+		}
+		case PUSH_FUNCTION: {
+			Object* object = (Object*)stack[sp].u.obj;
+			uint16_t offset = USHORT(code, pc + 2);
+			stack[sp].u.obj = object;
 			break;
 		}
 		default: {

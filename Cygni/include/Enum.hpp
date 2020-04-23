@@ -60,6 +60,7 @@ namespace cygni {
 
 		Import,
 		Uses,
+		GoesTo,
 
 		LowerBound,
 		UpperBound,
@@ -198,7 +199,7 @@ namespace cygni {
 		JUMP_IF_FALSE,
 		PUSH_MODULE,
 		PUSH_FUNCTION,
-		INOVKE,
+		INVOKE,
 		RETURN,
 		NEW,
 		SUPER,
@@ -317,6 +318,8 @@ namespace cygni {
 				return U"Import";
 			case Tag::Uses:
 				return U"Uses";
+			case Tag::GoesTo:
+				return  U"GoesTo";
 			case Tag::LowerBound:
 				return U"LowerBound";
 			case Tag::UpperBound:
@@ -526,115 +529,115 @@ namespace cygni {
 	template <> class Enum<OpCode> {
 	public:
 		static std::u32string ToString(OpCode code) {
-			swtich(code) {
+			switch(code) {
 			case OpCode::PUSH_INT_1BYTE:
-				return L"PUSH_INT_1BYTE";
+				return U"PUSH_INT_1BYTE";
 			case OpCode::PUSH_INT_2BYTE:
-				return L"PUSH_INT_2BYTE";
+				return U"PUSH_INT_2BYTE";
 			case OpCode::PUSH_INT:
-				return L"PUSH_INT";
+				return U"PUSH_INT";
 			case OpCode::PUSH_DOUBLE_0:
-				return L"PUSH_DOUBLE_0";
+				return U"PUSH_DOUBLE_0";
 			case OpCode::PUSH_DOUBLE_1:
-				return L"PUSH_DOUBLE_1";
+				return U"PUSH_DOUBLE_1";
 			case OpCode::PUSH_DOUBLE:
-				return L"PUSH_DOUBLE";
+				return U"PUSH_DOUBLE";
 			case OpCode::PUSH_NULL:
-				return L"PUSH_NULL";
+				return U"PUSH_NULL";
 			case OpCode::PUSH_STACK:
-				return L"PUSH_STACK";
+				return U"PUSH_STACK";
 			case OpCode::POP_STACK:
-				return L"POP_STACK";
+				return U"POP_STACK";
 			case OpCode::PUSH_CONSTANT:
-				return L"PUSH_CONSTANT";
+				return U"PUSH_CONSTANT";
 			case OpCode::POP_CONSTANT:
-				return L"POP_CONSTANT";
+				return U"POP_CONSTANT";
 			case OpCode::PUSH_ARRAY:
-				return L"PUSH_ARRAY";
+				return U"PUSH_ARRAY";
 			case OpCode::POP_ARRAY:
-				return L"POP_ARRAY";
+				return U"POP_ARRAY";
 			case OpCode::PUSH_FIELD:
-				return L"PUSH_FIELD";
+				return U"PUSH_FIELD";
 			case OpCode::POP_FIELD:
-				return L"POP_FIELD";
+				return U"POP_FIELD";
 			case OpCode::ADD:
-				return L"ADD";
+				return U"ADD";
 			case OpCode::SUB:
-				return L"SUB";
+				return U"SUB";
 			case OpCode::MUL:
-				return L"MUL";
+				return U"MUL";
 			case OpCode::DIV:
-				return L"DIV";
+				return U"DIV";
 			case OpCode::MOD:
-				return L"MOD";
+				return U"MOD";
 			case OpCode::BIT_AND:
-				return L"BIT_AND";
+				return U"BIT_AND";
 			case OpCode::BIT_OR:
-				return L"BIT_OR";
+				return U"BIT_OR";
 			case OpCode::BIT_XOR:
-				return L"BIT_XOR";
+				return U"BIT_XOR";
 			case OpCode::MINUS:
-				return L"MINUS";
+				return U"MINUS";
 			case OpCode::BIT_NOT:
-				return L"BIT_NOT";
+				return U"BIT_NOT";
 			case OpCode::CAST:
-				return L"CAST";
+				return U"CAST";
 			case OpCode::UP_CAST:
-				return L"UP_CAST";
+				return U"UP_CAST";
 			case OpCode::DOWN_CAST:
-				return L"DOWN_CAST";
+				return U"DOWN_CAST";
 			case OpCode::EQ:
-				return L"EQ";
+				return U"EQ";
 			case OpCode::NE:
-				return L"NE";
+				return U"NE";
 			case OpCode::GT:
-				return L"GT";
+				return U"GT";
 			case OpCode::LT:
-				return L"LT";
+				return U"LT";
 			case OpCode::GE:
-				return L"GE";
+				return U"GE";
 			case OpCode::LE:
-				return L"LE";
+				return U"LE";
 			case OpCode::LOGICAL_AND:
-				return L"LOGICAL_AND";
+				return U"LOGICAL_AND";
 			case OpCode::LOGICAL_OR:
-				return L"LOGICAL_OR";
+				return U"LOGICAL_OR";
 			case OpCode::LOGICAL_NOT:
-				return L"LOGICAL_NOT";
+				return U"LOGICAL_NOT";
 			case OpCode::POP:
-				return L"POP";
+				return U"POP";
 			case OpCode::DUPLICATE:
-				return L"DUPLICATE";
+				return U"DUPLICATE";
 			case OpCode::DUPLICATE_OFFSET:
-				return L"DUPLICATE_OFFSET";
+				return U"DUPLICATE_OFFSET";
 			case OpCode::JUMP:
-				return L"JUMP";
+				return U"JUMP";
 			case OpCode::JUMP_IF_TRUE:
-				return L"JUMP_IF_TRUE";
+				return U"JUMP_IF_TRUE";
 			case OpCode::JUMP_IF_FALSE:
-				return L"JUMP_IF_FALSE";
+				return U"JUMP_IF_FALSE";
 			case OpCode::PUSH_MODULE:
-				return L"PUSH_MODULE";
+				return U"PUSH_MODULE";
 			case OpCode::PUSH_FUNCTION:
-				return L"PUSH_FUNCTION";
-			case OpCode::INOVKE:
-				return L"INOVKE";
+				return U"PUSH_FUNCTION";
+			case OpCode::INVOKE:
+				return U"INVOKE";
 			case OpCode::RETURN:
-				return L"RETURN";
+				return U"RETURN";
 			case OpCode::NEW:
-				return L"NEW";
+				return U"NEW";
 			case OpCode::SUPER:
-				return L"SUPER";
+				return U"SUPER";
 			case OpCode::INSTANCE_OF:
-				return L"INSTANCE_OF";
+				return U"INSTANCE_OF";
 			case OpCode::THROW:
-				return L"THROW";
+				return U"THROW";
 			case OpCode::RETHROW:
-				return L"RETHROW";
+				return U"RETHROW";
 			case OpCode::GO_FINALLY:
-				return L"GO_FINALLY";
+				return U"GO_FINALLY";
 			case OpCode::FINALLY_END:
-				return L"FINALLY_END";
+				return U"FINALLY_END";
 			default:
 				std::cout << __FUNCTION__ << std::endl;
 				exit(1);
@@ -647,17 +650,17 @@ namespace cygni {
 		static std::u32string ToString(TypeTag tag) {
 			switch (tag) {
 			case TypeTag::TYPE_I32:
-				return L"TYPE_I32";
+				return U"TYPE_I32";
 			case TypeTag::TYPE_I64:
-				return L"TYPE_I64";
+				return U"TYPE_I64";
 			case TypeTag::TYPE_F32:
-				return L"TYPE_F32";
+				return U"TYPE_F32";
 			case TypeTag::TYPE_F64:
-				return L"TYPE_F64";
+				return U"TYPE_F64";
 			case TypeTag::TYPE_STRING:
-				return L"TYPE_STRING";
+				return U"TYPE_STRING";
 			case TypeTag::TYPE_OBJECT:
-				return L"TYPE_OBJECT";
+				return U"TYPE_OBJECT";
 			default:
 				std::cout << __FUNCTION__ << std::endl;
 				exit(1);
