@@ -5,10 +5,6 @@
 #include "SourceLocation.hpp"
 #include "Type.hpp"
 #include <iostream>
-#include <memory>
-#include <string>
-#include <unordered_map>
-#include <vector>
 
 namespace cygni
 {
@@ -316,23 +312,29 @@ namespace cygni
 	class Package : public std::enable_shared_from_this<Package>
 	{
 	public:
-		std::u32string name;
-		std::unordered_map<std::u32string, std::shared_ptr<Package>> subPackages;
+		PackageRoute route;
+		std::unordered_map<std::u32string, TypeAlias> typeAliases;
 
 		Table<std::u32string, std::shared_ptr<ClassInfo>> classes;
 		Table<std::u32string, std::shared_ptr<ModuleInfo>> modules;
 
-		explicit Package(std::u32string name);
+		explicit Package(PackageRoute route);
+	};
 
-		std::shared_ptr<Package> FindPackage(const SourceLocation& location, const PackageRoute& route, int index);
-		std::shared_ptr<Package> CreatePackage(const SourceLocation& location, const PackageRoute& route, int index);
+	class PackageRouteStatement
+	{
+	public:
+		SourceLocation location;
+		PackageRoute route;
+		PackageRouteStatement() = default;
+		PackageRouteStatement(SourceLocation location, PackageRoute route);
 	};
 
 	class Program
 	{
 	public:
 		std::shared_ptr<SourceDocument> document;
-		PackageRoute route;
+		PackageRouteStatement packageRoute;
 		std::vector<PackageRoute> requiredPackages;
 		std::unordered_map<std::u32string, TypeAlias> typeAliases;
 		Table<std::u32string, std::shared_ptr<ClassInfo>> classes;
@@ -345,7 +347,9 @@ namespace cygni
 	{
 	public:
 		Table<std::string, Program> programs;
-		std::unordered_map<std::u32string, std::shared_ptr<Package>> packages;
+		std::unordered_map<PackageRoute, std::shared_ptr<Package>> packages;
+
+		void MergeAllPrograms();
 	};
 
 } // namespace cygni

@@ -4,6 +4,6 @@
     "\\include",
     "\\src"
   ],
-  "SelectedNode": "\\src\\Compiler.cpp",
+  "SelectedNode": "\\include\\Token.hpp",
   "PreviewInSolutionExplorer": false
 }

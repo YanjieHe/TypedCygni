@@ -15,6 +15,13 @@ namespace cygni
 
 		LexicalException(int line, int column, const std::u32string &message)
 			: line{ line }, column{ column }, message{ message } {}
+
+		std::string FormattedErrorMessage() const
+		{
+			auto actualLine = std::to_string(line + 1);
+			auto actualColumn = std::to_string(column + 1);
+			return "Syntax Error: (" + actualLine + ", " + actualColumn + ") " + UTF32ToUTF8(message);
+		}
 	};
 
 	class ArgumentException
@@ -36,6 +43,13 @@ namespace cygni
 
 		ParserException(int line, int column, const std::u32string &message)
 			: line{ line }, column{ column }, message{ message } {}
+
+		std::string FormattedErrorMessage() const
+		{
+			auto actualLine = std::to_string(line + 1);
+			auto actualColumn = std::to_string(column + 1);
+			return "Syntax Error: (" + actualLine + ", " + actualColumn + ") " + UTF32ToUTF8(message);
+		}
 	};
 
 	class NotImplementedException
@@ -44,6 +58,7 @@ namespace cygni
 		std::u32string message;
 
 		NotImplementedException() : message{ U"Not Implemented Exception" } {}
+
 		explicit NotImplementedException(const std::u32string &message)
 			: message{ message }
 		{
@@ -59,6 +74,16 @@ namespace cygni
 		TypeException() = default;
 		TypeException(SourceLocation location, const std::u32string &message)
 			: location{ location }, message{ message } {}
+
+		std::string FormattedErrorMessage() const
+		{
+			auto actualStartLine = std::to_string(location.startLine + 1);
+			auto actualStartColumn = std::to_string(location.startCol + 1);
+			auto actualEndLine = std::to_string(location.endLine + 1);
+			auto actualEndColumn = std::to_string(location.endCol + 1);
+			return "Type Error: (" + (actualStartLine)+", " + actualStartColumn + ") - (" +
+				actualEndLine + ", " + actualEndColumn + ") " + UTF32ToUTF8(message);
+		}
 	};
 
 	class SyntaxException
@@ -89,7 +114,7 @@ namespace cygni
 	{
 	public:
 		std::u32string message;
-		explicit FileNotFoundException(std::u32string fileName) :message{ U"Could not find file '" + fileName + U"'." }
+		explicit FileNotFoundException(std::u32string fileName) :message{ U"cannot find file '" + fileName + U"'." }
 		{
 
 		}

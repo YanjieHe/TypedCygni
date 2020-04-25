@@ -11,9 +11,7 @@ namespace cygni
 	Program Parser::ParseProgram()
 	{
 		Program program(document);
-		Match(Tag::Package);
-		auto route = ParsePackageRoute();
-		program.route = route;
+		program.packageRoute = ParsePackageRouteStatement();
 		program.requiredPackages = ParseRequiredPackages();
 		program.typeAliases = ParseTypeAliases();
 		while (!IsEof())
@@ -30,6 +28,14 @@ namespace cygni
 			}
 		}
 		return program;
+	}
+
+	PackageRouteStatement Parser::ParsePackageRouteStatement()
+	{
+		auto location = GetLoc(Look());
+		Match(Tag::Package);
+		auto route = ParsePackageRoute();
+		return { location, route };
 	}
 
 	PackageRoute Parser::ParsePackageRoute()
@@ -719,6 +725,7 @@ namespace cygni
 			return Argument(value);
 		}
 	}
+	
 	std::vector<PackageRoute> Parser::ParseRequiredPackages()
 	{
 		std::vector<PackageRoute> requiredPackages;
@@ -729,6 +736,7 @@ namespace cygni
 		}
 		return requiredPackages;
 	}
+
 	std::unordered_map<std::u32string, TypeAlias> Parser::ParseTypeAliases()
 	{
 		std::unordered_map<std::u32string, TypeAlias> typeAliases;

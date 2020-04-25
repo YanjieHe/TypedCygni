@@ -48,6 +48,8 @@ namespace cygni
 
 		Program ParseProgram();
 
+		PackageRouteStatement ParsePackageRouteStatement();
+
 		PackageRoute ParsePackageRoute();
 
 		ExpPtr Statement();

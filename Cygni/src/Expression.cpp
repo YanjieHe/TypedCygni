@@ -175,58 +175,55 @@ namespace cygni
 	{
 	}
 
-	Package::Package(std::u32string name) : name{ name }
+	Package::Package(PackageRoute route) : route{ route }
 	{
 	}
 
-	std::shared_ptr<Package> Package::FindPackage(const SourceLocation& location, const PackageRoute& route, int index)
-	{
-		if (index == route.size())
-		{
-			return shared_from_this();
-		}
-		else
-		{
-			const std::u32string& name = route.front();
-			if (subPackages.find(name) != subPackages.end())
-			{
-				return subPackages[name]->FindPackage(location, route, index + 1);
-			}
-			else
-			{
-				throw SyntaxException(location, U"cannot find the pacakge");
-			}
-		}
-	}
 
-	std::shared_ptr<Package> Package::CreatePackage(const SourceLocation & location, const PackageRoute & route, int index)
-	{
-		if (index == route.size())
-		{
-			return shared_from_this();
-		}
-		else
-		{
-			const std::u32string& name = route.front();
-			if (subPackages.find(name) != subPackages.end())
-			{
-				return subPackages[name]->CreatePackage(location, route, index + 1);
-			}
-			else
-			{
-				auto newPackage = std::make_shared<Package>(name);
-				return newPackage->CreatePackage(location, route, index + 1);
-			}
-		}
-	}
-
-	Program::Program(std::shared_ptr<SourceDocument> document) :document{ document }
+	Program::Program(std::shared_ptr<SourceDocument> document) : document{ document }
 	{
 	}
 
 	TypeAlias::TypeAlias(PackageRoute route, std::u32string typeName, std::u32string alias)
 		: route{ route }, typeName{ typeName }, alias{ alias }
 	{
+	}
+
+
+	PackageRouteStatement::PackageRouteStatement(SourceLocation location, PackageRoute route)
+		: location{ location }, route{ route }
+	{
+	}
+
+	void Project::MergeAllPrograms()
+	{
+		for (auto program : programs.values)
+		{
+			auto route = program.packageRoute.route;
+			std::shared_ptr<Package> package;
+			if (packages.find(route) != packages.end())
+			{
+				// found package
+				package = packages.at(route);
+			}
+			else
+			{
+				// package not found. create a new package
+				package = std::make_shared<Package>(route);
+			}
+			for (auto _class : program.classes.values)
+			{
+				package->classes.Add(_class->name, _class);
+			}
+			for (auto module : program.modules.values)
+			{
+				package->modules.Add(module->name, module);
+			}
+			for (auto pair : program.typeAliases)
+			{
+				package->typeAliases.insert(pair);
+			}
+		}
 	}
 
 } // namespace cygni
