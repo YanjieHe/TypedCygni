@@ -351,6 +351,7 @@ namespace cygni
 	{
 	public:
 		PackageRoute route;
+		std::vector<PackageRoute> importedPackages;
 		std::unordered_map<std::u32string, TypeAlias> typeAliases;
 
 		Table<std::u32string, std::shared_ptr<ClassInfo>> classes;
@@ -373,7 +374,7 @@ namespace cygni
 	public:
 		std::shared_ptr<SourceDocument> document;
 		PackageRouteStatement packageRoute;
-		std::vector<PackageRoute> requiredPackages;
+		std::vector<PackageRoute> importedPackages;
 		std::unordered_map<std::u32string, TypeAlias> typeAliases;
 		Table<std::u32string, std::shared_ptr<ClassInfo>> classes;
 		Table<std::u32string, std::shared_ptr<ModuleInfo>> modules;

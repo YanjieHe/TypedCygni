@@ -223,6 +223,10 @@ namespace cygni
 			{
 				package->typeAliases.insert(pair);
 			}
+			for (auto route : program.importedPackages)
+			{
+				package->importedPackages.push_back(route);
+			}
 			this->packages.insert({ route, package });
 		}
 	}

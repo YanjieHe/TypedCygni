@@ -80,13 +80,11 @@ namespace cygni
 
 		ExpPtr ParseVar();
 
-		FieldDef ParseFieldDefinition(AccessModifier modifier,
-			std::vector<AnnotationInfo> annotations,
-			bool isStatic);
+		FieldDef ParseFieldDefinition(AccessModifier modifier, 
+			std::vector<AnnotationInfo> annotations, bool isStatic);
 
-		MethodDef ParseMethodDefinition(AccessModifier modifier,
-			std::vector<AnnotationInfo> annotations,
-			bool isStatic);
+		MethodDef ParseMethodDefinition(AccessModifier modifier, 
+			std::vector<AnnotationInfo> annotations, bool isStatic);
 
 		std::shared_ptr<ParameterExpression> ParseParameter();
 
@@ -114,7 +112,7 @@ namespace cygni
 
 		Argument ParseArgument();
 
-		std::vector<PackageRoute> ParseRequiredPackages();
+		std::vector<PackageRoute> ParseImportedPackages();
 		std::unordered_map<std::u32string, TypeAlias> ParseTypeAliases();
 	};
 } // namespace cygni

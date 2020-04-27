@@ -12,7 +12,7 @@ namespace cygni
 	{
 		Program program(document);
 		program.packageRoute = ParsePackageRouteStatement();
-		program.requiredPackages = ParseRequiredPackages();
+		program.importedPackages = ParseImportedPackages();
 		program.typeAliases = ParseTypeAliases();
 		while (!IsEof())
 		{
@@ -726,15 +726,15 @@ namespace cygni
 		}
 	}
 	
-	std::vector<PackageRoute> Parser::ParseRequiredPackages()
+	std::vector<PackageRoute> Parser::ParseImportedPackages()
 	{
-		std::vector<PackageRoute> requiredPackages;
-		while (Look().tag == Tag::Require)
+		std::vector<PackageRoute> importedPackages;
+		while (Look().tag == Tag::Import)
 		{
-			Match(Tag::Require);
-			requiredPackages.push_back(ParsePackageRoute());
+			Match(Tag::Import);
+			importedPackages.push_back(ParsePackageRoute());
 		}
-		return requiredPackages;
+		return importedPackages;
 	}
 
 	std::unordered_map<std::u32string, TypeAlias> Parser::ParseTypeAliases()

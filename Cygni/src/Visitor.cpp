@@ -690,6 +690,16 @@ namespace cygni
 		}
 	}
 
+	void TypeChecker::ImportPackage(ScopePtr scope, const PackageRoute & route)
+	{
+		auto pkg = project.packages.at(route);
+		for (const auto &module : pkg->modules.values)
+		{
+			TypePtr moduleType = std::make_shared<ModuleType>(module->name);
+			scope->Put(module->name, moduleType);
+		}
+	}
+
 	TypePtr TypeChecker::VisitExpression(ExpPtr node, ScopePtr scope)
 	{
 		switch (node->nodeType)
@@ -904,7 +914,14 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location, U"undefined field");
+				auto field = UTF32ToUTF8(node->field);
+				auto moduleName = UTF32ToUTF8(moduleType->name);
+				for (auto method : moduleInfo->methods.values)
+				{
+					cout << method.name << endl;
+				}
+				throw TypeException(node->location,
+					UTF8ToUTF32(Format("undefined field '{}' in module '{}'", field, moduleName)));
 			}
 		}
 		else if (object->typeCode == TypeCode::Class)
@@ -999,8 +1016,21 @@ namespace cygni
 
 	void TypeChecker::VisitPackage(ScopePtr globalScope)
 	{
+		visited.insert(package->route);
 		auto scope = std::make_shared<Scope>(globalScope);
 		// TO DO: type aliases
+		for (const auto& route : package->importedPackages)
+		{
+			if (visited.find(route) == visited.end())
+			{
+				// not visited
+				auto currentPackage = package;
+				package = project.packages.at(route);
+				VisitPackage(globalScope);
+				package = currentPackage;
+			}
+			ImportPackage(scope, route);
+		}
 		for (const auto &module : package->modules.values)
 		{
 			TypePtr moduleType = std::make_shared<ModuleType>(module->name);
