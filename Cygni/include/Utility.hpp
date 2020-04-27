@@ -3,10 +3,10 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <sstream>
 
 namespace cygni
 {
-
 	inline static bool IsDigit(char32_t c) { return (c >= U'0' && c <= U'9'); }
 
 	inline static bool IsLetter(char32_t c)
@@ -41,7 +41,7 @@ namespace cygni
 			}
 			else
 			{
-				int n = values.size();
+				int n = static_cast<int>(values.size());
 				map.insert({ key, n });
 				values.push_back(value);
 			}
@@ -61,6 +61,76 @@ namespace cygni
 
 	std::string ReadText(std::string path);
 	void WriteText(std::string path, std::string text);
+
+	std::string FormatInternal(const std::string& fmt, std::ostringstream& stream, int i);
+
+	template<class T, class... Args>
+	std::string FormatInternal(const std::string& fmt, std::ostringstream& stream, int i, const T& head, const Args&... rest)
+	{
+		int n = static_cast<int>(fmt.size());
+		while (i < n)
+		{
+			if (fmt[i] == '{')
+			{
+				if (i + 1 >= n)
+				{
+					throw std::invalid_argument("wrong format");
+				}
+				else
+				{
+					if (fmt[i + 1] == '{')
+					{
+						// escape left brace
+						stream << '{';
+						i = i + 2;
+					}
+					else if (fmt[i + 1] == '}')
+					{
+						stream << head;
+						i = i + 2;
+						return FormatInternal(fmt, stream, i, rest...);
+					}
+					else
+					{
+						throw std::invalid_argument("expecting right brace for closure");
+					}
+				}
+			}
+			else if (fmt[i] == '}')
+			{
+				if (i + 1 >= n)
+				{
+					throw std::invalid_argument("wrong format");
+				}
+				else
+				{
+					if (fmt[i + 1] == '}')
+					{
+						stream << '}';
+						i = i + 2;
+					}
+					else
+					{
+						throw std::invalid_argument("expecting a right brace for escaping");
+					}
+				}
+			}
+			else
+			{
+				stream << fmt[i];
+				i = i + 1;
+			}
+		}
+		return stream.str();
+	}
+
+	template <class... Args>
+	std::string Format(const std::string& fmt, const Args&... args)
+	{
+		std::ostringstream stream;
+		int i = 0;
+		return FormatInternal(fmt, stream, i, args...);
+	}
 
 } // namespace cygni
 

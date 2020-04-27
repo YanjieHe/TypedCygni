@@ -74,7 +74,18 @@ int main(int argc, char **argv)
 	{
 		//CompileProgram("sample_code/factorial.cyg", "sample_code/factorial.json");
 		ConsoleApp app;
-		app.Run(argc, argv);
+		app.CompileAndOutputJson(
+			{
+				"sample_code/Geometry.cyg",
+				"sample_code/IO.cyg",
+				"sample_code/Math.cyg",
+				"sample_code/Recursion.cyg",
+				"sample_code/Stat.cyg",
+				"sample_code/App.cyg"
+			},
+			"sample_code/program.json"
+		);
+		//app.Run(argc, argv);
 	}
 	catch (cygni::ArgumentException &ex)
 	{

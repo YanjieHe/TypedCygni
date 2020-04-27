@@ -36,7 +36,7 @@ namespace cygni
 		return project;
 	}
 
-	void ConsoleApp::CompileProject(Project & project, std::string outputJsonPath)
+	void ConsoleApp::SemanticAnalysis(Project & project)
 	{
 		/* pass 4: check and infer types of each node */
 		TypeChecker typeChecker(project);
@@ -58,6 +58,12 @@ namespace cygni
 		ConstantCollector constantCollector;
 		constantCollector.VisitProject(project);
 		cout << "Complete Constant Collection!" << endl;
+	}
+
+	void ConsoleApp::CompileAndOutputJson(std::vector<std::string> fileList, std::string outputJsonPath)
+	{
+		auto project = ParseProject(fileList);
+		SemanticAnalysis(project);
 
 		/* pass 8: convert the abstract syntax tree to json format */
 		cygni::AstToJsonSerialization astToJson;
@@ -72,8 +78,7 @@ namespace cygni
 		std::vector<std::string> fileList = {
 			"sample_code/factorial.cyg"
 		};
-		Project project = ParseProject(fileList);
-		CompileProject(project, "sample_code/factorial.json");
+		CompileAndOutputJson(fileList, "sample_code/factorial.json");
 		return 0;
 	}
 }

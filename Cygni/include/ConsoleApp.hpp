@@ -11,7 +11,9 @@ namespace cygni
 		Program ParseProgram(std::string path);
 		Project ParseProject(std::vector<std::string> fileList);
 
-		void CompileProject(Project& project ,std::string outputJsonPath);
+		void SemanticAnalysis(Project& project);
+
+		void CompileAndOutputJson(std::vector<std::string> fileList, std::string outputJsonPath);
 		int Run(int argc, char **argv);
 	};
 }

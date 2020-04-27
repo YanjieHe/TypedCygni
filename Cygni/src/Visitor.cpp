@@ -408,7 +408,7 @@ namespace cygni
 		{
 			if (rule.parameters.size() == parameters.size())
 			{
-				int n = rule.parameters.size();
+				int n = static_cast<int>(rule.parameters.size());
 				for (int i = 0; i < n; i++)
 				{
 					if (!(rule.parameters[i]->Equals(parameters[i])))
@@ -468,6 +468,31 @@ namespace cygni
 		ruleSet.Add(U"==", { Type::Float32(), Type::Float32() }, Type::Float32());
 		ruleSet.Add(U"==", { Type::Float64(), Type::Float64() }, Type::Float64());
 
+		ruleSet.Add(U">", { Type::Int32(), Type::Int32() }, Type::Boolean());
+		ruleSet.Add(U">", { Type::Int64(), Type::Int64() }, Type::Boolean());
+		ruleSet.Add(U">", { Type::Float32(), Type::Float32() }, Type::Float32());
+		ruleSet.Add(U">", { Type::Float64(), Type::Float64() }, Type::Float64());
+
+		ruleSet.Add(U"<", { Type::Int32(), Type::Int32() }, Type::Boolean());
+		ruleSet.Add(U"<", { Type::Int64(), Type::Int64() }, Type::Boolean());
+		ruleSet.Add(U"<", { Type::Float32(), Type::Float32() }, Type::Float32());
+		ruleSet.Add(U"<", { Type::Float64(), Type::Float64() }, Type::Float64());
+
+		ruleSet.Add(U">=", { Type::Int32(), Type::Int32() }, Type::Boolean());
+		ruleSet.Add(U">=", { Type::Int64(), Type::Int64() }, Type::Boolean());
+		ruleSet.Add(U">=", { Type::Float32(), Type::Float32() }, Type::Float32());
+		ruleSet.Add(U">=", { Type::Float64(), Type::Float64() }, Type::Float64());
+
+		ruleSet.Add(U"<=", { Type::Int32(), Type::Int32() }, Type::Boolean());
+		ruleSet.Add(U"<=", { Type::Int64(), Type::Int64() }, Type::Boolean());
+		ruleSet.Add(U"<=", { Type::Float32(), Type::Float32() }, Type::Float32());
+		ruleSet.Add(U"<=", { Type::Float64(), Type::Float64() }, Type::Float64());
+
+		ruleSet.Add(U"==", { Type::Int32(), Type::Int32() }, Type::Boolean());
+		ruleSet.Add(U"==", { Type::Int64(), Type::Int64() }, Type::Boolean());
+		ruleSet.Add(U"==", { Type::Float32(), Type::Float32() }, Type::Float32());
+		ruleSet.Add(U"==", { Type::Float64(), Type::Float64() }, Type::Float64());
+
 		ruleSet.Add(U"!=", { Type::Int32(), Type::Int32() }, Type::Boolean());
 		ruleSet.Add(U"!=", { Type::Int64(), Type::Int64() }, Type::Boolean());
 		ruleSet.Add(U"!=", { Type::Float32(), Type::Float32() }, Type::Float32());
@@ -475,8 +500,7 @@ namespace cygni
 
 	}
 
-	TypePtr TypeChecker::VisitBinary(std::shared_ptr<BinaryExpression> node,
-		ScopePtr scope)
+	TypePtr TypeChecker::VisitBinary(std::shared_ptr<BinaryExpression> node, ScopePtr scope)
 	{
 		auto left = VisitExpression(node->left, scope);
 		auto right = VisitExpression(node->right, scope);
@@ -515,13 +539,57 @@ namespace cygni
 		}
 		else if (node->nodeType == ExpressionType::Divide)
 		{
-			if (auto res = ruleSet.Match(U"+", { left, right }))
+			if (auto res = ruleSet.Match(U"/", { left, right }))
 			{
 				return Attach(node, *res);
 			}
 			else
 			{
 				throw TypeException(node->location, U"type mismatch: /");
+			}
+		}
+		else if (node->nodeType == ExpressionType::GreaterThan)
+		{
+			if (auto res = ruleSet.Match(U">", { left, right }))
+			{
+				return Attach(node, *res);
+			}
+			else
+			{
+				throw TypeException(node->location, U"type mismatch: >");
+			}
+		}
+		else if (node->nodeType == ExpressionType::LessThan)
+		{
+			if (auto res = ruleSet.Match(U"<", { left, right }))
+			{
+				return Attach(node, *res);
+			}
+			else
+			{
+				throw TypeException(node->location, U"type mismatch: <");
+			}
+		}
+		else if (node->nodeType == ExpressionType::GreaterThanOrEqual)
+		{
+			if (auto res = ruleSet.Match(U">=", { left, right }))
+			{
+				return Attach(node, *res);
+			}
+			else
+			{
+				throw TypeException(node->location, U"type mismatch: >=");
+			}
+		}
+		else if (node->nodeType == ExpressionType::LessThanOrEqual)
+		{
+			if (auto res = ruleSet.Match(U"<=", { left, right }))
+			{
+				return Attach(node, *res);
+			}
+			else
+			{
+				throw TypeException(node->location, U"type mismatch: <=");
 			}
 		}
 		else if (node->nodeType == ExpressionType::Equal)
@@ -552,8 +620,7 @@ namespace cygni
 		}
 	}
 
-	TypePtr TypeChecker::VisitBlock(std::shared_ptr<BlockExpression> node,
-		ScopePtr outerScope)
+	TypePtr TypeChecker::VisitBlock(std::shared_ptr<BlockExpression> node, ScopePtr outerScope)
 	{
 		ScopePtr scope = std::make_shared<Scope>(outerScope);
 		for (const auto &exp : node->expressions)
@@ -570,8 +637,7 @@ namespace cygni
 		return type;
 	}
 
-	TypePtr TypeChecker::VisitAssign(std::shared_ptr<BinaryExpression> node,
-		ScopePtr scope)
+	TypePtr TypeChecker::VisitAssign(std::shared_ptr<BinaryExpression> node, ScopePtr scope)
 	{
 		if (node->left->nodeType == ExpressionType::Parameter)
 		{
@@ -609,8 +675,7 @@ namespace cygni
 		}
 	}
 
-	TypePtr TypeChecker::VisitWhile(std::shared_ptr<WhileExpression> node,
-		ScopePtr scope)
+	TypePtr TypeChecker::VisitWhile(std::shared_ptr<WhileExpression> node, ScopePtr scope)
 	{
 		TypePtr condition = VisitExpression(node->condition, scope);
 		if (condition->typeCode == TypeCode::Boolean)
@@ -754,7 +819,9 @@ namespace cygni
 		}
 		else
 		{
-			throw TypeException(parameter->location, U"parameter name not found");
+			auto name = UTF32ToUTF8(parameter->name);
+			throw TypeException(parameter->location,
+				UTF8ToUTF32(Format("parameter name '{}' not found", name)));
 		}
 	}
 

@@ -1,11 +1,11 @@
 #ifndef CYGNI_EXCEPTION_HPP
 #define CYGNI_EXCEPTION_HPP
 #include "SourceLocation.hpp"
+#include "Utility.hpp"
 #include <string>
 
 namespace cygni
 {
-
 	class LexicalException
 	{
 	public:

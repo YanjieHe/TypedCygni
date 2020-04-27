@@ -66,7 +66,7 @@ namespace cygni
 	{
 		std::u32string res;
 		int i = 0;
-		int n = utf8.size();
+		int n = static_cast<int>(utf8.size());
 		while (i < n)
 		{
 			if ((utf8[i] & 0x80) == 0)
@@ -133,6 +133,62 @@ namespace cygni
 	{
 		std::ofstream stream(path);
 		stream << text;
+	}
+	std::string FormatInternal(const std::string & fmt, std::ostringstream & stream, int i)
+	{
+		int n = static_cast<int>(fmt.size());
+		while (i < n)
+		{
+			if (fmt[i] == '{')
+			{
+				if (i + 1 >= n)
+				{
+					throw std::invalid_argument("wrong format");
+				}
+				else
+				{
+					if (fmt[i + 1] == '{')
+					{
+						// escape left brace
+						stream.put('{');
+						i = i + 2;
+					}
+					else if (fmt[i + 1] == '}')
+					{
+						throw std::invalid_argument("out of arguments");
+					}
+					else
+					{
+						throw std::invalid_argument("expecting right brace for closure");
+					}
+				}
+			}
+			else if (fmt[i] == '}')
+			{
+				if (i + 1 >= n)
+				{
+					throw std::invalid_argument("wrong format");
+				}
+				else
+				{
+					if (fmt[i + 1] == '}')
+					{
+						stream.put('}');
+						i = i + 2;
+					}
+					else
+					{
+						throw std::invalid_argument("expecting a right brace for escaping");
+					}
+				}
+			}
+			else
+			{
+				stream.put(fmt[i]);
+				i = i + 1;
+			}
+		}
+		return stream.str();
 	}
 } // namespace cygni
 

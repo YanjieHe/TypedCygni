@@ -14,6 +14,8 @@ namespace cygni
 		TypeCode typeCode;
 		std::u32string constant;
 	};
+
+	using PackageRoute = std::vector<std::u32string>;
 }
 
 namespace std
@@ -35,6 +37,44 @@ namespace std
 		bool operator()(const cygni::ConstantKey& lhs, const cygni::ConstantKey& rhs) const
 		{
 			return lhs.typeCode == rhs.typeCode && lhs.constant == rhs.constant;
+		}
+	};
+
+	template <>
+	struct hash<cygni::PackageRoute>
+	{
+		std::hash<std::u32string> hashFunction;
+		std::size_t operator()(const cygni::PackageRoute& key) const
+		{
+			std::size_t seed = key.size();
+			for (const auto& i : key)
+			{
+				seed = seed ^ (hashFunction(i) + 0x9e3779b9 + (seed << 6) + (seed >> 2));
+			}
+			return seed;
+		}
+	};
+
+	template <>
+	struct equal_to<cygni::PackageRoute>
+	{
+		bool operator()(const cygni::PackageRoute& lhs, const cygni::PackageRoute& rhs) const
+		{
+			if (lhs.size() == rhs.size())
+			{
+				for (int i = 0; i < static_cast<int>(lhs.size()); i++)
+				{
+					if (lhs[i] != rhs[i])
+					{
+						return false;
+					}
+				}
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 	};
 }
@@ -295,8 +335,6 @@ namespace cygni
 		ModuleInfo() = default;
 		ModuleInfo(SourceLocation location, std::u32string name);
 	};
-
-	using PackageRoute = std::vector<std::u32string>;
 
 	class TypeAlias
 	{

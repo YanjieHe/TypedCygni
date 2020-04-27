@@ -28,8 +28,8 @@ namespace cygni
 			{U"protected", Tag::Protected},
 			{U"package", Tag::Package},
 			{U"import", Tag::Import},
-			{U"Require", Tag::Require},
-			{U"Rename", Tag::Rename}
+			{U"require", Tag::Require},
+			{U"rename", Tag::Rename}
 		};
 		if (tag == Tag::Identifier)
 		{

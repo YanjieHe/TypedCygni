@@ -223,6 +223,7 @@ namespace cygni
 			{
 				package->typeAliases.insert(pair);
 			}
+			this->packages.insert({ route, package });
 		}
 	}
 
