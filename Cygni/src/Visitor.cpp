@@ -1000,7 +1000,7 @@ namespace cygni
 	void TypeChecker::VisitPackage(ScopePtr globalScope)
 	{
 		auto scope = std::make_shared<Scope>(globalScope);
-
+		// TO DO: type aliases
 		for (const auto &module : package->modules.values)
 		{
 			TypePtr moduleType = std::make_shared<ModuleType>(module->name);
