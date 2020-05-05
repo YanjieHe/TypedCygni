@@ -3,122 +3,124 @@
 
 namespace cygni
 {
-	std::vector<Byte> Compiler::StringToBytes(std::u32string u32str)
+	ByteCode::ByteCode(std::u32string u32str)
 	{
-		std::vector<Byte> bytes;
 		std::string u8str = UTF32ToUTF8(u32str);
 		for (Byte c : u8str)
 		{
-			bytes.push_back(c);
+			Append(c);
 		}
-		return bytes;
 	}
-	void Compiler::Append(std::vector<Byte>& byteCode, Byte byte)
+	void ByteCode::Append(Byte byte)
 	{
-		byteCode.push_back(byte);
+		bytes.push_back(byte);
 	}
-	void Compiler::AppendOp(std::vector<Byte>& byteCode, OpCode op)
+	void ByteCode::AppendOp(OpCode op)
 	{
-		byteCode.push_back(static_cast<Byte>(op));
+		bytes.push_back(static_cast<Byte>(op));
 	}
-	void Compiler::AppendTypeTag(std::vector<Byte>& byteCode, TypeTag tag)
+	void ByteCode::AppendTypeTag(TypeTag tag)
 	{
-		byteCode.push_back(static_cast<Byte>(tag));
+		bytes.push_back(static_cast<Byte>(tag));
 	}
-	void Compiler::AppendUShort(std::vector<Byte>& byteCode, int value)
+	void ByteCode::AppendUShort(int value)
 	{
-		byteCode.push_back(value % 256);
-		byteCode.push_back(value / 256);
+		bytes.push_back(value % 256);
+		bytes.push_back(value / 256);
 	}
-	void Compiler::WriteUShort(std::vector<Byte>& byteCode, int index, int value)
+	void ByteCode::WriteUShort(int index, int value)
 	{
-		byteCode.at(index) = (value % 256);
-		byteCode.at(index + 1) = (value / 256);
+		bytes.at(index) = (value % 256);
+		bytes.at(index + 1) = (value / 256);
 	}
-	void Compiler::AppendType(std::vector<Byte>& byteCode, TypePtr type)
+	void ByteCode::AppendType(TypePtr type)
 	{
 		switch (type->typeCode)
 		{
 		case TypeCode::Boolean:
 		case TypeCode::Int32: {
-			AppendTypeTag(byteCode, TypeTag::TYPE_I32);
+			AppendTypeTag(TypeTag::TYPE_I32);
 			break;
 		}
 		case TypeCode::Int64: {
-			AppendTypeTag(byteCode, TypeTag::TYPE_I64);
+			AppendTypeTag(TypeTag::TYPE_I64);
 			break;
 		}
 		case TypeCode::Float32: {
-			AppendTypeTag(byteCode, TypeTag::TYPE_F32);
+			AppendTypeTag(TypeTag::TYPE_F32);
 			break;
 		}
 		case TypeCode::Float64: {
-			AppendTypeTag(byteCode, TypeTag::TYPE_F64);
+			AppendTypeTag(TypeTag::TYPE_F64);
 			break;
 		}
 		case TypeCode::String: {
-			AppendTypeTag(byteCode, TypeTag::TYPE_STRING);
+			AppendTypeTag(TypeTag::TYPE_STRING);
 		}
 		default:
 			throw NotImplementedException();
 		}
 	}
+	int ByteCode::Size() const
+	{
+		return static_cast<int>(bytes.size());
+	}
 	void Compiler::CompileBinary(std::shared_ptr<BinaryExpression> node,
-		const std::unordered_map<ConstantKey, int>& constantMap,
-		std::vector<Byte>& byteCode)
+		const ConstantMap& constantMap,
+		ByteCode& byteCode)
 	{
 		CompileExpression(node->left, constantMap, byteCode);
 		CompileExpression(node->right, constantMap, byteCode);
 		switch (node->nodeType)
 		{
 		case ExpressionType::Add: {
-			AppendOp(byteCode, OpCode::ADD);
+			byteCode.AppendOp(OpCode::ADD);
 			break;
 		}
 		case ExpressionType::Subtract: {
-			AppendOp(byteCode, OpCode::SUB);
+			byteCode.AppendOp(OpCode::SUB);
 			break;
 		}
 		case ExpressionType::Multiply: {
-			AppendOp(byteCode, OpCode::MUL);
+			byteCode.AppendOp(OpCode::MUL);
 			break;
 		}
 		case ExpressionType::Divide: {
-			AppendOp(byteCode, OpCode::DIV);
+			byteCode.AppendOp(OpCode::DIV);
 			break;
 		}
 		case ExpressionType::GreaterThan: {
-			AppendOp(byteCode, OpCode::GT);
+			byteCode.AppendOp(OpCode::GT);
 			break;
 		}
 		case ExpressionType::LessThan: {
-			AppendOp(byteCode, OpCode::LT);
+			byteCode.AppendOp(OpCode::LT);
 			break;
 		}
 		case ExpressionType::GreaterThanOrEqual: {
-			AppendOp(byteCode, OpCode::GE);
+			byteCode.AppendOp(OpCode::GE);
 			break;
 		}
 		case ExpressionType::LessThanOrEqual: {
-			AppendOp(byteCode, OpCode::LE);
+			byteCode.AppendOp(OpCode::LE);
 			break;
 		}
 		case ExpressionType::Equal: {
-			AppendOp(byteCode, OpCode::EQ);
+			byteCode.AppendOp(OpCode::EQ);
 			break;
 		}
 		case ExpressionType::NotEqual: {
-			AppendOp(byteCode, OpCode::NE);
+			byteCode.AppendOp(OpCode::NE);
 			break;
 		}
 		default:
 			throw NotImplementedException();
 		}
-		AppendType(byteCode, node->type);
+		byteCode.AppendType(node->type);
 	}
 	void Compiler::CompileBlock(std::shared_ptr<BlockExpression> node,
-		const std::unordered_map<ConstantKey, int>& constantMap,
-		std::vector<Byte>& byteCode)
+		const ConstantMap& constantMap,
+		ByteCode& byteCode)
 	{
 		for (auto exp : node->expressions)
 		{
@@ -127,21 +129,21 @@ namespace cygni
 	}
 	void Compiler::CompileExpression(
 		ExpPtr node,
-		const std::unordered_map<ConstantKey, int>& constantMap,
-		std::vector<Byte>& byteCode)
+		const ConstantMap& constantMap,
+		ByteCode& byteCode)
 	{
 	}
 	void Compiler::CompileConstant(
 		std::shared_ptr<ConstantExpression> node,
-		const std::unordered_map<ConstantKey, int>& constantMap,
-		std::vector<Byte>& byteCode)
+		const ConstantMap& constantMap,
+		ByteCode& byteCode)
 	{
 		ConstantKey key{ node->type->typeCode, node->constant };
 		if (constantMap.find(key) != constantMap.end())
 		{
 			int index = constantMap.at(key);
-			AppendOp(byteCode, OpCode::PUSH_CONSTANT);
-			AppendUShort(byteCode, index);
+			byteCode.AppendOp(OpCode::PUSH_CONSTANT);
+			byteCode.AppendUShort(index);
 		}
 		else
 		{
@@ -150,53 +152,50 @@ namespace cygni
 		}
 	}
 	void Compiler::CompileParameter(std::shared_ptr<ParameterExpression> parameter,
-		std::vector<Byte>& byteCode)
+		ByteCode& byteCode)
 	{
 		auto location = parameter->parameterLocation;
 		switch (location.type)
 		{
 		case ParameterType::LocalVariable: {
-			AppendOp(byteCode, OpCode::PUSH_STACK);
+			byteCode.AppendOp(OpCode::PUSH_STACK);
 			break;
 		}
 		default:
 			throw NotImplementedException();
 		}
-		AppendType(byteCode, parameter->type);
-		AppendUShort(byteCode, location.offset);
+		byteCode.AppendType(parameter->type);
+		byteCode.AppendUShort(location.offset);
 	}
 	void Compiler::CompileReturn(std::shared_ptr<ReturnExpression> node,
-		const std::unordered_map<ConstantKey, int>& constantMap,
-		std::vector<Byte>& byteCode)
+		const ConstantMap& constantMap, ByteCode& byteCode)
 	{
 		CompileExpression(node->value, constantMap, byteCode);
-		AppendOp(byteCode, OpCode::RETURN);
-		AppendType(byteCode, node->type);
+		byteCode.AppendOp(OpCode::RETURN);
+		byteCode.AppendType(node->type);
 	}
-	void Compiler::CompileConditional(
-		std::shared_ptr<ConditionalExpression> node,
-		const std::unordered_map<ConstantKey, int>& constantMap,
-		std::vector<Byte>& byteCode)
+	void Compiler::CompileConditional(std::shared_ptr<ConditionalExpression> node,
+		const ConstantMap& constantMap, ByteCode& byteCode)
 	{
 		CompileExpression(node->condition, constantMap, byteCode);
-		AppendOp(byteCode, OpCode::JUMP_IF_FALSE);
-		int index1 = static_cast<int>(byteCode.size());
-		AppendUShort(byteCode, 0);
+		byteCode.AppendOp(OpCode::JUMP_IF_FALSE);
+		int index1 = byteCode.Size();
+		byteCode.AppendUShort(0);
 
 		CompileExpression(node->ifTrue, constantMap, byteCode);
-		AppendOp(byteCode, OpCode::JUMP);
-		int index2 = static_cast<int>(byteCode.size());
-		AppendUShort(byteCode, 0);
+		byteCode.AppendOp(OpCode::JUMP);
+		int index2 = byteCode.Size();
+		byteCode.AppendUShort(0);
 
-		int target1 = static_cast<int>(byteCode.size());
+		int target1 = byteCode.Size();
 		CompileExpression(node->ifFalse, constantMap, byteCode);
-		int target2 = static_cast<int>(byteCode.size());
+		int target2 = byteCode.Size();
 
-		WriteUShort(byteCode, index1, target1);
-		WriteUShort(byteCode, index2, target2);
+		byteCode.WriteUShort(index1, target1);
+		byteCode.WriteUShort(index2, target2);
 	}
 	void Compiler::CompileDefault(std::shared_ptr<DefaultExpression> node,
-		std::vector<Byte>& byteCode)
+		ByteCode& byteCode)
 	{
 		switch (node->type->typeCode)
 		{
@@ -209,26 +208,32 @@ namespace cygni
 		}
 		}
 	}
-	void Compiler::CompileInvocation(
-		std::shared_ptr<InvocationExpression> node,
-		const std::unordered_map<ConstantKey, int>& constantMap,
-		std::vector<Byte>& byteCode)
+	void Compiler::CompileInvocation(std::shared_ptr<InvocationExpression> node,
+		const ConstantMap& constantMap,
+		ByteCode& byteCode)
 	{
 		for (auto arg : node->arguments)
 		{
 			CompileExpression(arg.value, constantMap, byteCode);
 		}
 		CompileExpression(node->expression, constantMap, byteCode);
-		AppendOp(byteCode, OpCode::INVOKE);
+		byteCode.AppendOp(OpCode::INVOKE);
 	}
-	void Compiler::CompileMemberAccess(
-		std::shared_ptr<MemberAccessExpression> node,
-		const std::unordered_map<ConstantKey, int>& constantMap,
-		std::vector<Byte>& byteCode)
+	void Compiler::CompileMemberAccess(std::shared_ptr<MemberAccessExpression> node,
+		const ConstantMap& constantMap, ByteCode& byteCode)
 	{
 		CompileExpression(node->object, constantMap, byteCode);
-		AppendOp(byteCode, OpCode::PUSH_FIELD);
-		AppendType(byteCode, node->type);
+		byteCode.AppendOp(OpCode::PUSH_FIELD);
+		byteCode.AppendType(node->type);
+		auto objType = node->object->type;
+		if (objType->typeCode == TypeCode::Module)
+		{
+			auto modType = std::static_pointer_cast<ModuleType>(objType);
+		}
+		else
+		{
+
+		}
 		// TO DO: field index
 	}
 } // namespace cygni

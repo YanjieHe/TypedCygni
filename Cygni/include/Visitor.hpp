@@ -108,10 +108,8 @@ namespace cygni
 		void VisitBlock(std::shared_ptr<BlockExpression>node, std::vector<ExpPtr>&nodeList);
 		void VisitReturn(std::shared_ptr<ReturnExpression>node, std::vector<ExpPtr>&nodeList);
 		void VisitConditional(std::shared_ptr<ConditionalExpression>node, std::vector<ExpPtr>&nodeList);
-		void VisitInvocation(std::shared_ptr<InvocationExpression> node,
-			std::vector<ExpPtr>&nodeList);
-		void VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node,
-			std::vector<ExpPtr>&nodeList);
+		void VisitInvocation(std::shared_ptr<InvocationExpression> node, std::vector<ExpPtr>&nodeList);
+		void VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node, std::vector<ExpPtr>&nodeList);
 		void VisitNewExpression(std::shared_ptr<NewExpression>node, std::vector<ExpPtr>& nodeList);
 		void VisitVarDefExpression(std::shared_ptr<VarDefExpression>node, std::vector<ExpPtr>&nodeList);
 		void VisitWhileExpression(std::shared_ptr<WhileExpression>node, std::vector<ExpPtr>&nodeList);

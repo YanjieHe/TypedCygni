@@ -17,8 +17,7 @@ namespace cygni
 		return obj;
 	}
 
-	json AstToJsonSerialization::VisitBinary(
-		std::shared_ptr<BinaryExpression> node)
+	json AstToJsonSerialization::VisitBinary(std::shared_ptr<BinaryExpression> node)
 	{
 		json obj;
 		AttachNodeInformation(obj, node);
@@ -27,8 +26,7 @@ namespace cygni
 		return obj;
 	}
 
-	json AstToJsonSerialization::VisitConstant(
-		std::shared_ptr<ConstantExpression> node)
+	json AstToJsonSerialization::VisitConstant(std::shared_ptr<ConstantExpression> node)
 	{
 		json obj;
 		AttachNodeInformation(obj, node);
@@ -697,6 +695,7 @@ namespace cygni
 		{
 			TypePtr moduleType = std::make_shared<ModuleType>(module->name);
 			scope->Put(module->name, moduleType);
+			this->package->modules.Add(module->name, module);
 		}
 	}
 
@@ -808,7 +807,6 @@ namespace cygni
 
 	TypePtr TypeChecker::VisitMethodDef(const MethodDef &method, ScopePtr outerScope)
 	{
-		cout << "visit method: " << UTF32ToUTF8(method.name) << endl;
 		ScopePtr scope{ outerScope };
 		for (const auto &parameter : method.parameters)
 		{
@@ -916,10 +914,6 @@ namespace cygni
 			{
 				auto field = UTF32ToUTF8(node->field);
 				auto moduleName = UTF32ToUTF8(moduleType->name);
-				for (auto method : moduleInfo->methods.values)
-				{
-					cout << method.name << endl;
-				}
 				throw TypeException(node->location,
 					UTF8ToUTF32(Format("undefined field '{}' in module '{}'", field, moduleName)));
 			}
@@ -951,8 +945,7 @@ namespace cygni
 		}
 	}
 
-	TypePtr TypeChecker::VisitNewExpression(std::shared_ptr<NewExpression> node,
-		ScopePtr scope)
+	TypePtr TypeChecker::VisitNewExpression(std::shared_ptr<NewExpression> node, ScopePtr scope)
 	{
 		if (package->classes.ContainsKey(node->name))
 		{
@@ -1026,7 +1019,7 @@ namespace cygni
 				// not visited
 				auto currentPackage = package;
 				package = project.packages.at(route);
-				VisitPackage(globalScope);
+				VisitPackage(scope);
 				package = currentPackage;
 			}
 			ImportPackage(scope, route);
