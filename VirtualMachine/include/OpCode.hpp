@@ -3,7 +3,8 @@
 #include <string>
 #include <iostream>
 
-typedef enum {
+typedef enum
+{
 	PUSH_INT_1BYTE,
 	PUSH_INT_2BYTE,
 	PUSH_INT,
@@ -62,7 +63,8 @@ typedef enum {
 	FINALLY_END
 } OpCode;
 
-typedef enum {
+typedef enum
+{
 	TYPE_I32,
 	TYPE_I64,
 	TYPE_F32,
@@ -71,8 +73,10 @@ typedef enum {
 	TYPE_OBJECT
 } TypeTag;
 
-static std::string OpCodeToString(OpCode code) {
-	switch (code) {
+static std::string OpCodeToString(OpCode code)
+{
+	switch (code)
+	{
 	case PUSH_INT_1BYTE:
 		return "PUSH_INT_1BYTE";
 	case PUSH_INT_2BYTE:
@@ -187,8 +191,10 @@ static std::string OpCodeToString(OpCode code) {
 	}
 }
 
-static std::string TypeTagToString(TypeTag tag) {
-	switch (tag) {
+static std::string TypeTagToString(TypeTag tag)
+{
+	switch (tag)
+	{
 	case TYPE_I32:
 		return "TYPE_I32";
 	case TYPE_I64:

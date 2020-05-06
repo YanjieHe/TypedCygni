@@ -14,6 +14,7 @@ namespace cygni
 		program.packageRoute = ParsePackageRouteStatement();
 		program.importedPackages = ParseImportedPackages();
 		program.typeAliases = ParseTypeAliases();
+		route = program.packageRoute.route;
 		while (!IsEof())
 		{
 			if (Look().tag == Tag::Class)
@@ -516,7 +517,7 @@ namespace cygni
 		}
 		else
 		{
-			return std::make_shared<ClassType>(name);
+			return std::make_shared<ClassType>(route, name);
 		}
 	}
 

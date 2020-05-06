@@ -125,11 +125,11 @@ namespace cygni
 	}
 
 	template <class... Args>
-	std::string Format(const std::string& fmt, const Args&... args)
+	std::u32string Format(const std::u32string& fmt, const Args&... args)
 	{
 		std::ostringstream stream;
 		int i = 0;
-		return FormatInternal(fmt, stream, i, args...);
+		return UTF8ToUTF32(FormatInternal(UTF32ToUTF8(fmt), stream, i, args...));
 	}
 
 } // namespace cygni

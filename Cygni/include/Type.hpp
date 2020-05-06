@@ -107,22 +107,14 @@ namespace cygni
 		AnyType();
 	};
 
-	class ObjectType : public Type
-	{
-	public:
-		std::u32string name;
-		explicit ObjectType(std::u32string name);
-
-		std::u32string ToString() const override;
-
-		bool Equals(TypePtr other) const override;
-	};
+	using PackageRoute = std::vector<std::u32string>;
 
 	class ClassType : public Type
 	{
 	public:
+		PackageRoute route;
 		std::u32string name;
-		explicit ClassType(std::u32string name);
+		ClassType(PackageRoute route, std::u32string name);
 
 		std::u32string ToString() const override;
 		bool Equals(TypePtr other) const override;
@@ -131,8 +123,9 @@ namespace cygni
 	class ModuleType : public Type
 	{
 	public:
+		PackageRoute route;
 		std::u32string name;
-		explicit ModuleType(std::u32string name);
+		ModuleType(PackageRoute route, std::u32string name);
 
 		std::u32string ToString() const override;
 		bool Equals(TypePtr other) const override;

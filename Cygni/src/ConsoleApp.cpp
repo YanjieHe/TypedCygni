@@ -33,6 +33,8 @@ namespace cygni
 			project.programs.Add(path, program);
 		}
 		project.MergeAllPrograms();
+		ClassAndModuleLocator classAndModuleLocator;
+		classAndModuleLocator.VisitProject(project);
 		return project;
 	}
 

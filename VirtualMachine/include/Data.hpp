@@ -1,5 +1,5 @@
-#ifndef STRUCTURES_HPP
-#define STRUCTURES_HPP
+#ifndef DATA_HPP
+#define DATA_HPP
 
 #include <cstdint>
 #include <vector>
@@ -8,8 +8,10 @@
 
 using Byte = uint8_t;
 
-typedef struct {
-	union {
+typedef struct
+{
+	union
+	{
 		int32_t i32_v;
 		int64_t i64_v;
 		float_t f32_v;
@@ -19,7 +21,8 @@ typedef struct {
 	uint8_t is_pointer;
 } Value;
 
-class Function {
+class Function
+{
 public:
 	std::string name;
 	int numArgs;
@@ -28,14 +31,16 @@ public:
 	std::vector<Value> constantPool;
 };
 
-class Object {
+class Object
+{
 public:
 	std::vector<Value> fields;
 	std::vector<Function>* methods;
 	Object* next;
 };
 
-class ClassInfo {
+class ClassInfo
+{
 public:
 	std::string name;
 	int numOfFields;
@@ -43,7 +48,8 @@ public:
 	std::vector<Value> constantPool;
 };
 
-class ModuleInfo {
+class ModuleInfo
+{
 public:
 	std::string name;
 	std::vector<Value> variables;
@@ -51,11 +57,12 @@ public:
 	std::vector<Value> constantPool;
 };
 
-class Program {
+class Program
+{
 public:
 	std::vector<ClassInfo> classes;
-	std::vector<Object*> modules;
+	std::vector<Object*> singletons;
 	Function* entry;
 };
 
-#endif // STRUCTURES_HPP
+#endif // DATA_HPP

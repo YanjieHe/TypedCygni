@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 #include "OpCode.hpp"
-#include "Structures.hpp"
+#include "Data.hpp"
 
 class Machine {
 public:
@@ -13,8 +13,8 @@ public:
 	int fp;
 	int sp;
 	int pc;
-	explicit Machine(int stackSize, Program* program);
-	void Run(Function* entry);
+	Machine(int stackSize, Program* program);
+	void Run();
 
 	inline uint16_t USHORT(std::vector<Byte>* bytes, int index)
 	{

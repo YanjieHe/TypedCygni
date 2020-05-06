@@ -2,12 +2,13 @@
 #define CYGNI_CONSTANTS_HPP
 #include <string>
 
-namespace cygni {
+namespace cygni
+{
 
-inline const char32_t SINGLE_QUOTE = U'\'';
-inline const char32_t DOUBLE_QUOTE = U'\"';
-inline const char32_t END_LINE	 = U'\n';
-inline const char32_t BACKSLASH	= U'\\';
+	inline const char32_t SINGLE_QUOTE = U'\'';
+	inline const char32_t DOUBLE_QUOTE = U'\"';
+	inline const char32_t END_LINE = U'\n';
+	inline const char32_t BACKSLASH = U'\\';
 
 } // namespace cygni
 

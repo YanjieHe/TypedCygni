@@ -12,6 +12,7 @@ namespace cygni
 		std::vector<Token> tokens;
 		std::shared_ptr<SourceDocument> document;
 		int offset;
+		PackageRoute route;
 
 		Parser(std::vector<Token> tokens, std::shared_ptr<SourceDocument> document);
 

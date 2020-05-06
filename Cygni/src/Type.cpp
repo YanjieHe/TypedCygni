@@ -103,24 +103,6 @@ namespace cygni
 
 	AnyType::AnyType() : Type(TypeCode::Any) {}
 
-	ObjectType::ObjectType(std::u32string name)
-		: Type(TypeCode::Object), name{ name } {}
-
-	std::u32string ObjectType::ToString() const { return name; }
-
-	bool ObjectType::Equals(TypePtr other) const
-	{
-		if (typeCode == other->typeCode)
-		{
-			std::shared_ptr<ObjectType> objType =
-				std::static_pointer_cast<ObjectType>(other);
-			return name == objType->name;
-		}
-		else
-		{
-			return false;
-		}
-	}
 	ArrayType::ArrayType(TypePtr elementType)
 		: Type(TypeCode::Array), elementType{ elementType } {}
 
@@ -169,7 +151,7 @@ namespace cygni
 
 	UnionType::UnionType() : Type(TypeCode::Union) {}
 
-	ClassType::ClassType(std::u32string name) : Type(TypeCode::Class), name{ name } {}
+	ClassType::ClassType(PackageRoute route, std::u32string name) : Type(TypeCode::Class), route{ route }, name{ name } {}
 
 	std::u32string ClassType::ToString() const { return name; }
 
@@ -177,8 +159,7 @@ namespace cygni
 	{
 		if (typeCode == other->typeCode)
 		{
-			std::shared_ptr<ClassType> classType =
-				std::static_pointer_cast<ClassType>(other);
+			auto classType = std::static_pointer_cast<ClassType>(other);
 			return name == classType->name;
 		}
 		else
@@ -187,8 +168,8 @@ namespace cygni
 		}
 	}
 
-	ModuleType::ModuleType(std::u32string name)
-		: Type(TypeCode::Module), name{ name } {}
+	ModuleType::ModuleType(PackageRoute route, std::u32string name)
+		: Type(TypeCode::Module), route{ route }, name{ name } {}
 
 	std::u32string ModuleType::ToString() const { return name; }
 
@@ -196,8 +177,7 @@ namespace cygni
 	{
 		if (typeCode == other->typeCode)
 		{
-			std::shared_ptr<ModuleType> moduleType =
-				std::static_pointer_cast<ModuleType>(other);
+			auto moduleType = std::static_pointer_cast<ModuleType>(other);
 			return name == moduleType->name;
 		}
 		else

@@ -151,6 +151,12 @@ namespace cygni
 		void VisitPackage(std::shared_ptr<Package> package);
 		void VisitProject(Project& project);
 	};
+
+	class ClassAndModuleLocator
+	{
+	public:
+		void VisitProject(Project& project);
+	};
 } // namespace cygni
 
 #endif // CYGNI_VISITOR_HPP

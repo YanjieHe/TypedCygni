@@ -183,8 +183,7 @@ namespace cygni
 		return obj;
 	}
 
-	json AstToJsonSerialization::VisitMemberAccess(
-		std::shared_ptr<MemberAccessExpression> node)
+	json AstToJsonSerialization::VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node)
 	{
 		json obj;
 		AttachNodeInformation(obj, node);
@@ -193,13 +192,13 @@ namespace cygni
 		return obj;
 	}
 
-	json AstToJsonSerialization::VisitNewExpression(
-		std::shared_ptr<NewExpression> node)
+	json AstToJsonSerialization::VisitNewExpression(std::shared_ptr<NewExpression> node)
 	{
 		json obj;
 		AttachNodeInformation(obj, node);
 		obj["class"] = UTF32ToUTF8(node->name);
 		obj["arguments"] = VisitArgumentList(node->arguments);
+		obj["parameterLocation"] = VisitParameterLocation(node->parameterLocation);
 		return obj;
 	}
 
@@ -693,9 +692,13 @@ namespace cygni
 		auto pkg = project.packages.at(route);
 		for (const auto &module : pkg->modules.values)
 		{
-			TypePtr moduleType = std::make_shared<ModuleType>(module->name);
+			TypePtr moduleType = std::make_shared<ModuleType>(route, module->name);
 			scope->Put(module->name, moduleType);
-			this->package->modules.Add(module->name, module);
+			this->package->moduleMap.insert({ module->name, module });
+		}
+		for (const auto& _class : pkg->classes.values)
+		{
+			this->package->classMap.insert({ _class->name, _class });
 		}
 	}
 
@@ -744,8 +747,7 @@ namespace cygni
 		return node->type;
 	}
 
-	TypePtr TypeChecker::VisitClassInfo(std::shared_ptr<ClassInfo> info,
-		ScopePtr outerScope)
+	TypePtr TypeChecker::VisitClassInfo(std::shared_ptr<ClassInfo> info, ScopePtr outerScope)
 	{
 		ScopePtr scope{ outerScope };
 
@@ -827,9 +829,7 @@ namespace cygni
 		}
 		else
 		{
-			auto name = UTF32ToUTF8(parameter->name);
-			throw TypeException(parameter->location,
-				UTF8ToUTF32(Format("parameter name '{}' not found", name)));
+			throw TypeException(parameter->location, Format(U"parameter name '{}' not found", parameter->name));
 		}
 	}
 
@@ -890,14 +890,13 @@ namespace cygni
 		}
 	}
 
-	TypePtr TypeChecker::VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node,
-		ScopePtr scope)
+	TypePtr TypeChecker::VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node, ScopePtr scope)
 	{
 		TypePtr object = VisitExpression(node->object, scope);
 		if (object->typeCode == TypeCode::Module)
 		{
 			auto moduleType = std::static_pointer_cast<ModuleType>(object);
-			const auto &moduleInfo = package->modules.GetValueByKey(moduleType->name);
+			const auto &moduleInfo = package->moduleMap.at(moduleType->name);
 			if (moduleInfo->fields.ContainsKey(node->field))
 			{
 				auto field = moduleInfo->fields.GetValueByKey(node->field);
@@ -912,16 +911,14 @@ namespace cygni
 			}
 			else
 			{
-				auto field = UTF32ToUTF8(node->field);
-				auto moduleName = UTF32ToUTF8(moduleType->name);
 				throw TypeException(node->location,
-					UTF8ToUTF32(Format("undefined field '{}' in module '{}'", field, moduleName)));
+					Format(U"undefined field '{}' in module '{}'", node->field, moduleType->name));
 			}
 		}
 		else if (object->typeCode == TypeCode::Class)
 		{
 			auto classType = std::static_pointer_cast<ClassType>(object);
-			const auto &classInfo = package->classes.GetValueByKey(classType->name);
+			const auto &classInfo = package->classMap.at(classType->name);
 			if (classInfo->fields.ContainsKey(node->field))
 			{
 				auto field = classInfo->fields.GetValueByKey(node->field);
@@ -973,14 +970,14 @@ namespace cygni
 					throw TypeException(node->location, U"field initialization name not specified");
 				}
 			}
-			auto type = std::make_shared<ClassType>(node->name);
+			node->parameterLocation = ParameterLocation(ParameterType::ClassName, classInfo->index);
+			auto type = std::make_shared<ClassType>(package->route, node->name);
 			node->type = type;
 			return type;
 		}
 		else
 		{
-			throw TypeException(node->location,
-				U"error new expression: undefined class");
+			throw TypeException(node->location, U"error new expression: undefined class");
 		}
 	}
 
@@ -1026,8 +1023,13 @@ namespace cygni
 		}
 		for (const auto &module : package->modules.values)
 		{
-			TypePtr moduleType = std::make_shared<ModuleType>(module->name);
+			TypePtr moduleType = std::make_shared<ModuleType>(package->route, module->name);
+			this->package->moduleMap.insert({ module->name, module });
 			scope->Put(module->name, moduleType);
+		}
+		for (const auto& _class : package->classes.values)
+		{
+			this->package->classMap.insert({ _class->name, _class });
 		}
 		for (const auto &_class : package->classes.values)
 		{
@@ -1283,6 +1285,7 @@ namespace cygni
 		for (auto method : info->methods.values)
 		{
 			scope->Put(method.name, ParameterLocation(ParameterType::ClassMethod, offset));
+			offset++;
 		}
 		for (auto method : info->methods.values)
 		{
@@ -1372,10 +1375,10 @@ namespace cygni
 	void VariableLocator::VisitPackage(std::shared_ptr<Package> package, ScopePtr globalScope)
 	{
 		auto scope = std::make_shared<Scope>(globalScope);
-		int offset = 0;
-		for (auto module : package->modules.values)
+		for (auto pair : package->moduleMap)
 		{
-			scope->Put(module->name, ParameterLocation(ParameterType::ModuleName, offset));
+			auto module = pair.second;
+			scope->Put(module->name, ParameterLocation(ParameterType::ModuleName, module->index));
 		}
 		for (auto _class : package->classes.values)
 		{
@@ -1441,6 +1444,25 @@ namespace cygni
 		{
 			auto package = pair.second;
 			VisitPackage(package);
+		}
+	}
+	void ClassAndModuleLocator::VisitProject(Project & project)
+	{
+		int classIndex = 0;
+		int moduleIndex = 0;
+		for (auto pair : project.packages)
+		{
+			auto pkg = pair.second;
+			for (auto _class : pkg->classes.values)
+			{
+				_class->index = classIndex;
+				classIndex++;
+			}
+			for (auto module : pkg->modules.values)
+			{
+				module->index = moduleIndex;
+				moduleIndex++;
+			}
 		}
 	}
 } // namespace cygni

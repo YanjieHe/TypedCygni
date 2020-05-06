@@ -6,11 +6,11 @@ Machine::Machine(int stackSize, Program * program)
 {
 }
 
-void Machine::Run(Function* entry)
+void Machine::Run()
 {
-	function = entry;
-	std::vector<Byte>* code = &(entry->code);
-	std::vector<Value>* constantPool = &(entry->constantPool);
+	function = program->entry;
+	std::vector<Byte>* code = &(function->code);
+	std::vector<Value>* constantPool = &(function->constantPool);
 	pc = 0;
 	fp = 0;
 	// arguments ... (fp) | local variables ... | last function | last pc | last fp
@@ -18,12 +18,15 @@ void Machine::Run(Function* entry)
 	pc = stack[index + 1].u.i32_v;
 	fp = stack[index + 2].u.i32_v;
 	sp = index + 3;
-	while (true) {
+	while (true)
+	{
 		Byte op = (*code)[pc];
-		switch (op) {
+		switch (op)
+		{
 		case PUSH_CONSTANT: {
 			Byte type = ((*code)[pc + 1]);
-			switch (type) {
+			switch (type)
+			{
 			case TYPE_I32: {
 				uint16_t index = USHORT(code, pc + 2);
 				int32_t value = (*constantPool)[index].u.i32_v;
@@ -58,7 +61,8 @@ void Machine::Run(Function* entry)
 		}
 		case PUSH_STACK: {
 			Byte type = ((*code)[pc + 1]);
-			switch (type) {
+			switch (type)
+			{
 			case TYPE_I32:
 			{
 				uint16_t offset = USHORT(code, pc + 2);
@@ -97,7 +101,8 @@ void Machine::Run(Function* entry)
 		}
 		case POP_STACK: {
 			Byte type = ((*code)[pc + 1]);
-			switch (type) {
+			switch (type)
+			{
 			case TYPE_I32: /* POP_STACK */
 			{
 				int32_t value = stack[sp].u.i32_v;
@@ -137,7 +142,8 @@ void Machine::Run(Function* entry)
 		case ADD:
 		{
 			Byte type = ((*code)[pc + 1]);
-			switch (type) {
+			switch (type)
+			{
 			case TYPE_I32: {
 
 				int32_t right = stack[sp].u.i32_v;
@@ -181,7 +187,8 @@ void Machine::Run(Function* entry)
 		case SUB:
 		{
 			Byte type = ((*code)[pc + 1]);
-			switch (type) {
+			switch (type)
+			{
 			case TYPE_I32: {
 
 				int32_t right = stack[sp].u.i32_v;
@@ -225,7 +232,8 @@ void Machine::Run(Function* entry)
 		case MUL:
 		{
 			Byte type = ((*code)[pc + 1]);
-			switch (type) {
+			switch (type)
+			{
 			case TYPE_I32: {
 
 				int32_t right = stack[sp].u.i32_v;
@@ -269,7 +277,8 @@ void Machine::Run(Function* entry)
 		case DIV:
 		{
 			Byte type = ((*code)[pc + 1]);
-			switch (type) {
+			switch (type)
+			{
 			case TYPE_I32: {
 
 				int32_t right = stack[sp].u.i32_v;
@@ -313,7 +322,8 @@ void Machine::Run(Function* entry)
 		case GT:
 		{
 			Byte type = ((*code)[pc + 1]);
-			switch (type) {
+			switch (type)
+			{
 			case TYPE_I32: {
 
 				int32_t right = stack[sp].u.i32_v;
@@ -357,7 +367,8 @@ void Machine::Run(Function* entry)
 		case LT:
 		{
 			Byte type = ((*code)[pc + 1]);
-			switch (type) {
+			switch (type)
+			{
 			case TYPE_I32: {
 
 				int32_t right = stack[sp].u.i32_v;
@@ -401,7 +412,8 @@ void Machine::Run(Function* entry)
 		case GE:
 		{
 			Byte type = ((*code)[pc + 1]);
-			switch (type) {
+			switch (type)
+			{
 			case TYPE_I32: {
 
 				int32_t right = stack[sp].u.i32_v;
@@ -445,7 +457,8 @@ void Machine::Run(Function* entry)
 		case LE:
 		{
 			Byte type = ((*code)[pc + 1]);
-			switch (type) {
+			switch (type)
+			{
 			case TYPE_I32: {
 
 				int32_t right = stack[sp].u.i32_v;
@@ -489,7 +502,8 @@ void Machine::Run(Function* entry)
 		case EQ:
 		{
 			Byte type = ((*code)[pc + 1]);
-			switch (type) {
+			switch (type)
+			{
 			case TYPE_I32: {
 
 				int32_t right = stack[sp].u.i32_v;
@@ -533,7 +547,8 @@ void Machine::Run(Function* entry)
 		case NE:
 		{
 			Byte type = ((*code)[pc + 1]);
-			switch (type) {
+			switch (type)
+			{
 			case TYPE_I32: {
 
 				int32_t right = stack[sp].u.i32_v;
@@ -576,7 +591,8 @@ void Machine::Run(Function* entry)
 		}
 		case PUSH_FIELD: {
 			Byte type = ((*code)[pc + 1]);
-			switch (type) {
+			switch (type)
+			{
 			case TYPE_I32: {
 				Object* object = (Object*)stack[sp].u.obj;
 				uint16_t offset = USHORT(code, pc + 2);
@@ -607,7 +623,8 @@ void Machine::Run(Function* entry)
 		}
 		case POP_FIELD: {
 			Byte type = ((*code)[pc + 1]);
-			switch (type) {
+			switch (type)
+			{
 			case TYPE_I32: {
 				Object* object = (Object*)stack[sp].u.obj;
 				uint16_t offset = USHORT(code, pc + 2);
@@ -650,10 +667,12 @@ void Machine::Run(Function* entry)
 		case JUMP_IF_TRUE: {
 			int32_t value = stack[sp].u.i32_v;
 			sp--;
-			if (value) {
+			if (value)
+			{
 				pc = USHORT(code, pc + 1);
 			}
-			else {
+			else
+			{
 				pc = pc + 1 + 2;
 			}
 			break;
@@ -661,17 +680,20 @@ void Machine::Run(Function* entry)
 		case JUMP_IF_FALSE: {
 			int32_t value = stack[sp].u.i32_v;
 			sp--;
-			if (value) {
+			if (value)
+			{
 				pc = pc + 1 + 2;
 			}
-			else {
+			else
+			{
 				pc = USHORT(code, pc + 1);
 			}
 			break;
 		}
 		case RETURN: {
 			Byte type = ((*code)[pc + 1]);
-			switch (type) {
+			switch (type)
+			{
 			case TYPE_I32: {
 				int32_t value = stack[sp].u.i32_v;
 				sp--;
@@ -747,7 +769,7 @@ void Machine::Run(Function* entry)
 		}
 		case PUSH_MODULE: {
 			int16_t index = USHORT(code, pc + 1);
-			Object* moduleObject = program->modules.at(index);
+			Object* moduleObject = program->singletons.at(index);
 			sp++;
 			stack[sp].u.obj = moduleObject;
 			break;

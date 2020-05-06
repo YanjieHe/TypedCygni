@@ -310,6 +310,7 @@ namespace cygni
 	public:
 		std::u32string name;
 		std::vector<Argument> arguments;
+		ParameterLocation parameterLocation;
 		NewExpression(SourceLocation location, std::u32string name,
 			std::vector<Argument> arguments);
 	};
@@ -321,6 +322,7 @@ namespace cygni
 		std::u32string name;
 		Table<std::u32string, FieldDef> fields;
 		Table<std::u32string, MethodDef> methods;
+		int index = -1;
 		ClassInfo() = default;
 		ClassInfo(SourceLocation location, std::u32string name);
 	};
@@ -332,6 +334,7 @@ namespace cygni
 		std::u32string name;
 		Table<std::u32string, FieldDef> fields;
 		Table<std::u32string, MethodDef> methods;
+		int index = -1;
 		ModuleInfo() = default;
 		ModuleInfo(SourceLocation location, std::u32string name);
 	};
@@ -356,6 +359,9 @@ namespace cygni
 
 		Table<std::u32string, std::shared_ptr<ClassInfo>> classes;
 		Table<std::u32string, std::shared_ptr<ModuleInfo>> modules;
+
+		std::unordered_map<std::u32string, std::shared_ptr<ModuleInfo>> moduleMap;
+		std::unordered_map<std::u32string, std::shared_ptr<ClassInfo>> classMap;
 
 		explicit Package(PackageRoute route);
 	};

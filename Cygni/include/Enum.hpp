@@ -4,8 +4,10 @@
 #include <string>
 #include <iostream>
 
-namespace cygni {
-	enum class Tag {
+namespace cygni
+{
+	enum class Tag
+	{
 		Identifier,
 		Integer,
 		Float,
@@ -76,7 +78,8 @@ namespace cygni {
 		Eof
 	};
 
-	enum class ExpressionType {
+	enum class ExpressionType
+	{
 		Add,
 		Subtract,
 		Multiply,
@@ -116,7 +119,8 @@ namespace cygni {
 
 	enum class AccessModifier { Public, Private, Protected };
 
-	enum class TypeCode {
+	enum class TypeCode
+	{
 		Unknown,
 		Void,
 		Any,
@@ -142,7 +146,8 @@ namespace cygni {
 
 	};
 
-	enum class ParameterType {
+	enum class ParameterType
+	{
 		Unknown,
 		ModuleName,
 		ModuleField,
@@ -153,7 +158,8 @@ namespace cygni {
 		LocalVariable
 	};
 
-	enum class OpCode {
+	enum class OpCode
+	{
 		PUSH_INT_1BYTE,
 		PUSH_INT_2BYTE,
 		PUSH_INT,
@@ -212,7 +218,8 @@ namespace cygni {
 		FINALLY_END
 	};
 
-	enum class TypeTag {
+	enum class TypeTag
+	{
 		TYPE_I32,
 		TYPE_I64,
 		TYPE_F32,
@@ -220,18 +227,23 @@ namespace cygni {
 		TYPE_STRING,
 		TYPE_OBJECT
 	};
-	template <typename TEnum> class Enum {
+	template <typename TEnum> class Enum
+	{
 	public:
-		static std::u32string ToString(TEnum) {
+		static std::u32string ToString(TEnum)
+		{
 			std::cout << __FUNCTION__ << std::endl;
 			exit(1);
 		}
 	};
 
-	template <> class Enum<Tag> {
+	template <> class Enum<Tag>
+	{
 	public:
-		static std::u32string ToString(Tag tag) {
-			switch (tag) {
+		static std::u32string ToString(Tag tag)
+		{
+			switch (tag)
+			{
 			case Tag::Identifier:
 				return U"Identifier";
 			case Tag::Integer:
@@ -351,10 +363,13 @@ namespace cygni {
 		}
 	};
 
-	template <> class Enum<ExpressionType> {
+	template <> class Enum<ExpressionType>
+	{
 	public:
-		static std::u32string ToString(ExpressionType kind) {
-			switch (kind) {
+		static std::u32string ToString(ExpressionType kind)
+		{
+			switch (kind)
+			{
 			case ExpressionType::Add:
 				return U"Add";
 			case ExpressionType::Subtract:
@@ -432,10 +447,13 @@ namespace cygni {
 			}
 		}
 	};
-	template <> class Enum<AccessModifier> {
+	template <> class Enum<AccessModifier>
+	{
 	public:
-		static std::u32string ToString(AccessModifier modifier) {
-			switch (modifier) {
+		static std::u32string ToString(AccessModifier modifier)
+		{
+			switch (modifier)
+			{
 			case AccessModifier::Public:
 				return U"Public";
 			case AccessModifier::Private:
@@ -449,10 +467,13 @@ namespace cygni {
 		}
 	};
 
-	template <> class Enum<TypeCode> {
+	template <> class Enum<TypeCode>
+	{
 	public:
-		static std::u32string ToString(TypeCode typeCode) {
-			switch (typeCode) {
+		static std::u32string ToString(TypeCode typeCode)
+		{
+			switch (typeCode)
+			{
 			case TypeCode::Unknown:
 				return U"Unknown";
 			case TypeCode::Void:
@@ -505,10 +526,13 @@ namespace cygni {
 		}
 	};
 
-	template <> class Enum<ParameterType> {
+	template <> class Enum<ParameterType>
+	{
 	public:
-		static std::u32string ToString(ParameterType type) {
-			switch (type) {
+		static std::u32string ToString(ParameterType type)
+		{
+			switch (type)
+			{
 			case ParameterType::Unknown:
 				return U"Unknown";
 			case ParameterType::ModuleName:
@@ -532,10 +556,13 @@ namespace cygni {
 		}
 	};
 
-	template <> class Enum<OpCode> {
+	template <> class Enum<OpCode>
+	{
 	public:
-		static std::u32string ToString(OpCode code) {
-			switch(code) {
+		static std::u32string ToString(OpCode code)
+		{
+			switch (code)
+			{
 			case OpCode::PUSH_INT_1BYTE:
 				return U"PUSH_INT_1BYTE";
 			case OpCode::PUSH_INT_2BYTE:
@@ -651,10 +678,13 @@ namespace cygni {
 		}
 	};
 
-	template <> class Enum<TypeTag> {
+	template <> class Enum<TypeTag>
+	{
 	public:
-		static std::u32string ToString(TypeTag tag) {
-			switch (tag) {
+		static std::u32string ToString(TypeTag tag)
+		{
+			switch (tag)
+			{
 			case TypeTag::TYPE_I32:
 				return U"TYPE_I32";
 			case TypeTag::TYPE_I64:
