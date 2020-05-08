@@ -999,8 +999,7 @@ namespace cygni
 		}
 		else
 		{
-			throw TypeException(node->location,
-				U"variable initialization type mismatch");
+			throw TypeException(node->location, U"variable initialization type mismatch");
 		}
 	}
 
@@ -1208,6 +1207,10 @@ namespace cygni
 			VisitPackage(package);
 		}
 	}
+	VariableLocator::VariableLocator(Project & project): project{project}
+	{
+
+	}
 	void VariableLocator::VisitExpression(ExpPtr node, ScopePtr scope)
 	{
 		switch (node->nodeType)
@@ -1276,15 +1279,17 @@ namespace cygni
 	{
 		auto scope = std::make_shared<Scope>(outerScope);
 		int offset = 0;
-		for (auto field : info->fields.values)
+		for (auto& field : info->fields.values)
 		{
 			scope->Put(field.name, ParameterLocation(ParameterType::ClassField, offset));
+			field.index = offset;
 			offset++;
 		}
 		offset = 0;
-		for (auto method : info->methods.values)
+		for (auto& method : info->methods.values)
 		{
 			scope->Put(method.name, ParameterLocation(ParameterType::ClassMethod, offset));
+			method.index = offset;
 			offset++;
 		}
 		for (auto method : info->methods.values)
@@ -1354,6 +1359,65 @@ namespace cygni
 	void VariableLocator::VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node, ScopePtr scope)
 	{
 		VisitExpression(node->object, scope);
+		TypePtr object = node->object->type;
+		if (object->typeCode == TypeCode::Module)
+		{
+			auto moduleType = std::static_pointer_cast<ModuleType>(object);
+
+			if (auto res = project.GetModule(moduleType->route, moduleType->name))
+			{
+				const auto &moduleInfo = *res;
+				if (moduleInfo->fields.ContainsKey(node->field))
+				{
+					auto field = moduleInfo->fields.GetValueByKey(node->field);
+					node->parameterLocation = ParameterLocation(ParameterType::ModuleField, field.index);
+				}
+				else if (moduleInfo->methods.ContainsKey(node->field))
+				{
+					auto method = moduleInfo->methods.GetValueByKey(node->field);
+					node->parameterLocation = ParameterLocation(ParameterType::ModuleMethod, method.index);
+				}
+				else
+				{
+					throw TypeException(node->location,
+						Format(U"undefined field '{}' in module '{}'", node->field, moduleType->name));
+				}
+			}
+			else
+			{
+				throw TypeException(node->location, U"undefined module");
+			}
+		}
+		else if (object->typeCode == TypeCode::Class)
+		{
+			auto classType = std::static_pointer_cast<ClassType>(object);
+			if (auto res = project.GetClass(classType->route, classType->name))
+			{
+				const auto &classInfo = *res;
+				if (classInfo->fields.ContainsKey(node->field))
+				{
+					auto field = classInfo->fields.GetValueByKey(node->field);
+					node->parameterLocation = ParameterLocation(ParameterType::ClassField, field.index);
+				}
+				else if (classInfo->methods.ContainsKey(node->field))
+				{
+					auto method = classInfo->methods.GetValueByKey(node->field);
+					node->parameterLocation = ParameterLocation(ParameterType::ClassMethod, method.index);
+				}
+				else
+				{
+					throw TypeException(node->location, U"undefined field");
+				}
+			}
+			else
+			{
+				throw TypeException(node->location, U"undefined class");
+			}
+		}
+		else
+		{
+			throw TypeException(node->location, U"object does not have any field");
+		}
 	}
 	void VariableLocator::VisitNewExpression(std::shared_ptr<NewExpression> node, ScopePtr scope)
 	{
@@ -1389,7 +1453,7 @@ namespace cygni
 			VisitModuleInfo(module, scope);
 		}
 	}
-	void VariableLocator::VisitProject(Project & project)
+	void VariableLocator::VisitProject()
 	{
 		auto scope = std::make_shared<Scope>();
 		for (auto pair : project.packages)

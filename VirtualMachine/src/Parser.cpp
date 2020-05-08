@@ -1,0 +1,297 @@
+#include "Parser.h"
+#include <malloc.h>
+#include <stdio.h>
+
+char* parse_string(FILE* file)
+{
+	uint16_t len;
+	char* str;
+
+	len = parse_ushort(file);
+	str = (char*)malloc(sizeof(char) * (len + 1));
+	if (fread(str, 1, len, file) == len)
+	{
+		str[len] = '\0';
+		return str;
+	}
+	else
+	{
+		fprintf(stderr, "cannot read string\n");
+		free(str);
+		exit(-1);
+	}
+}
+
+uint16_t parse_ushort(FILE* file)
+{
+	uint16_t value;
+	uint8_t b1;
+	uint8_t b2;
+	size_t res1;
+	size_t res2;
+
+	res1 = fread(&b1, 1, 1, file);
+	res2 = fread(&b2, 1, 1, file);
+
+	if (res1 == 1 && res2 == 1)
+	{
+		value = ((uint16_t)b1) + ((uint16_t)b2) * 256;
+		return value;
+	}
+	else
+	{
+		fprintf(stderr, "cannot read ushort\n");
+		exit(-1);
+	}
+}
+
+uint32_t parse_uint(ByteCode* byteCode)
+{
+	uint32_t value;
+	int i;
+
+	value = 0;
+	for (i = 0; i < 4; i++)
+	{
+		value = value * 256;
+		value = value + byteCode->bytes[byteCode->index + (4 - i)];
+	}
+	byteCode->index = byteCode->index + 4;
+	return value;
+}
+
+TypeTag parse_type_tag(ByteCode * byteCode)
+{
+	Byte byte;
+
+	byte = byteCode->bytes[byteCode->index];
+	byteCode->index++;
+	return (TypeTag)byte;
+}
+
+OpCode parse_opcode(ByteCode * byteCode)
+{
+	Byte byte;
+
+	byte = byteCode->bytes[byteCode->index];
+	byteCode->index++;
+	return (OpCode)byte;
+}
+
+Executable* parse_file(const char * path)
+{
+	FILE* file;
+	uint16_t class_count;
+	uint16_t module_count;
+	int i;
+	Executable* exe;
+
+	file = fopen(path, "rb");
+	if (file)
+	{
+		exe = (Executable*)malloc(sizeof(Executable));
+		class_count = parse_ushort(file);
+		module_count = parse_ushort(file);
+		exe->class_count = class_count;
+		exe->module_count = module_count;
+		exe->classes = (ClassInfo**)malloc(sizeof(ClassInfo*)*class_count);
+		exe->modules = (ModuleInfo**)malloc(sizeof(ModuleInfo*)*module_count);
+
+		printf("class count: %d, module count = %d\n", class_count, module_count);
+		for (i = 0; i < class_count; i++)
+		{
+			exe->classes[i] = parse_class(file);
+		}
+		for (i = 0; i < module_count; i++)
+		{
+			exe->modules[i] = parse_module(file);
+		}
+
+		return exe;
+	}
+	else
+	{
+		fprintf(stderr, "fail to read file '%s'", path);
+		exit(-1);
+	}
+}
+
+ClassInfo * parse_class(FILE * file)
+{
+	char* class_name;
+	uint16_t field_count;
+	uint16_t method_count;
+	char** field_names;
+	Function** methods;
+	int i;
+	ClassInfo* class_info;
+
+	class_name = parse_string(file);
+	printf("class name: %s\n", class_name);
+	field_count = parse_ushort(file);
+	field_names = (char**)malloc(sizeof(char*)*field_count);
+
+	for (i = 0; i < field_count; i++)
+	{
+		field_names[i] = parse_string(file);
+		printf("field: %s\n", field_names[i]);
+	}
+
+	method_count = parse_ushort(file);
+	methods = (Function**)malloc(sizeof(Function*)*method_count);
+	for (i = 0; i < method_count; i++)
+	{
+		methods[i] = parse_function(file);
+		printf("method: %s\n", methods[i]->name);
+	}
+
+	class_info = (ClassInfo*)malloc(sizeof(ClassInfo));
+	class_info->name = class_name;
+	class_info->n_fields = field_count;
+	class_info->field_names = field_names;
+	class_info->n_methods = method_count;
+	class_info->methods = methods;
+
+	return class_info;
+}
+
+ModuleInfo * parse_module(FILE * file)
+{
+	char* module_name;
+	uint16_t field_count;
+	uint16_t function_count;
+	char** field_names;
+	Function** functions;
+	ModuleInfo* module_info;
+	int i;
+
+	module_name = parse_string(file);
+	printf("module name: %s\n", module_name);
+	field_count = parse_ushort(file);
+	field_names = (char**)malloc(sizeof(char*)*field_count);
+
+	for (i = 0; i < field_count; i++)
+	{
+		field_names[i] = parse_string(file);
+		printf("field: %s\n", field_names[i]);
+	}
+
+	function_count = parse_ushort(file);
+	functions = (Function**)malloc(sizeof(Function*)*function_count);
+	for (i = 0; i < function_count; i++)
+	{
+		functions[i] = parse_function(file);
+		printf("function: %s\n", functions[i]->name);
+	}
+
+	module_info = (ModuleInfo*)malloc(sizeof(ModuleInfo));
+	module_info->name = module_name;
+	module_info->n_fields = field_count;
+	module_info->field_names = field_names;
+	module_info->n_functions = function_count;
+	module_info->functions = functions;
+
+	return module_info;
+}
+
+Function * parse_function(FILE * file)
+{
+	Function* function;
+
+	function = (Function*)malloc(sizeof(Function));
+	function->name = parse_string(file);
+	function->n_parameters = parse_ushort(file);
+	function->locals = parse_ushort(file);
+	function->code_len = parse_ushort(file);
+	printf("function code len=%d\n", function->code_len);
+	function->code = (uint8_t*)malloc(sizeof(uint8_t) * function->code_len);
+	if (fread(function->code, sizeof(uint8_t), function->code_len, file) == function->code_len)
+	{
+		return function;
+	}
+	else
+	{
+		fprintf(stderr, "fail to read byte code\n");
+		free(function->name);
+		free(function->code);
+		free(function);
+		exit(-1);
+	}
+}
+
+void view_exe(Executable * exe)
+{
+	int i;
+	int j;
+	Function* function;
+
+	printf("class count: %d, module count: %d\n\n", exe->class_count, exe->module_count);
+	for (i = 0; i < exe->class_count; i++)
+	{
+		printf("class: %s\n", exe->classes[i]->name);
+		for (j = 0; j < exe->classes[i]->n_fields; j++)
+		{
+			printf("\tfield: %s\n", exe->classes[i]->field_names[j]);
+		}
+		printf("\n");
+		for (j = 0; j < exe->classes[i]->n_methods; j++)
+		{
+			function = exe->classes[i]->methods[j];
+			view_function(function);
+		}
+		printf("\n");
+	}
+	for (i = 0; i < exe->module_count; i++)
+	{
+		printf("module: %s\n", exe->modules[i]->name);
+		for (j = 0; j < exe->modules[i]->n_fields; j++)
+		{
+			printf("\tfield: %s\n", exe->modules[i]->field_names[j]);
+		}
+		printf("\n");
+		for (j = 0; j < exe->modules[i]->n_functions; j++)
+		{
+			function = exe->modules[i]->functions[j];
+			view_function(function);
+		}
+		printf("\n");
+	}
+}
+
+void view_function(Function * function)
+{
+	int i;
+	int j;
+	uint8_t byte;
+	uint8_t op_code;
+	const char* op_name;
+	int op_count;
+
+	printf("\tmethod: %s\n", function->name);
+	printf("\targs_size=%\d, locals=%d\n", function->n_parameters, function->locals);
+
+	printf("\tcode:\n");
+	i = 0;
+	while (i < function->code_len)
+	{
+		op_code = function->code[i];
+		op_name = op_info[op_code][0];
+		printf("%s", op_name);
+		i++;
+		if (op_info[op_code][1] == "true")
+		{
+			byte = function->code[i];
+			i++;
+			printf(" [TYPE TAG]");
+		}
+		op_count = atoi(op_info[op_code][2]);
+		for (j = 0; j < op_count; j++)
+		{
+			printf(" %d", (int)function->code[i + j]);
+		}
+		i = i + op_count;
+		printf("\n");
+	}
+
+	printf("\n");
+}

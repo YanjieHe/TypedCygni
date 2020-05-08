@@ -2,6 +2,7 @@
 #include "Lexer.hpp"
 #include "Parser.hpp"
 #include "Visitor.hpp"
+#include "Compiler.hpp"
 #include <iostream>
 using std::cout;
 using std::endl;
@@ -52,8 +53,8 @@ namespace cygni
 		cout << "Complete Local Variable Collection!" << endl;
 
 		/* pass 6: locate variables */
-		VariableLocator variableLocator;
-		variableLocator.VisitProject(project);
+		VariableLocator variableLocator(project);
+		variableLocator.VisitProject();
 		cout << "Complete Local Variable Locatoring!" << endl;
 
 		/* pass 7: collect constants */
@@ -73,6 +74,16 @@ namespace cygni
 		auto jsonText = jsonObj.dump();
 		cygni::WriteText(outputJsonPath, jsonText);
 		cout << "Output AST in JSON format!" << endl;
+	}
+
+	void ConsoleApp::Compile(std::vector<std::string> fileList, std::string outputExePath)
+	{
+		auto project = ParseProject(fileList);
+		SemanticAnalysis(project);
+
+		Compiler compiler(project);
+		ByteCode byteCode = compiler.Compile();
+		WriteBytes(outputExePath, byteCode.bytes);
 	}
 
 	int ConsoleApp::Run(int argc, char ** argv)

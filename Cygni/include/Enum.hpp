@@ -207,6 +207,7 @@ namespace cygni
 		JUMP_IF_FALSE,
 		PUSH_MODULE,
 		PUSH_FUNCTION,
+		PUSH_METHOD,
 		INVOKE,
 		RETURN,
 		NEW,
@@ -653,6 +654,8 @@ namespace cygni
 				return U"PUSH_MODULE";
 			case OpCode::PUSH_FUNCTION:
 				return U"PUSH_FUNCTION";
+			case OpCode::PUSH_METHOD:
+				return U"PUSH_METHOD";
 			case OpCode::INVOKE:
 				return U"INVOKE";
 			case OpCode::RETURN:

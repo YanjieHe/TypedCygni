@@ -1,56 +1,85 @@
-#include "Machine.hpp"
+#include "Machine.h"
+#include <malloc.h>
+//Machine::Machine(int stackSize, Program * program)
+//	:stack(stackSize), program{ program }, function{ nullptr },
+//	fp{ -1 }, sp{ -1 }, pc{ 0 }
+//{
+//}
 
-Machine::Machine(int stackSize, Program * program)
-	:stack(stackSize), program{ program }, function{ nullptr },
-	fp{ -1 }, sp{ -1 }, pc{ 0 }
+Machine * create_machine(int stackSize, Executable * exe)
 {
+	Machine * machine;
+
+	machine = (Machine*)malloc(sizeof(Machine));
+	machine->stack.length = stackSize;
+	machine->stack.values = (Value*)malloc(sizeof(Value)*stackSize);
+	machine->exe = exe;
+	machine->fp = -1;
+	machine->sp = -1;
+	machine->pc = 0;
+	machine->function = NULL;
+	return machine;
 }
 
-void Machine::Run()
+void run(Machine* machine)
 {
-	function = program->entry;
-	std::vector<Byte>* code = &(function->code);
-	std::vector<Value>* constantPool = &(function->constantPool);
+	Byte* code;
+	Value* constantPool;
+	Value* stack;
+	Function* function;
+	int pc;
+	int fp;
+	int sp;
+	Byte op;
+	Byte type;
+
+	machine->function = machine->exe->entry;
+	function = machine->function;
+	code = machine->function->code;
+	constantPool = machine->function->constantPool.values;
+	stack = machine->stack.values;
 	pc = 0;
 	fp = 0;
+
 	// arguments ... (fp) | local variables ... | last function | last pc | last fp
-	int index = fp + function->numArgs + function->locals + 1;
+	int index = fp + function->n_parameters + function->locals + 1;
 	pc = stack[index + 1].u.i32_v;
 	fp = stack[index + 2].u.i32_v;
 	sp = index + 3;
+
 	while (true)
 	{
-		Byte op = (*code)[pc];
+		op = code[pc];
 		switch (op)
 		{
 		case PUSH_CONSTANT: {
-			Byte type = ((*code)[pc + 1]);
+			type = (code[pc + 1]);
 			switch (type)
 			{
 			case TYPE_I32: {
 				uint16_t index = USHORT(code, pc + 2);
-				int32_t value = (*constantPool)[index].u.i32_v;
+				int32_t value = constantPool[index].u.i32_v;
 				sp++;
 				stack[sp].u.i32_v = value;
 				break;
 			}
 			case TYPE_I64: {
 				uint16_t index = USHORT(code, pc + 2);
-				int64_t value = (*constantPool)[index].u.i64_v;
+				int64_t value = constantPool[index].u.i64_v;
 				sp++;
 				stack[sp].u.i64_v = value;
 				break;
 			}
 			case TYPE_F32: {
 				uint16_t index = USHORT(code, pc + 2);
-				float_t value = (*constantPool)[index].u.f32_v;
+				float_t value = constantPool[index].u.f32_v;
 				sp++;
 				stack[sp].u.f32_v = value;
 				break;
 			}
 			case TYPE_F64: {
 				uint16_t index = USHORT(code, pc + 2);
-				double_t value = (*constantPool)[index].u.f64_v;
+				double_t value = constantPool[index].u.f64_v;
 				sp++;
 				stack[sp].u.f64_v = value;
 				break;
@@ -60,7 +89,7 @@ void Machine::Run()
 			break;
 		}
 		case PUSH_STACK: {
-			Byte type = ((*code)[pc + 1]);
+			Byte type = (code[pc + 1]);
 			switch (type)
 			{
 			case TYPE_I32:
@@ -100,7 +129,7 @@ void Machine::Run()
 			break;
 		}
 		case POP_STACK: {
-			Byte type = ((*code)[pc + 1]);
+			Byte type = (code[pc + 1]);
 			switch (type)
 			{
 			case TYPE_I32: /* POP_STACK */
@@ -141,7 +170,7 @@ void Machine::Run()
 		}
 		case ADD:
 		{
-			Byte type = ((*code)[pc + 1]);
+			Byte type = (code[pc + 1]);
 			switch (type)
 			{
 			case TYPE_I32: {
@@ -186,7 +215,7 @@ void Machine::Run()
 		}
 		case SUB:
 		{
-			Byte type = ((*code)[pc + 1]);
+			Byte type = (code[pc + 1]);
 			switch (type)
 			{
 			case TYPE_I32: {
@@ -231,7 +260,7 @@ void Machine::Run()
 		}
 		case MUL:
 		{
-			Byte type = ((*code)[pc + 1]);
+			Byte type = (code[pc + 1]);
 			switch (type)
 			{
 			case TYPE_I32: {
@@ -276,7 +305,7 @@ void Machine::Run()
 		}
 		case DIV:
 		{
-			Byte type = ((*code)[pc + 1]);
+			Byte type = (code[pc + 1]);
 			switch (type)
 			{
 			case TYPE_I32: {
@@ -321,7 +350,7 @@ void Machine::Run()
 		}
 		case GT:
 		{
-			Byte type = ((*code)[pc + 1]);
+			Byte type = (code[pc + 1]);
 			switch (type)
 			{
 			case TYPE_I32: {
@@ -366,7 +395,7 @@ void Machine::Run()
 		}
 		case LT:
 		{
-			Byte type = ((*code)[pc + 1]);
+			Byte type = (code[pc + 1]);
 			switch (type)
 			{
 			case TYPE_I32: {
@@ -411,7 +440,7 @@ void Machine::Run()
 		}
 		case GE:
 		{
-			Byte type = ((*code)[pc + 1]);
+			Byte type = (code[pc + 1]);
 			switch (type)
 			{
 			case TYPE_I32: {
@@ -456,7 +485,7 @@ void Machine::Run()
 		}
 		case LE:
 		{
-			Byte type = ((*code)[pc + 1]);
+			Byte type = (code[pc + 1]);
 			switch (type)
 			{
 			case TYPE_I32: {
@@ -501,7 +530,7 @@ void Machine::Run()
 		}
 		case EQ:
 		{
-			Byte type = ((*code)[pc + 1]);
+			Byte type = (code[pc + 1]);
 			switch (type)
 			{
 			case TYPE_I32: {
@@ -546,7 +575,7 @@ void Machine::Run()
 		}
 		case NE:
 		{
-			Byte type = ((*code)[pc + 1]);
+			Byte type = (code[pc + 1]);
 			switch (type)
 			{
 			case TYPE_I32: {
@@ -590,31 +619,31 @@ void Machine::Run()
 			break;
 		}
 		case PUSH_FIELD: {
-			Byte type = ((*code)[pc + 1]);
+			Byte type = (code[pc + 1]);
 			switch (type)
 			{
 			case TYPE_I32: {
 				Object* object = (Object*)stack[sp].u.obj;
 				uint16_t offset = USHORT(code, pc + 2);
-				stack[sp].u.i32_v = object->fields[offset].u.i32_v;
+				stack[sp].u.i32_v = object->fields.values[offset].u.i32_v;
 				break;
 			}
 			case TYPE_I64: {
 				Object* object = (Object*)stack[sp].u.obj;
 				uint16_t offset = USHORT(code, pc + 2);
-				stack[sp].u.i64_v = object->fields[offset].u.i64_v;
+				stack[sp].u.i64_v = object->fields.values[offset].u.i64_v;
 				break;
 			}
 			case TYPE_F32: {
 				Object* object = (Object*)stack[sp].u.obj;
 				uint16_t offset = USHORT(code, pc + 2);
-				stack[sp].u.f32_v = object->fields[offset].u.f32_v;
+				stack[sp].u.f32_v = object->fields.values[offset].u.f32_v;
 				break;
 			}
 			case TYPE_F64: {
 				Object* object = (Object*)stack[sp].u.obj;
 				uint16_t offset = USHORT(code, pc + 2);
-				stack[sp].u.f64_v = object->fields[offset].u.f64_v;
+				stack[sp].u.f64_v = object->fields.values[offset].u.f64_v;
 				break;
 			}
 			}
@@ -622,14 +651,14 @@ void Machine::Run()
 			break;
 		}
 		case POP_FIELD: {
-			Byte type = ((*code)[pc + 1]);
+			Byte type = (code[pc + 1]);
 			switch (type)
 			{
 			case TYPE_I32: {
 				Object* object = (Object*)stack[sp].u.obj;
 				uint16_t offset = USHORT(code, pc + 2);
 				sp--;
-				object->fields[offset].u.i32_v = stack[sp].u.i32_v;
+				object->fields.values[offset].u.i32_v = stack[sp].u.i32_v;
 				sp--;
 				break;
 			}
@@ -637,7 +666,7 @@ void Machine::Run()
 				Object* object = (Object*)stack[sp].u.obj;
 				uint16_t offset = USHORT(code, pc + 2);
 				sp--;
-				object->fields[offset].u.i64_v = stack[sp].u.i64_v;
+				object->fields.values[offset].u.i64_v = stack[sp].u.i64_v;
 				sp--;
 				break;
 			}
@@ -645,7 +674,7 @@ void Machine::Run()
 				Object* object = (Object*)stack[sp].u.obj;
 				uint16_t offset = USHORT(code, pc + 2);
 				sp--;
-				object->fields[offset].u.f32_v = stack[sp].u.f32_v;
+				object->fields.values[offset].u.f32_v = stack[sp].u.f32_v;
 				sp--;
 				break;
 			}
@@ -653,7 +682,7 @@ void Machine::Run()
 				Object* object = (Object*)stack[sp].u.obj;
 				uint16_t offset = USHORT(code, pc + 2);
 				sp--;
-				object->fields[offset].u.f64_v = stack[sp].u.f64_v;
+				object->fields.values[offset].u.f64_v = stack[sp].u.f64_v;
 				sp--;
 				break;
 			}
@@ -691,59 +720,59 @@ void Machine::Run()
 			break;
 		}
 		case RETURN: {
-			Byte type = ((*code)[pc + 1]);
+			Byte type = (code[pc + 1]);
 			switch (type)
 			{
 			case TYPE_I32: {
 				int32_t value = stack[sp].u.i32_v;
 				sp--;
-				int index = fp + function->numArgs + function->locals + 1;
+				int index = fp + function->n_parameters + function->locals + 1;
 				Function* lastFunction = (Function*)stack[index].u.obj;
 				sp = fp;
 				pc = stack[index + 1].u.i32_v;
 				fp = stack[index + 2].u.i32_v;
 				stack[sp].u.i32_v = value;
-				code = &(lastFunction->code);
-				constantPool = &(lastFunction->constantPool);
+				code = lastFunction->code;
+				constantPool = lastFunction->constantPool.values;
 				break;
 			}
 			case TYPE_I64: {
 				int64_t value = stack[sp].u.i64_v;
 				sp--;
-				int index = fp + function->numArgs + function->locals + 1;
+				int index = fp + function->n_parameters + function->locals + 1;
 				Function* lastFunction = (Function*)stack[index].u.obj;
 				sp = fp;
 				pc = stack[index + 1].u.i32_v;
 				fp = stack[index + 2].u.i32_v;
 				stack[sp].u.i64_v = value;
-				code = &(lastFunction->code);
-				constantPool = &(lastFunction->constantPool);
+				code = lastFunction->code;
+				constantPool = lastFunction->constantPool.values;
 				break;
 			}
 			case TYPE_F32: {
 				float_t value = stack[sp].u.f32_v;
 				sp--;
-				int index = fp + function->numArgs + function->locals + 1;
+				int index = fp + function->n_parameters + function->locals + 1;
 				Function* lastFunction = (Function*)stack[index].u.obj;
 				sp = fp;
 				pc = stack[index + 1].u.i32_v;
 				fp = stack[index + 2].u.i32_v;
 				stack[sp].u.f32_v = value;
-				code = &(lastFunction->code);
-				constantPool = &(lastFunction->constantPool);
+				code = lastFunction->code;
+				constantPool = lastFunction->constantPool.values;
 				break;
 			}
 			case TYPE_F64: {
 				double_t value = stack[sp].u.f64_v;
 				sp--;
-				int index = fp + function->numArgs + function->locals + 1;
+				int index = fp + function->n_parameters + function->locals + 1;
 				Function* lastFunction = (Function*)stack[index].u.obj;
 				sp = fp;
 				pc = stack[index + 1].u.i32_v;
 				fp = stack[index + 2].u.i32_v;
 				stack[sp].u.f64_v = value;
-				code = &(lastFunction->code);
-				constantPool = &(lastFunction->constantPool);
+				code = lastFunction->code;
+				constantPool = lastFunction->constantPool.values;
 				break;
 			}
 			}
@@ -755,21 +784,21 @@ void Machine::Run()
 			sp--;
 			int currentPc = pc;
 			int currentFp = fp;
-			fp = sp - nextFunction->numArgs;
-			int index = fp + nextFunction->numArgs + nextFunction->locals + 1;
+			fp = sp - nextFunction->n_parameters;
+			int index = fp + nextFunction->n_parameters + nextFunction->locals + 1;
 			stack[index].u.obj = function;
 			stack[index + 1].u.i32_v = currentPc;
 			stack[index + 2].u.i32_v = currentFp;
 			function = nextFunction;
 			pc = 0;
 			sp = index + 3;
-			code = &(nextFunction->code);
-			constantPool = &(nextFunction->constantPool);
+			code = nextFunction->code;
+			constantPool = nextFunction->constantPool.values;
 			break;
 		}
 		case PUSH_MODULE: {
 			int16_t index = USHORT(code, pc + 1);
-			Object* moduleObject = program->singletons.at(index);
+			Object* moduleObject = machine->exe->singletons[index];
 			sp++;
 			stack[sp].u.obj = moduleObject;
 			break;
@@ -781,9 +810,11 @@ void Machine::Run()
 			break;
 		}
 		default: {
-			std::cout << "unsupported operation code: " << OpCodeToString((OpCode)op) << std::endl;
+			printf("unsupported operation code: ");
+			printf("%s\n", OpCodeToString((OpCode)op));
 			exit(1);
 		}
 		}
 	}
 }
+

@@ -18,7 +18,10 @@ namespace cygni
 		void AppendTypeTag(TypeTag tag);
 		void AppendUShort(int value);
 		void WriteUShort(int index, int value);
+		void AppendUInt(uint32_t value);
 		void AppendType(TypePtr type);
+		void AppendString(const std::u32string& u32str);
+		void AppendByteCode(const ByteCode& other);
 		int Size() const;
 	};
 
@@ -27,7 +30,9 @@ namespace cygni
 	class Compiler
 	{
 	public:
-		//void CompileExpression(ExpPtr node, ByteCode& byteCode);
+		Project& project;
+		explicit Compiler(Project& project);
+		ByteCode Compile();
 		void CompileBinary(std::shared_ptr<BinaryExpression> node,
 			const ConstantMap& constantMap, ByteCode& byteCode);
 		void CompileBlock(std::shared_ptr<BlockExpression> node,
@@ -35,10 +40,10 @@ namespace cygni
 		void CompileExpression(ExpPtr node, const ConstantMap& constantMap, ByteCode& byteCode);
 		void CompileConstant(std::shared_ptr<ConstantExpression> node,
 			const ConstantMap& constantMap, ByteCode& byteCode);
-		//void CompileClassInfo(std::shared_ptr<ClassInfo> info);
-		//void CompileModuleInfo(std::shared_ptr<ModuleInfo> info);
-		//void CompileFieldDef(const FieldDef &field);
-		//void CompileMethodDef(const MethodDef &method);
+		void CompileClassInfo(std::shared_ptr<ClassInfo> info, ByteCode& byteCode);
+		void CompileModuleInfo(std::shared_ptr<ModuleInfo> info, ByteCode& byteCode);
+		//void CompileFieldDef(const FieldDef &field, ByteCode& byteCode);
+		ByteCode CompileMethodDef(const MethodDef &method);
 		void CompileParameter(std::shared_ptr<ParameterExpression> parameter, ByteCode& byteCode);
 		void CompileReturn(std::shared_ptr<ReturnExpression> node,
 			const ConstantMap& constantMap, ByteCode& byteCode);
@@ -49,8 +54,12 @@ namespace cygni
 			const ConstantMap& constantMap, ByteCode& byteCode);
 		void CompileMemberAccess(std::shared_ptr<MemberAccessExpression> node,
 			const ConstantMap& constantMap, ByteCode& byteCode);
-		//void CompileNewExpression(std::shared_ptr<NewExpression> node);
-		//void CompileVarDefExpression(std::shared_ptr<VarDefExpression> node);
+		void CompileNewExpression(std::shared_ptr<NewExpression> node,
+			const ConstantMap& constantMap, ByteCode& byteCode);
+		void CompileVarDefExpression(std::shared_ptr<VarDefExpression> node,
+			const ConstantMap& constantMap, ByteCode& byteCode);
+		void CompileAssign(std::shared_ptr<BinaryExpression> node,
+			const ConstantMap& constantMap, ByteCode& byteCode);
 		//void CompileWhileLoop(std::shared_ptr<WhileExpression> node);
 	};
 } // namespace cygni

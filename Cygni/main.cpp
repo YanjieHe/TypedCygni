@@ -73,18 +73,17 @@ int main(int argc, char **argv)
 	try
 	{
 		//CompileProgram("sample_code/factorial.cyg", "sample_code/factorial.json");
-		ConsoleApp app;
-		app.CompileAndOutputJson(
-			{
-				"sample_code/Geometry.cyg",
+		std::vector<std::string> fileList = {
+			"sample_code/Geometry.cyg",
 				"sample_code/IO.cyg",
 				"sample_code/Math.cyg",
 				"sample_code/Recursion.cyg",
 				"sample_code/Stat.cyg",
 				"sample_code/App.cyg"
-			},
-			"sample_code/program.json"
-		);
+		};
+		ConsoleApp app;
+		//app.CompileAndOutputJson(fileList, "sample_code/program.json");
+		app.Compile(fileList, "sample_code/app");
 		//app.Run(argc, argv);
 	}
 	catch (cygni::ArgumentException &ex)

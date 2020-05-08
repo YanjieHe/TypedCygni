@@ -134,6 +134,14 @@ namespace cygni
 		std::ofstream stream(path);
 		stream << text;
 	}
+	void WriteBytes(std::string path, const std::vector<uint8_t>& bytes)
+	{
+		std::ofstream stream(path);
+		for (uint8_t b : bytes)
+		{
+			stream.put(b);
+		}
+	}
 	std::string FormatInternal(const std::string & fmt, std::ostringstream & stream, int i)
 	{
 		int n = static_cast<int>(fmt.size());

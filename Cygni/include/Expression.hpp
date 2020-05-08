@@ -218,6 +218,7 @@ namespace cygni
 		std::u32string name;
 		TypePtr type;
 		ExpPtr value;
+		int index = -1;
 		FieldDef() = default;
 		FieldDef(SourceLocation location, AccessModifier modifier, bool isStatic,
 			std::vector<AnnotationInfo> annotations, std::u32string name,
@@ -239,6 +240,8 @@ namespace cygni
 
 		std::vector<std::shared_ptr<VarDefExpression>> localVariables;
 		std::unordered_map<ConstantKey, int> constantMap;
+
+		int index = -1;
 
 		MethodDef() = default;
 		MethodDef(SourceLocation location, AccessModifier modifier, bool isStatic,
@@ -270,6 +273,7 @@ namespace cygni
 	public:
 		ExpPtr object;
 		std::u32string field;
+		ParameterLocation parameterLocation;
 		MemberAccessExpression(SourceLocation location, ExpPtr object,
 			std::u32string field);
 	};
@@ -395,6 +399,8 @@ namespace cygni
 		std::unordered_map<PackageRoute, std::shared_ptr<Package>> packages;
 
 		void MergeAllPrograms();
+		std::optional<std::shared_ptr<ModuleInfo>> GetModule(PackageRoute route, std::u32string name);
+		std::optional<std::shared_ptr<ClassInfo>> GetClass(PackageRoute route, std::u32string name);
 	};
 
 } // namespace cygni

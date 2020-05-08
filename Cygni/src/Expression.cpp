@@ -231,4 +231,42 @@ namespace cygni
 		}
 	}
 
+	std::optional<std::shared_ptr<ModuleInfo>> Project::GetModule(PackageRoute route, std::u32string name)
+	{
+		if (packages.find(route) != packages.end())
+		{
+			if (packages.at(route)->modules.ContainsKey(name))
+			{
+				return { packages.at(route)->modules.GetValueByKey(name) };
+			}
+			else
+			{
+				return {};
+			}
+		}
+		else
+		{
+			return {};
+		}
+	}
+
+	std::optional<std::shared_ptr<ClassInfo>> Project::GetClass(PackageRoute route, std::u32string name)
+	{
+		if (packages.find(route) != packages.end())
+		{
+			if (packages.at(route)->classes.ContainsKey(name))
+			{
+				return { packages.at(route)->classes.GetValueByKey(name) };
+			}
+			else
+			{
+				return {};
+			}
+		}
+		else
+		{
+			return {};
+		}
+	}
+
 } // namespace cygni

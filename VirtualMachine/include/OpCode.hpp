@@ -1,7 +1,5 @@
 #ifndef OP_CODE_HPP
 #define OP_CODE_HPP
-#include <string>
-#include <iostream>
 
 typedef enum
 {
@@ -52,6 +50,7 @@ typedef enum
 	JUMP_IF_FALSE,
 	PUSH_MODULE,
 	PUSH_FUNCTION,
+	PUSH_METHOD,
 	INVOKE,
 	RETURN,
 	NEW,
@@ -73,7 +72,7 @@ typedef enum
 	TYPE_OBJECT
 } TypeTag;
 
-static std::string OpCodeToString(OpCode code)
+static const char* OpCodeToString(OpCode code)
 {
 	switch (code)
 	{
@@ -167,6 +166,8 @@ static std::string OpCodeToString(OpCode code)
 		return "PUSH_MODULE";
 	case PUSH_FUNCTION:
 		return "PUSH_FUNCTION";
+	case PUSH_METHOD:
+		return "PUSH_METHOD";
 	case INVOKE:
 		return "INVOKE";
 	case RETURN:
@@ -186,12 +187,12 @@ static std::string OpCodeToString(OpCode code)
 	case FINALLY_END:
 		return "FINALLY_END";
 	default:
-		std::cout << __FUNCTION__ << std::endl;
-		exit(1);
+		printf(__FUNCTION__);
+		throw std::invalid_argument("opcode enumeration");
 	}
 }
 
-static std::string TypeTagToString(TypeTag tag)
+static const char* TypeTagToString(TypeTag tag)
 {
 	switch (tag)
 	{
@@ -208,8 +209,8 @@ static std::string TypeTagToString(TypeTag tag)
 	case TYPE_OBJECT:
 		return "TYPE_OBJECT";
 	default:
-		std::cout << __FUNCTION__ << std::endl;
-		exit(1);
+		printf(__FUNCTION__);
+		throw std::invalid_argument("type tag enumeration");
 	}
 }
 #endif // OP_CODE_HPP

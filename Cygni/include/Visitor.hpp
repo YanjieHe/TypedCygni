@@ -126,6 +126,8 @@ namespace cygni
 	class VariableLocator
 	{
 	public:
+		Project& project;
+		explicit VariableLocator(Project& project);
 		void VisitExpression(ExpPtr node, ScopePtr scope);
 		void VisitBlock(std::shared_ptr<BlockExpression> node, ScopePtr outerScope);
 		void VisitBinary(std::shared_ptr<BinaryExpression> node, ScopePtr scope);
@@ -141,7 +143,7 @@ namespace cygni
 		void VisitVarDefExpression(std::shared_ptr<VarDefExpression> node, ScopePtr scope);
 		void VisitWhileExpression(std::shared_ptr<WhileExpression> node, ScopePtr scope);
 		void VisitPackage(std::shared_ptr<Package> package, ScopePtr globalScope);
-		void VisitProject(Project& project);
+		void VisitProject();
 	};
 
 	class ConstantCollector

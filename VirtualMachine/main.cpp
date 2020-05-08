@@ -1,17 +1,16 @@
-#include "Machine.hpp"
-#include <iostream>
-#include <fstream>
-
-std::vector<Byte> ReadBytesFromFile(std::string path)
-{
-	std::ifstream stream(path, std::ios_base::binary);
-
-	return std::vector<Byte>(std::istreambuf_iterator<char>(stream),
-		std::istreambuf_iterator<char>());
-}
-
+#include "Machine.h"
+#include <stdlib.h>
+#include "Parser.h"
 int main()
 {
-	std::cout << "Hello World!\n";
-	std::cin.get();
+	const char* path;
+	Executable* exe;
+
+	path = "C:\\Users\\HeYan\\CMakeBuilds\\dc11c05f-03b5-4f3a-963f-0c8941d4a6da\\build\\x64-Debug (default)\\sample_code\\app";
+
+	exe = parse_file(path);
+
+	printf("\n");
+	view_exe(exe);
+	getchar();
 }

@@ -2,8 +2,9 @@ cmake_minimum_required(VERSION 3.5)
 
 project(VirtualMachine LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_C_FLAGS "-std=c89")
+set(CMAKE_C_STANDARD 89)
+set(CMAKE_C_STANDARD_REQUIRED ON)
 
 
 include_directories(src/ include/)

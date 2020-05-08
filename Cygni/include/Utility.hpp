@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <vector>
 #include <sstream>
+#include <cstdint>
 
 namespace cygni
 {
@@ -57,10 +58,16 @@ namespace cygni
 		int GetIndexByKey(const TKey &key) { return map[key]; }
 
 		bool ContainsKey(const TKey &key) const { return map.find(key) != map.end(); }
+
+		int Size() const
+		{
+			return static_cast<int>(values.size());
+		}
 	};
 
 	std::string ReadText(std::string path);
 	void WriteText(std::string path, std::string text);
+	void WriteBytes(std::string path, const std::vector<uint8_t>& bytes);
 
 	std::string FormatInternal(const std::string& fmt, std::ostringstream& stream, int i);
 
