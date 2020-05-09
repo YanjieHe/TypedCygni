@@ -167,11 +167,15 @@ namespace cygni
 		: name{ name }, value{ value } {}
 
 
-	ParameterLocation::ParameterLocation() : type{ ParameterType::Unknown }, offset{ -1 }
+	ParameterLocation::ParameterLocation() : type{ ParameterType::Unknown }, offset{ -1 }, index{ -1 }
 	{
 	}
 
-	ParameterLocation::ParameterLocation(ParameterType type, int offset) : type{ type }, offset{ offset }
+	ParameterLocation::ParameterLocation(ParameterType type, int offset) : type{ type }, offset{ offset }, index{ -1 }
+	{
+	}
+
+	ParameterLocation::ParameterLocation(ParameterType type, int offset, int index) : type{ type }, offset{ offset }, index{ index }
 	{
 	}
 

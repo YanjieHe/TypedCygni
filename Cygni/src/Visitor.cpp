@@ -1307,11 +1307,12 @@ namespace cygni
 			offset++;
 		}
 		offset = 0;
-		for (auto method : info->methods.values)
+		for (auto& method : info->methods.values)
 		{
-			scope->Put(method.name, ParameterLocation(ParameterType::ModuleMethod, offset));
+			method.index = offset;
+			scope->Put(method.name, ParameterLocation(ParameterType::ModuleMethod, offset, info->index));
 		}
-		for (auto method : info->methods.values)
+		for (const auto& method : info->methods.values)
 		{
 			VisitMethodDef(method, scope);
 		}

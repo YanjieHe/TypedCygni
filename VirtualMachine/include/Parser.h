@@ -24,7 +24,10 @@ ModuleInfo* parse_module(FILE* file);
 Function* parse_function(FILE* file);
 
 void view_exe(Executable* exe);
+
 void view_function(Function* function);
+
+void view_type_tag(uint8_t tag);
 
 static const char* op_info[][3] = {
 	{ "PUSH_INT_1BYTE", "false", "1" },

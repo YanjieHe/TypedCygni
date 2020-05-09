@@ -261,14 +261,14 @@ void view_exe(Executable * exe)
 void view_function(Function * function)
 {
 	int i;
-	int j;
 	uint8_t byte;
 	uint8_t op_code;
 	const char* op_name;
 	int op_count;
+	uint32_t u32_v;
 
 	printf("\tmethod: %s\n", function->name);
-	printf("\targs_size=%\d, locals=%d\n", function->n_parameters, function->locals);
+	printf("\targs_size=%d, locals=%d\n", function->n_parameters, function->locals);
 
 	printf("\tcode:\n");
 	i = 0;
@@ -276,22 +276,61 @@ void view_function(Function * function)
 	{
 		op_code = function->code[i];
 		op_name = op_info[op_code][0];
-		printf("%s", op_name);
+		printf("\t\t%d: %s", i, op_name);
 		i++;
-		if (op_info[op_code][1] == "true")
+		if (strcmp(op_info[op_code][1], "true") == 0)
 		{
 			byte = function->code[i];
 			i++;
-			printf(" [TYPE TAG]");
+			view_type_tag(byte);
 		}
 		op_count = atoi(op_info[op_code][2]);
-		for (j = 0; j < op_count; j++)
+		if (op_count == 1)
 		{
-			printf(" %d", (int)function->code[i + j]);
+			printf(" %d", (int)function->code[i]);
+		}
+		else if (op_count == 2)
+		{
+			u32_v = function->code[i];
+			u32_v = u32_v + ((uint16_t)function->code[i + 1]) * 256;
+			printf(" %d", u32_v);
 		}
 		i = i + op_count;
 		printf("\n");
 	}
 
 	printf("\n");
+}
+
+void view_type_tag(uint8_t tag)
+{
+	if (tag == TYPE_I32)
+	{
+		printf(" [I32]");
+	}
+	else if (tag == TYPE_I64)
+	{
+		printf(" [I64]");
+	}
+	else if (tag == TYPE_F32)
+	{
+		printf(" [F32]");
+	}
+	else if (tag == TYPE_F64)
+	{
+		printf(" [F64]");
+	}
+	else if (tag == TYPE_STRING)
+	{
+		printf(" [STRING]");
+	}
+	else if (tag == TYPE_OBJECT)
+	{
+		printf(" [OBJECT]");
+	}
+	else
+	{
+		fprintf(stderr, "error type tag\n");
+		exit(-1);
+	}
 }

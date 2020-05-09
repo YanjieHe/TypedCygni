@@ -173,8 +173,11 @@ namespace cygni
 	public:
 		ParameterType type;
 		int offset;
+		// module of class index
+		int index;
 		ParameterLocation();
 		ParameterLocation(ParameterType type, int offset);
+		ParameterLocation(ParameterType type, int offset, int index);
 	};
 
 	class ParameterExpression : public Expression

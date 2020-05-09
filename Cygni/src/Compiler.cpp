@@ -262,6 +262,7 @@ namespace cygni
 		{
 			int index = constantMap.at(key);
 			byteCode.AppendOp(OpCode::PUSH_CONSTANT);
+			byteCode.AppendType(node->type);
 			byteCode.AppendUShort(index);
 		}
 		else
@@ -322,21 +323,26 @@ namespace cygni
 		{
 		case ParameterType::LocalVariable: {
 			byteCode.AppendOp(OpCode::PUSH_STACK);
+			byteCode.AppendType(parameter->type);
+			byteCode.AppendUShort(location.offset);
 			break;
 		}
 		case ParameterType::ModuleMethod: {
-			// TO DO
-			throw NotImplementedException(
-				Format(U"parameter: {}", Enum<ParameterType>::ToString(location.type)));
+			byteCode.AppendOp(OpCode::PUSH_MODULE);
+			byteCode.AppendUShort(parameter->parameterLocation.index);
+			byteCode.AppendOp(OpCode::PUSH_FUNCTION);
+			byteCode.AppendUShort(parameter->parameterLocation.offset);
+			break;
+		}
+		case ParameterType::ModuleName: {
+			byteCode.AppendOp(OpCode::PUSH_MODULE);
+			byteCode.AppendUShort(parameter->parameterLocation.offset);
 			break;
 		}
 		default:
 			throw NotImplementedException(
 				Format(U"parameter: {}", Enum<ParameterType>::ToString(location.type)));
 		}
-
-		byteCode.AppendType(parameter->type);
-		byteCode.AppendUShort(location.offset);
 	}
 	void Compiler::CompileReturn(std::shared_ptr<ReturnExpression> node,
 		const ConstantMap& constantMap, ByteCode& byteCode)
@@ -436,7 +442,7 @@ namespace cygni
 		const ConstantMap & constantMap, ByteCode & byteCode)
 	{
 		CompileExpression(node->value, constantMap, byteCode);
-		byteCode.AppendOp(OpCode::PUSH_STACK);
+		byteCode.AppendOp(OpCode::POP_STACK);
 		byteCode.AppendType(node->type);
 		if (node->variable->parameterLocation.type == ParameterType::LocalVariable)
 		{
@@ -450,14 +456,14 @@ namespace cygni
 	void Compiler::CompileAssign(std::shared_ptr<BinaryExpression> node, const ConstantMap & constantMap, ByteCode & byteCode)
 	{
 		CompileExpression(node->right, constantMap, byteCode);
-		byteCode.AppendOp(OpCode::PUSH_STACK);
-		byteCode.AppendType(node->left->type);
-
+		
 		if (node->left->nodeType == ExpressionType::Parameter)
 		{
 			auto parameter = std::static_pointer_cast<ParameterExpression>(node->left);
 			if (parameter->parameterLocation.type == ParameterType::LocalVariable)
 			{
+				byteCode.AppendOp(OpCode::PUSH_STACK);
+				byteCode.AppendType(node->left->type);
 				byteCode.AppendUShort(parameter->parameterLocation.offset);
 			}
 			else
