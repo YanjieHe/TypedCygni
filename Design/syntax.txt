@@ -1,0 +1,12 @@
+object App
+{
+    func Main(args: Array[String]): Int
+    {
+        return 0
+    }
+
+    proc PrintTen()
+    {
+        WriteLine("10")
+    }
+}
