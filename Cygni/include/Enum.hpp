@@ -158,65 +158,159 @@ namespace cygni
 		LocalVariable
 	};
 
-	enum class OpCode
+	enum OpCode
 	{
-		PUSH_INT_1BYTE,
-		PUSH_INT_2BYTE,
-		PUSH_INT,
-
-		PUSH_DOUBLE_0,
-		PUSH_DOUBLE_1,
-		PUSH_DOUBLE,
-		PUSH_NULL,
-
-		PUSH_STACK,
-		POP_STACK,
-		PUSH_CONSTANT,
-		POP_CONSTANT,
-		PUSH_ARRAY,
-		POP_ARRAY,
-		PUSH_FIELD,
-		POP_FIELD,
-		ADD,
-		SUB,
-		MUL,
-		DIV,
-		MOD,
-		BIT_AND,
-		BIT_OR,
-		BIT_XOR,
-		MINUS,
-		BIT_NOT,
-		CAST,
-		UP_CAST,
-		DOWN_CAST,
-		EQ,
-		NE,
-		GT,
-		LT,
-		GE,
-		LE,
-		LOGICAL_AND,
-		LOGICAL_OR,
-		LOGICAL_NOT,
-		POP,
-		DUPLICATE,
-		DUPLICATE_OFFSET,
-		JUMP,
-		JUMP_IF_TRUE,
-		JUMP_IF_FALSE,
-		PUSH_MODULE,
-		PUSH_FUNCTION,
-		PUSH_METHOD,
-		INVOKE,
-		RETURN,
-		NEW,
-		SUPER,
-		INSTANCE_OF,
-		THROW,
-		RETHROW,
-		GO_FINALLY,
-		FINALLY_END
+		PUSH_I32_0 = 0,
+		PUSH_I32_1 = 1,
+		PUSH_I32_1BYTE = 2,
+		PUSH_I32_2BYTE = 3,
+		PUSH_I64_0 = 4,
+		PUSH_I64_1 = 5,
+		PUSH_F64_0 = 6,
+		PUSH_F64_1 = 7,
+		PUSH_I32 = 8,
+		PUSH_I64 = 9,
+		PUSH_F32 = 10,
+		PUSH_F64 = 11,
+		PUSH_STRING = 12,
+		PUSH_NULL = 13,
+		PUSH_LOCAL_I32 = 14,
+		PUSH_LOCAL_I64 = 15,
+		PUSH_LOCAL_F32 = 16,
+		PUSH_LOCAL_F64 = 17,
+		PUSH_LOCAL_OBJECT = 18,
+		POP_LOCAL_I32 = 19,
+		POP_LOCAL_I64 = 20,
+		POP_LOCAL_F32 = 21,
+		POP_LOCAL_F64 = 22,
+		POP_LOCAL_OBJECT = 23,
+		PUSH_STATIC_I32 = 24,
+		PUSH_STATIC_I64 = 25,
+		PUSH_STATIC_F32 = 26,
+		PUSH_STATIC_F64 = 27,
+		PUSH_STATIC_OBJECT = 28,
+		POP_STATIC_I32 = 29,
+		POP_STATIC_I64 = 30,
+		POP_STATIC_F32 = 31,
+		POP_STATIC_F64 = 32,
+		POP_STATIC_OBJECT = 33,
+		PUSH_ARRAY_I32 = 34,
+		PUSH_ARRAY_I64 = 35,
+		PUSH_ARRAY_F32 = 36,
+		PUSH_ARRAY_F64 = 37,
+		PUSH_ARRAY_OBJECT = 38,
+		POP_ARRAY_I32 = 39,
+		POP_ARRAY_I64 = 40,
+		POP_ARRAY_F32 = 41,
+		POP_ARRAY_F64 = 42,
+		POP_ARRAY_OBJECT = 43,
+		PUSH_FIELD_I32 = 44,
+		PUSH_FIELD_I64 = 45,
+		PUSH_FIELD_F32 = 46,
+		PUSH_FIELD_F64 = 47,
+		PUSH_FIELD_OBJECT = 48,
+		POP_FIELD_I32 = 49,
+		POP_FIELD_I64 = 50,
+		POP_FIELD_F32 = 51,
+		POP_FIELD_F64 = 52,
+		POP_FIELD_OBJECT = 53,
+		ADD_I32 = 54,
+		ADD_I64 = 55,
+		ADD_F32 = 56,
+		ADD_F64 = 57,
+		SUB_I32 = 58,
+		SUB_I64 = 59,
+		SUB_F32 = 60,
+		SUB_F64 = 61,
+		MUL_I32 = 62,
+		MUL_I64 = 63,
+		MUL_F32 = 64,
+		MUL_F64 = 65,
+		DIV_I32 = 66,
+		DIV_I64 = 67,
+		DIV_F32 = 68,
+		DIV_F64 = 69,
+		MOD_I32 = 70,
+		MOD_I64 = 71,
+		MOD_F32 = 72,
+		MOD_F64 = 73,
+		BIT_AND_I32 = 74,
+		BIT_AND_I64 = 75,
+		BIT_OR_I32 = 76,
+		BIT_OR_I64 = 77,
+		BIT_XOR_I32 = 78,
+		BIT_XOR_I64 = 79,
+		MINUS_I32 = 80,
+		MINUS_I64 = 81,
+		MINUS_F32 = 82,
+		MINUS_F64 = 83,
+		BIT_NOT_I32 = 84,
+		BIT_NOT_I64 = 85,
+		CAST_I32_TO_I64 = 86,
+		CAST_I32_TO_F32 = 87,
+		CAST_I32_TO_F64 = 88,
+		CAST_I64_TO_I32 = 89,
+		CAST_I64_TO_F32 = 90,
+		CAST_I64_TO_F64 = 91,
+		CAST_F32_TO_I32 = 92,
+		CAST_F32_TO_I64 = 93,
+		CAST_F32_TO_F64 = 94,
+		CAST_F64_TO_I32 = 95,
+		CAST_F64_TO_I64 = 96,
+		CAST_F64_TO_F32 = 97,
+		UP_CAST = 98,
+		DOWN_CAST = 99,
+		EQ_I32 = 100,
+		EQ_I64 = 101,
+		EQ_F32 = 102,
+		EQ_F64 = 103,
+		NE_I32 = 104,
+		NE_I64 = 105,
+		NE_F32 = 106,
+		NE_F64 = 107,
+		GT_I32 = 108,
+		GT_I64 = 109,
+		GT_F32 = 110,
+		GT_F64 = 111,
+		LT_I32 = 112,
+		LT_I64 = 113,
+		LT_F32 = 114,
+		LT_F64 = 115,
+		GE_I32 = 116,
+		GE_I64 = 117,
+		GE_F32 = 118,
+		GE_F64 = 119,
+		LE_I32 = 120,
+		LE_I64 = 121,
+		LE_F32 = 122,
+		LE_F64 = 123,
+		POP = 124,
+		DUPLICATE = 125,
+		DUPLICATE_OFFSET = 126,
+		JUMP = 127,
+		JUMP_IF_TRUE = 128,
+		JUMP_IF_FALSE = 129,
+		PUSH_FUNCTION = 130,
+		PUSH_METHOD = 131,
+		INVOKE = 132,
+		RETURN_I32 = 133,
+		RETURN_I64 = 134,
+		RETURN_F32 = 135,
+		RETURN_F64 = 136,
+		RETURN_OBJECT = 137,
+		NEW = 138,
+		NEW_ARRAY = 139,
+		NEW_ARRAY_LITERAL_I32 = 140,
+		NEW_ARRAY_LITERAL_I64 = 141,
+		NEW_ARRAY_LITERAL_F32 = 142,
+		NEW_ARRAY_LITERAL_F64 = 143,
+		NEW_ARRAY_LITERAL_OBJECT = 144,
+		SUPER = 145,
+		INSTANCE_OF = 146,
+		THROW = 147,
+		RETHROW = 148,
+		GO_FINALLY = 149,
+		FINALLY_END = 150
 	};
 
 	enum class TypeTag
@@ -564,80 +658,254 @@ namespace cygni
 		{
 			switch (code)
 			{
-			case OpCode::PUSH_INT_1BYTE:
-				return U"PUSH_INT_1BYTE";
-			case OpCode::PUSH_INT_2BYTE:
-				return U"PUSH_INT_2BYTE";
-			case OpCode::PUSH_INT:
-				return U"PUSH_INT";
-			case OpCode::PUSH_DOUBLE_0:
-				return U"PUSH_DOUBLE_0";
-			case OpCode::PUSH_DOUBLE_1:
-				return U"PUSH_DOUBLE_1";
-			case OpCode::PUSH_DOUBLE:
-				return U"PUSH_DOUBLE";
+			case OpCode::PUSH_I32_0:
+				return U"PUSH_I32_0";
+			case OpCode::PUSH_I32_1:
+				return U"PUSH_I32_1";
+			case OpCode::PUSH_I32_1BYTE:
+				return U"PUSH_I32_1BYTE";
+			case OpCode::PUSH_I32_2BYTE:
+				return U"PUSH_I32_2BYTE";
+			case OpCode::PUSH_I64_0:
+				return U"PUSH_I64_0";
+			case OpCode::PUSH_I64_1:
+				return U"PUSH_I64_1";
+			case OpCode::PUSH_F64_0:
+				return U"PUSH_F64_0";
+			case OpCode::PUSH_F64_1:
+				return U"PUSH_F64_1";
+			case OpCode::PUSH_I32:
+				return U"PUSH_I32";
+			case OpCode::PUSH_I64:
+				return U"PUSH_I64";
+			case OpCode::PUSH_F32:
+				return U"PUSH_F32";
+			case OpCode::PUSH_F64:
+				return U"PUSH_F64";
+			case OpCode::PUSH_STRING:
+				return U"PUSH_STRING";
 			case OpCode::PUSH_NULL:
 				return U"PUSH_NULL";
-			case OpCode::PUSH_STACK:
-				return U"PUSH_STACK";
-			case OpCode::POP_STACK:
-				return U"POP_STACK";
-			case OpCode::PUSH_CONSTANT:
-				return U"PUSH_CONSTANT";
-			case OpCode::POP_CONSTANT:
-				return U"POP_CONSTANT";
-			case OpCode::PUSH_ARRAY:
-				return U"PUSH_ARRAY";
-			case OpCode::POP_ARRAY:
-				return U"POP_ARRAY";
-			case OpCode::PUSH_FIELD:
-				return U"PUSH_FIELD";
-			case OpCode::POP_FIELD:
-				return U"POP_FIELD";
-			case OpCode::ADD:
-				return U"ADD";
-			case OpCode::SUB:
-				return U"SUB";
-			case OpCode::MUL:
-				return U"MUL";
-			case OpCode::DIV:
-				return U"DIV";
-			case OpCode::MOD:
-				return U"MOD";
-			case OpCode::BIT_AND:
-				return U"BIT_AND";
-			case OpCode::BIT_OR:
-				return U"BIT_OR";
-			case OpCode::BIT_XOR:
-				return U"BIT_XOR";
-			case OpCode::MINUS:
-				return U"MINUS";
-			case OpCode::BIT_NOT:
-				return U"BIT_NOT";
-			case OpCode::CAST:
-				return U"CAST";
+			case OpCode::PUSH_LOCAL_I32:
+				return U"PUSH_LOCAL_I32";
+			case OpCode::PUSH_LOCAL_I64:
+				return U"PUSH_LOCAL_I64";
+			case OpCode::PUSH_LOCAL_F32:
+				return U"PUSH_LOCAL_F32";
+			case OpCode::PUSH_LOCAL_F64:
+				return U"PUSH_LOCAL_F64";
+			case OpCode::PUSH_LOCAL_OBJECT:
+				return U"PUSH_LOCAL_OBJECT";
+			case OpCode::POP_LOCAL_I32:
+				return U"POP_LOCAL_I32";
+			case OpCode::POP_LOCAL_I64:
+				return U"POP_LOCAL_I64";
+			case OpCode::POP_LOCAL_F32:
+				return U"POP_LOCAL_F32";
+			case OpCode::POP_LOCAL_F64:
+				return U"POP_LOCAL_F64";
+			case OpCode::POP_LOCAL_OBJECT:
+				return U"POP_LOCAL_OBJECT";
+			case OpCode::PUSH_STATIC_I32:
+				return U"PUSH_STATIC_I32";
+			case OpCode::PUSH_STATIC_I64:
+				return U"PUSH_STATIC_I64";
+			case OpCode::PUSH_STATIC_F32:
+				return U"PUSH_STATIC_F32";
+			case OpCode::PUSH_STATIC_F64:
+				return U"PUSH_STATIC_F64";
+			case OpCode::PUSH_STATIC_OBJECT:
+				return U"PUSH_STATIC_OBJECT";
+			case OpCode::POP_STATIC_I32:
+				return U"POP_STATIC_I32";
+			case OpCode::POP_STATIC_I64:
+				return U"POP_STATIC_I64";
+			case OpCode::POP_STATIC_F32:
+				return U"POP_STATIC_F32";
+			case OpCode::POP_STATIC_F64:
+				return U"POP_STATIC_F64";
+			case OpCode::POP_STATIC_OBJECT:
+				return U"POP_STATIC_OBJECT";
+			case OpCode::PUSH_ARRAY_I32:
+				return U"PUSH_ARRAY_I32";
+			case OpCode::PUSH_ARRAY_I64:
+				return U"PUSH_ARRAY_I64";
+			case OpCode::PUSH_ARRAY_F32:
+				return U"PUSH_ARRAY_F32";
+			case OpCode::PUSH_ARRAY_F64:
+				return U"PUSH_ARRAY_F64";
+			case OpCode::PUSH_ARRAY_OBJECT:
+				return U"PUSH_ARRAY_OBJECT";
+			case OpCode::POP_ARRAY_I32:
+				return U"POP_ARRAY_I32";
+			case OpCode::POP_ARRAY_I64:
+				return U"POP_ARRAY_I64";
+			case OpCode::POP_ARRAY_F32:
+				return U"POP_ARRAY_F32";
+			case OpCode::POP_ARRAY_F64:
+				return U"POP_ARRAY_F64";
+			case OpCode::POP_ARRAY_OBJECT:
+				return U"POP_ARRAY_OBJECT";
+			case OpCode::PUSH_FIELD_I32:
+				return U"PUSH_FIELD_I32";
+			case OpCode::PUSH_FIELD_I64:
+				return U"PUSH_FIELD_I64";
+			case OpCode::PUSH_FIELD_F32:
+				return U"PUSH_FIELD_F32";
+			case OpCode::PUSH_FIELD_F64:
+				return U"PUSH_FIELD_F64";
+			case OpCode::PUSH_FIELD_OBJECT:
+				return U"PUSH_FIELD_OBJECT";
+			case OpCode::POP_FIELD_I32:
+				return U"POP_FIELD_I32";
+			case OpCode::POP_FIELD_I64:
+				return U"POP_FIELD_I64";
+			case OpCode::POP_FIELD_F32:
+				return U"POP_FIELD_F32";
+			case OpCode::POP_FIELD_F64:
+				return U"POP_FIELD_F64";
+			case OpCode::POP_FIELD_OBJECT:
+				return U"POP_FIELD_OBJECT";
+			case OpCode::ADD_I32:
+				return U"ADD_I32";
+			case OpCode::ADD_I64:
+				return U"ADD_I64";
+			case OpCode::ADD_F32:
+				return U"ADD_F32";
+			case OpCode::ADD_F64:
+				return U"ADD_F64";
+			case OpCode::SUB_I32:
+				return U"SUB_I32";
+			case OpCode::SUB_I64:
+				return U"SUB_I64";
+			case OpCode::SUB_F32:
+				return U"SUB_F32";
+			case OpCode::SUB_F64:
+				return U"SUB_F64";
+			case OpCode::MUL_I32:
+				return U"MUL_I32";
+			case OpCode::MUL_I64:
+				return U"MUL_I64";
+			case OpCode::MUL_F32:
+				return U"MUL_F32";
+			case OpCode::MUL_F64:
+				return U"MUL_F64";
+			case OpCode::DIV_I32:
+				return U"DIV_I32";
+			case OpCode::DIV_I64:
+				return U"DIV_I64";
+			case OpCode::DIV_F32:
+				return U"DIV_F32";
+			case OpCode::DIV_F64:
+				return U"DIV_F64";
+			case OpCode::MOD_I32:
+				return U"MOD_I32";
+			case OpCode::MOD_I64:
+				return U"MOD_I64";
+			case OpCode::MOD_F32:
+				return U"MOD_F32";
+			case OpCode::MOD_F64:
+				return U"MOD_F64";
+			case OpCode::BIT_AND_I32:
+				return U"BIT_AND_I32";
+			case OpCode::BIT_AND_I64:
+				return U"BIT_AND_I64";
+			case OpCode::BIT_OR_I32:
+				return U"BIT_OR_I32";
+			case OpCode::BIT_OR_I64:
+				return U"BIT_OR_I64";
+			case OpCode::BIT_XOR_I32:
+				return U"BIT_XOR_I32";
+			case OpCode::BIT_XOR_I64:
+				return U"BIT_XOR_I64";
+			case OpCode::MINUS_I32:
+				return U"MINUS_I32";
+			case OpCode::MINUS_I64:
+				return U"MINUS_I64";
+			case OpCode::MINUS_F32:
+				return U"MINUS_F32";
+			case OpCode::MINUS_F64:
+				return U"MINUS_F64";
+			case OpCode::BIT_NOT_I32:
+				return U"BIT_NOT_I32";
+			case OpCode::BIT_NOT_I64:
+				return U"BIT_NOT_I64";
+			case OpCode::CAST_I32_TO_I64:
+				return U"CAST_I32_TO_I64";
+			case OpCode::CAST_I32_TO_F32:
+				return U"CAST_I32_TO_F32";
+			case OpCode::CAST_I32_TO_F64:
+				return U"CAST_I32_TO_F64";
+			case OpCode::CAST_I64_TO_I32:
+				return U"CAST_I64_TO_I32";
+			case OpCode::CAST_I64_TO_F32:
+				return U"CAST_I64_TO_F32";
+			case OpCode::CAST_I64_TO_F64:
+				return U"CAST_I64_TO_F64";
+			case OpCode::CAST_F32_TO_I32:
+				return U"CAST_F32_TO_I32";
+			case OpCode::CAST_F32_TO_I64:
+				return U"CAST_F32_TO_I64";
+			case OpCode::CAST_F32_TO_F64:
+				return U"CAST_F32_TO_F64";
+			case OpCode::CAST_F64_TO_I32:
+				return U"CAST_F64_TO_I32";
+			case OpCode::CAST_F64_TO_I64:
+				return U"CAST_F64_TO_I64";
+			case OpCode::CAST_F64_TO_F32:
+				return U"CAST_F64_TO_F32";
 			case OpCode::UP_CAST:
 				return U"UP_CAST";
 			case OpCode::DOWN_CAST:
 				return U"DOWN_CAST";
-			case OpCode::EQ:
-				return U"EQ";
-			case OpCode::NE:
-				return U"NE";
-			case OpCode::GT:
-				return U"GT";
-			case OpCode::LT:
-				return U"LT";
-			case OpCode::GE:
-				return U"GE";
-			case OpCode::LE:
-				return U"LE";
-			case OpCode::LOGICAL_AND:
-				return U"LOGICAL_AND";
-			case OpCode::LOGICAL_OR:
-				return U"LOGICAL_OR";
-			case OpCode::LOGICAL_NOT:
-				return U"LOGICAL_NOT";
+			case OpCode::EQ_I32:
+				return U"EQ_I32";
+			case OpCode::EQ_I64:
+				return U"EQ_I64";
+			case OpCode::EQ_F32:
+				return U"EQ_F32";
+			case OpCode::EQ_F64:
+				return U"EQ_F64";
+			case OpCode::NE_I32:
+				return U"NE_I32";
+			case OpCode::NE_I64:
+				return U"NE_I64";
+			case OpCode::NE_F32:
+				return U"NE_F32";
+			case OpCode::NE_F64:
+				return U"NE_F64";
+			case OpCode::GT_I32:
+				return U"GT_I32";
+			case OpCode::GT_I64:
+				return U"GT_I64";
+			case OpCode::GT_F32:
+				return U"GT_F32";
+			case OpCode::GT_F64:
+				return U"GT_F64";
+			case OpCode::LT_I32:
+				return U"LT_I32";
+			case OpCode::LT_I64:
+				return U"LT_I64";
+			case OpCode::LT_F32:
+				return U"LT_F32";
+			case OpCode::LT_F64:
+				return U"LT_F64";
+			case OpCode::GE_I32:
+				return U"GE_I32";
+			case OpCode::GE_I64:
+				return U"GE_I64";
+			case OpCode::GE_F32:
+				return U"GE_F32";
+			case OpCode::GE_F64:
+				return U"GE_F64";
+			case OpCode::LE_I32:
+				return U"LE_I32";
+			case OpCode::LE_I64:
+				return U"LE_I64";
+			case OpCode::LE_F32:
+				return U"LE_F32";
+			case OpCode::LE_F64:
+				return U"LE_F64";
 			case OpCode::POP:
 				return U"POP";
 			case OpCode::DUPLICATE:
@@ -650,18 +918,36 @@ namespace cygni
 				return U"JUMP_IF_TRUE";
 			case OpCode::JUMP_IF_FALSE:
 				return U"JUMP_IF_FALSE";
-			case OpCode::PUSH_MODULE:
-				return U"PUSH_MODULE";
 			case OpCode::PUSH_FUNCTION:
 				return U"PUSH_FUNCTION";
 			case OpCode::PUSH_METHOD:
 				return U"PUSH_METHOD";
 			case OpCode::INVOKE:
 				return U"INVOKE";
-			case OpCode::RETURN:
-				return U"RETURN";
+			case OpCode::RETURN_I32:
+				return U"RETURN_I32";
+			case OpCode::RETURN_I64:
+				return U"RETURN_I64";
+			case OpCode::RETURN_F32:
+				return U"RETURN_F32";
+			case OpCode::RETURN_F64:
+				return U"RETURN_F64";
+			case OpCode::RETURN_OBJECT:
+				return U"RETURN_OBJECT";
 			case OpCode::NEW:
 				return U"NEW";
+			case OpCode::NEW_ARRAY:
+				return U"NEW_ARRAY";
+			case OpCode::NEW_ARRAY_LITERAL_I32:
+				return U"NEW_ARRAY_LITERAL_I32";
+			case OpCode::NEW_ARRAY_LITERAL_I64:
+				return U"NEW_ARRAY_LITERAL_I64";
+			case OpCode::NEW_ARRAY_LITERAL_F32:
+				return U"NEW_ARRAY_LITERAL_F32";
+			case OpCode::NEW_ARRAY_LITERAL_F64:
+				return U"NEW_ARRAY_LITERAL_F64";
+			case OpCode::NEW_ARRAY_LITERAL_OBJECT:
+				return U"NEW_ARRAY_LITERAL_OBJECT";
 			case OpCode::SUPER:
 				return U"SUPER";
 			case OpCode::INSTANCE_OF:
@@ -674,9 +960,10 @@ namespace cygni
 				return U"GO_FINALLY";
 			case OpCode::FINALLY_END:
 				return U"FINALLY_END";
-			default:
+			default: {
 				std::cout << __FUNCTION__ << std::endl;
 				exit(1);
+			}
 			}
 		}
 	};

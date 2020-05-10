@@ -1207,7 +1207,7 @@ namespace cygni
 			VisitPackage(package);
 		}
 	}
-	VariableLocator::VariableLocator(Project & project): project{project}
+	VariableLocator::VariableLocator(Project & project) : project{ project }
 	{
 
 	}
@@ -1371,12 +1371,12 @@ namespace cygni
 				if (moduleInfo->fields.ContainsKey(node->field))
 				{
 					auto field = moduleInfo->fields.GetValueByKey(node->field);
-					node->parameterLocation = ParameterLocation(ParameterType::ModuleField, field.index);
+					node->parameterLocation = ParameterLocation(ParameterType::ModuleField, field.index, moduleInfo->index);
 				}
 				else if (moduleInfo->methods.ContainsKey(node->field))
 				{
 					auto method = moduleInfo->methods.GetValueByKey(node->field);
-					node->parameterLocation = ParameterLocation(ParameterType::ModuleMethod, method.index);
+					node->parameterLocation = ParameterLocation(ParameterType::ModuleMethod, method.index, moduleInfo->index);
 				}
 				else
 				{

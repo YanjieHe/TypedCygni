@@ -32,14 +32,14 @@ def make_opcode_info_array(op_list):
     return "static const char* opcode_info [][2] {{\n{0}\n}};".format(",\n".join(lines))
 
 
+def make_cpp_enum_to_string(op_list):
+    lines = []
+    for (op_name, _) in op_list:
+        lines.append('case OpCode::{0}:\nreturn U"{0}";'.format(op_name))
+    lines.append("default:{\nstd::cout << __FUNCTION__ << std::endl;\nexit(1);\n}")
+    return "switch(code) {{\n{0}\n}}".format("\n".join(lines))
+
 op_list = expand(df)
 print(make_enum(op_list))
 print(make_opcode_info_array(op_list))
-
-# opcode_list = add_casts(expand(parse_opcode(read_txt("opcode.txt"))))
-
-# opcode_list = sorted(opcode_list, key=lambda x: x.name)
-
-# print(make_enum(opcode_list))
-
-# print(make_opcode_info_array(opcode_list))
+print(make_cpp_enum_to_string(op_list))
