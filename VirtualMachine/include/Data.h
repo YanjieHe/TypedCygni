@@ -1,20 +1,9 @@
 #ifndef DATA_H
 #define DATA_H
-
-#include <cstdint>
-#include <vector>
-#include <string>
 #include <inttypes.h>
-#include "OpCode.hpp"
+#include "OpCode.h"
 
 typedef uint8_t Byte;
-
-typedef struct
-{
-	int length;
-	int index;
-	Byte* bytes;
-}ByteCode;
 
 typedef struct
 {
@@ -29,12 +18,13 @@ typedef struct
 	uint8_t is_pointer;
 } Value;
 
+
+// unicode (UTF32)
 typedef struct
 {
-	int length;
-	Value* values;
-}Values;
-
+	int32_t length;
+	uint32_t* characters;
+} String;
 
 typedef struct
 {
@@ -43,19 +33,14 @@ typedef struct
 	int locals;
 	int code_len;
 	uint8_t* code;
-	Values constantPool;
+	int n_constants;
+	Value* constantPool;
 } Function;
 
-typedef struct
-{
-	int length;
-	Function* values;
-}Functions;
 
 typedef struct Object
 {
-	Values fields;
-	Functions* methods;
+	Value* fields;
 	struct Object* next;
 }Object;
 
@@ -64,20 +49,22 @@ typedef struct
 	char* name;
 	uint16_t n_fields;
 	char** field_names;
-	Values constantPool;
 	uint16_t n_methods;
 	Function** methods;
-}ClassInfo;
+	int n_constants;
+	Value* constantPool;
+} ClassInfo;
 
 typedef struct
 {
 	char* name;
 	uint16_t n_fields;
 	char** field_names;
-	Values variables;
+	Value* variables;
 	uint16_t n_functions;
 	Function** functions;
-	Values constantPool;
+	int n_constants;
+	Value* constantPool;
 }ModuleInfo;
 
 typedef struct
@@ -86,8 +73,6 @@ typedef struct
 	ClassInfo** classes;
 	int module_count;
 	ModuleInfo** modules;
-
-	Object** singletons;
 	Function* entry;
 }Executable;
 

@@ -1,15 +1,12 @@
 #ifndef MACHINE_H
 #define MACHINE_H
-#include <vector>
-#include <string>
-#include "OpCode.hpp"
+#include "OpCode.h"
 #include "Data.h"
-
-typedef Values Stack;
 
 typedef struct
 {
-	Stack stack;
+	int stack_max_size;
+	Value* stack;
 	Function* function;
 	Executable* exe;
 	int fp;
@@ -19,10 +16,11 @@ typedef struct
 
 static inline uint16_t USHORT(Byte* bytes, int index)
 {
-	return (uint16_t)((bytes[index]) + (bytes[index + 1] << 8));
+	return ((uint16_t)bytes[index]) << 8 + ((uint16_t)bytes[index + 1]);
 }
 
-Machine* create_machine(int stackSize, Executable* exe);
+Machine* create_machine(int stack_max_size, Executable* exe);
+
 void run(Machine* machine);
 
 #endif // MACHINE_H

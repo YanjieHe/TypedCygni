@@ -28,8 +28,8 @@ def make_enum(opcode_list):
 def make_opcode_info_array(op_list):
     lines = []
     for (op_name, op_type) in op_list:
-        lines.append('{{ "{0}", "{1}" }}'.format(op_name, op_type))
-    return "static const char* opcode_info [] {{\n{0}\n}};".format(",\n".join(lines))
+        lines.append('\t{{ "{0}", "{1}" }}'.format(op_name, op_type))
+    return "static const char* opcode_info [][2] {{\n{0}\n}};".format(",\n".join(lines))
 
 
 op_list = expand(df)

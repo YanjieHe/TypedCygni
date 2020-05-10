@@ -22,6 +22,7 @@ char* parse_string(FILE* file)
 	}
 }
 
+// Big Endian
 uint16_t parse_ushort(FILE* file)
 {
 	uint16_t value;
@@ -35,7 +36,7 @@ uint16_t parse_ushort(FILE* file)
 
 	if (res1 == 1 && res2 == 1)
 	{
-		value = ((uint16_t)b1) + ((uint16_t)b2) * 256;
+		value = ((uint16_t)b1) * 256 + ((uint16_t)b2);
 		return value;
 	}
 	else
@@ -45,22 +46,7 @@ uint16_t parse_ushort(FILE* file)
 	}
 }
 
-uint32_t parse_uint(ByteCode* byteCode)
-{
-	uint32_t value;
-	int i;
-
-	value = 0;
-	for (i = 0; i < 4; i++)
-	{
-		value = value * 256;
-		value = value + byteCode->bytes[byteCode->index + (4 - i)];
-	}
-	byteCode->index = byteCode->index + 4;
-	return value;
-}
-
-TypeTag parse_type_tag(ByteCode * byteCode)
+TypeTag parse_type_tag(ByteCode* byteCode)
 {
 	Byte byte;
 
@@ -69,7 +55,7 @@ TypeTag parse_type_tag(ByteCode * byteCode)
 	return (TypeTag)byte;
 }
 
-OpCode parse_opcode(ByteCode * byteCode)
+OpCode parse_opcode(ByteCode* byteCode)
 {
 	Byte byte;
 
@@ -78,7 +64,7 @@ OpCode parse_opcode(ByteCode * byteCode)
 	return (OpCode)byte;
 }
 
-Executable* parse_file(const char * path)
+Executable* parse_file(const char* path)
 {
 	FILE* file;
 	uint16_t class_count;
@@ -116,7 +102,7 @@ Executable* parse_file(const char * path)
 	}
 }
 
-ClassInfo * parse_class(FILE * file)
+ClassInfo* parse_class(FILE* file)
 {
 	char* class_name;
 	uint16_t field_count;
@@ -155,7 +141,7 @@ ClassInfo * parse_class(FILE * file)
 	return class_info;
 }
 
-ModuleInfo * parse_module(FILE * file)
+ModuleInfo* parse_module(FILE* file)
 {
 	char* module_name;
 	uint16_t field_count;
@@ -264,7 +250,7 @@ void view_function(Function * function)
 	uint8_t byte;
 	uint8_t op_code;
 	const char* op_name;
-	int op_count;
+	const char* op_type;
 	uint32_t u32_v;
 
 	printf("\tmethod: %s\n", function->name);
@@ -275,27 +261,22 @@ void view_function(Function * function)
 	while (i < function->code_len)
 	{
 		op_code = function->code[i];
-		op_name = op_info[op_code][0];
+		op_name = opcode_info[op_code][0];
 		printf("\t\t%d: %s", i, op_name);
 		i++;
-		if (strcmp(op_info[op_code][1], "true") == 0)
-		{
-			byte = function->code[i];
-			i++;
-			view_type_tag(byte);
-		}
-		op_count = atoi(op_info[op_code][2]);
-		if (op_count == 1)
+		op_type = opcode_info[op_code][1];
+		if (strcmp(op_type, "b") == 0)
 		{
 			printf(" %d", (int)function->code[i]);
+			i++;
 		}
-		else if (op_count == 2)
+		else if (strcmp(op_type, "u") == 0)
 		{
 			u32_v = function->code[i];
 			u32_v = u32_v + ((uint16_t)function->code[i + 1]) * 256;
 			printf(" %d", u32_v);
+			i = i + 2;
 		}
-		i = i + op_count;
 		printf("\n");
 	}
 
