@@ -1,6 +1,8 @@
 #include "Parser.h"
 #include <malloc.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 char* parse_string(FILE* file)
 {
@@ -46,24 +48,6 @@ uint16_t parse_ushort(FILE* file)
 	}
 }
 
-TypeTag parse_type_tag(ByteCode* byteCode)
-{
-	Byte byte;
-
-	byte = byteCode->bytes[byteCode->index];
-	byteCode->index++;
-	return (TypeTag)byte;
-}
-
-OpCode parse_opcode(ByteCode* byteCode)
-{
-	Byte byte;
-
-	byte = byteCode->bytes[byteCode->index];
-	byteCode->index++;
-	return (OpCode)byte;
-}
-
 Executable* parse_file(const char* path)
 {
 	FILE* file;
@@ -80,17 +64,17 @@ Executable* parse_file(const char* path)
 		module_count = parse_ushort(file);
 		exe->class_count = class_count;
 		exe->module_count = module_count;
-		exe->classes = (ClassInfo**)malloc(sizeof(ClassInfo*)*class_count);
-		exe->modules = (ModuleInfo**)malloc(sizeof(ModuleInfo*)*module_count);
+		exe->classes = (ClassInfo*)malloc(sizeof(ClassInfo) * class_count);
+		exe->modules = (ModuleInfo*)malloc(sizeof(ModuleInfo) * module_count);
 
 		printf("class count: %d, module count = %d\n", class_count, module_count);
 		for (i = 0; i < class_count; i++)
 		{
-			exe->classes[i] = parse_class(file);
+			parse_class(file, &(exe->classes[i]));
 		}
 		for (i = 0; i < module_count; i++)
 		{
-			exe->modules[i] = parse_module(file);
+			parse_module(file, &(exe->modules[i]));
 		}
 
 		return exe;
@@ -102,7 +86,7 @@ Executable* parse_file(const char* path)
 	}
 }
 
-ClassInfo* parse_class(FILE* file)
+void parse_class(FILE* file, ClassInfo* class_info)
 {
 	char* class_name;
 	uint16_t field_count;
@@ -110,7 +94,6 @@ ClassInfo* parse_class(FILE* file)
 	char** field_names;
 	Function** methods;
 	int i;
-	ClassInfo* class_info;
 
 	class_name = parse_string(file);
 	printf("class name: %s\n", class_name);
@@ -131,24 +114,20 @@ ClassInfo* parse_class(FILE* file)
 		printf("method: %s\n", methods[i]->name);
 	}
 
-	class_info = (ClassInfo*)malloc(sizeof(ClassInfo));
 	class_info->name = class_name;
 	class_info->n_fields = field_count;
 	class_info->field_names = field_names;
 	class_info->n_methods = method_count;
 	class_info->methods = methods;
-
-	return class_info;
 }
 
-ModuleInfo* parse_module(FILE* file)
+void parse_module(FILE* file, ModuleInfo* module_info)
 {
 	char* module_name;
 	uint16_t field_count;
 	uint16_t function_count;
 	char** field_names;
 	Function** functions;
-	ModuleInfo* module_info;
 	int i;
 
 	module_name = parse_string(file);
@@ -170,14 +149,12 @@ ModuleInfo* parse_module(FILE* file)
 		printf("function: %s\n", functions[i]->name);
 	}
 
-	module_info = (ModuleInfo*)malloc(sizeof(ModuleInfo));
 	module_info->name = module_name;
 	module_info->n_fields = field_count;
 	module_info->field_names = field_names;
 	module_info->n_functions = function_count;
 	module_info->functions = functions;
 
-	return module_info;
 }
 
 Function * parse_function(FILE * file)
@@ -205,7 +182,7 @@ Function * parse_function(FILE * file)
 	}
 }
 
-void view_exe(Executable * exe)
+void view_exe(Executable* exe)
 {
 	int i;
 	int j;
@@ -214,30 +191,30 @@ void view_exe(Executable * exe)
 	printf("class count: %d, module count: %d\n\n", exe->class_count, exe->module_count);
 	for (i = 0; i < exe->class_count; i++)
 	{
-		printf("class: %s\n", exe->classes[i]->name);
-		for (j = 0; j < exe->classes[i]->n_fields; j++)
+		printf("class: %s\n", exe->classes[i].name);
+		for (j = 0; j < exe->classes[i].n_fields; j++)
 		{
-			printf("\tfield: %s\n", exe->classes[i]->field_names[j]);
+			printf("\tfield: %s\n", exe->classes[i].field_names[j]);
 		}
 		printf("\n");
-		for (j = 0; j < exe->classes[i]->n_methods; j++)
+		for (j = 0; j < exe->classes[i].n_methods; j++)
 		{
-			function = exe->classes[i]->methods[j];
+			function = exe->classes[i].methods[j];
 			view_function(function);
 		}
 		printf("\n");
 	}
 	for (i = 0; i < exe->module_count; i++)
 	{
-		printf("module: %s\n", exe->modules[i]->name);
-		for (j = 0; j < exe->modules[i]->n_fields; j++)
+		printf("module: %s\n", exe->modules[i].name);
+		for (j = 0; j < exe->modules[i].n_fields; j++)
 		{
-			printf("\tfield: %s\n", exe->modules[i]->field_names[j]);
+			printf("\tfield: %s\n", exe->modules[i].field_names[j]);
 		}
 		printf("\n");
-		for (j = 0; j < exe->modules[i]->n_functions; j++)
+		for (j = 0; j < exe->modules[i].n_functions; j++)
 		{
-			function = exe->modules[i]->functions[j];
+			function = exe->modules[i].functions[j];
 			view_function(function);
 		}
 		printf("\n");
@@ -273,7 +250,19 @@ void view_function(Function * function)
 		else if (strcmp(op_type, "u") == 0)
 		{
 			u32_v = function->code[i];
-			u32_v = u32_v + ((uint16_t)function->code[i + 1]) * 256;
+			u32_v = u32_v * 256 + ((uint16_t)function->code[i + 1]);
+			printf(" %d", u32_v);
+			i = i + 2;
+		}
+		else if (strcmp(op_type, "uu") == 0)
+		{
+			u32_v = function->code[i];
+			u32_v = u32_v * 256 + ((uint16_t)function->code[i + 1]);
+			printf(" %d", u32_v);
+			i = i + 2;
+
+			u32_v = function->code[i];
+			u32_v = u32_v * 256 + ((uint16_t)function->code[i + 1]);
 			printf(" %d", u32_v);
 			i = i + 2;
 		}

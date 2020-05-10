@@ -153,6 +153,7 @@ namespace cygni
 	public:
 		std::optional<std::u32string> name;
 		ExpPtr value;
+		int index = -1; // parameter index
 
 		Argument() = default;
 		explicit Argument(ExpPtr value);

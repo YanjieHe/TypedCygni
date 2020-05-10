@@ -61,6 +61,7 @@ namespace cygni
 		void CompileAssign(std::shared_ptr<BinaryExpression> node,
 			const ConstantMap& constantMap, ByteCode& byteCode);
 		//void CompileWhileLoop(std::shared_ptr<WhileExpression> node);
+		void CompileMainFunction(const std::vector<std::shared_ptr<ModuleInfo>>& modules, ByteCode& byteCode);
 	};
 } // namespace cygni
 

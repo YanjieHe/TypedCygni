@@ -1422,9 +1422,34 @@ namespace cygni
 	}
 	void VariableLocator::VisitNewExpression(std::shared_ptr<NewExpression> node, ScopePtr scope)
 	{
-		for (auto arg : node->arguments)
+		if (node->type->typeCode == TypeCode::Class)
 		{
-			VisitExpression(arg.value, scope);
+			auto classType = std::static_pointer_cast<ClassType>(node->type);
+			if (auto res = project.GetClass(classType->route, classType->name))
+			{
+				const auto &classInfo = *res;
+				for (auto& arg : node->arguments)
+				{
+					if (arg.name)
+					{
+						int index = classInfo->fields.GetIndexByKey(*arg.name);
+						arg.index = index;
+						VisitExpression(arg.value, scope);
+					}
+					else
+					{
+						throw TypeException(node->location, U"missing field name in the new statement");
+					}
+				}
+			}
+			else
+			{
+				throw TypeException(node->location, U"undefined class");
+			}
+		}
+		else
+		{
+			throw TypeException(node->location, U"wrong new statement: type is not a class");
 		}
 	}
 	void VariableLocator::VisitVarDefExpression(std::shared_ptr<VarDefExpression> node, ScopePtr scope)

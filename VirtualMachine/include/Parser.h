@@ -8,15 +8,11 @@ char* parse_string(FILE* file);
 
 uint16_t parse_ushort(FILE* file);
 
-TypeTag parse_type_tag(ByteCode* byteCode);
-
-OpCode parse_opcode(ByteCode* byteCode);
-
 Executable* parse_file(const char* path);
 
-ClassInfo* parse_class(FILE* file);
+void parse_class(FILE* file, ClassInfo* class_info);
 
-ModuleInfo* parse_module(FILE* file);
+void parse_module(FILE* file, ModuleInfo* module_info);
 
 Function* parse_function(FILE* file);
 

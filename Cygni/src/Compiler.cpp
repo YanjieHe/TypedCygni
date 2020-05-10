@@ -21,13 +21,13 @@ namespace cygni
 	}
 	void ByteCode::AppendUShort(int value)
 	{
-		bytes.push_back(value % 256);
 		bytes.push_back(value / 256);
+		bytes.push_back(value % 256);
 	}
 	void ByteCode::WriteUShort(int index, int value)
 	{
-		bytes.at(index) = (value % 256);
-		bytes.at(index + 1) = (value / 256);
+		bytes.at(index) = (value / 256);
+		bytes.at(index + 1) = (value % 256);
 	}
 	void ByteCode::AppendUInt(uint32_t value)
 	{
@@ -118,6 +118,9 @@ namespace cygni
 		}
 
 		ByteCode byteCode;
+
+		CompileMainFunction(modules, byteCode);
+
 		byteCode.AppendUShort(static_cast<int>(classes.size()));
 		byteCode.AppendUShort(static_cast<int>(modules.size()));
 
@@ -612,7 +615,7 @@ namespace cygni
 			break;
 		}
 		case ParameterType::ModuleName: {
-			std::cout << "module name" << std::endl;
+			std::cout << "module name: " << parameter->name << std::endl;
 			break;
 		}
 		default:
@@ -794,12 +797,45 @@ namespace cygni
 	void Compiler::CompileNewExpression(std::shared_ptr<NewExpression> node,
 		const ConstantMap& constantMap, ByteCode& byteCode)
 	{
+		byteCode.AppendOp(OpCode::NEW);
+		byteCode.AppendUShort(node->parameterLocation.offset);
 		for (auto arg : node->arguments)
 		{
 			CompileExpression(arg.value, constantMap, byteCode);
+			byteCode.AppendOp(OpCode::DUPLICATE_OFFSET);
+			byteCode.AppendUShort(1); // get the initialized class object
+			switch (node->type->typeCode)
+			{
+			case TypeCode::Int32: {
+				byteCode.AppendOp(OpCode::POP_FIELD_I32);
+				break;
+			}
+			case TypeCode::Int64: {
+				byteCode.AppendOp(OpCode::POP_FIELD_I64);
+				break;
+			}
+			case TypeCode::Float32: {
+				byteCode.AppendOp(OpCode::POP_FIELD_F32);
+				break;
+			}
+			case TypeCode::Float64: {
+				byteCode.AppendOp(OpCode::POP_FIELD_F64);
+				break;
+			}
+			case TypeCode::String: {
+				byteCode.AppendOp(OpCode::POP_FIELD_OBJECT);
+				break;
+			}
+			case TypeCode::Class: {
+				byteCode.AppendOp(OpCode::POP_FIELD_OBJECT);
+				break;
+			}
+			default: {
+				throw CompilerException(node->location, U"not supported field initializer type");
+			}
+			}
+			byteCode.AppendUShort(arg.index);
 		}
-		byteCode.AppendOp(OpCode::NEW);
-		byteCode.AppendUShort(node->parameterLocation.offset);
 	}
 	void Compiler::CompileVarDefExpression(std::shared_ptr<VarDefExpression> node,
 		const ConstantMap & constantMap, ByteCode & byteCode)
@@ -973,5 +1009,27 @@ namespace cygni
 		{
 			throw CompilerException(node->location, U"wrong assignment");
 		}
+	}
+	void Compiler::CompileMainFunction(const std::vector<std::shared_ptr<ModuleInfo>>& modules, ByteCode & byteCode)
+	{
+		bool found = false;
+		for (auto module : modules)
+		{
+			if (module->methods.ContainsKey(U"Main"))
+			{
+				auto method = module->methods.GetValueByKey(U"Main");
+				if (found)
+				{
+					throw CompilerException(method.location, U"multiple definitions of the Main function");
+				}
+				else
+				{
+					byteCode.AppendUShort(module->index);
+					byteCode.AppendUShort(method.index);
+					found = true;
+				}
+			}
+		}
+		throw CompilerException(SourceLocation(), U"cannot find Main function");
 	}
 } // namespace cygni

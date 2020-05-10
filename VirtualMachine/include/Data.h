@@ -1,6 +1,7 @@
 #ifndef DATA_H
 #define DATA_H
 #include <inttypes.h>
+#include <math.h>
 #include "OpCode.h"
 
 typedef uint8_t Byte;
@@ -19,11 +20,13 @@ typedef struct
 } Value;
 
 
+typedef uint32_t Char;
+
 // unicode (UTF32)
 typedef struct
 {
 	int32_t length;
-	uint32_t* characters;
+	Char* characters;
 } String;
 
 typedef struct
@@ -38,11 +41,6 @@ typedef struct
 } Function;
 
 
-typedef struct Object
-{
-	Value* fields;
-	struct Object* next;
-}Object;
 
 typedef struct
 {
@@ -67,12 +65,20 @@ typedef struct
 	Value* constantPool;
 }ModuleInfo;
 
+
+typedef struct Object
+{
+	ClassInfo* class_info;
+	Value* fields;
+	struct Object* next;
+}Object;
+
 typedef struct
 {
 	int class_count;
-	ClassInfo** classes;
+	ClassInfo* classes;
 	int module_count;
-	ModuleInfo** modules;
+	ModuleInfo* modules;
 	Function* entry;
 }Executable;
 

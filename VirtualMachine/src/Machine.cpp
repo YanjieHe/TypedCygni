@@ -35,17 +35,18 @@ void run(Machine* machine)
 	int fp;
 	int sp;
 	Byte op;
-	Byte type;
 	uint16_t offset;
 	uint16_t index;
 	int32_t i32_v;
 	int64_t i64_v;
 	float_t f32_v;
 	double_t f64_v;
-	Object* obj;
+	void* obj;
+	Object* typed_obj;
 	Function* prev_func;
 	Function* next_func;
 	void* pointer;
+	int stack_index;
 
 	machine->function = machine->exe->entry;
 	function = machine->function;
@@ -55,18 +56,28 @@ void run(Machine* machine)
 	pc = 0;
 	fp = 0;
 
-	// arguments ... (fp) | local variables ... | last function | last pc | last fp
-	index = fp + function->n_parameters + function->locals + 1;
-	pc = stack[index + 1].u.i32_v;
-	fp = stack[index + 2].u.i32_v;
-	sp = index + 3;
+	// arguments ... (fp) | local variables ... | previous function | last pc | last fp
+	stack_index = fp + function->n_parameters + function->locals + 1;
+	pc = stack[stack_index + 1].u.i32_v;
+	fp = stack[stack_index + 2].u.i32_v;
+	sp = stack_index + 3;
 
-	while (true)
+	while (pc < function->code_len)
 	{
 		op = code[pc];
-		pc + 1;
+		pc = pc + 1;
 		switch (op)
 		{
+		case PUSH_I32_0: {
+			sp++;
+			stack[sp].u.i32_v = 0;
+			break;
+		}
+		case PUSH_I32_1: {
+			sp++;
+			stack[sp].u.i32_v = 1;
+			break;
+		}
 		case PUSH_I32: {
 			READ_USHORT(index);
 			i32_v = constantPool[index].u.i32_v;
@@ -137,6 +148,76 @@ void run(Machine* machine)
 			READ_USHORT(offset);
 			STACK_READ(i64_v);
 			stack[fp + offset].u.i64_v = i64_v;
+			break;
+		}
+		case PUSH_STATIC_I32: {
+			READ_USHORT(index);
+			READ_USHORT(offset);
+			i32_v = machine->exe->modules[index].variables[offset].u.i32_v;
+			STACK_WRITE(i32_v);
+			break;
+		}
+		case PUSH_STATIC_I64: {
+			READ_USHORT(index);
+			READ_USHORT(offset);
+			i64_v = machine->exe->modules[index].variables[offset].u.i64_v;
+			STACK_WRITE(i64_v);
+			break;
+		}
+		case PUSH_STATIC_F32: {
+			READ_USHORT(index);
+			READ_USHORT(offset);
+			f32_v = machine->exe->modules[index].variables[offset].u.f32_v;
+			STACK_WRITE(f32_v);
+			break;
+		}
+		case PUSH_STATIC_F64: {
+			READ_USHORT(index);
+			READ_USHORT(offset);
+			f64_v = machine->exe->modules[index].variables[offset].u.f64_v;
+			STACK_WRITE(f64_v);
+			break;
+		}
+		case PUSH_STATIC_OBJECT: {
+			READ_USHORT(index);
+			READ_USHORT(offset);
+			obj = machine->exe->modules[index].variables[offset].u.obj;
+			STACK_WRITE(obj);
+			break;
+		}
+		case POP_STATIC_I32: {
+			READ_USHORT(index);
+			READ_USHORT(offset);
+			STACK_READ(i32_v);
+			machine->exe->modules[index].variables[offset].u.i32_v = i32_v;
+			break;
+		}
+		case POP_STATIC_I64: {
+			READ_USHORT(index);
+			READ_USHORT(offset);
+			STACK_READ(i64_v);
+			machine->exe->modules[index].variables[offset].u.i64_v = i64_v;
+			break;
+		}
+		case POP_STATIC_F32: {
+			READ_USHORT(index);
+			READ_USHORT(offset);
+			STACK_READ(f32_v);
+			machine->exe->modules[index].variables[offset].u.f32_v = f32_v;
+			break;
+		}
+		case POP_STATIC_F64: {
+			READ_USHORT(index);
+			READ_USHORT(offset);
+			STACK_READ(f64_v);
+			machine->exe->modules[index].variables[offset].u.f64_v = f64_v;
+			break;
+		}
+		case POP_STATIC_OBJECT: {
+			READ_USHORT(index);
+			READ_USHORT(offset);
+			STACK_READ(obj);
+			machine->exe->modules[index].variables[offset].u.obj = obj;
 			break;
 		}
 		case ADD_I32: {
@@ -342,68 +423,68 @@ void run(Machine* machine)
 		case PUSH_FIELD_I32: {
 			obj = (Object*)stack[sp].u.obj;
 			READ_USHORT(offset);
-			stack[sp].u.i32_v = obj->fields[offset].u.i32_v;
+			stack[sp].u.i32_v = ((Object*)obj)->fields[offset].u.i32_v;
 			break;
 		}
 		case PUSH_FIELD_I64: {
 			obj = (Object*)stack[sp].u.obj;
 			READ_USHORT(offset);
-			stack[sp].u.i64_v = obj->fields[offset].u.i64_v;
+			stack[sp].u.i64_v = ((Object*)obj)->fields[offset].u.i64_v;
 			break;
 		}
 		case PUSH_FIELD_F32: {
 			obj = (Object*)stack[sp].u.obj;
 			READ_USHORT(offset);
-			stack[sp].u.f32_v = obj->fields[offset].u.f32_v;
+			stack[sp].u.f32_v = ((Object*)obj)->fields[offset].u.f32_v;
 			break;
 		}
 		case PUSH_FIELD_F64: {
 			obj = (Object*)stack[sp].u.obj;
 			READ_USHORT(offset);
-			stack[sp].u.f64_v = obj->fields[offset].u.f64_v;
+			stack[sp].u.f64_v = ((Object*)obj)->fields[offset].u.f64_v;
 			break;
 		}
 		case POP_FIELD_I32: {
 			obj = (Object*)stack[sp].u.obj;
 			READ_USHORT(offset);
-			obj->fields[offset].u.i32_v = stack[sp - 1].u.i32_v;
+			((Object*)obj)->fields[offset].u.i32_v = stack[sp - 1].u.i32_v;
 			sp = sp - 2;
 			break;
 		}
 		case POP_FIELD_I64: {
 			obj = (Object*)stack[sp].u.obj;
 			READ_USHORT(offset);
-			obj->fields[offset].u.i64_v = stack[sp - 1].u.i64_v;
+			((Object*)obj)->fields[offset].u.i64_v = stack[sp - 1].u.i64_v;
 			sp = sp - 2;
 			break;
 		}
 		case POP_FIELD_F32: {
 			obj = (Object*)stack[sp].u.obj;
 			READ_USHORT(offset);
-			obj->fields[offset].u.f32_v = stack[sp - 1].u.f32_v;
+			((Object*)obj)->fields[offset].u.f32_v = stack[sp - 1].u.f32_v;
 			sp = sp - 2;
 			break;
 		}
 		case POP_FIELD_F64: {
 			obj = (Object*)stack[sp].u.obj;
 			READ_USHORT(offset);
-			obj->fields[offset].u.f64_v = stack[sp - 1].u.f64_v;
+			((Object*)obj)->fields[offset].u.f64_v = stack[sp - 1].u.f64_v;
 			sp = sp - 2;
 			break;
 		}
 		case JUMP: {
-			pc = USHORT(code, pc + 1);
+			pc = USHORT(code, pc);
 			break;
 		}
 		case JUMP_IF_TRUE: {
 			STACK_READ(i32_v);
 			if (i32_v)
 			{
-				pc = USHORT(code, pc + 1);
+				pc = USHORT(code, pc);
 			}
 			else
 			{
-				pc = pc + 1 + 2;
+				pc = pc + 2;
 			}
 			break;
 		}
@@ -411,21 +492,21 @@ void run(Machine* machine)
 			STACK_READ(i32_v);
 			if (i32_v)
 			{
-				pc = pc + 1 + 2;
+				pc = pc + 2;
 			}
 			else
 			{
-				pc = USHORT(code, pc + 1);
+				pc = USHORT(code, pc);
 			}
 			break;
 		}
 		case RETURN_I32: {
 			STACK_READ(i32_v);
-			index = fp + function->n_parameters + function->locals + 1;
-			prev_func = (Function*)stack[index].u.obj;
+			stack_index = fp + function->n_parameters + function->locals + 1;
+			prev_func = (Function*)stack[stack_index].u.obj;
 			sp = fp;
-			pc = stack[index + 1].u.i32_v;
-			fp = stack[index + 2].u.i32_v;
+			pc = stack[stack_index + 1].u.i32_v;
+			fp = stack[stack_index + 2].u.i32_v;
 			code = prev_func->code;
 			constantPool = prev_func->constantPool;
 
@@ -434,11 +515,11 @@ void run(Machine* machine)
 		}
 		case RETURN_I64: {
 			STACK_READ(i64_v);
-			index = fp + function->n_parameters + function->locals + 1;
-			prev_func = (Function*)stack[index].u.obj;
+			stack_index = fp + function->n_parameters + function->locals + 1;
+			prev_func = (Function*)stack[stack_index].u.obj;
 			sp = fp;
-			pc = stack[index + 1].u.i32_v;
-			fp = stack[index + 2].u.i32_v;
+			pc = stack[stack_index + 1].u.i32_v;
+			fp = stack[stack_index + 2].u.i32_v;
 			code = prev_func->code;
 			constantPool = prev_func->constantPool;
 
@@ -447,11 +528,11 @@ void run(Machine* machine)
 		}
 		case RETURN_F32: {
 			STACK_READ(f32_v);
-			index = fp + function->n_parameters + function->locals + 1;
-			prev_func = (Function*)stack[index].u.obj;
+			stack_index = fp + function->n_parameters + function->locals + 1;
+			prev_func = (Function*)stack[stack_index].u.obj;
 			sp = fp;
-			pc = stack[index + 1].u.i32_v;
-			fp = stack[index + 2].u.i32_v;
+			pc = stack[stack_index + 1].u.i32_v;
+			fp = stack[stack_index + 2].u.i32_v;
 			code = prev_func->code;
 			constantPool = prev_func->constantPool;
 
@@ -460,11 +541,11 @@ void run(Machine* machine)
 		}
 		case RETURN_F64: {
 			STACK_READ(f64_v);
-			index = fp + function->n_parameters + function->locals + 1;
-			prev_func = (Function*)stack[index].u.obj;
+			stack_index = fp + function->n_parameters + function->locals + 1;
+			prev_func = (Function*)stack[stack_index].u.obj;
 			sp = fp;
-			pc = stack[index + 1].u.i32_v;
-			fp = stack[index + 2].u.i32_v;
+			pc = stack[stack_index + 1].u.i32_v;
+			fp = stack[stack_index + 2].u.i32_v;
 			code = prev_func->code;
 			constantPool = prev_func->constantPool;
 
@@ -474,11 +555,11 @@ void run(Machine* machine)
 		case RETURN_OBJECT: {
 			pointer = stack[sp].u.obj;
 			sp--;
-			index = fp + function->n_parameters + function->locals + 1;
-			prev_func = (Function*)stack[index].u.obj;
+			stack_index = fp + function->n_parameters + function->locals + 1;
+			prev_func = (Function*)stack[stack_index].u.obj;
 			sp = fp;
-			pc = stack[index + 1].u.i32_v;
-			fp = stack[index + 2].u.i32_v;
+			pc = stack[stack_index + 1].u.i32_v;
+			fp = stack[stack_index + 2].u.i32_v;
 			code = prev_func->code;
 			constantPool = prev_func->constantPool;
 
@@ -488,16 +569,15 @@ void run(Machine* machine)
 		case INVOKE: {
 			next_func = (Function*)stack[sp].u.obj;
 			sp--;
-			int currentPc = pc;
 			int currentFp = fp;
 			fp = sp - next_func->n_parameters;
-			int index = fp + next_func->n_parameters + next_func->locals + 1;
-			stack[index].u.obj = function;
-			stack[index + 1].u.i32_v = currentPc;
-			stack[index + 2].u.i32_v = currentFp;
+			stack_index = fp + next_func->n_parameters + next_func->locals + 1;
+			stack[stack_index].u.obj = function;
+			stack[stack_index + 1].u.i32_v = pc;
+			stack[stack_index + 2].u.i32_v = currentFp;
 			function = next_func;
 			pc = 0;
-			sp = index + 3;
+			sp = stack_index + 3;
 			code = next_func->code;
 			constantPool = next_func->constantPool;
 			break;
@@ -506,14 +586,22 @@ void run(Machine* machine)
 			READ_USHORT(index);
 			READ_USHORT(offset);
 			sp++;
-			stack[sp].u.obj = machine->exe->modules[index]->functions[offset];
+			stack[sp].u.obj = machine->exe->modules[index].functions[offset];
 			break;
 		}
 		case PUSH_METHOD: {
-			READ_USHORT(index);
+			typed_obj = (Object*)stack[sp].u.obj;
 			READ_USHORT(offset);
-			sp++;
-			stack[sp].u.obj = machine->exe->classes[index]->methods[offset];
+			stack[sp].u.obj = typed_obj->class_info->methods[offset];
+			break;
+		}
+		case NEW: {
+			READ_USHORT(index);
+			typed_obj = (Object*)malloc(sizeof(Object));
+			typed_obj->class_info = &(machine->exe->classes[index]);
+			typed_obj->fields = (Value*)malloc(sizeof(Value) * typed_obj->class_info->n_fields);
+			typed_obj->next = NULL; // TO DO: garbage collection
+			STACK_WRITE(obj);
 			break;
 		}
 		default: {
