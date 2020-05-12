@@ -14,7 +14,7 @@ typedef struct
 	int pc;
 } Machine;
 
-static inline uint16_t USHORT(Byte* bytes, int index)
+static inline uint16_t bytes_to_u16(Byte* bytes, int index)
 {
 	return (((uint16_t)bytes[index]) << 8) + ((uint16_t)bytes[index + 1]);
 }
@@ -22,5 +22,7 @@ static inline uint16_t USHORT(Byte* bytes, int index)
 Machine* create_machine(int stack_max_size, Executable* exe);
 
 void run(Machine* machine);
+
+FunctionPointer load_library_function(const char* library_path, const char* function_name);
 
 #endif // MACHINE_H

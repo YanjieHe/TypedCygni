@@ -3,6 +3,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <windows.h>
 
 #define STACK_WRITE(VALUE) sp++; stack[sp].u.##VALUE = (VALUE);
 #define STACK_READ(VALUE) (VALUE) = stack[sp].u.##VALUE; sp--;
@@ -28,7 +29,7 @@ Machine * create_machine(int stack_max_size, Executable * exe)
 void run(Machine* machine)
 {
 	Byte* code;
-	Value* constantPool;
+	Value* constant_pool;
 	Value* stack;
 	Function* function;
 	int pc;
@@ -50,20 +51,21 @@ void run(Machine* machine)
 
 	machine->function = machine->exe->entry;
 	function = machine->function;
-	code = machine->function->code;
-	constantPool = machine->function->constantPool;
+	code = machine->function->u.func_info->code;
+	constant_pool = machine->function->u.func_info->constant_pool;
 	stack = machine->stack;
 	pc = 0;
 	fp = 0;
 
 	// arguments ... (fp) | local variables ... | previous function | last pc | last fp
-	stack_index = fp + function->n_parameters + function->locals + 1;
-	pc = stack[stack_index + 1].u.i32_v;
-	fp = stack[stack_index + 2].u.i32_v;
+	stack_index = fp + function->u.func_info->n_parameters + function->u.func_info->locals + 1;
+	stack[stack_index + 1].u.i32_v = pc;
+	stack[stack_index + 2].u.i32_v = fp;
 	sp = stack_index + 3;
 
-	while (pc < function->code_len)
+	while (pc < function->u.func_info->code_len)
 	{
+		printf("%s, pc = %d\n", function->name, pc);
 		op = code[pc];
 		pc = pc + 1;
 		switch (op)
@@ -80,25 +82,25 @@ void run(Machine* machine)
 		}
 		case PUSH_I32: {
 			READ_USHORT(index);
-			i32_v = constantPool[index].u.i32_v;
+			i32_v = constant_pool[index].u.i32_v;
 			STACK_WRITE(i32_v);
 			break;
 		}
 		case PUSH_I64: {
 			READ_USHORT(index);
-			i64_v = constantPool[index].u.i64_v;
+			i64_v = constant_pool[index].u.i64_v;
 			STACK_WRITE(i64_v);
 			break;
 		}
 		case PUSH_F32: {
 			READ_USHORT(index);
-			f32_v = constantPool[index].u.f32_v;
+			f32_v = constant_pool[index].u.f32_v;
 			STACK_WRITE(f32_v);
 			break;
 		}
 		case PUSH_F64: {
 			READ_USHORT(index);
-			f64_v = constantPool[index].u.f64_v;
+			f64_v = constant_pool[index].u.f64_v;
 			STACK_WRITE(f64_v);
 			break;
 		}
@@ -473,14 +475,14 @@ void run(Machine* machine)
 			break;
 		}
 		case JUMP: {
-			pc = USHORT(code, pc);
+			pc = bytes_to_u16(code, pc);
 			break;
 		}
 		case JUMP_IF_TRUE: {
 			STACK_READ(i32_v);
 			if (i32_v)
 			{
-				pc = USHORT(code, pc);
+				pc = bytes_to_u16(code, pc);
 			}
 			else
 			{
@@ -496,58 +498,58 @@ void run(Machine* machine)
 			}
 			else
 			{
-				pc = USHORT(code, pc);
+				pc = bytes_to_u16(code, pc);
 			}
 			break;
 		}
 		case RETURN_I32: {
 			STACK_READ(i32_v);
-			stack_index = fp + function->n_parameters + function->locals + 1;
+			stack_index = fp + function->u.func_info->n_parameters + function->u.func_info->locals + 1;
 			prev_func = (Function*)stack[stack_index].u.obj;
 			sp = fp;
 			pc = stack[stack_index + 1].u.i32_v;
 			fp = stack[stack_index + 2].u.i32_v;
-			code = prev_func->code;
-			constantPool = prev_func->constantPool;
+			code = prev_func->u.func_info->code;
+			constant_pool = prev_func->u.func_info->constant_pool;
 
 			stack[sp].u.i32_v = i32_v;
 			break;
 		}
 		case RETURN_I64: {
 			STACK_READ(i64_v);
-			stack_index = fp + function->n_parameters + function->locals + 1;
+			stack_index = fp + function->u.func_info->n_parameters + function->u.func_info->locals + 1;
 			prev_func = (Function*)stack[stack_index].u.obj;
 			sp = fp;
 			pc = stack[stack_index + 1].u.i32_v;
 			fp = stack[stack_index + 2].u.i32_v;
-			code = prev_func->code;
-			constantPool = prev_func->constantPool;
+			code = prev_func->u.func_info->code;
+			constant_pool = prev_func->u.func_info->constant_pool;
 
 			stack[sp].u.i64_v = i64_v;
 			break;
 		}
 		case RETURN_F32: {
 			STACK_READ(f32_v);
-			stack_index = fp + function->n_parameters + function->locals + 1;
+			stack_index = fp + function->u.func_info->n_parameters + function->u.func_info->locals + 1;
 			prev_func = (Function*)stack[stack_index].u.obj;
 			sp = fp;
 			pc = stack[stack_index + 1].u.i32_v;
 			fp = stack[stack_index + 2].u.i32_v;
-			code = prev_func->code;
-			constantPool = prev_func->constantPool;
+			code = prev_func->u.func_info->code;
+			constant_pool = prev_func->u.func_info->constant_pool;
 
 			stack[sp].u.f32_v = f32_v;
 			break;
 		}
 		case RETURN_F64: {
 			STACK_READ(f64_v);
-			stack_index = fp + function->n_parameters + function->locals + 1;
+			stack_index = fp + function->u.func_info->n_parameters + function->u.func_info->locals + 1;
 			prev_func = (Function*)stack[stack_index].u.obj;
 			sp = fp;
 			pc = stack[stack_index + 1].u.i32_v;
 			fp = stack[stack_index + 2].u.i32_v;
-			code = prev_func->code;
-			constantPool = prev_func->constantPool;
+			code = prev_func->u.func_info->code;
+			constant_pool = prev_func->u.func_info->constant_pool;
 
 			stack[sp].u.f64_v = f64_v;
 			break;
@@ -555,13 +557,13 @@ void run(Machine* machine)
 		case RETURN_OBJECT: {
 			pointer = stack[sp].u.obj;
 			sp--;
-			stack_index = fp + function->n_parameters + function->locals + 1;
+			stack_index = fp + function->u.func_info->n_parameters + function->u.func_info->locals + 1;
 			prev_func = (Function*)stack[stack_index].u.obj;
 			sp = fp;
 			pc = stack[stack_index + 1].u.i32_v;
 			fp = stack[stack_index + 2].u.i32_v;
-			code = prev_func->code;
-			constantPool = prev_func->constantPool;
+			code = prev_func->u.func_info->code;
+			constant_pool = prev_func->u.func_info->constant_pool;
 
 			stack[sp].u.obj = pointer;
 			break;
@@ -569,17 +571,34 @@ void run(Machine* machine)
 		case INVOKE: {
 			next_func = (Function*)stack[sp].u.obj;
 			sp--;
-			int currentFp = fp;
-			fp = sp - next_func->n_parameters;
-			stack_index = fp + next_func->n_parameters + next_func->locals + 1;
-			stack[stack_index].u.obj = function;
-			stack[stack_index + 1].u.i32_v = pc;
-			stack[stack_index + 2].u.i32_v = currentFp;
-			function = next_func;
-			pc = 0;
-			sp = stack_index + 3;
-			code = next_func->code;
-			constantPool = next_func->constantPool;
+			if (next_func->is_native_function)
+			{
+				if (!(next_func->u.native_function->is_loaded))
+				{
+					next_func->u.native_function->function_pointer = load_library_function(
+						next_func->u.native_function->lib_path,
+						next_func->u.native_function->func_name);
+					next_func->u.native_function->is_loaded = true;
+				}
+				next_func->u.native_function->function_pointer(
+					&(stack[sp + 1 - next_func->u.native_function->n_parameters]),
+					&(stack[sp + 1 - next_func->u.native_function->n_parameters]));
+				sp = sp + 1 - next_func->u.native_function->n_parameters;
+			}
+			else
+			{
+				int currentFp = fp;
+				fp = sp - next_func->u.func_info->n_parameters;
+				stack_index = fp + next_func->u.func_info->n_parameters + next_func->u.func_info->locals + 1;
+				stack[stack_index].u.obj = function;
+				stack[stack_index + 1].u.i32_v = pc;
+				stack[stack_index + 2].u.i32_v = currentFp;
+				function = next_func;
+				pc = 0;
+				sp = stack_index + 3;
+				code = next_func->u.func_info->code;
+				constant_pool = next_func->u.func_info->constant_pool;
+			}
 			break;
 		}
 		case PUSH_FUNCTION: {
@@ -602,6 +621,7 @@ void run(Machine* machine)
 			typed_obj->fields = (Value*)malloc(sizeof(Value) * typed_obj->class_info->n_fields);
 			typed_obj->next = NULL; // TO DO: garbage collection
 			STACK_WRITE(obj);
+			stack[sp].is_pointer = true;
 			break;
 		}
 		default: {
@@ -610,5 +630,33 @@ void run(Machine* machine)
 			exit(-1);
 		}
 		}
+	}
+}
+
+FunctionPointer load_library_function(const char * library_path, const char * function_name)
+{
+	HINSTANCE lib;
+	FunctionPointer function_pointer;
+
+	lib = LoadLibrary(library_path);
+
+	if (lib)
+	{
+		function_pointer = (FunctionPointer)GetProcAddress(lib, "function_pointer");
+		if (function_pointer)
+		{
+			return function_pointer;
+		}
+		else
+		{
+			fprintf(stderr, "cannot load function '%' in the library: %s\n", function_name, library_path);
+			exit(-1);
+		}
+	}
+	else
+	{
+		fprintf(stderr, "cannot load library: %s\n", library_path);
+		fprintf(stderr, "error code: %d", GetLastError());
+		exit(-1);
 	}
 }

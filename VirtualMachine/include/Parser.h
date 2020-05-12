@@ -1,6 +1,5 @@
 #ifndef PARSER_H
 #define PARSER_H
-
 #include "Data.h"
 #include <stdio.h>
 

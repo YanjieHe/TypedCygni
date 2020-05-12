@@ -3,6 +3,7 @@
 #include "Expression.hpp"
 #include <cstdint>
 #include <vector>
+
 namespace cygni
 {
 	using Byte = uint8_t;
@@ -60,7 +61,8 @@ namespace cygni
 			const ConstantMap& constantMap, ByteCode& byteCode);
 		void CompileAssign(std::shared_ptr<BinaryExpression> node,
 			const ConstantMap& constantMap, ByteCode& byteCode);
-		//void CompileWhileLoop(std::shared_ptr<WhileExpression> node);
+		void CompileWhileLoop(std::shared_ptr<WhileExpression> node,
+			const ConstantMap& constantMap, ByteCode& byteCode);
 		void CompileMainFunction(const std::vector<std::shared_ptr<ModuleInfo>>& modules, ByteCode& byteCode);
 	};
 } // namespace cygni

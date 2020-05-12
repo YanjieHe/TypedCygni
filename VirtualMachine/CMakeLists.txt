@@ -1,14 +1,15 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(VirtualMachine LANGUAGES CXX)
+project(VirtualMachine LANGUAGES C)
 
-set(CMAKE_C_FLAGS "-std=c89")
 set(CMAKE_C_STANDARD 89)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
+include_directories(include/)
 
-include_directories(src/ include/)
+file(GLOB SOURCES "src/*.c")
 
-file(GLOB SOURCES "src/*.cpp")
 
-add_executable(VirtualMachine main.cpp ${SOURCES})
+add_executable(VirtualMachine main.c ${SOURCES})
+
+set_target_properties(VirtualMachine PROPERTIES LINKER_LANGUAGE C)

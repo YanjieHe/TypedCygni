@@ -2,6 +2,7 @@
 #define DATA_H
 #include <inttypes.h>
 #include <math.h>
+#include <stdbool.h>
 #include "OpCode.h"
 
 typedef uint8_t Byte;
@@ -31,15 +32,35 @@ typedef struct
 
 typedef struct
 {
-	char* name;
 	int n_parameters;
 	int locals;
 	int code_len;
 	uint8_t* code;
 	int n_constants;
-	Value* constantPool;
-} Function;
+	Value* constant_pool;
+} FunctionInfo;
 
+typedef void(*FunctionPointer)(Value* argv, Value* out);
+
+typedef struct
+{
+	bool is_loaded;
+	char* lib_path;
+	char* func_name;
+	int n_parameters;
+	FunctionPointer function_pointer;
+} NativeFunction;
+
+typedef struct
+{
+	bool is_native_function;
+	char* name;
+	union
+	{
+		FunctionInfo* func_info; // NULL if it is a native function
+		NativeFunction* native_function;
+	}u;
+} Function;
 
 
 typedef struct
@@ -62,7 +83,7 @@ typedef struct
 	uint16_t n_functions;
 	Function** functions;
 	int n_constants;
-	Value* constantPool;
+	Value* constant_pool;
 }ModuleInfo;
 
 

@@ -1010,6 +1010,20 @@ namespace cygni
 			throw CompilerException(node->location, U"wrong assignment");
 		}
 	}
+	void Compiler::CompileWhileLoop(std::shared_ptr<WhileExpression> node, const ConstantMap & constantMap, ByteCode & byteCode)
+	{
+		int index1 = byteCode.Size();
+		CompileExpression(node->condition, constantMap, byteCode);
+		byteCode.AppendOp(OpCode::JUMP_IF_FALSE);
+		int index2 = byteCode.Size();
+		byteCode.AppendUShort(0);
+
+		CompileExpression(node->body, constantMap, byteCode);
+		byteCode.AppendOp(OpCode::JUMP);
+		byteCode.AppendUShort(index1);
+		int target2 = byteCode.Size();
+		byteCode.WriteUShort(index2, target2);
+	}
 	void Compiler::CompileMainFunction(const std::vector<std::shared_ptr<ModuleInfo>>& modules, ByteCode & byteCode)
 	{
 		bool found = false;
@@ -1030,6 +1044,9 @@ namespace cygni
 				}
 			}
 		}
-		throw CompilerException(SourceLocation(), U"cannot find Main function");
+		if (found == false)
+		{
+			throw CompilerException(SourceLocation(), U"cannot find Main function");
+		}
 	}
 } // namespace cygni

@@ -11,7 +11,7 @@ char* parse_string(FILE* file)
 
 	len = parse_ushort(file);
 	str = (char*)malloc(sizeof(char) * (len + 1));
-	if (fread(str, 1, len, file) == len)
+	if (fread(str, sizeof(char), len, file) == len)
 	{
 		str[len] = '\0';
 		return str;
@@ -33,8 +33,8 @@ uint16_t parse_ushort(FILE* file)
 	size_t res1;
 	size_t res2;
 
-	res1 = fread(&b1, 1, 1, file);
-	res2 = fread(&b2, 1, 1, file);
+	res1 = fread(&b1, sizeof(uint8_t), 1, file);
+	res2 = fread(&b2, sizeof(uint8_t), 1, file);
 
 	if (res1 == 1 && res2 == 1)
 	{
@@ -53,13 +53,18 @@ Executable* parse_file(const char* path)
 	FILE* file;
 	uint16_t class_count;
 	uint16_t module_count;
+	uint16_t main_func_module_index;
+	uint16_t main_func_index;
 	int i;
 	Executable* exe;
 
 	file = fopen(path, "rb");
+
 	if (file)
 	{
 		exe = (Executable*)malloc(sizeof(Executable));
+		main_func_module_index = parse_ushort(file);
+		main_func_index = parse_ushort(file);
 		class_count = parse_ushort(file);
 		module_count = parse_ushort(file);
 		exe->class_count = class_count;
@@ -67,7 +72,9 @@ Executable* parse_file(const char* path)
 		exe->classes = (ClassInfo*)malloc(sizeof(ClassInfo) * class_count);
 		exe->modules = (ModuleInfo*)malloc(sizeof(ModuleInfo) * module_count);
 
-		printf("class count: %d, module count = %d\n", class_count, module_count);
+		printf("main function module: %d, main function: %d\n",
+			main_func_module_index, main_func_index);
+		printf("class count = %d, module count = %d\n", class_count, module_count);
 		for (i = 0; i < class_count; i++)
 		{
 			parse_class(file, &(exe->classes[i]));
@@ -77,6 +84,7 @@ Executable* parse_file(const char* path)
 			parse_module(file, &(exe->modules[i]));
 		}
 
+		exe->entry = exe->modules[main_func_module_index].functions[main_func_index];
 		return exe;
 	}
 	else
@@ -160,15 +168,18 @@ void parse_module(FILE* file, ModuleInfo* module_info)
 Function * parse_function(FILE * file)
 {
 	Function* function;
+	uint16_t code_len;
 
 	function = (Function*)malloc(sizeof(Function));
 	function->name = parse_string(file);
-	function->n_parameters = parse_ushort(file);
-	function->locals = parse_ushort(file);
-	function->code_len = parse_ushort(file);
-	printf("function code len=%d\n", function->code_len);
-	function->code = (uint8_t*)malloc(sizeof(uint8_t) * function->code_len);
-	if (fread(function->code, sizeof(uint8_t), function->code_len, file) == function->code_len)
+	function->u.func_info = (FunctionInfo*)malloc(sizeof(FunctionInfo));
+	function->u.func_info->n_parameters = parse_ushort(file);
+	function->u.func_info->locals = parse_ushort(file);
+	code_len = parse_ushort(file);
+	function->u.func_info->code_len = code_len;
+	printf("function code len=%d\n", code_len);
+	function->u.func_info->code = (uint8_t*)malloc(sizeof(uint8_t) * code_len);
+	if (fread(function->u.func_info->code, sizeof(uint8_t), code_len, file) == code_len)
 	{
 		return function;
 	}
@@ -176,7 +187,7 @@ Function * parse_function(FILE * file)
 	{
 		fprintf(stderr, "fail to read byte code\n");
 		free(function->name);
-		free(function->code);
+		free(function->u.func_info->code);
 		free(function);
 		exit(-1);
 	}
@@ -224,45 +235,44 @@ void view_exe(Executable* exe)
 void view_function(Function * function)
 {
 	int i;
-	uint8_t byte;
 	uint8_t op_code;
 	const char* op_name;
 	const char* op_type;
 	uint32_t u32_v;
 
 	printf("\tmethod: %s\n", function->name);
-	printf("\targs_size=%d, locals=%d\n", function->n_parameters, function->locals);
+	printf("\targs_size=%d, locals=%d\n", function->u.func_info->n_parameters, function->u.func_info->locals);
 
 	printf("\tcode:\n");
 	i = 0;
-	while (i < function->code_len)
+	while (i < function->u.func_info->code_len)
 	{
-		op_code = function->code[i];
+		op_code = function->u.func_info->code[i];
 		op_name = opcode_info[op_code][0];
 		printf("\t\t%d: %s", i, op_name);
 		i++;
 		op_type = opcode_info[op_code][1];
 		if (strcmp(op_type, "b") == 0)
 		{
-			printf(" %d", (int)function->code[i]);
+			printf(" %d", (int)function->u.func_info->code[i]);
 			i++;
 		}
-		else if (strcmp(op_type, "u") == 0)
+		else if (strcmp(op_type, "u") == 0 || strcmp(op_type, "p") == 0)
 		{
-			u32_v = function->code[i];
-			u32_v = u32_v * 256 + ((uint16_t)function->code[i + 1]);
+			u32_v = function->u.func_info->code[i];
+			u32_v = u32_v * 256 + ((uint16_t)function->u.func_info->code[i + 1]);
 			printf(" %d", u32_v);
 			i = i + 2;
 		}
 		else if (strcmp(op_type, "uu") == 0)
 		{
-			u32_v = function->code[i];
-			u32_v = u32_v * 256 + ((uint16_t)function->code[i + 1]);
+			u32_v = function->u.func_info->code[i];
+			u32_v = u32_v * 256 + ((uint16_t)function->u.func_info->code[i + 1]);
 			printf(" %d", u32_v);
 			i = i + 2;
 
-			u32_v = function->code[i];
-			u32_v = u32_v * 256 + ((uint16_t)function->code[i + 1]);
+			u32_v = function->u.func_info->code[i];
+			u32_v = u32_v * 256 + ((uint16_t)function->u.func_info->code[i + 1]);
 			printf(" %d", u32_v);
 			i = i + 2;
 		}
