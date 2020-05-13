@@ -1,6 +1,5 @@
 #ifndef CYGNI_SCOPE_HPP
 #define CYGNI_SCOPE_HPP
-#include "PreDef.hpp"
 #include "Utility.hpp"
 #include <any>
 #include <memory>

@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "Unicode.h"
 
 char* parse_string(FILE* file)
 {
@@ -10,6 +11,7 @@ char* parse_string(FILE* file)
 	char* str;
 
 	len = parse_ushort(file);
+	printf("read string len: %d\n", len);
 	str = (char*)malloc(sizeof(char) * (len + 1));
 	if (fread(str, sizeof(char), len, file) == len)
 	{
@@ -113,6 +115,7 @@ void parse_class(FILE* file, ClassInfo* class_info)
 		field_names[i] = parse_string(file);
 		printf("field: %s\n", field_names[i]);
 	}
+	class_info->constant_pool = parse_constant_pool(file);
 
 	method_count = parse_ushort(file);
 	methods = (Function**)malloc(sizeof(Function*)*method_count);
@@ -149,7 +152,12 @@ void parse_module(FILE* file, ModuleInfo* module_info)
 		printf("field: %s\n", field_names[i]);
 	}
 
+	printf("start reading constant pool\n");
+	module_info->constant_pool = parse_constant_pool(file);
+	printf("complete reading constant pool\n");
+	printf("current position: %d\n", ftell(file));
 	function_count = parse_ushort(file);
+	printf("module name: %s, number of functions: %d\n", module_name, function_count);
 	functions = (Function**)malloc(sizeof(Function*)*function_count);
 	for (i = 0; i < function_count; i++)
 	{
@@ -171,7 +179,9 @@ Function * parse_function(FILE * file)
 	uint16_t code_len;
 
 	function = (Function*)malloc(sizeof(Function));
+	printf("try to read function name\n");
 	function->name = parse_string(file);
+	printf("function name: %s\n", function->name);
 	function->u.func_info = (FunctionInfo*)malloc(sizeof(FunctionInfo));
 	function->u.func_info->n_parameters = parse_ushort(file);
 	function->u.func_info->locals = parse_ushort(file);
@@ -191,6 +201,72 @@ Function * parse_function(FILE * file)
 		free(function);
 		exit(-1);
 	}
+}
+
+Value * parse_constant_pool(FILE * file)
+{
+	uint16_t n_constants;
+	Byte b;
+	int i;
+	char* str;
+	Value* values;
+	String* u32_str;
+	char* ptr;
+
+	n_constants = parse_ushort(file);
+	printf("# of constants: %d\n", n_constants);
+	values = (Value*)malloc(sizeof(Value) * n_constants);
+	for (i = 0; i < n_constants; i++)
+	{
+		if (fread(&b, sizeof(Byte), 1, file) == 1)
+		{
+			str = parse_string(file);
+			printf("constant: '%s'\n", str);
+			for (ptr = str; (*ptr) != '\0'; ptr++)
+			{
+				printf("_");
+			}
+			printf("\n");
+			if (b == TYPE_I32)
+			{
+				values[i].u.i32_v = atoi(str);
+				free(str);
+			}
+			else if (b == TYPE_I64)
+			{
+				values[i].u.i64_v = atol(str);
+				free(str);
+			}
+			else if (b == TYPE_F32)
+			{
+				values[i].u.f32_v = (float_t)atof(str);
+				free(str);
+			}
+			else if (b == TYPE_F64)
+			{
+				values[i].u.f64_v = (double_t)atof(str);
+				free(str);
+			}
+			else if (b == TYPE_STRING)
+			{
+				u32_str = malloc(sizeof(String));
+				u32_str->length = utf8_to_utf32_len(str);
+				u32_str->characters = utf8_to_utf32(str, u32_str->length);
+				free(str);
+			}
+			else
+			{
+				fprintf(stderr, "wrong type tag\n");
+				exit(-1);
+			}
+		}
+		else
+		{
+			fprintf(stderr, "cannot read type tag\n");
+			exit(-1);
+		}
+	}
+	return values;
 }
 
 void view_exe(Executable* exe)

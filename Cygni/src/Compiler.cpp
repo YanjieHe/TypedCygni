@@ -37,6 +37,39 @@ namespace cygni
 			value = value / 256;
 		}
 	}
+	void ByteCode::AppendTypeCode(TypeCode typeCode)
+	{
+		switch (typeCode)
+		{
+		case TypeCode::Boolean:
+		case TypeCode::Int32: {
+			AppendTypeTag(TypeTag::TYPE_I32);
+			break;
+		}
+		case TypeCode::Int64: {
+			AppendTypeTag(TypeTag::TYPE_I64);
+			break;
+		}
+		case TypeCode::Float32: {
+			AppendTypeTag(TypeTag::TYPE_F32);
+			break;
+		}
+		case TypeCode::Float64: {
+			AppendTypeTag(TypeTag::TYPE_F64);
+			break;
+		}
+		case TypeCode::String: {
+			AppendTypeTag(TypeTag::TYPE_STRING);
+			break;
+		}
+		case TypeCode::Class: {
+			AppendTypeTag(TypeTag::TYPE_OBJECT);
+			break;
+		}
+		default:
+			throw NotImplementedException(Format(U"not supported type code: {}", Enum<TypeCode>::ToString(typeCode)));
+		}
+	}
 	void ByteCode::AppendType(TypePtr type)
 	{
 		switch (type->typeCode)
@@ -465,63 +498,66 @@ namespace cygni
 		const ConstantMap& constantMap,
 		ByteCode& byteCode)
 	{
-		ConstantKey key{ node->type->typeCode, node->constant };
-		if (constantMap.find(key) != constantMap.end())
+		if (node->type->typeCode == TypeCode::Boolean)
 		{
-			int index = constantMap.at(key);
-
-			switch (node->type->typeCode)
+			if (node->constant == U"true")
 			{
-			case TypeCode::Boolean: {
-				if (node->constant == U"true")
-				{
-					byteCode.AppendOp(OpCode::PUSH_I32_1);
-				}
-				else if (node->constant == U"false")
-				{
-					byteCode.AppendOp(OpCode::PUSH_I32_0);
-				}
-				else
-				{
-					throw CompilerException(node->location,
-						U"illegal format of boolean value. should be 'true' or 'false'");
-				}
-				break;
+				byteCode.AppendOp(OpCode::PUSH_I32_1);
 			}
-			case TypeCode::Int32: {
-				byteCode.AppendOp(OpCode::PUSH_I32);
-				byteCode.AppendUShort(index);
-				break;
+			else if (node->constant == U"false")
+			{
+				byteCode.AppendOp(OpCode::PUSH_I32_0);
 			}
-			case TypeCode::Int64: {
-				byteCode.AppendOp(OpCode::PUSH_I64);
-				byteCode.AppendUShort(index);
-				break;
-			}
-			case TypeCode::Float32: {
-				byteCode.AppendOp(OpCode::PUSH_F32);
-				byteCode.AppendUShort(index);
-				break;
-			}
-			case TypeCode::Float64: {
-				byteCode.AppendOp(OpCode::PUSH_F64);
-				byteCode.AppendUShort(index);
-				break;
-			}
-			case TypeCode::String: {
-				byteCode.AppendOp(OpCode::PUSH_STRING);
-				byteCode.AppendUShort(index);
-				break;
-			}
-			default: {
-				throw CompilerException(node->location, U"constant type not supported");
-			}
+			else
+			{
+				throw CompilerException(node->location,
+					U"illegal format of boolean value. should be 'true' or 'false'");
 			}
 		}
 		else
 		{
-			throw CompilerException(node->location,
-				U"the given constant is not in the constant map");
+			ConstantKey key{ node->type->typeCode, node->constant };
+			if (constantMap.find(key) != constantMap.end())
+			{
+				int index = constantMap.at(key);
+
+				switch (node->type->typeCode)
+				{
+				case TypeCode::Int32: {
+					byteCode.AppendOp(OpCode::PUSH_I32);
+					byteCode.AppendUShort(index);
+					break;
+				}
+				case TypeCode::Int64: {
+					byteCode.AppendOp(OpCode::PUSH_I64);
+					byteCode.AppendUShort(index);
+					break;
+				}
+				case TypeCode::Float32: {
+					byteCode.AppendOp(OpCode::PUSH_F32);
+					byteCode.AppendUShort(index);
+					break;
+				}
+				case TypeCode::Float64: {
+					byteCode.AppendOp(OpCode::PUSH_F64);
+					byteCode.AppendUShort(index);
+					break;
+				}
+				case TypeCode::String: {
+					byteCode.AppendOp(OpCode::PUSH_STRING);
+					byteCode.AppendUShort(index);
+					break;
+				}
+				default: {
+					throw CompilerException(node->location, U"constant type not supported");
+				}
+				}
+			}
+			else
+			{
+				throw CompilerException(node->location,
+					U"the given constant is not in the constant map");
+			}
 		}
 	}
 	void Compiler::CompileClassInfo(std::shared_ptr<ClassInfo> info, ByteCode & byteCode)
@@ -532,41 +568,59 @@ namespace cygni
 		{
 			byteCode.AppendString(field.name);
 		}
+
+		// constant pool
+		CompileConstantPool(info->constantMap, byteCode);
+
 		byteCode.AppendUShort(info->methods.Size());
 		for (const auto& method : info->methods.values)
 		{
-			byteCode.AppendString(method.name);
-			byteCode.AppendUShort(static_cast<int>(method.parameters.size()));
-			byteCode.AppendUShort(static_cast<int>(method.localVariables.size()));
-			auto funcCode = CompileMethodDef(method);
-			byteCode.AppendUShort(funcCode.Size());
-			byteCode.AppendByteCode(funcCode);
+			CompileMethodDef(method, info->constantMap, byteCode);
 		}
 	}
 	void Compiler::CompileModuleInfo(std::shared_ptr<ModuleInfo> info, ByteCode& byteCode)
 	{
 		byteCode.AppendString(info->name);
 		byteCode.AppendUShort(info->fields.Size());
+		// fields
 		for (const auto& field : info->fields.values)
 		{
 			byteCode.AppendString(field.name);
 		}
+
+		// constant pool
+		CompileConstantPool(info->constantMap, byteCode);
+
 		byteCode.AppendUShort(info->methods.Size());
 		for (const auto& method : info->methods.values)
 		{
+			CompileMethodDef(method, info->constantMap, byteCode);
+		}
+	}
+	void Compiler::CompileMethodDef(const MethodDef & method, const ConstantMap& constantMap, ByteCode& byteCode)
+	{
+		if (method.annotations.ContainsKey(U"LibraryImport"))
+		{
+			byteCode.Append(1); // native function
+			auto annotation = method.annotations.GetValueByKey(U"LibraryImport");
+			byteCode.AppendString(method.name);
+			byteCode.AppendUShort(static_cast<int>(method.parameters.size()));
+			auto libName = std::static_pointer_cast<ConstantExpression>(annotation.arguments.at(0).value)->constant;
+			auto funcName = std::static_pointer_cast<ConstantExpression>(annotation.arguments.at(1).value)->constant;
+			byteCode.AppendString(libName);
+			byteCode.AppendString(funcName);
+		}
+		else
+		{
+			byteCode.Append(0); // user-defined function
 			byteCode.AppendString(method.name);
 			byteCode.AppendUShort(static_cast<int>(method.parameters.size()));
 			byteCode.AppendUShort(static_cast<int>(method.localVariables.size()));
-			auto funcCode = CompileMethodDef(method);
+			ByteCode funcCode;
+			CompileExpression(method.body, constantMap, byteCode);
 			byteCode.AppendUShort(static_cast<int>(funcCode.Size()));
 			byteCode.AppendByteCode(funcCode);
 		}
-	}
-	ByteCode Compiler::CompileMethodDef(const MethodDef & method)
-	{
-		ByteCode byteCode;
-		CompileExpression(method.body, method.constantMap, byteCode);
-		return byteCode;
 	}
 	void Compiler::CompileParameter(std::shared_ptr<ParameterExpression> parameter,
 		ByteCode& byteCode)
@@ -1047,6 +1101,20 @@ namespace cygni
 		if (found == false)
 		{
 			throw CompilerException(SourceLocation(), U"cannot find Main function");
+		}
+	}
+	void Compiler::CompileConstantPool(const ConstantMap & constantMap, ByteCode& byteCode)
+	{
+		byteCode.AppendUShort(constantMap.size());
+		std::vector<ConstantKey> constants(constantMap.size());
+		for (auto pair : constantMap)
+		{
+			constants[pair.second] = pair.first;
+		}
+		for (ConstantKey constant : constants)
+		{
+			byteCode.AppendTypeCode(constant.typeCode);
+			byteCode.AppendString(constant.constant);
 		}
 	}
 } // namespace cygni

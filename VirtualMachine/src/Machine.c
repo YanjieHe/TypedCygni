@@ -649,7 +649,7 @@ FunctionPointer load_library_function(const char * library_path, const char * fu
 		}
 		else
 		{
-			fprintf(stderr, "cannot load function '%' in the library: %s\n", function_name, library_path);
+			fprintf(stderr, "cannot load function '%s' in the library: %s\n", function_name, library_path);
 			exit(-1);
 		}
 	}

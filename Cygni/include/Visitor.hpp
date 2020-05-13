@@ -34,7 +34,7 @@ namespace cygni
 		json VisitProject(Project &project);
 		std::u32string VisitPackageRoute(const PackageRoute& route);
 		std::vector<json> VisitArgumentList(const std::vector<Argument> &arguments);
-		json VisitAnnotationList(const std::vector<AnnotationInfo> &annotations);
+		json VisitAnnotationList(const Table<std::u32string, AnnotationInfo> &annotations);
 		std::vector<json> VisitExpressionList(const std::vector<ExpPtr> &expressions);
 		json VisitParameterLocation(const ParameterLocation& location);
 	};
@@ -149,7 +149,7 @@ namespace cygni
 	class ConstantCollector
 	{
 	public:
-		void VisitMethodDef(MethodDef &method);
+		void VisitMethodDef(MethodDef &method, std::unordered_set<ConstantKey>& constantSet);
 		void VisitPackage(std::shared_ptr<Package> package);
 		void VisitProject(Project& project);
 	};

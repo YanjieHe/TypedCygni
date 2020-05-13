@@ -79,14 +79,14 @@ namespace cygni
 	}
 
 	FieldDef::FieldDef(SourceLocation location, AccessModifier modifier,
-		bool isStatic, std::vector<AnnotationInfo> annotations,
+		bool isStatic, Table<std::u32string, AnnotationInfo> annotations,
 		std::u32string name, TypePtr type, ExpPtr value)
 		: location{ location }, modifier{ modifier }, isStatic{ isStatic },
 		annotations{ annotations }, name{ name }, type{ type }, value{ value } {}
 
 	MethodDef::MethodDef(
 		SourceLocation location, AccessModifier modifier, bool isStatic,
-		std::vector<AnnotationInfo> annotations, std::u32string name,
+		Table<std::u32string, AnnotationInfo> annotations, std::u32string name,
 		std::vector<std::shared_ptr<ParameterExpression>> parameters,
 		TypePtr returnType, ExpPtr body)
 		: location{ location }, modifier{ modifier }, isStatic{ isStatic },
@@ -147,7 +147,7 @@ namespace cygni
 
 	ConstructorInfo::ConstructorInfo(
 		SourceLocation location, AccessModifier modifier,
-		std::vector<AnnotationInfo> annotations, std::u32string name,
+		Table<std::u32string, AnnotationInfo> annotations, std::u32string name,
 		std::vector<std::shared_ptr<ParameterExpression>> parameters,
 		TypePtr returnType, ExpPtr body)
 		: location{ location }, modifier{ modifier }, annotations{ annotations },

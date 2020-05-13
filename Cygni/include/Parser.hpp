@@ -82,10 +82,10 @@ namespace cygni
 		ExpPtr ParseVar();
 
 		FieldDef ParseFieldDefinition(AccessModifier modifier, 
-			std::vector<AnnotationInfo> annotations, bool isStatic);
+			Table<std::u32string, AnnotationInfo> annotations, bool isStatic);
 
 		MethodDef ParseMethodDefinition(AccessModifier modifier, 
-			std::vector<AnnotationInfo> annotations, bool isStatic);
+			Table<std::u32string, AnnotationInfo> annotations, bool isStatic);
 
 		std::shared_ptr<ParameterExpression> ParseParameter();
 
@@ -105,7 +105,7 @@ namespace cygni
 
 		AnnotationInfo ParseAnnotation();
 
-		std::vector<AnnotationInfo> ParseAnnotationList();
+		Table<std::u32string, AnnotationInfo> ParseAnnotationList();
 
 		std::vector<Argument> ParseArguments();
 

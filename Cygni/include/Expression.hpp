@@ -218,14 +218,14 @@ namespace cygni
 		SourceLocation location;
 		AccessModifier modifier;
 		bool isStatic;
-		std::vector<AnnotationInfo> annotations;
+		Table<std::u32string, AnnotationInfo> annotations;
 		std::u32string name;
 		TypePtr type;
 		ExpPtr value;
 		int index = -1;
 		FieldDef() = default;
 		FieldDef(SourceLocation location, AccessModifier modifier, bool isStatic,
-			std::vector<AnnotationInfo> annotations, std::u32string name,
+			Table<std::u32string, AnnotationInfo> annotations, std::u32string name,
 			TypePtr type, ExpPtr value);
 	};
 
@@ -235,7 +235,7 @@ namespace cygni
 		SourceLocation location;
 		AccessModifier modifier;
 		bool isStatic;
-		std::vector<AnnotationInfo> annotations;
+		Table<std::u32string, AnnotationInfo> annotations;
 		std::u32string name;
 		std::vector<std::shared_ptr<ParameterExpression>> parameters;
 		TypePtr returnType;
@@ -243,13 +243,12 @@ namespace cygni
 		TypePtr signature;
 
 		std::vector<std::shared_ptr<VarDefExpression>> localVariables;
-		std::unordered_map<ConstantKey, int> constantMap;
 
 		int index = -1;
 
 		MethodDef() = default;
 		MethodDef(SourceLocation location, AccessModifier modifier, bool isStatic,
-			std::vector<AnnotationInfo> annotations, std::u32string name,
+			Table<std::u32string, AnnotationInfo> annotations, std::u32string name,
 			std::vector<std::shared_ptr<ParameterExpression>> parameters,
 			TypePtr returnType, ExpPtr body);
 	};
@@ -259,7 +258,7 @@ namespace cygni
 	public:
 		SourceLocation location;
 		AccessModifier modifier;
-		std::vector<AnnotationInfo> annotations;
+		Table<std::u32string, AnnotationInfo> annotations;
 		std::u32string name;
 		std::vector<std::shared_ptr<ParameterExpression>> parameters;
 		TypePtr returnType;
@@ -267,7 +266,7 @@ namespace cygni
 		TypePtr signature;
 		ConstructorInfo() = default;
 		ConstructorInfo(SourceLocation location, AccessModifier modifier,
-			std::vector<AnnotationInfo> annotations, std::u32string name,
+			Table<std::u32string, AnnotationInfo> annotations, std::u32string name,
 			std::vector<std::shared_ptr<ParameterExpression>> parameters,
 			TypePtr returnType, ExpPtr body);
 	};
@@ -331,6 +330,7 @@ namespace cygni
 		Table<std::u32string, FieldDef> fields;
 		Table<std::u32string, MethodDef> methods;
 		int index = -1;
+		std::unordered_map<ConstantKey, int> constantMap;
 		ClassInfo() = default;
 		ClassInfo(SourceLocation location, std::u32string name);
 	};
@@ -343,6 +343,7 @@ namespace cygni
 		Table<std::u32string, FieldDef> fields;
 		Table<std::u32string, MethodDef> methods;
 		int index = -1;
+		std::unordered_map<ConstantKey, int> constantMap;
 		ModuleInfo() = default;
 		ModuleInfo(SourceLocation location, std::u32string name);
 	};

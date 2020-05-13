@@ -345,10 +345,10 @@ namespace cygni
 	}
 
 	json AstToJsonSerialization::VisitAnnotationList(
-		const std::vector<AnnotationInfo> &annotations)
+		const Table<std::u32string, AnnotationInfo> &annotations)
 	{
 		json annotationList(std::unordered_map<std::string, json>{});
-		for (const auto &annotation : annotations)
+		for (const auto &annotation : annotations.values)
 		{
 			json obj;
 			std::string name = UTF32ToUTF8(annotation.name);
@@ -1488,7 +1488,7 @@ namespace cygni
 			VisitPackage(package, scope);
 		}
 	}
-	void ConstantCollector::VisitMethodDef(MethodDef & method)
+	void ConstantCollector::VisitMethodDef(MethodDef & method, std::unordered_set<ConstantKey>& constantSet)
 	{
 		std::function<bool(ExpPtr)> filter = [](ExpPtr node)
 		{
@@ -1497,34 +1497,49 @@ namespace cygni
 		TreeTraverser traverser(filter);
 		std::vector<ExpPtr> nodeList;
 		traverser.VisitExpression(method.body, nodeList);
-		std::unordered_set<ConstantKey> constantSet;
 		for (auto exp : nodeList)
 		{
 			auto node = std::static_pointer_cast<ConstantExpression>(exp);
-			ConstantKey key{ node->type->typeCode, node->constant };
-			constantSet.insert(key);
-		}
-		int index = 0;
-		for (auto key : constantSet)
-		{
-			method.constantMap.insert({ key, index });
-			index++;
+			if (node->type->typeCode == TypeCode::Boolean)
+			{
+				// pass
+			}
+			else
+			{
+				// TO DO: small integers, 0.0 and 1.0
+				ConstantKey key{ node->type->typeCode, node->constant };
+				constantSet.insert(key);
+			}
 		}
 	}
 	void ConstantCollector::VisitPackage(std::shared_ptr<Package> package)
 	{
 		for (auto& _class : package->classes.values)
 		{
+			std::unordered_set<ConstantKey> constantSet;
 			for (auto& method : _class->methods.values)
 			{
-				VisitMethodDef(method);
+				VisitMethodDef(method, constantSet);
+			}
+			int index = 0;
+			for (auto key : constantSet)
+			{
+				_class->constantMap.insert({ key, index });
+				index++;
 			}
 		}
 		for (auto& module : package->modules.values)
 		{
+			std::unordered_set<ConstantKey> constantSet;
 			for (auto& method : module->methods.values)
 			{
-				VisitMethodDef(method);
+				VisitMethodDef(method, constantSet);
+			}
+			int index = 0;
+			for (auto key : constantSet)
+			{
+				module->constantMap.insert({ key, index });
+				index++;
 			}
 		}
 	}

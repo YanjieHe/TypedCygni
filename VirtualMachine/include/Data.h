@@ -71,7 +71,7 @@ typedef struct
 	uint16_t n_methods;
 	Function** methods;
 	int n_constants;
-	Value* constantPool;
+	Value* constant_pool;
 } ClassInfo;
 
 typedef struct

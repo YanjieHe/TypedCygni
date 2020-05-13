@@ -427,7 +427,7 @@ namespace cygni
 	}
 
 	FieldDef Parser::ParseFieldDefinition(AccessModifier modifier,
-		std::vector<AnnotationInfo> annotations,
+		Table<std::u32string, AnnotationInfo> annotations,
 		bool isStatic)
 	{
 		const Token &start = Look();
@@ -451,7 +451,7 @@ namespace cygni
 	}
 
 	MethodDef Parser::ParseMethodDefinition(AccessModifier modifier,
-		std::vector<AnnotationInfo> annotations,
+		Table<std::u32string, AnnotationInfo> annotations,
 		bool isStatic)
 	{
 		const Token &start = Look();
@@ -561,7 +561,7 @@ namespace cygni
 		Match(Tag::LeftBrace);
 		while (!IsEof() && Look().tag != Tag::RightBrace)
 		{
-			std::vector<AnnotationInfo> annotations = ParseAnnotationList();
+			Table<std::u32string, AnnotationInfo> annotations = ParseAnnotationList();
 			auto access = ParseAccess();
 
 			if (Look().tag == Tag::Var)
@@ -594,7 +594,7 @@ namespace cygni
 		Match(Tag::LeftBrace);
 		while (!IsEof() && Look().tag != Tag::RightBrace)
 		{
-			std::vector<AnnotationInfo> annotations = ParseAnnotationList();
+			Table<std::u32string, AnnotationInfo> annotations = ParseAnnotationList();
 			auto access = ParseAccess();
 
 			if (Look().tag == Tag::Var)
@@ -645,12 +645,13 @@ namespace cygni
 		return AnnotationInfo(GetLoc(start), name, arguments);
 	}
 
-	std::vector<AnnotationInfo> Parser::ParseAnnotationList()
+	Table<std::u32string, AnnotationInfo> Parser::ParseAnnotationList()
 	{
-		std::vector<AnnotationInfo> annotations;
+		Table<std::u32string, AnnotationInfo> annotations;
 		while (Look().tag == Tag::At)
 		{
-			annotations.push_back(ParseAnnotation());
+			auto annotation = ParseAnnotation();
+			annotations.Add(annotation.name, annotation);
 		}
 		return annotations;
 	}
@@ -726,7 +727,7 @@ namespace cygni
 			return Argument(value);
 		}
 	}
-	
+
 	std::vector<PackageRoute> Parser::ParseImportedPackages()
 	{
 		std::vector<PackageRoute> importedPackages;
