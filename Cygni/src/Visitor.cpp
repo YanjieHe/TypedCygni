@@ -1311,6 +1311,7 @@ namespace cygni
 		{
 			method.index = offset;
 			scope->Put(method.name, ParameterLocation(ParameterType::ModuleMethod, offset, info->index));
+			offset++;
 		}
 		for (const auto& method : info->methods.values)
 		{

@@ -2,7 +2,8 @@
 #include "IO.h"
 #include <stdio.h>
 
-void print_line_int(Value * argv, Value* out)
+int print_line_int(Value * env)
 {
-	printf("%d\n", argv[0].u.i32_v);
+	printf("%d\n", env[0].u.i32_v);
+	return 0;
 }

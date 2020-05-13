@@ -15,12 +15,12 @@ void parse_module(FILE* file, ModuleInfo* module_info);
 
 Function* parse_function(FILE* file);
 
-Value* parse_constant_pool(FILE* file);
+Constant* parse_constant_pool(FILE* file);
 
 void view_exe(Executable* exe);
 
 void view_function(Function* function);
 
-void view_type_tag(uint8_t tag);
+void view_type_tag(Byte tag);
 
 #endif // PARSER_H

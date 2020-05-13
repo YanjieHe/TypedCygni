@@ -11,7 +11,6 @@ char* parse_string(FILE* file)
 	char* str;
 
 	len = parse_ushort(file);
-	printf("read string len: %d\n", len);
 	str = (char*)malloc(sizeof(char) * (len + 1));
 	if (fread(str, sizeof(char), len, file) == len)
 	{
@@ -30,13 +29,13 @@ char* parse_string(FILE* file)
 uint16_t parse_ushort(FILE* file)
 {
 	uint16_t value;
-	uint8_t b1;
-	uint8_t b2;
+	Byte b1;
+	Byte b2;
 	size_t res1;
 	size_t res2;
 
-	res1 = fread(&b1, sizeof(uint8_t), 1, file);
-	res2 = fread(&b2, sizeof(uint8_t), 1, file);
+	res1 = fread(&b1, sizeof(Byte), 1, file);
+	res2 = fread(&b2, sizeof(Byte), 1, file);
 
 	if (res1 == 1 && res2 == 1)
 	{
@@ -122,6 +121,10 @@ void parse_class(FILE* file, ClassInfo* class_info)
 	for (i = 0; i < method_count; i++)
 	{
 		methods[i] = parse_function(file);
+		if (!(methods[i]->is_native_function))
+		{
+			methods[i]->u.func_info->constant_pool = class_info->constant_pool;
+		}
 		printf("method: %s\n", methods[i]->name);
 	}
 
@@ -152,16 +155,16 @@ void parse_module(FILE* file, ModuleInfo* module_info)
 		printf("field: %s\n", field_names[i]);
 	}
 
-	printf("start reading constant pool\n");
 	module_info->constant_pool = parse_constant_pool(file);
-	printf("complete reading constant pool\n");
-	printf("current position: %d\n", ftell(file));
 	function_count = parse_ushort(file);
-	printf("module name: %s, number of functions: %d\n", module_name, function_count);
 	functions = (Function**)malloc(sizeof(Function*)*function_count);
 	for (i = 0; i < function_count; i++)
 	{
 		functions[i] = parse_function(file);
+		if (!(functions[i]->is_native_function))
+		{
+			functions[i]->u.func_info->constant_pool = module_info->constant_pool;
+		}
 		printf("function: %s\n", functions[i]->name);
 	}
 
@@ -176,49 +179,73 @@ void parse_module(FILE* file, ModuleInfo* module_info)
 Function * parse_function(FILE * file)
 {
 	Function* function;
+	Byte is_native_function;
 	uint16_t code_len;
 
 	function = (Function*)malloc(sizeof(Function));
-	printf("try to read function name\n");
-	function->name = parse_string(file);
-	printf("function name: %s\n", function->name);
-	function->u.func_info = (FunctionInfo*)malloc(sizeof(FunctionInfo));
-	function->u.func_info->n_parameters = parse_ushort(file);
-	function->u.func_info->locals = parse_ushort(file);
-	code_len = parse_ushort(file);
-	function->u.func_info->code_len = code_len;
-	printf("function code len=%d\n", code_len);
-	function->u.func_info->code = (uint8_t*)malloc(sizeof(uint8_t) * code_len);
-	if (fread(function->u.func_info->code, sizeof(uint8_t), code_len, file) == code_len)
+	if (fread(&is_native_function, sizeof(Byte), 1, file) == 1)
 	{
-		return function;
+		if (is_native_function)
+		{
+			function->is_native_function = true;
+			function->name = parse_string(file);
+			function->u.native_function = (NativeFunction*)malloc(sizeof(NativeFunction));
+			function->u.native_function->is_loaded = false;
+			function->u.native_function->function_pointer = NULL;
+			function->u.native_function->args_size = parse_ushort(file);
+			function->u.native_function->lib_path = parse_string(file);
+			function->u.native_function->func_name = parse_string(file);
+			return function;
+		}
+		else
+		{
+			function->name = parse_string(file);
+			function->is_native_function = false;
+			function->u.func_info = (FunctionInfo*)malloc(sizeof(FunctionInfo));
+			function->u.func_info->args_size = parse_ushort(file);
+			function->u.func_info->locals = parse_ushort(file);
+			printf("args_size = %d, locals = %d\n", function->u.func_info->args_size, function->u.func_info->locals);
+			code_len = parse_ushort(file);
+			function->u.func_info->code_len = code_len;
+			printf("function code len=%d\n", code_len);
+			function->u.func_info->code = (Byte*)malloc(sizeof(Byte) * code_len);
+			if (fread(function->u.func_info->code, sizeof(Byte), code_len, file) == code_len)
+			{
+				return function;
+			}
+			else
+			{
+				fprintf(stderr, "fail to read byte code\n");
+				free(function->name);
+				free(function->u.func_info->code);
+				free(function);
+				exit(-1);
+			}
+		}
 	}
 	else
 	{
-		fprintf(stderr, "fail to read byte code\n");
-		free(function->name);
-		free(function->u.func_info->code);
-		free(function);
+		fprintf(stderr, "fail to load function");
 		exit(-1);
 	}
 }
 
-Value * parse_constant_pool(FILE * file)
+Constant * parse_constant_pool(FILE * file)
 {
 	uint16_t n_constants;
-	Byte b;
+	Byte type_tag;
 	int i;
 	char* str;
-	Value* values;
+	Constant* constants;
 	String* u32_str;
 	char* ptr;
 
 	n_constants = parse_ushort(file);
 	printf("# of constants: %d\n", n_constants);
-	values = (Value*)malloc(sizeof(Value) * n_constants);
+	constants = (Constant*)malloc(sizeof(Constant) * n_constants);
 	for (i = 0; i < n_constants; i++)
 	{
-		if (fread(&b, sizeof(Byte), 1, file) == 1)
+		if (fread(&type_tag, sizeof(Byte), 1, file) == 1)
 		{
 			str = parse_string(file);
 			printf("constant: '%s'\n", str);
@@ -227,31 +254,33 @@ Value * parse_constant_pool(FILE * file)
 				printf("_");
 			}
 			printf("\n");
-			if (b == TYPE_I32)
+			constants[i].tag = type_tag;
+			if (type_tag == TYPE_I32)
 			{
-				values[i].u.i32_v = atoi(str);
+				constants[i].u.i32_v = atoi(str);
 				free(str);
 			}
-			else if (b == TYPE_I64)
+			else if (type_tag == TYPE_I64)
 			{
-				values[i].u.i64_v = atol(str);
+				constants[i].u.i64_v = atol(str);
 				free(str);
 			}
-			else if (b == TYPE_F32)
+			else if (type_tag == TYPE_F32)
 			{
-				values[i].u.f32_v = (float_t)atof(str);
+				constants[i].u.f32_v = (float_t)atof(str);
 				free(str);
 			}
-			else if (b == TYPE_F64)
+			else if (type_tag == TYPE_F64)
 			{
-				values[i].u.f64_v = (double_t)atof(str);
+				constants[i].u.f64_v = (double_t)atof(str);
 				free(str);
 			}
-			else if (b == TYPE_STRING)
+			else if (type_tag == TYPE_STRING)
 			{
 				u32_str = malloc(sizeof(String));
 				u32_str->length = utf8_to_utf32_len(str);
 				u32_str->characters = utf8_to_utf32(str, u32_str->length);
+				constants[i].u.str_v = u32_str;
 				free(str);
 			}
 			else
@@ -266,7 +295,7 @@ Value * parse_constant_pool(FILE * file)
 			exit(-1);
 		}
 	}
-	return values;
+	return constants;
 }
 
 void view_exe(Executable* exe)
@@ -311,54 +340,63 @@ void view_exe(Executable* exe)
 void view_function(Function * function)
 {
 	int i;
-	uint8_t op_code;
+	Byte op_code;
 	const char* op_name;
 	const char* op_type;
 	uint32_t u32_v;
 
-	printf("\tmethod: %s\n", function->name);
-	printf("\targs_size=%d, locals=%d\n", function->u.func_info->n_parameters, function->u.func_info->locals);
-
-	printf("\tcode:\n");
-	i = 0;
-	while (i < function->u.func_info->code_len)
+	if (function->is_native_function)
 	{
-		op_code = function->u.func_info->code[i];
-		op_name = opcode_info[op_code][0];
-		printf("\t\t%d: %s", i, op_name);
-		i++;
-		op_type = opcode_info[op_code][1];
-		if (strcmp(op_type, "b") == 0)
-		{
-			printf(" %d", (int)function->u.func_info->code[i]);
-			i++;
-		}
-		else if (strcmp(op_type, "u") == 0 || strcmp(op_type, "p") == 0)
-		{
-			u32_v = function->u.func_info->code[i];
-			u32_v = u32_v * 256 + ((uint16_t)function->u.func_info->code[i + 1]);
-			printf(" %d", u32_v);
-			i = i + 2;
-		}
-		else if (strcmp(op_type, "uu") == 0)
-		{
-			u32_v = function->u.func_info->code[i];
-			u32_v = u32_v * 256 + ((uint16_t)function->u.func_info->code[i + 1]);
-			printf(" %d", u32_v);
-			i = i + 2;
+		printf("\tmethod: %s\n", function->name);
+		printf("\targs_size=%d\n", function->u.native_function->args_size);
+		printf("\tlibrary name: %s\nfunction name: %s\n", function->u.native_function->lib_path, function->u.native_function->func_name);
+	}
+	else
+	{
+		printf("\tmethod: %s\n", function->name);
+		printf("\targs_size=%d, locals=%d\n", function->u.func_info->args_size, function->u.func_info->locals);
 
-			u32_v = function->u.func_info->code[i];
-			u32_v = u32_v * 256 + ((uint16_t)function->u.func_info->code[i + 1]);
-			printf(" %d", u32_v);
-			i = i + 2;
+		printf("\tcode:\n");
+		i = 0;
+		while (i < function->u.func_info->code_len)
+		{
+			op_code = function->u.func_info->code[i];
+			op_name = opcode_info[op_code][0];
+			printf("\t\t%d: %s", i, op_name);
+			i++;
+			op_type = opcode_info[op_code][1];
+			if (strcmp(op_type, "b") == 0)
+			{
+				printf(" %d", (int)function->u.func_info->code[i]);
+				i++;
+			}
+			else if (strcmp(op_type, "u") == 0 || strcmp(op_type, "p") == 0)
+			{
+				u32_v = function->u.func_info->code[i];
+				u32_v = u32_v * 256 + ((uint16_t)function->u.func_info->code[i + 1]);
+				printf(" %d", u32_v);
+				i = i + 2;
+			}
+			else if (strcmp(op_type, "uu") == 0)
+			{
+				u32_v = function->u.func_info->code[i];
+				u32_v = u32_v * 256 + ((uint16_t)function->u.func_info->code[i + 1]);
+				printf(" %d", u32_v);
+				i = i + 2;
+
+				u32_v = function->u.func_info->code[i];
+				u32_v = u32_v * 256 + ((uint16_t)function->u.func_info->code[i + 1]);
+				printf(" %d", u32_v);
+				i = i + 2;
+			}
+			printf("\n");
 		}
+
 		printf("\n");
 	}
-
-	printf("\n");
 }
 
-void view_type_tag(uint8_t tag)
+void view_type_tag(Byte tag)
 {
 	if (tag == TYPE_I32)
 	{

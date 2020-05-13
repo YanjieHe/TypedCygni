@@ -3,7 +3,7 @@
 #include "Data.h"
 
 extern "C" {
-	__declspec(dllexport) void print_line_int(Value * argv, Value* out);
+	__declspec(dllexport) int print_line_int(Value * env);
 }
 
 #endif // IO_H

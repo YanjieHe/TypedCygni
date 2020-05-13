@@ -6,24 +6,63 @@
 #include "OpCode.h"
 
 typedef uint8_t Byte;
+typedef uint32_t Char;
+
+struct Object;
+struct Function;
 
 typedef struct
 {
+	uint8_t is_gc_obj;
 	union
 	{
 		int32_t i32_v;
 		int64_t i64_v;
 		float_t f32_v;
 		double_t f64_v;
-		void* obj;
+		struct Object* gc_obj; /* collectable objects */
+		struct Function* function;
+		void* pointer;
 	}u;
-	uint8_t is_pointer;
 } Value;
 
+typedef enum
+{
+	ARRAY_TYPE_I32,
+	ARRAY_TYPE_I64,
+	ARRAY_TYPE_F32,
+	ARRAY_TYPE_F64,
+	ARRAY_TYPE_OBJECT
+} ArrayType;
 
-typedef uint32_t Char;
+typedef struct
+{
+	ArrayType type;
+	int32_t length;
+	union
+	{
+		int32_t* i32_array;
+		int64_t* i64_array;
+		float_t* f32_array;
+		double_t* f64_array;
+		struct Object** obj_array;
+	}u;
+} Array;
 
-// unicode (UTF32)
+typedef struct Object
+{
+	uint8_t is_array;
+	struct Object* next;
+	uint8_t marked;
+	uint16_t class_index;
+	union
+	{
+		Value* fields;
+		Array* array;
+	}u;
+}Object;
+
+// unicode (UTF-32)
 typedef struct
 {
 	int32_t length;
@@ -32,26 +71,40 @@ typedef struct
 
 typedef struct
 {
-	int n_parameters;
-	int locals;
-	int code_len;
-	uint8_t* code;
-	int n_constants;
-	Value* constant_pool;
-} FunctionInfo;
-
-typedef void(*FunctionPointer)(Value* argv, Value* out);
+	TypeTag tag;
+	union
+	{
+		int32_t i32_v;
+		int64_t i64_v;
+		float_t f32_v;
+		double_t f64_v;
+		String* str_v;
+	}u;
+} Constant;
 
 typedef struct
+{
+	uint16_t need_stack_size;
+	uint16_t args_size;
+	uint16_t locals;
+	uint16_t code_len;
+	uint8_t* code;
+	int n_constants;
+	Constant* constant_pool;
+} FunctionInfo;
+
+typedef int(*FunctionPointer)(Value* env);
+
+typedef struct NativeFunction
 {
 	bool is_loaded;
 	char* lib_path;
 	char* func_name;
-	int n_parameters;
+	int args_size;
 	FunctionPointer function_pointer;
 } NativeFunction;
 
-typedef struct
+typedef struct Function
 {
 	bool is_native_function;
 	char* name;
@@ -62,7 +115,6 @@ typedef struct
 	}u;
 } Function;
 
-
 typedef struct
 {
 	char* name;
@@ -71,7 +123,7 @@ typedef struct
 	uint16_t n_methods;
 	Function** methods;
 	int n_constants;
-	Value* constant_pool;
+	Constant* constant_pool;
 } ClassInfo;
 
 typedef struct
@@ -83,16 +135,15 @@ typedef struct
 	uint16_t n_functions;
 	Function** functions;
 	int n_constants;
-	Value* constant_pool;
+	Constant* constant_pool;
 }ModuleInfo;
 
-
-typedef struct Object
+typedef struct
 {
-	ClassInfo* class_info;
-	Value* fields;
-	struct Object* next;
-}Object;
+	int size;
+	int threshold;
+	Object* head;
+} Heap;
 
 typedef struct
 {
@@ -101,6 +152,7 @@ typedef struct
 	int module_count;
 	ModuleInfo* modules;
 	Function* entry;
-}Executable;
+	Heap heap;
+} Executable;
 
 #endif // DATA_H

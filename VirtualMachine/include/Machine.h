@@ -25,4 +25,6 @@ void run(Machine* machine);
 
 FunctionPointer load_library_function(const char* library_path, const char* function_name);
 
+void view_stack(Value* stack);
+
 #endif // MACHINE_H

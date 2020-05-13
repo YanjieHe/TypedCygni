@@ -599,6 +599,7 @@ namespace cygni
 	}
 	void Compiler::CompileMethodDef(const MethodDef & method, const ConstantMap& constantMap, ByteCode& byteCode)
 	{
+		std::cout << "method name: " << method.name << std::endl;
 		if (method.annotations.ContainsKey(U"LibraryImport"))
 		{
 			byteCode.Append(1); // native function
@@ -617,8 +618,8 @@ namespace cygni
 			byteCode.AppendUShort(static_cast<int>(method.parameters.size()));
 			byteCode.AppendUShort(static_cast<int>(method.localVariables.size()));
 			ByteCode funcCode;
-			CompileExpression(method.body, constantMap, byteCode);
-			byteCode.AppendUShort(static_cast<int>(funcCode.Size()));
+			CompileExpression(method.body, constantMap, funcCode);
+			byteCode.AppendUShort(funcCode.Size());
 			byteCode.AppendByteCode(funcCode);
 		}
 	}
