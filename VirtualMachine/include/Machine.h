@@ -27,4 +27,6 @@ FunctionPointer load_library_function(const char* library_path, const char* func
 
 void view_stack(Value* stack);
 
+void copy_string(int32_t* char_array, String* str_v);
+
 #endif // MACHINE_H

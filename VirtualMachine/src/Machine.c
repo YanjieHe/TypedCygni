@@ -47,6 +47,9 @@ void run(Machine* machine)
 	void* pointer;
 	int stack_index;
 	int32_t array_index;
+	String* str_v;
+	Object* str_obj;
+	int32_t cur_fp;
 
 	machine->function = machine->exe->entry;
 	cur_func = machine->function;
@@ -65,7 +68,7 @@ void run(Machine* machine)
 	while (pc < cur_func->u.func_info->code_len)
 	{
 		op = code[pc];
-		printf("function: %s, op = %s\n", cur_func->name, opcode_info[op][0]);
+		//printf("function: %s, op = %s\n", cur_func->name, opcode_info[op][0]);
 		pc = pc + 1;
 		switch (op)
 		{
@@ -103,10 +106,28 @@ void run(Machine* machine)
 			STACK_WRITE(f64_v);
 			break;
 		}
-					   //case PUSH_STRING: {
-					   //	READ_USHORT(index);
-					   //	break;
-					   //}
+		case PUSH_STRING: {
+			READ_USHORT(index);
+			str_v = constant_pool[index].u.str_v;
+			gc_obj = malloc(sizeof(Object));
+			gc_obj->is_array = false;
+			gc_obj->next = NULL;
+			gc_obj->class_index = 65535; // the class index of string
+			gc_obj->u.fields = malloc(sizeof(Value) * 1);
+			gc_obj->u.fields[0].is_gc_obj = true;
+
+			str_obj = malloc(sizeof(Object));
+			str_obj->is_array = true;
+			str_obj->next = NULL;
+			str_obj->u.array = malloc(sizeof(Array));
+			str_obj->u.array->length = str_v->length;
+			str_obj->u.array->u.i32_array = malloc(sizeof(int32_t) * str_v->length);
+			copy_string(str_obj->u.array->u.i32_array, str_v);
+
+			gc_obj->u.fields[0].u.gc_obj = str_obj;
+			STACK_WRITE(gc_obj);
+			break;
+		}
 		case PUSH_LOCAL_I32: {
 			READ_USHORT(offset);
 			i32_v = stack[fp + offset].u.i32_v;
@@ -672,12 +693,12 @@ void run(Machine* machine)
 			}
 			else
 			{
-				int currentFp = fp;
+				cur_fp = fp;
 				fp = sp - next_func->u.func_info->args_size;
 				stack_index = fp + next_func->u.func_info->args_size + next_func->u.func_info->locals;
 				stack[stack_index].u.function = cur_func;
 				stack[stack_index + 1].u.i32_v = pc;
-				stack[stack_index + 2].u.i32_v = currentFp;
+				stack[stack_index + 2].u.i32_v = cur_fp;
 				cur_func = next_func;
 				pc = 0;
 				sp = stack_index + 3;
@@ -805,7 +826,7 @@ FunctionPointer load_library_function(const char * library_path, const char * fu
 	FunctionPointer function_pointer;
 
 	lib = LoadLibrary(library_path);
-	printf("try to load function '%s' from library '%s'\n", function_name, library_path);
+	//printf("try to load function '%s' from library '%s'\n", function_name, library_path);
 
 	if (lib)
 	{
@@ -836,4 +857,14 @@ void view_stack(Value* stack)
 		printf("%d ", stack[i].u.i32_v);
 	}
 	printf("\n");
+}
+
+void copy_string(int32_t * char_array, String * str_v)
+{
+	int i;
+
+	for (i = 0; i < str_v->length; i++)
+	{
+		char_array[i] = (int32_t)str_v->characters[i];
+	}
 }

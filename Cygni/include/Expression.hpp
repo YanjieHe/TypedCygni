@@ -331,6 +331,7 @@ namespace cygni
 		Table<std::u32string, MethodDef> methods;
 		int index = -1;
 		std::unordered_map<ConstantKey, int> constantMap;
+		std::vector<TypePtr> superClasses;
 		ClassInfo() = default;
 		ClassInfo(SourceLocation location, std::u32string name);
 	};
@@ -346,6 +347,17 @@ namespace cygni
 		std::unordered_map<ConstantKey, int> constantMap;
 		ModuleInfo() = default;
 		ModuleInfo(SourceLocation location, std::u32string name);
+	};
+
+	class InterfaceInfo
+	{
+	public:
+		SourceLocation location;
+		std::u32string name;
+		Table<std::u32string, MethodDef> methods;
+		std::vector<TypePtr> superInterfaces;
+		InterfaceInfo() = default;
+		InterfaceInfo(SourceLocation location, std::u32string name);
 	};
 
 	class TypeAlias
@@ -393,6 +405,7 @@ namespace cygni
 		std::unordered_map<std::u32string, TypeAlias> typeAliases;
 		Table<std::u32string, std::shared_ptr<ClassInfo>> classes;
 		Table<std::u32string, std::shared_ptr<ModuleInfo>> modules;
+		Table<std::u32string, std::shared_ptr<InterfaceInfo>> interfaces;
 
 		explicit Program(std::shared_ptr<SourceDocument> document);
 	};

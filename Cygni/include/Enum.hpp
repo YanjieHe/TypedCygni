@@ -75,6 +75,8 @@ namespace cygni
 		Protected,
 		Module,
 		Package,
+		Extends,
+		Interface,
 		Eof
 	};
 
@@ -449,6 +451,10 @@ namespace cygni
 				return U"Module";
 			case Tag::Package:
 				return U"Package";
+			case Tag::Extends:
+				return U"Extends";
+			case Tag::Interface:
+				return U"Interface";
 			case Tag::Eof:
 				return U"Eof";
 			default:

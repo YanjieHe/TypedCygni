@@ -3,7 +3,6 @@
 #include <inttypes.h>
 #include <math.h>
 #include <stdbool.h>
-#include "OpCode.h"
 
 typedef uint8_t Byte;
 typedef uint32_t Char;
@@ -71,7 +70,7 @@ typedef struct
 
 typedef struct
 {
-	TypeTag tag;
+	uint8_t tag;
 	union
 	{
 		int32_t i32_v;

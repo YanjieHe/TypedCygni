@@ -29,7 +29,8 @@ namespace cygni
 			{U"package", Tag::Package},
 			{U"import", Tag::Import},
 			{U"require", Tag::Require},
-			{U"rename", Tag::Rename}
+			{U"rename", Tag::Rename},
+			{U"interface", Tag::Interface}
 		};
 		if (tag == Tag::Identifier)
 		{

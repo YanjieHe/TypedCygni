@@ -4,8 +4,7 @@ using std::vector;
 
 namespace cygni
 {
-	Parser::Parser(std::vector<Token> tokens,
-		std::shared_ptr<SourceDocument> document)
+	Parser::Parser(std::vector<Token> tokens, std::shared_ptr<SourceDocument> document)
 		: tokens{ tokens }, document{ document }, offset{ 0 } {}
 
 	Program Parser::ParseProgram()
@@ -22,10 +21,19 @@ namespace cygni
 				auto classInfo = ParseDefClass();
 				program.classes.Add(classInfo->name, classInfo);
 			}
-			else
+			else if (Look().tag == Tag::Module)
 			{
 				auto moduleInfo = ParseDefModule();
 				program.modules.Add(moduleInfo->name, moduleInfo);
+			}
+			else if (Look().tag == Tag::Interface)
+			{
+				auto interfaceInfo = ParseDefInterface();
+				program.interfaces.Add(interfaceInfo->name, interfaceInfo);
+			}
+			else
+			{
+				throw ParserException(Look().line, Look().column, U"expecting 'class', 'module' or 'interface'");
 			}
 		}
 		return program;
@@ -330,7 +338,7 @@ namespace cygni
 			const Token &start = Look();
 			Advance();
 			return std::make_shared<ParameterExpression>(
-				GetLoc(start), name, std::make_shared<UnknownType>());
+				GetLoc(start), name, Type::Unknown());
 		}
 		else if (Look().tag == Tag::New)
 		{
@@ -338,7 +346,8 @@ namespace cygni
 		}
 		else
 		{
-			throw ParserException(Look().line, Look().column, U"factor");
+			throw ParserException(Look().line, Look().column,
+				Format(U"unexpected token type: {}", Enum<Tag>::ToString(Look().tag)));
 		}
 	}
 
@@ -558,6 +567,17 @@ namespace cygni
 		Match(Tag::Class);
 		auto name = Match(Tag::Identifier).text;
 		auto info = std::make_shared<ClassInfo>(GetLoc(start), name);
+
+		if (Look().tag == Tag::UpperBound)
+		{
+			Match(Tag::UpperBound);
+			info->superClasses.push_back(ParseType());
+			while (!IsEof() && Look().tag != Tag::LeftBrace)
+			{
+				Match(Tag::Comma);
+				info->superClasses.push_back(ParseType());
+			}
+		}
 		Match(Tag::LeftBrace);
 		while (!IsEof() && Look().tag != Tag::RightBrace)
 		{
@@ -578,7 +598,8 @@ namespace cygni
 			}
 			else
 			{
-				throw ParserException(Look().line, Look().column, U"unexpected token");
+				throw ParserException(Look().line, Look().column,
+					Format(U"unexpected token type '{}', expecting 'var' or 'def'", Enum<Tag>::ToString(Look().tag)));
 			}
 		}
 		Match(Tag::RightBrace);
@@ -611,7 +632,44 @@ namespace cygni
 			}
 			else
 			{
-				throw ParserException(Look().line, Look().column, U"unexpected token");
+				throw ParserException(Look().line, Look().column,
+					Format(U"unexpected token type '{}', expecting 'var' or 'def'", Enum<Tag>::ToString(Look().tag)));
+			}
+		}
+		Match(Tag::RightBrace);
+		return info;
+	}
+
+	std::shared_ptr<InterfaceInfo> Parser::ParseDefInterface()
+	{
+		const Token &start = Look();
+		Match(Tag::Module);
+		auto name = Match(Tag::Identifier).text;
+		auto info = std::make_shared<InterfaceInfo>(GetLoc(start), name);
+		if (Look().tag == Tag::UpperBound)
+		{
+			Match(Tag::UpperBound);
+			info->superInterfaces.push_back(ParseType());
+			while (!IsEof() && Look().tag != Tag::LeftBrace)
+			{
+				Match(Tag::Comma);
+				info->superInterfaces.push_back(ParseType());
+			}
+		}
+		Match(Tag::LeftBrace);
+		while (!IsEof() && Look().tag != Tag::RightBrace)
+		{
+			Table<std::u32string, AnnotationInfo> annotations = ParseAnnotationList();
+			if (Look().tag == Tag::Def)
+			{
+				// def method(args..) { }
+				auto method = ParseMethodDefinition(AccessModifier::Public, annotations, true);
+				info->methods.Add(method.name, method); // only definition, no implementation
+			}
+			else
+			{
+				throw ParserException(Look().line, Look().column,
+					Format(U"unexpected token type '{}', expecting 'def'", Enum<Tag>::ToString(Look().tag)));
 			}
 		}
 		Match(Tag::RightBrace);

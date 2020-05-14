@@ -273,4 +273,9 @@ namespace cygni
 		}
 	}
 
+	InterfaceInfo::InterfaceInfo(SourceLocation location, std::u32string name)
+		: location{location}, name{ name }
+	{
+	}
+
 } // namespace cygni

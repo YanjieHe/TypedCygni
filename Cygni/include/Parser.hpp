@@ -101,6 +101,8 @@ namespace cygni
 
 		std::shared_ptr<ModuleInfo> ParseDefModule();
 
+		std::shared_ptr<InterfaceInfo> ParseDefInterface();
+
 		AccessModifier ParseAccess();
 
 		AnnotationInfo ParseAnnotation();
@@ -114,7 +116,9 @@ namespace cygni
 		Argument ParseArgument();
 
 		std::vector<PackageRoute> ParseImportedPackages();
+
 		std::unordered_map<std::u32string, TypeAlias> ParseTypeAliases();
+
 	};
 } // namespace cygni
 #endif // CYGNI_PARSER_HPP

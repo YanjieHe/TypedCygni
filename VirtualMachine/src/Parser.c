@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "Unicode.h"
+#include "OpCode.h"
 
 char* parse_string(FILE* file)
 {
