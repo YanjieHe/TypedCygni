@@ -131,6 +131,18 @@ namespace cygni
 		bool Equals(TypePtr other) const override;
 	};
 
+
+	class InterfaceType : public Type
+	{
+	public:
+		PackageRoute route;
+		std::u32string name;
+		InterfaceType(PackageRoute route, std::u32string name);
+
+		std::u32string ToString() const override;
+		bool Equals(TypePtr other) const override;
+	};
+
 	class ArrayType : public Type
 	{
 	public:
@@ -145,12 +157,15 @@ namespace cygni
 	class FunctionType : public Type
 	{
 	public:
+		TypePtr selfType;
 		std::vector<TypePtr> parameters;
 		TypePtr returnType;
 
-		FunctionType(std::vector<TypePtr> parameters, TypePtr returnType);
+		FunctionType(TypePtr selfType, std::vector<TypePtr> parameters, TypePtr returnType);
 
 		bool Match(const std::vector<TypePtr> &args) const;
+
+		std::u32string ToString() const override;
 	};
 
 	class TypeParameter
@@ -164,6 +179,8 @@ namespace cygni
 	public:
 		std::vector<TypeParameter> parameters;
 	};
+
+	std::u32string PackageRouteToString(const PackageRoute& route);
 
 } // namespace cygni
 
@@ -194,7 +211,6 @@ public:
 
 namespace cygni
 {
-
 	class UnionType : public Type
 	{
 	public:

@@ -72,7 +72,6 @@ int main(int argc, char **argv)
 	cout << "Hello Cygni!" << endl;
 	try
 	{
-		//CompileProgram("sample_code/factorial.cyg", "sample_code/factorial.json");
 		std::vector<std::string> fileList = {
 			"sample_code/Geometry.cyg",
 				"sample_code/IO.cyg",
@@ -82,31 +81,29 @@ int main(int argc, char **argv)
 				"sample_code/App.cyg"
 		};
 		ConsoleApp app;
-		//app.CompileAndOutputJson(fileList, "sample_code/program.json");
 		app.Compile(fileList, "sample_code/app");
-		//app.Run(argc, argv);
 	}
-	catch (cygni::ArgumentException &ex)
+	catch (ArgumentException &ex)
 	{
-		cout << cygni::UTF32ToUTF8(ex.message) << endl;
+		cout << UTF32ToUTF8(ex.message) << endl;
 	}
-	catch (cygni::NotImplementedException &ex)
+	catch (NotImplementedException &ex)
 	{
-		cout << cygni::UTF32ToUTF8(ex.message) << endl;
+		cout << UTF32ToUTF8(ex.message) << endl;
 	}
-	catch (cygni::LexicalException &ex)
-	{
-		cout << ex.FormattedErrorMessage() << endl;
-	}
-	catch (cygni::ParserException &ex)
+	catch (LexicalException &ex)
 	{
 		cout << ex.FormattedErrorMessage() << endl;
 	}
-	catch (cygni::TypeException &ex)
+	catch (ParserException &ex)
 	{
 		cout << ex.FormattedErrorMessage() << endl;
 	}
-	catch (cygni::FileNotFoundException& ex)
+	catch (TypeException &ex)
+	{
+		cout << ex.FormattedErrorMessage() << endl;
+	}
+	catch (FileNotFoundException& ex)
 	{
 		cout << ex.message << endl;
 	}

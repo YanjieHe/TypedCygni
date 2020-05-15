@@ -1,7 +1,6 @@
 #ifndef CYGNI_LEXER_HPP
 #define CYGNI_LEXER_HPP
 
-#include "Constants.hpp"
 #include "Exception.hpp"
 #include "Token.hpp"
 #include "Utility.hpp"
@@ -18,6 +17,11 @@ namespace cygni
 		int column;
 		int offset;
 		std::u32string builder;
+
+		static inline const char32_t SINGLE_QUOTE = U'\'';
+		static inline const char32_t DOUBLE_QUOTE = U'\"';
+		static inline const  char32_t END_LINE = U'\n';
+		static inline const char32_t BACKSLASH = U'\\';
 
 	public:
 		explicit Lexer(const std::u32string &code);
@@ -104,7 +108,7 @@ namespace cygni
 			}
 			else
 			{
-				throw LexicalException(line, column, U"unexpected character");
+				throw LexicalException(line, column, Format(U"unexpected character '{}'", Peek()));
 			}
 		}
 
@@ -116,7 +120,7 @@ namespace cygni
 			}
 			else
 			{
-				throw LexicalException(line, column, U"unexpected character");
+				throw LexicalException(line, column, Format(U"unexpected character '{}'", Peek()));
 			}
 		}
 
@@ -128,7 +132,7 @@ namespace cygni
 			}
 			else
 			{
-				throw LexicalException(line, column, U"unexpected character");
+				throw LexicalException(line, column, Format(U"unexpected character '{}'", Peek()));
 			}
 		}
 	};

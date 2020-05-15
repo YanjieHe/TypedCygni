@@ -17,7 +17,7 @@ namespace cygni
 		void Append(Byte byte);
 		void AppendOp(OpCode op);
 		void AppendTypeTag(TypeTag tag);
-		void AppendUShort(int value);
+		void AppendUShort(uint32_t value);
 		void WriteUShort(int index, int value);
 		void AppendUInt(uint32_t value);
 		void AppendTypeCode(TypeCode typeCode);

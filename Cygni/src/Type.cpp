@@ -125,8 +125,8 @@ namespace cygni
 		return U"Array[" + elementType->ToString() + U"]";
 	}
 
-	FunctionType::FunctionType(std::vector<TypePtr> parameters, TypePtr returnType)
-		: Type(TypeCode::Function), parameters{ parameters }, returnType{ returnType } {
+	FunctionType::FunctionType(TypePtr selfType, std::vector<TypePtr> parameters, TypePtr returnType)
+		: Type(TypeCode::Function), selfType{ selfType }, parameters{ parameters }, returnType{ returnType } {
 	}
 
 	bool FunctionType::Match(const std::vector<TypePtr> &args) const
@@ -149,11 +149,32 @@ namespace cygni
 		}
 	}
 
+	std::u32string FunctionType::ToString() const
+	{
+		std::u32string text = U"Function[";
+		if (parameters.size() != 0)
+		{
+			text += parameters.front()->ToString();
+			for (int i = 1; i < parameters.size(); i++)
+			{
+				text += U", ";
+				text += parameters.at(i)->ToString();
+			}
+			return text + U", " + returnType->ToString() + U"]";
+		}
+		else
+		{
+			return U"Function[" + returnType->ToString() + U"]";
+		}
+	}
 	UnionType::UnionType() : Type(TypeCode::Union) {}
 
 	ClassType::ClassType(PackageRoute route, std::u32string name) : Type(TypeCode::Class), route{ route }, name{ name } {}
 
-	std::u32string ClassType::ToString() const { return name; }
+	std::u32string ClassType::ToString() const
+	{
+		return PackageRouteToString(route) + U"." + name;
+	}
 
 	bool ClassType::Equals(TypePtr other) const
 	{
@@ -171,7 +192,10 @@ namespace cygni
 	ModuleType::ModuleType(PackageRoute route, std::u32string name)
 		: Type(TypeCode::Module), route{ route }, name{ name } {}
 
-	std::u32string ModuleType::ToString() const { return name; }
+	std::u32string ModuleType::ToString() const
+	{
+		return PackageRouteToString(route) + U"." + name;
+	}
 
 	bool ModuleType::Equals(TypePtr other) const
 	{
@@ -179,6 +203,61 @@ namespace cygni
 		{
 			auto moduleType = std::static_pointer_cast<ModuleType>(other);
 			return name == moduleType->name;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	std::u32string PackageRouteToString(const PackageRoute & route)
+	{
+		if (route.empty())
+		{
+			return U"";
+		}
+		else
+		{
+			std::u32string text;
+			size_t size = 0;
+			for (size_t i = 0; i < route.size(); i++)
+			{
+				size = size + route[i].size();
+			}
+			size = size + route.size() - 1;
+			text.reserve(size);
+
+			for (auto c : route.front())
+			{
+				text.push_back(c);
+			}
+			for (size_t i = 1; i < route.size(); i++)
+			{
+				text.push_back(U'.');
+				for (auto c : route.at(i))
+				{
+					text.push_back(c);
+				}
+			}
+			return text;
+		}
+	}
+
+	InterfaceType::InterfaceType(PackageRoute route, std::u32string name) : Type(TypeCode::Interface), route{ route }, name{ name }
+	{
+	}
+
+	std::u32string InterfaceType::ToString() const
+	{
+		return PackageRouteToString(route) + U"." + name;
+	}
+
+	bool InterfaceType::Equals(TypePtr other) const
+	{
+		if (typeCode == other->typeCode)
+		{
+			auto interfaceType = std::static_pointer_cast<InterfaceType>(other);
+			return name == interfaceType->name;
 		}
 		else
 		{

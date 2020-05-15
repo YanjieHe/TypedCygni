@@ -235,6 +235,7 @@ namespace cygni
 		SourceLocation location;
 		AccessModifier modifier;
 		bool isStatic;
+		TypePtr selfType;
 		Table<std::u32string, AnnotationInfo> annotations;
 		std::u32string name;
 		std::vector<std::shared_ptr<ParameterExpression>> parameters;
@@ -247,29 +248,29 @@ namespace cygni
 		int index = -1;
 
 		MethodDef() = default;
-		MethodDef(SourceLocation location, AccessModifier modifier, bool isStatic,
+		MethodDef(SourceLocation location, AccessModifier modifier, bool isStatic, TypePtr selfType,
 			Table<std::u32string, AnnotationInfo> annotations, std::u32string name,
 			std::vector<std::shared_ptr<ParameterExpression>> parameters,
 			TypePtr returnType, ExpPtr body);
 	};
 
-	class ConstructorInfo
-	{
-	public:
-		SourceLocation location;
-		AccessModifier modifier;
-		Table<std::u32string, AnnotationInfo> annotations;
-		std::u32string name;
-		std::vector<std::shared_ptr<ParameterExpression>> parameters;
-		TypePtr returnType;
-		ExpPtr body;
-		TypePtr signature;
-		ConstructorInfo() = default;
-		ConstructorInfo(SourceLocation location, AccessModifier modifier,
-			Table<std::u32string, AnnotationInfo> annotations, std::u32string name,
-			std::vector<std::shared_ptr<ParameterExpression>> parameters,
-			TypePtr returnType, ExpPtr body);
-	};
+	//class ConstructorInfo
+	//{
+	//public:
+	//	SourceLocation location;
+	//	AccessModifier modifier;
+	//	Table<std::u32string, AnnotationInfo> annotations;
+	//	std::u32string name;
+	//	std::vector<std::shared_ptr<ParameterExpression>> parameters;
+	//	TypePtr returnType;
+	//	ExpPtr body;
+	//	TypePtr signature;
+	//	ConstructorInfo() = default;
+	//	ConstructorInfo(SourceLocation location, AccessModifier modifier,
+	//		Table<std::u32string, AnnotationInfo> annotations, std::u32string name,
+	//		std::vector<std::shared_ptr<ParameterExpression>> parameters,
+	//		TypePtr returnType, ExpPtr body);
+	//};
 
 	class MemberAccessExpression : public Expression
 	{
@@ -363,12 +364,13 @@ namespace cygni
 	class TypeAlias
 	{
 	public:
+		SourceLocation location;
 		PackageRoute route;
 		std::u32string typeName;
 		std::u32string alias;
 
 		TypeAlias() = default;
-		TypeAlias(PackageRoute route, std::u32string typeName, std::u32string alias);
+		TypeAlias(SourceLocation location, PackageRoute route, std::u32string typeName, std::u32string alias);
 	};
 
 	class Package : public std::enable_shared_from_this<Package>
@@ -376,7 +378,7 @@ namespace cygni
 	public:
 		PackageRoute route;
 		std::vector<PackageRoute> importedPackages;
-		std::unordered_map<std::u32string, TypeAlias> typeAliases;
+		Table<std::u32string, TypeAlias> typeAliases;
 
 		Table<std::u32string, std::shared_ptr<ClassInfo>> classes;
 		Table<std::u32string, std::shared_ptr<ModuleInfo>> modules;
@@ -402,7 +404,7 @@ namespace cygni
 		std::shared_ptr<SourceDocument> document;
 		PackageRouteStatement packageRoute;
 		std::vector<PackageRoute> importedPackages;
-		std::unordered_map<std::u32string, TypeAlias> typeAliases;
+		Table<std::u32string, TypeAlias> typeAliases;
 		Table<std::u32string, std::shared_ptr<ClassInfo>> classes;
 		Table<std::u32string, std::shared_ptr<ModuleInfo>> modules;
 		Table<std::u32string, std::shared_ptr<InterfaceInfo>> interfaces;

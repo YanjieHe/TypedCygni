@@ -34,10 +34,10 @@ namespace cygni
 			}
 			else
 			{
-				std::u32string message = U"expecting '" + Enum<Tag>::ToString(tag) +
-					U"', got '" + Enum<Tag>::ToString(Look().tag) +
-					U"'";
-				throw ParserException(Look().line, Look().column, message);
+				throw ParserException(Look().line, Look().column,
+					Format(U"expecting '{}', got '{}'",
+						Enum<Tag>::ToString(tag),
+						Enum<Tag>::ToString(Look().tag)));
 			}
 		}
 
@@ -81,11 +81,11 @@ namespace cygni
 
 		ExpPtr ParseVar();
 
-		FieldDef ParseFieldDefinition(AccessModifier modifier, 
+		FieldDef ParseFieldDefinition(AccessModifier modifier,
 			Table<std::u32string, AnnotationInfo> annotations, bool isStatic);
 
-		MethodDef ParseMethodDefinition(AccessModifier modifier, 
-			Table<std::u32string, AnnotationInfo> annotations, bool isStatic);
+		MethodDef ParseMethodDefinition(AccessModifier modifier,
+			Table<std::u32string, AnnotationInfo> annotations, bool isStatic, TypePtr selfType);
 
 		std::shared_ptr<ParameterExpression> ParseParameter();
 
@@ -93,7 +93,7 @@ namespace cygni
 
 		ExpPtr ParseReturn();
 
-		std::vector<std::shared_ptr<Type>> ParseTypeArguments();
+		std::vector<TypePtr> ParseTypeArguments();
 
 		ExpPtr ParseWhile();
 
@@ -117,7 +117,7 @@ namespace cygni
 
 		std::vector<PackageRoute> ParseImportedPackages();
 
-		std::unordered_map<std::u32string, TypeAlias> ParseTypeAliases();
+		Table<std::u32string, TypeAlias> ParseTypeAliases();
 
 	};
 } // namespace cygni

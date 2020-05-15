@@ -731,6 +731,17 @@ void run(Machine* machine)
 			stack[sp].is_gc_obj = true;
 			break;
 		}
+		case DUPLICATE: {
+			sp++;
+			stack[sp].u.gc_obj = stack[sp - 1].u.gc_obj;
+			break;
+		}
+		case DUPLICATE_OFFSET: {
+			READ_USHORT(offset);
+			sp++;
+			stack[sp].u.gc_obj = stack[sp - offset].u.gc_obj;
+			break;
+		}
 		case NEW_ARRAY: {
 			switch (code[pc])
 			{

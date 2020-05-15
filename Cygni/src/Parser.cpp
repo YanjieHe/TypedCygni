@@ -82,7 +82,7 @@ namespace cygni
 		auto x = ParseOr();
 		if (Look().tag == Tag::Assign)
 		{
-			Token t = Match(Tag::Assign);
+			Match(Tag::Assign);
 			auto y = ParseOr();
 			return std::make_shared<BinaryExpression>(GetLoc(start),
 				ExpressionType::Assign, x, y);
@@ -99,10 +99,10 @@ namespace cygni
 		auto x = ParseAnd();
 		while (Look().tag == Tag::Or)
 		{
-			Token t = Match(Tag::Or);
+			Match(Tag::Or);
 			auto y = ParseAnd();
-			x = std::make_shared<BinaryExpression>(GetLoc(start), ExpressionType::Or, x,
-				y);
+			x = std::make_shared<BinaryExpression>(GetLoc(start),
+				ExpressionType::Or, x, y);
 		}
 		return x;
 	}
@@ -113,10 +113,10 @@ namespace cygni
 		auto x = ParseEquality();
 		while (Look().tag == Tag::And)
 		{
-			Token t = Match(Tag::And);
+			Match(Tag::And);
 			auto y = ParseEquality();
-			x = std::make_shared<BinaryExpression>(GetLoc(start), ExpressionType::And,
-				x, y);
+			x = std::make_shared<BinaryExpression>(GetLoc(start),
+				ExpressionType::And, x, y);
 		}
 		return x;
 	}
@@ -193,8 +193,8 @@ namespace cygni
 			auto y = ParseTerm();
 			if (t.tag == Tag::Add)
 			{
-				x = std::make_shared<BinaryExpression>(GetLoc(start), ExpressionType::Add,
-					x, y);
+				x = std::make_shared<BinaryExpression>(GetLoc(start),
+					ExpressionType::Add, x, y);
 			}
 			else
 			{
@@ -274,8 +274,9 @@ namespace cygni
 			else if (Look().tag == Tag::LeftBracket)
 			{
 				// TO DO
+				throw NotImplementedException();
 			}
-			else if (Look().tag == Tag::Dot)
+			else // if (Look().tag == Tag::Dot)
 			{
 				Match(Tag::Dot);
 				auto name = Match(Tag::Identifier).text;
@@ -436,8 +437,7 @@ namespace cygni
 	}
 
 	FieldDef Parser::ParseFieldDefinition(AccessModifier modifier,
-		Table<std::u32string, AnnotationInfo> annotations,
-		bool isStatic)
+		Table<std::u32string, AnnotationInfo> annotations, bool isStatic)
 	{
 		const Token &start = Look();
 		Match(Tag::Var);
@@ -460,8 +460,7 @@ namespace cygni
 	}
 
 	MethodDef Parser::ParseMethodDefinition(AccessModifier modifier,
-		Table<std::u32string, AnnotationInfo> annotations,
-		bool isStatic)
+		Table<std::u32string, AnnotationInfo> annotations, bool isStatic, TypePtr selfType)
 	{
 		const Token &start = Look();
 		Match(Tag::Def);
@@ -484,15 +483,15 @@ namespace cygni
 		if (Look().tag == Tag::LeftBrace)
 		{
 			auto body = ParseBlock();
-			return MethodDef(GetLoc(start), modifier, isStatic, annotations, name,
-				parameters, returnType, body);
+			return MethodDef(GetLoc(start), modifier, isStatic, selfType,
+				annotations, name, parameters, returnType, body);
 		}
 		else
 		{
 			auto empty =
 				std::make_shared<DefaultExpression>(GetLoc(Look()), returnType);
-			return MethodDef(GetLoc(start), modifier, isStatic, annotations, name,
-				parameters, returnType, empty);
+			return MethodDef(GetLoc(start), modifier, isStatic, selfType,
+				annotations, name, parameters, returnType, empty);
 		}
 	}
 
@@ -538,10 +537,10 @@ namespace cygni
 		return std::make_shared<ReturnExpression>(GetLoc(start), value);
 	}
 
-	std::vector<std::shared_ptr<Type>> Parser::ParseTypeArguments()
+	std::vector<TypePtr> Parser::ParseTypeArguments()
 	{
 		Match(Tag::LeftBracket);
-		std::vector<std::shared_ptr<Type>> types;
+		std::vector<TypePtr> types;
 		types.push_back(ParseType());
 		while (!IsEof() && Look().tag != Tag::RightBracket)
 		{
@@ -581,7 +580,7 @@ namespace cygni
 		Match(Tag::LeftBrace);
 		while (!IsEof() && Look().tag != Tag::RightBrace)
 		{
-			Table<std::u32string, AnnotationInfo> annotations = ParseAnnotationList();
+			auto annotations = ParseAnnotationList();
 			auto access = ParseAccess();
 
 			if (Look().tag == Tag::Var)
@@ -593,7 +592,8 @@ namespace cygni
 			else if (Look().tag == Tag::Def)
 			{
 				// def method(args..) { }
-				auto method = ParseMethodDefinition(access, annotations, false);
+				auto selfType = std::make_shared<ClassType>(route, name);
+				auto method = ParseMethodDefinition(access, annotations, false, selfType);
 				info->methods.Add(method.name, method);
 			}
 			else
@@ -615,7 +615,7 @@ namespace cygni
 		Match(Tag::LeftBrace);
 		while (!IsEof() && Look().tag != Tag::RightBrace)
 		{
-			Table<std::u32string, AnnotationInfo> annotations = ParseAnnotationList();
+			auto annotations = ParseAnnotationList();
 			auto access = ParseAccess();
 
 			if (Look().tag == Tag::Var)
@@ -627,7 +627,8 @@ namespace cygni
 			else if (Look().tag == Tag::Def)
 			{
 				// def method(args..) { }
-				auto method = ParseMethodDefinition(access, annotations, true);
+				auto selfType = std::make_shared<ModuleType>(route, name);
+				auto method = ParseMethodDefinition(access, annotations, true, selfType);
 				info->methods.Add(method.name, method);
 			}
 			else
@@ -663,7 +664,8 @@ namespace cygni
 			if (Look().tag == Tag::Def)
 			{
 				// def method(args..) { }
-				auto method = ParseMethodDefinition(AccessModifier::Public, annotations, true);
+				auto selfType = std::make_shared<InterfaceType>(route, name);
+				auto method = ParseMethodDefinition(AccessModifier::Public, annotations, false, selfType);
 				info->methods.Add(method.name, method); // only definition, no implementation
 			}
 			else
@@ -797,17 +799,17 @@ namespace cygni
 		return importedPackages;
 	}
 
-	std::unordered_map<std::u32string, TypeAlias> Parser::ParseTypeAliases()
+	Table<std::u32string, TypeAlias> Parser::ParseTypeAliases()
 	{
-		std::unordered_map<std::u32string, TypeAlias> typeAliases;
+		Table<std::u32string, TypeAlias> typeAliases;
 		while (Look().tag == Tag::Rename)
 		{
-			Match(Tag::Rename);
+			auto token = Match(Tag::Rename);
 			auto route = ParsePackageRoute();
 			auto alias = Match(Tag::Identifier).text;
 			auto originalName = route.back();
 			route.pop_back();
-			typeAliases.insert({ alias, TypeAlias(route, originalName, alias) });
+			typeAliases.Add(alias, TypeAlias(GetLoc(token), route, originalName, alias));
 		}
 		return typeAliases;
 	}

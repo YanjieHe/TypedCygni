@@ -144,7 +144,8 @@ namespace cygni
 		UInt64,
 		Array,
 		Union,
-		Function
+		Function,
+		Interface
 
 	};
 
@@ -619,6 +620,8 @@ namespace cygni
 				return U"Union";
 			case TypeCode::Function:
 				return U"Function";
+			case TypeCode::Interface:
+				return U"Interface";
 
 			default:
 				std::cout << __FUNCTION__ << std::endl;

@@ -32,7 +32,6 @@ namespace cygni
 		void AttachNodeInformation(json &obj, ExpPtr node);
 		json VisitPackage(std::shared_ptr<Package> package);
 		json VisitProject(Project &project);
-		std::u32string VisitPackageRoute(const PackageRoute& route);
 		std::vector<json> VisitArgumentList(const std::vector<Argument> &arguments);
 		json VisitAnnotationList(const Table<std::u32string, AnnotationInfo> &annotations);
 		std::vector<json> VisitExpressionList(const std::vector<ExpPtr> &expressions);

@@ -63,7 +63,7 @@ namespace cygni
 		cout << "Complete Constant Collection!" << endl;
 	}
 
-	void ConsoleApp::CompileAndOutputJson(std::vector<std::string> fileList, std::string outputJsonPath)
+	void ConsoleApp::DumpAbstractSyntaxTree(std::vector<std::string> fileList, std::string outputJsonPath)
 	{
 		auto project = ParseProject(fileList);
 		SemanticAnalysis(project);
@@ -84,6 +84,7 @@ namespace cygni
 		Compiler compiler(project);
 		ByteCode byteCode = compiler.Compile();
 		WriteBytes(outputExePath, byteCode.bytes);
+		cout << "Total bytes in the compiled executable file: " << byteCode.Size() << endl;
 	}
 
 	int ConsoleApp::Run(int argc, char ** argv)
@@ -91,7 +92,7 @@ namespace cygni
 		std::vector<std::string> fileList = {
 			"sample_code/factorial.cyg"
 		};
-		CompileAndOutputJson(fileList, "sample_code/factorial.json");
+		DumpAbstractSyntaxTree(fileList, "sample_code/factorial.json");
 		return 0;
 	}
 }

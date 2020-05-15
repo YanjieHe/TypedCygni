@@ -85,20 +85,21 @@ namespace cygni
 		annotations{ annotations }, name{ name }, type{ type }, value{ value } {}
 
 	MethodDef::MethodDef(
-		SourceLocation location, AccessModifier modifier, bool isStatic,
+		SourceLocation location, AccessModifier modifier, bool isStatic, TypePtr selfType,
 		Table<std::u32string, AnnotationInfo> annotations, std::u32string name,
 		std::vector<std::shared_ptr<ParameterExpression>> parameters,
 		TypePtr returnType, ExpPtr body)
 		: location{ location }, modifier{ modifier }, isStatic{ isStatic },
-		annotations{ annotations }, name{ name }, parameters{ parameters },
-		returnType{ returnType }, body{ body } {
+		selfType{ selfType }, annotations{ annotations }, name{ name }, parameters{ parameters },
+		returnType{ returnType }, body{ body }
+	{
 		std::vector<TypePtr> parameterTypes(parameters.size());
 		std::transform(parameters.begin(), parameters.end(), parameterTypes.begin(),
 			[](const std::shared_ptr<ParameterExpression> &p) -> TypePtr
 		{
 			return p->type;
 		});
-		this->signature = std::make_shared<FunctionType>(parameterTypes, returnType);
+		this->signature = std::make_shared<FunctionType>(selfType, parameterTypes, returnType);
 	}
 
 	ClassInfo::ClassInfo(SourceLocation location, std::u32string name)
@@ -120,21 +121,6 @@ namespace cygni
 		: Expression(location, ExpressionType::While), condition{ condition },
 		body{ body } {}
 
-	//Program::Program(std::shared_ptr<SourceDocument> document)
-	//	: document{ document }
-	//{
-	//}
-
-	//void Program::AddClass(std::shared_ptr<ClassInfo> info)
-	//{
-	//	classes.Add(info->name, info);
-	//}
-
-	//void Program::AddModule(std::shared_ptr<ModuleInfo> info)
-	//{
-	//	modules.Add(info->name, info);
-	//}
-
 	AnnotationInfo::AnnotationInfo(SourceLocation location, std::u32string name,
 		std::vector<Argument> arguments)
 		: location{ location }, name{ name }, arguments{ arguments } {}
@@ -145,21 +131,21 @@ namespace cygni
 		: Expression(location, ExpressionType::MemberAccess), object{ object },
 		field{ field } {}
 
-	ConstructorInfo::ConstructorInfo(
-		SourceLocation location, AccessModifier modifier,
-		Table<std::u32string, AnnotationInfo> annotations, std::u32string name,
-		std::vector<std::shared_ptr<ParameterExpression>> parameters,
-		TypePtr returnType, ExpPtr body)
-		: location{ location }, modifier{ modifier }, annotations{ annotations },
-		name{ name }, parameters{ parameters }, returnType{ returnType }, body{ body } {
-		std::vector<TypePtr> parameterTypes(parameters.size());
-		std::transform(parameters.begin(), parameters.end(), parameterTypes.begin(),
-			[](const std::shared_ptr<ParameterExpression> &p) -> TypePtr
-		{
-			return p->type;
-		});
-		this->signature = std::make_shared<FunctionType>(parameterTypes, returnType);
-	}
+	//ConstructorInfo::ConstructorInfo(
+	//	SourceLocation location, AccessModifier modifier,
+	//	Table<std::u32string, AnnotationInfo> annotations, std::u32string name,
+	//	std::vector<std::shared_ptr<ParameterExpression>> parameters,
+	//	TypePtr returnType, ExpPtr body)
+	//	: location{ location }, modifier{ modifier }, annotations{ annotations },
+	//	name{ name }, parameters{ parameters }, returnType{ returnType }, body{ body } {
+	//	std::vector<TypePtr> parameterTypes(parameters.size());
+	//	std::transform(parameters.begin(), parameters.end(), parameterTypes.begin(),
+	//		[](const std::shared_ptr<ParameterExpression> &p) -> TypePtr
+	//	{
+	//		return p->type;
+	//	});
+	//	this->signature = std::make_shared<FunctionType>(parameterTypes, returnType);
+	//}
 
 	Argument::Argument(ExpPtr value) : name(), value{ value } {}
 
@@ -188,8 +174,8 @@ namespace cygni
 	{
 	}
 
-	TypeAlias::TypeAlias(PackageRoute route, std::u32string typeName, std::u32string alias)
-		: route{ route }, typeName{ typeName }, alias{ alias }
+	TypeAlias::TypeAlias(SourceLocation location, PackageRoute route, std::u32string typeName, std::u32string alias)
+		: location{ location }, route{ route }, typeName{ typeName }, alias{ alias }
 	{
 	}
 
@@ -223,9 +209,9 @@ namespace cygni
 			{
 				package->modules.Add(module->name, module);
 			}
-			for (auto pair : program.typeAliases)
+			for (auto pair : program.typeAliases.map)
 			{
-				package->typeAliases.insert(pair);
+				package->typeAliases.Add(pair.first, program.typeAliases.GetValueByKey(pair.first));
 			}
 			for (auto route : program.importedPackages)
 			{
@@ -274,7 +260,7 @@ namespace cygni
 	}
 
 	InterfaceInfo::InterfaceInfo(SourceLocation location, std::u32string name)
-		: location{location}, name{ name }
+		: location{ location }, name{ name }
 	{
 	}
 

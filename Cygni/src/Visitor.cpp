@@ -63,7 +63,6 @@ namespace cygni
 	{
 		json obj;
 		obj["nodeType"] = "module";
-
 		obj["name"] = UTF32ToUTF8(info->name);
 
 		json fieldsJson(std::unordered_map<std::string, json>{});
@@ -292,7 +291,7 @@ namespace cygni
 			std::string name = UTF32ToUTF8(info->name);
 			moduleJson[name] = VisitModuleInfo(info);
 		}
-		obj["route"] = UTF32ToUTF8(VisitPackageRoute(package->route));
+		obj["route"] = UTF32ToUTF8(PackageRouteToString(package->route));
 		obj["classes"] = classesJson;
 		obj["modules"] = moduleJson;
 		return obj;
@@ -305,21 +304,9 @@ namespace cygni
 		{
 			auto route = pair.first;
 			auto package = pair.second;
-			obj[UTF32ToUTF8(VisitPackageRoute(route))] = VisitPackage(package);
+			obj[UTF32ToUTF8(PackageRouteToString(route))] = VisitPackage(package);
 		}
 		return obj;
-	}
-
-	std::u32string AstToJsonSerialization::VisitPackageRoute(const PackageRoute & route)
-	{
-		std::u32string text;
-		text += route.front();
-		for (int i = 1; i < route.size(); i++)
-		{
-			text.push_back(U'.');
-			text += route.at(i);
-		}
-		return text;
 	}
 
 	std::vector<json> AstToJsonSerialization::VisitArgumentList(
@@ -810,6 +797,10 @@ namespace cygni
 	TypePtr TypeChecker::VisitMethodDef(const MethodDef &method, ScopePtr outerScope)
 	{
 		ScopePtr scope{ outerScope };
+		if (method.selfType->typeCode == TypeCode::Class)
+		{
+			scope->Put(U"this", method.selfType);
+		}
 		for (const auto &parameter : method.parameters)
 		{
 			scope->Put(parameter->name, parameter->type);
@@ -863,8 +854,8 @@ namespace cygni
 
 	TypePtr TypeChecker::VisitInvocation(std::shared_ptr<InvocationExpression> node, ScopePtr scope)
 	{
-		// TO DO: named arguments
 		auto exp = VisitExpression(node->expression, scope);
+		// TO DO: named arguments
 		std::vector<TypePtr> args(node->arguments.size());
 		std::transform(node->arguments.begin(), node->arguments.end(), args.begin(),
 			[this, &scope](const Argument &arg) -> TypePtr
@@ -881,7 +872,7 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location, U"function call arguments type do not match");
+				throw TypeException(node->location, U"function call argument(s)' type(s) do not match");
 			}
 		}
 		else
@@ -933,7 +924,7 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location, U"undefined field");
+				throw TypeException(node->location, Format(U"undefined field '{}'", node->field));
 			}
 		}
 		else
@@ -953,7 +944,7 @@ namespace cygni
 				{
 					if (classInfo->fields.ContainsKey(*argument.name))
 					{
-						auto field = classInfo->fields.GetValueByKey(*argument.name);
+						auto field = classInfo->fields.GetValueByKey(*(argument.name));
 						auto value = VisitExpression(argument.value, scope);
 						if (field.type->Equals(value))
 						{
@@ -961,8 +952,14 @@ namespace cygni
 						}
 						else
 						{
-							throw TypeException(node->location, U"field initialization type does not match");
+							throw TypeException(node->location,
+								Format(U"field '{}' initialization type does not match", *(argument.name)));
 						}
+					}
+					else
+					{
+						throw TypeException(node->location,
+							Format(U"field initialization name '{}' not found", *(argument.name)));
 					}
 				}
 				else
@@ -977,7 +974,8 @@ namespace cygni
 		}
 		else
 		{
-			throw TypeException(node->location, U"error new expression: undefined class");
+			throw TypeException(node->location,
+				Format(U"error new expression: undefined class '{}'", node->name));
 		}
 	}
 
@@ -1169,6 +1167,10 @@ namespace cygni
 		std::vector<ExpPtr> nodeList;
 		traverser.VisitExpression(method.body, nodeList);
 		int offset = 0;
+		if (method.selfType->typeCode == TypeCode::Class)
+		{
+			offset++;
+		}
 		for (auto parameter : method.parameters)
 		{
 			parameter->parameterLocation = ParameterLocation(ParameterType::LocalVariable, offset);
@@ -1337,7 +1339,8 @@ namespace cygni
 		}
 		else
 		{
-			throw TypeException(parameter->location, U"parameter '" + parameter->name + U"' is not defined");
+			throw TypeException(parameter->location,
+				Format(U"parameter '{}' is not defined", parameter->name));
 		}
 	}
 	void VariableLocator::VisitReturn(std::shared_ptr<ReturnExpression> node, ScopePtr scope)
@@ -1408,12 +1411,14 @@ namespace cygni
 				}
 				else
 				{
-					throw TypeException(node->location, U"undefined field");
+					throw TypeException(node->location,
+						Format(U"undefined field '{}' in module '{}'", node->field, classType->name));
 				}
 			}
 			else
 			{
-				throw TypeException(node->location, U"undefined class");
+				throw TypeException(node->location,
+					Format(U"undefined class '{}'", classType->name));
 			}
 		}
 		else
@@ -1445,7 +1450,8 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location, U"undefined class");
+				throw TypeException(node->location,
+					Format(U"undefined class '{}'", classType->name));
 			}
 		}
 		else

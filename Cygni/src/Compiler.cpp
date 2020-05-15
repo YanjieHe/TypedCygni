@@ -19,7 +19,7 @@ namespace cygni
 	{
 		bytes.push_back(static_cast<Byte>(tag));
 	}
-	void ByteCode::AppendUShort(int value)
+	void ByteCode::AppendUShort(uint32_t value)
 	{
 		bytes.push_back(value / 256);
 		bytes.push_back(value % 256);
@@ -752,12 +752,20 @@ namespace cygni
 		const ConstantMap& constantMap,
 		ByteCode& byteCode)
 	{
-		for (auto arg : node->arguments)
+		if (node->expression->type->typeCode == TypeCode::Function)
 		{
-			CompileExpression(arg.value, constantMap, byteCode);
+			auto function = std::static_pointer_cast<FunctionType>(node->expression->type);
+			for (auto arg : node->arguments)
+			{
+				CompileExpression(arg.value, constantMap, byteCode);
+			}
+			CompileExpression(node->expression, constantMap, byteCode);
+			byteCode.AppendOp(OpCode::INVOKE);
 		}
-		CompileExpression(node->expression, constantMap, byteCode);
-		byteCode.AppendOp(OpCode::INVOKE);
+		else
+		{
+			throw CompilerException(node->location, U"object is not callable");
+		}
 	}
 	void Compiler::CompileMemberAccess(std::shared_ptr<MemberAccessExpression> node,
 		const ConstantMap& constantMap, ByteCode& byteCode)
@@ -841,6 +849,7 @@ namespace cygni
 		}
 		else if (location.type == ParameterType::ClassMethod)
 		{
+			byteCode.AppendOp(OpCode::DUPLICATE);
 			byteCode.AppendOp(OpCode::PUSH_METHOD);
 			byteCode.AppendUShort(location.offset);
 		}
