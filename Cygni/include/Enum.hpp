@@ -308,12 +308,13 @@ namespace cygni
 		NEW_ARRAY_LITERAL_F32 = 142,
 		NEW_ARRAY_LITERAL_F64 = 143,
 		NEW_ARRAY_LITERAL_OBJECT = 144,
-		SUPER = 145,
-		INSTANCE_OF = 146,
-		THROW = 147,
-		RETHROW = 148,
-		GO_FINALLY = 149,
-		FINALLY_END = 150
+		ARRAY_LENGTH = 145,
+		SUPER = 146,
+		INSTANCE_OF = 147,
+		THROW = 148,
+		RETHROW = 149,
+		GO_FINALLY = 150,
+		FINALLY_END = 151
 	};
 
 	enum class TypeTag
@@ -957,6 +958,8 @@ namespace cygni
 				return U"NEW_ARRAY_LITERAL_F64";
 			case OpCode::NEW_ARRAY_LITERAL_OBJECT:
 				return U"NEW_ARRAY_LITERAL_OBJECT";
+			case OpCode::ARRAY_LENGTH:
+				return U"ARRAY_LENGTH";
 			case OpCode::SUPER:
 				return U"SUPER";
 			case OpCode::INSTANCE_OF:

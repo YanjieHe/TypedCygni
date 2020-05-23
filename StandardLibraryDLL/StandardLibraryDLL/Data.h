@@ -1,5 +1,5 @@
-#ifndef DATA_H
-#define DATA_H
+#ifndef VM_DATA_H
+#define VM_DATA_H
 #include <inttypes.h>
 #include <math.h>
 #include <stdbool.h>
@@ -12,7 +12,7 @@ struct Function;
 
 typedef struct
 {
-	uint8_t is_gc_obj;
+	uint8_t is_gc_obj : 1;
 	union
 	{
 		int32_t i32_v;
@@ -50,15 +50,15 @@ typedef struct
 
 typedef struct Object
 {
+	uint8_t marked : 1;
 	uint8_t is_array;
-	struct Object* next;
-	uint8_t marked;
 	uint16_t class_index;
 	union
 	{
 		Value* fields;
 		Array* array;
 	}u;
+	struct Object* next;
 }Object;
 
 // unicode (UTF-32)
@@ -68,19 +68,9 @@ typedef struct
 	Char* characters;
 } String;
 
-typedef enum
-{
-	TYPE_I32,
-	TYPE_I64,
-	TYPE_F32,
-	TYPE_F64,
-	TYPE_STRING,
-	TYPE_OBJECT
-} TypeTag;
-
 typedef struct
 {
-	TypeTag tag;
+	uint8_t tag;
 	union
 	{
 		int32_t i32_v;
@@ -124,6 +114,12 @@ typedef struct Function
 	}u;
 } Function;
 
+typedef struct ConstantPool
+{
+	int32_t n_constants;
+	Constant* constants;
+} ConstantPool;
+
 typedef struct
 {
 	char* name;
@@ -131,8 +127,7 @@ typedef struct
 	char** field_names;
 	uint16_t n_methods;
 	Function** methods;
-	int n_constants;
-	Constant* constant_pool;
+	ConstantPool constant_pool;
 } ClassInfo;
 
 typedef struct
@@ -143,15 +138,14 @@ typedef struct
 	Value* variables;
 	uint16_t n_functions;
 	Function** functions;
-	int n_constants;
-	Constant* constant_pool;
-}ModuleInfo;
+	ConstantPool constant_pool;
+} ModuleInfo;
 
 typedef struct
 {
 	int size;
 	int threshold;
-	Object* head;
+	Object* first; /* first object */
 } Heap;
 
 typedef struct
@@ -164,4 +158,15 @@ typedef struct
 	Heap heap;
 } Executable;
 
-#endif // DATA_H
+typedef enum VM_Error
+{
+	VM_ERROR_NO_ERROR = 0,
+	VM_ERROR_READ_STRING,
+	VM_ERROR_READ_U16,
+	VM_ERROR_OPEN_FILE,
+	VM_ERROR_READ_FUNCTION_BYTE_CODE,
+	VM_ERROR_WRONG_TYPE_TAG,
+	VM_ERROR_READ_TYPE_TAG,
+} VM_Error;
+
+#endif // VM_DATA_H

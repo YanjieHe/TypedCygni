@@ -510,22 +510,40 @@ namespace cygni
 	{
 		auto name = Match(Tag::Identifier).text;
 		static std::unordered_map<std::u32string, std::shared_ptr<Type>> basicTypes =
-		{ {U"Int", std::make_shared<Int32Type>()},
-		 {U"Long", std::make_shared<Int64Type>()},
-		 {U"Bool", std::make_shared<BooleanType>()},
-		 {U"Float", std::make_shared<Float32Type>()},
-		 {U"Double", std::make_shared<Float64Type>()},
-		 {U"Char", std::make_shared<CharType>()},
-		 {U"String", std::make_shared<StringType>()},
-		 {U"Any", std::make_shared<AnyType>()},
-		 {U"Void", std::make_shared<VoidType>()} };
+		{ {U"Int", Type::Int32()},
+		 {U"Long",Type::Int64()},
+		 {U"Bool", Type::Boolean()},
+		 {U"Float", Type::Float32()},
+		 {U"Double", Type::Float64()},
+		 {U"Char", Type::Char()},
+		 {U"String", Type::String()},
+		 {U"Any", Type::Any()},
+		 {U"Void", Type::Void()} };
 		if (basicTypes.find(name) != basicTypes.end())
 		{
 			return basicTypes[name];
 		}
+		else if (name == U"Array")
+		{
+			return ParseArrayType();
+		}
 		else
 		{
 			return std::make_shared<ClassType>(route, name);
+		}
+	}
+
+	std::shared_ptr<ArrayType> Parser::ParseArrayType()
+	{
+		auto args = ParseTypeArguments();
+		if (args.size() == 1)
+		{
+			return std::make_shared<ArrayType>(args.at(0));
+		}
+		else
+		{
+			throw ParserException(Look().line, Look().column, 
+				Format(U"wrong number of type arguments for the 'Array' type. should be 1 instead of {}.", static_cast<int>(args.size())));
 		}
 	}
 

@@ -91,6 +91,8 @@ namespace cygni
 
 		std::shared_ptr<Type> ParseType();
 
+		std::shared_ptr<ArrayType> ParseArrayType();
+
 		ExpPtr ParseReturn();
 
 		std::vector<TypePtr> ParseTypeArguments();

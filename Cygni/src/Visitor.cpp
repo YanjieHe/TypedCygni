@@ -272,7 +272,7 @@ namespace cygni
 		case ExpressionType::While:
 			return VisitWhileLoop(std::static_pointer_cast<WhileExpression>(node));
 		default:
-			throw NotImplementedException();
+			throw NotImplementedException(U"not supported expression type for JSON converter");
 		}
 	}
 
@@ -447,40 +447,37 @@ namespace cygni
 		ruleSet.Add(U"/", { Type::Float32(), Type::Float32() }, Type::Float32());
 		ruleSet.Add(U"/", { Type::Float64(), Type::Float64() }, Type::Float64());
 
-		ruleSet.Add(U"==", { Type::Int32(), Type::Int32() }, Type::Boolean());
-		ruleSet.Add(U"==", { Type::Int64(), Type::Int64() }, Type::Boolean());
-		ruleSet.Add(U"==", { Type::Float32(), Type::Float32() }, Type::Float32());
-		ruleSet.Add(U"==", { Type::Float64(), Type::Float64() }, Type::Float64());
-
 		ruleSet.Add(U">", { Type::Int32(), Type::Int32() }, Type::Boolean());
 		ruleSet.Add(U">", { Type::Int64(), Type::Int64() }, Type::Boolean());
-		ruleSet.Add(U">", { Type::Float32(), Type::Float32() }, Type::Float32());
-		ruleSet.Add(U">", { Type::Float64(), Type::Float64() }, Type::Float64());
+		ruleSet.Add(U">", { Type::Float32(), Type::Float32() }, Type::Boolean());
+		ruleSet.Add(U">", { Type::Float64(), Type::Float64() }, Type::Boolean());
 
 		ruleSet.Add(U"<", { Type::Int32(), Type::Int32() }, Type::Boolean());
 		ruleSet.Add(U"<", { Type::Int64(), Type::Int64() }, Type::Boolean());
-		ruleSet.Add(U"<", { Type::Float32(), Type::Float32() }, Type::Float32());
-		ruleSet.Add(U"<", { Type::Float64(), Type::Float64() }, Type::Float64());
+		ruleSet.Add(U"<", { Type::Float32(), Type::Float32() }, Type::Boolean());
+		ruleSet.Add(U"<", { Type::Float64(), Type::Float64() }, Type::Boolean());
 
 		ruleSet.Add(U">=", { Type::Int32(), Type::Int32() }, Type::Boolean());
 		ruleSet.Add(U">=", { Type::Int64(), Type::Int64() }, Type::Boolean());
-		ruleSet.Add(U">=", { Type::Float32(), Type::Float32() }, Type::Float32());
-		ruleSet.Add(U">=", { Type::Float64(), Type::Float64() }, Type::Float64());
+		ruleSet.Add(U">=", { Type::Float32(), Type::Float32() }, Type::Boolean());
+		ruleSet.Add(U">=", { Type::Float64(), Type::Float64() }, Type::Boolean());
 
 		ruleSet.Add(U"<=", { Type::Int32(), Type::Int32() }, Type::Boolean());
 		ruleSet.Add(U"<=", { Type::Int64(), Type::Int64() }, Type::Boolean());
-		ruleSet.Add(U"<=", { Type::Float32(), Type::Float32() }, Type::Float32());
-		ruleSet.Add(U"<=", { Type::Float64(), Type::Float64() }, Type::Float64());
+		ruleSet.Add(U"<=", { Type::Float32(), Type::Float32() }, Type::Boolean());
+		ruleSet.Add(U"<=", { Type::Float64(), Type::Float64() }, Type::Boolean());
 
 		ruleSet.Add(U"==", { Type::Int32(), Type::Int32() }, Type::Boolean());
 		ruleSet.Add(U"==", { Type::Int64(), Type::Int64() }, Type::Boolean());
-		ruleSet.Add(U"==", { Type::Float32(), Type::Float32() }, Type::Float32());
-		ruleSet.Add(U"==", { Type::Float64(), Type::Float64() }, Type::Float64());
+		ruleSet.Add(U"==", { Type::Float32(), Type::Float32() }, Type::Boolean());
+		ruleSet.Add(U"==", { Type::Float64(), Type::Float64() }, Type::Boolean());
+		ruleSet.Add(U"==", { Type::Char(), Type::Char() }, Type::Boolean());
 
 		ruleSet.Add(U"!=", { Type::Int32(), Type::Int32() }, Type::Boolean());
 		ruleSet.Add(U"!=", { Type::Int64(), Type::Int64() }, Type::Boolean());
-		ruleSet.Add(U"!=", { Type::Float32(), Type::Float32() }, Type::Float32());
-		ruleSet.Add(U"!=", { Type::Float64(), Type::Float64() }, Type::Float64());
+		ruleSet.Add(U"!=", { Type::Float32(), Type::Float32() }, Type::Boolean());
+		ruleSet.Add(U"!=", { Type::Float64(), Type::Float64() }, Type::Boolean());
+		ruleSet.Add(U"!=", { Type::Char(), Type::Char() }, Type::Boolean());
 
 	}
 
@@ -496,7 +493,8 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location, U"type mismatch: +");
+				throw TypeException(node->location,
+					Format(U"type mismatch: +, left: {}, right: {}", left->ToString(), right->ToString()));
 			}
 		}
 		else if (node->nodeType == ExpressionType::Subtract)
@@ -507,7 +505,8 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location, U"type mismatch: -");
+				throw TypeException(node->location,
+					Format(U"type mismatch: -, left: {}, right: {}", left->ToString(), right->ToString()));
 			}
 		}
 		else if (node->nodeType == ExpressionType::Multiply)
@@ -518,7 +517,8 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location, U"type mismatch: *");
+				throw TypeException(node->location,
+					Format(U"type mismatch: *, left: {}, right: {}", left->ToString(), right->ToString()));
 			}
 		}
 		else if (node->nodeType == ExpressionType::Divide)
@@ -529,7 +529,8 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location, U"type mismatch: /");
+				throw TypeException(node->location,
+					Format(U"type mismatch: /, left: {}, right: {}", left->ToString(), right->ToString()));
 			}
 		}
 		else if (node->nodeType == ExpressionType::GreaterThan)
@@ -540,7 +541,8 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location, U"type mismatch: >");
+				throw TypeException(node->location,
+					Format(U"type mismatch: >, left: {}, right: {}", left->ToString(), right->ToString()));
 			}
 		}
 		else if (node->nodeType == ExpressionType::LessThan)
@@ -551,7 +553,8 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location, U"type mismatch: <");
+				throw TypeException(node->location,
+					Format(U"type mismatch: <, left: {}, right: {}", left->ToString(), right->ToString()));
 			}
 		}
 		else if (node->nodeType == ExpressionType::GreaterThanOrEqual)
@@ -562,7 +565,8 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location, U"type mismatch: >=");
+				throw TypeException(node->location,
+					Format(U"type mismatch: >=, left: {}, right: {}", left->ToString(), right->ToString()));
 			}
 		}
 		else if (node->nodeType == ExpressionType::LessThanOrEqual)
@@ -573,7 +577,8 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location, U"type mismatch: <=");
+				throw TypeException(node->location,
+					Format(U"type mismatch: <=, left: {}, right: {}", left->ToString(), right->ToString()));
 			}
 		}
 		else if (node->nodeType == ExpressionType::Equal)
@@ -584,7 +589,8 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location, U"type mismatch: ==");
+				throw TypeException(node->location,
+					Format(U"type mismatch: ==, left: {}, right: {}", left->ToString(), right->ToString()));
 			}
 		}
 		else if (node->nodeType == ExpressionType::NotEqual)
@@ -595,12 +601,13 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location, U"type mismatch: !=");
+				throw TypeException(node->location,
+					Format(U"type mismatch: !=, left: {}, right: {}", left->ToString(), right->ToString()));
 			}
 		}
 		else
 		{
-			throw NotImplementedException();
+			throw NotImplementedException(U"not implemented binary operation");
 		}
 	}
 
@@ -682,6 +689,10 @@ namespace cygni
 		case ExpressionType::Subtract:
 		case ExpressionType::Multiply:
 		case ExpressionType::Divide:
+		case ExpressionType::GreaterThan:
+		case ExpressionType::LessThan:
+		case ExpressionType::GreaterThanOrEqual:
+		case ExpressionType::LessThanOrEqual:
 		case ExpressionType::Equal:
 		case ExpressionType::NotEqual:
 			return VisitBinary(std::static_pointer_cast<BinaryExpression>(node), scope);
@@ -710,7 +721,8 @@ namespace cygni
 		case ExpressionType::While:
 			return VisitWhile(std::static_pointer_cast<WhileExpression>(node), scope);
 		default:
-			throw NotImplementedException();
+			throw NotImplementedException(
+				Format(U"not supported type checker node type '{}'", Enum<ExpressionType>::ToString(node->nodeType)));
 		}
 	}
 
@@ -852,12 +864,30 @@ namespace cygni
 			auto functionType = std::static_pointer_cast<FunctionType>(exp);
 			if (functionType->Match(args))
 			{
-				Attach(node, functionType->returnType);
-				return functionType->returnType;
+				return Attach(node, functionType->returnType);
 			}
 			else
 			{
 				throw TypeException(node->location, U"function call argument(s)' type(s) do not match");
+			}
+		}
+		else if (exp->typeCode == TypeCode::Array)
+		{
+			auto arrayType = std::static_pointer_cast<ArrayType>(exp);
+			if (args.size() == 1)
+			{
+				if (args.at(0)->typeCode == TypeCode::Int32)
+				{
+					return Attach(node, arrayType->elementType);
+				}
+				else
+				{
+					throw TypeException(node->location, U"array index should be 'Int' type");
+				}
+			}
+			else
+			{
+				throw TypeException(node->location, U"array should be accessed by one index");
 			}
 		}
 		else
@@ -876,14 +906,12 @@ namespace cygni
 			if (moduleInfo->fields.ContainsKey(node->field))
 			{
 				auto field = moduleInfo->fields.GetValueByKey(node->field);
-				node->type = field.type;
-				return field.type;
+				return Attach(node, field.type);
 			}
 			else if (moduleInfo->methods.ContainsKey(node->field))
 			{
 				auto method = moduleInfo->methods.GetValueByKey(node->field);
-				node->type = method.signature;
-				return method.signature;
+				return Attach(node, method.signature);
 			}
 			else
 			{
@@ -898,23 +926,35 @@ namespace cygni
 			if (classInfo->fields.ContainsKey(node->field))
 			{
 				auto field = classInfo->fields.GetValueByKey(node->field);
-				node->type = field.type;
-				return node->type;
+				return Attach(node, field.type);
 			}
 			else if (classInfo->methods.ContainsKey(node->field))
 			{
 				auto method = classInfo->methods.GetValueByKey(node->field);
-				node->type = method.signature;
-				return node->type;
+				return Attach(node, method.signature);
 			}
 			else
 			{
 				throw TypeException(node->location, Format(U"undefined field '{}'", node->field));
 			}
 		}
+		else if (object->typeCode == TypeCode::Array)
+		{
+			auto arrayType = std::static_pointer_cast<ArrayType>(object);
+			if (node->field == U"Size")
+			{
+				auto ft = std::make_shared<FunctionType>(arrayType, std::vector<TypePtr>{}, Type::Int32());
+				return Attach(node, ft);
+			}
+			else
+			{
+				throw TypeException(node->location, Format(U"undefined field '{}' of array", node->field));
+			}
+		}
 		else
 		{
-			throw TypeException(node->location, U"object does not have any field");
+			throw TypeException(node->location, 
+				Format(U"object '{}' does not have any field", object->ToString()));
 		}
 	}
 
@@ -1107,7 +1147,7 @@ namespace cygni
 			VisitWhileExpression(std::static_pointer_cast<WhileExpression>(node), nodeList);
 			return;
 		default:
-			throw NotImplementedException();
+			throw NotImplementedException(U"not implemented node type for tree traverser");
 		}
 	}
 	void TreeTraverser::VisitBinary(std::shared_ptr<BinaryExpression> node, std::vector<ExpPtr>& nodeList)
@@ -1265,7 +1305,8 @@ namespace cygni
 		case ExpressionType::Default:
 			return;
 		default:
-			throw NotImplementedException();
+			throw NotImplementedException(
+				Format(U"not implemented node type '{}' for variable locator", Enum<ExpressionType>::ToString(node->nodeType)));
 		}
 	}
 	void VariableLocator::VisitBlock(std::shared_ptr<BlockExpression> node, ScopePtr outerScope)
@@ -1429,9 +1470,14 @@ namespace cygni
 					Format(U"undefined class '{}'", classType->name));
 			}
 		}
+		else if (object->typeCode == TypeCode::Array)
+		{
+			// pass
+		}
 		else
 		{
-			throw TypeException(node->location, U"object does not have any field");
+			throw TypeException(node->location, 
+				Format(U"object '{}' does not have any field", object->ToString()));
 		}
 	}
 	void VariableLocator::VisitNewExpression(std::shared_ptr<NewExpression> node, ScopePtr scope)

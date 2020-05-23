@@ -29,7 +29,7 @@ def make_opcode_info_array(op_list):
     lines = []
     for (op_name, op_type) in op_list:
         lines.append('\t{{ "{0}", "{1}" }}'.format(op_name, op_type))
-    return "static const char* opcode_info [][2] {{\n{0}\n}};".format(",\n".join(lines))
+    return "const char* opcode_info [][2] = {{\n{0}\n}};".format(",\n".join(lines))
 
 
 def make_cpp_enum_to_string(op_list):

@@ -73,6 +73,7 @@ int main(int argc, char **argv)
 	try
 	{
 		std::vector<std::string> fileList = {
+			"sample_code/String.cyg",
 			"sample_code/Geometry.cyg",
 				"sample_code/IO.cyg",
 				"sample_code/Math.cyg",
@@ -107,6 +108,10 @@ int main(int argc, char **argv)
 	catch (FileNotFoundException& ex)
 	{
 		cout << ex.message << endl;
+	}
+	catch (CompilerException& ex)
+	{
+		cout << ex.FormattedErrorMessage() << endl;
 	}
 	cout << "Press any key to close..." << endl;
 	cin.get();

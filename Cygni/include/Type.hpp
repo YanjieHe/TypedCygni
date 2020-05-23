@@ -41,6 +41,8 @@ namespace cygni
 		static std::shared_ptr<Float64Type> Float64();
 		static std::shared_ptr<VoidType> Void();
 		static std::shared_ptr<BooleanType> Boolean();
+		static std::shared_ptr<CharType> Char();
+		static std::shared_ptr<StringType> String();
 		static std::shared_ptr<UnknownType> Unknown();
 		static std::shared_ptr<AnyType> Any();
 

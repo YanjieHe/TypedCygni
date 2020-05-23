@@ -4,13 +4,13 @@
 #include <stdio.h>
 #include <malloc.h>
 
-int print_line_int(Value * env)
+int put_int(Value * env)
 {
-	printf("print integer: %d\n", env[0].u.i32_v);
+	printf("%d", env[0].u.i32_v);
 	return 0;
 }
 
-int print_line_text(Value * env)
+int put_str(Value * env)
 {
 	Array* array;
 	int32_t utf8_len;

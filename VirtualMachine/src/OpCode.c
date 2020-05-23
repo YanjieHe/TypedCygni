@@ -146,6 +146,7 @@ const char* opcode_info[][2] = {
 	{ "NEW_ARRAY_LITERAL_F32", "u" },
 	{ "NEW_ARRAY_LITERAL_F64", "u" },
 	{ "NEW_ARRAY_LITERAL_OBJECT", "u" },
+	{ "ARRAY_LENGTH", "" },
 	{ "SUPER", "" },
 	{ "INSTANCE_OF", "u" },
 	{ "THROW", "" },

@@ -41,6 +41,16 @@ namespace cygni
 		static std::shared_ptr<BooleanType> type = std::make_shared<BooleanType>();
 		return type;
 	}
+	std::shared_ptr<CharType> Type::Char()
+	{
+		static std::shared_ptr<CharType> type = std::make_shared<CharType>();
+		return type;
+	}
+	std::shared_ptr<StringType> Type::String()
+	{
+		static std::shared_ptr<StringType> type = std::make_shared<StringType>();
+		return type;
+	}
 	std::shared_ptr<UnknownType> Type::Unknown()
 	{
 		static std::shared_ptr<UnknownType> type = std::make_shared<UnknownType>();

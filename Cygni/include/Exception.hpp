@@ -108,6 +108,15 @@ namespace cygni
 		{
 
 		}
+		std::u32string FormattedErrorMessage() const
+		{
+			auto actualStartLine = std::to_string(location.startLine + 1);
+			auto actualStartColumn = std::to_string(location.startCol + 1);
+			auto actualEndLine = std::to_string(location.endLine + 1);
+			auto actualEndColumn = std::to_string(location.endCol + 1);
+			return Format(U"File: {} Type Error: ({}, {}) - ({}, {}) {}",
+				location.document->fileName, actualStartLine, actualStartColumn, actualEndLine, actualEndColumn, message);
+		}
 	};
 
 	class FileNotFoundException

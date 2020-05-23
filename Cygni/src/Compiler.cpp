@@ -175,6 +175,8 @@ namespace cygni
 	{
 		CompileExpression(node->left, constantMap, byteCode);
 		CompileExpression(node->right, constantMap, byteCode);
+		TypeCode lt = node->left->type->typeCode;
+		TypeCode rt = node->right->type->typeCode;
 		switch (node->nodeType)
 		{
 		case ExpressionType::Add: {
@@ -278,154 +280,158 @@ namespace cygni
 			break;
 		}
 		case ExpressionType::GreaterThan: {
-			switch (node->type->typeCode)
+			if (lt == TypeCode::Int32 && rt == TypeCode::Int32)
 			{
-			case TypeCode::Int32: {
 				byteCode.AppendOp(OpCode::GT_I32);
-				break;
 			}
-			case TypeCode::Int64: {
+			else if (lt == TypeCode::Int64 && rt == TypeCode::Int64)
+			{
 				byteCode.AppendOp(OpCode::GT_I64);
-				break;
 			}
-			case TypeCode::Float32: {
+			else if (lt == TypeCode::Float32 && rt == TypeCode::Float32)
+			{
 				byteCode.AppendOp(OpCode::GT_F32);
-				break;
 			}
-			case TypeCode::Float64: {
+			else if (lt == TypeCode::Float64 && rt == TypeCode::Float64)
+			{
 				byteCode.AppendOp(OpCode::GT_F64);
-				break;
 			}
-			default: {
-				throw CompilerException(node->location, U"not supported type for '>'");
-			}
+			else
+			{
+				throw CompilerException(node->location,
+					Format(U"not supported type for '>', left: '{}', right: '{}'", node->left->type->ToString(), node->right->type->ToString()));
 			}
 			break;
 		}
 		case ExpressionType::LessThan: {
-			switch (node->type->typeCode)
+			if (lt == TypeCode::Int32 && rt == TypeCode::Int32)
 			{
-			case TypeCode::Int32: {
 				byteCode.AppendOp(OpCode::LT_I32);
-				break;
 			}
-			case TypeCode::Int64: {
+			else if (lt == TypeCode::Int64 && rt == TypeCode::Int64)
+			{
 				byteCode.AppendOp(OpCode::LT_I64);
-				break;
 			}
-			case TypeCode::Float32: {
+			else if (lt == TypeCode::Float32 && rt == TypeCode::Float32)
+			{
 				byteCode.AppendOp(OpCode::LT_F32);
-				break;
 			}
-			case TypeCode::Float64: {
+			else if (lt == TypeCode::Float64 && rt == TypeCode::Float64)
+			{
 				byteCode.AppendOp(OpCode::LT_F64);
-				break;
 			}
-			default: {
-				throw CompilerException(node->location, U"not supported type for '<'");
-			}
+			else
+			{
+				throw CompilerException(node->location,
+					Format(U"not supported type for '<', left: '{}', right: '{}'", node->left->type->ToString(), node->right->type->ToString()));
 			}
 			break;
 		}
 		case ExpressionType::GreaterThanOrEqual: {
-			switch (node->type->typeCode)
+			if (lt == TypeCode::Int32 && rt == TypeCode::Int32)
 			{
-			case TypeCode::Int32: {
 				byteCode.AppendOp(OpCode::GE_I32);
-				break;
 			}
-			case TypeCode::Int64: {
+			else if (lt == TypeCode::Int64 && rt == TypeCode::Int64)
+			{
 				byteCode.AppendOp(OpCode::GE_I64);
-				break;
 			}
-			case TypeCode::Float32: {
+			else if (lt == TypeCode::Float32 && rt == TypeCode::Float32)
+			{
 				byteCode.AppendOp(OpCode::GE_F32);
-				break;
 			}
-			case TypeCode::Float64: {
+			else if (lt == TypeCode::Float64 && rt == TypeCode::Float64)
+			{
 				byteCode.AppendOp(OpCode::GE_F64);
-				break;
 			}
-			default: {
+			else
+			{
 				throw CompilerException(node->location, U"not supported type for '>='");
-			}
 			}
 			break;
 		}
 		case ExpressionType::LessThanOrEqual: {
-			switch (node->type->typeCode)
+			if (lt == TypeCode::Int32 && rt == TypeCode::Int32)
 			{
-			case TypeCode::Int32: {
 				byteCode.AppendOp(OpCode::LE_I32);
-				break;
 			}
-			case TypeCode::Int64: {
+			else if (lt == TypeCode::Int64 && rt == TypeCode::Int64)
+			{
 				byteCode.AppendOp(OpCode::LE_I64);
-				break;
 			}
-			case TypeCode::Float32: {
+			else if (lt == TypeCode::Float32 && rt == TypeCode::Float32)
+			{
 				byteCode.AppendOp(OpCode::LE_F32);
-				break;
 			}
-			case TypeCode::Float64: {
+			else if (lt == TypeCode::Float64 && rt == TypeCode::Float64)
+			{
 				byteCode.AppendOp(OpCode::LE_F64);
-				break;
 			}
-			default: {
+			else
+			{
 				throw CompilerException(node->location, U"not supported type for '<='");
-			}
 			}
 			break;
 		}
 		case ExpressionType::Equal: {
-			switch (node->type->typeCode)
+			if (lt == TypeCode::Char && rt == TypeCode::Char)
 			{
-			case TypeCode::Boolean:
-			case TypeCode::Int32: {
 				byteCode.AppendOp(OpCode::EQ_I32);
-				break;
 			}
-			case TypeCode::Int64: {
+			else if (lt == TypeCode::Boolean && rt == TypeCode::Boolean)
+			{
+				byteCode.AppendOp(OpCode::EQ_I32);
+			}
+			else if (lt == TypeCode::Int32 && rt == TypeCode::Int32)
+			{
+				byteCode.AppendOp(OpCode::EQ_I32);
+			}
+			else if (lt == TypeCode::Int64 && rt == TypeCode::Int64)
+			{
 				byteCode.AppendOp(OpCode::EQ_I64);
-				break;
 			}
-			case TypeCode::Float32: {
+			else if (lt == TypeCode::Float32 && rt == TypeCode::Float32)
+			{
 				byteCode.AppendOp(OpCode::EQ_F32);
-				break;
 			}
-			case TypeCode::Float64: {
+			else if (lt == TypeCode::Float64 && rt == TypeCode::Float64)
+			{
 				byteCode.AppendOp(OpCode::EQ_F64);
-				break;
 			}
-			default: {
+			else
+			{
 				throw CompilerException(node->location, U"not supported type for '=='");
-			}
 			}
 			break;
 		}
 		case ExpressionType::NotEqual: {
-			switch (node->type->typeCode)
+			if (lt == TypeCode::Char && rt == TypeCode::Char)
 			{
-			case TypeCode::Boolean:
-			case TypeCode::Int32: {
 				byteCode.AppendOp(OpCode::NE_I32);
-				break;
 			}
-			case TypeCode::Int64: {
+			else if (lt == TypeCode::Boolean && rt == TypeCode::Boolean)
+			{
+				byteCode.AppendOp(OpCode::NE_I32);
+			}
+			else if (lt == TypeCode::Int32 && rt == TypeCode::Int32)
+			{
+				byteCode.AppendOp(OpCode::NE_I32);
+			}
+			else if (lt == TypeCode::Int64 && rt == TypeCode::Int64)
+			{
 				byteCode.AppendOp(OpCode::NE_I64);
-				break;
 			}
-			case TypeCode::Float32: {
+			else if (lt == TypeCode::Float32 && rt == TypeCode::Float32)
+			{
 				byteCode.AppendOp(OpCode::NE_F32);
-				break;
 			}
-			case TypeCode::Float64: {
+			else if (lt == TypeCode::Float64 && rt == TypeCode::Float64)
+			{
 				byteCode.AppendOp(OpCode::NE_F64);
-				break;
 			}
-			default: {
+			else
+			{
 				throw CompilerException(node->location, U"not supported type for '!='");
-			}
 			}
 			break;
 		}
@@ -487,7 +493,7 @@ namespace cygni
 			return CompileVarDefExpression(std::static_pointer_cast<VarDefExpression>(node),
 				constantMap, byteCode);
 		case ExpressionType::While:
-			//return VisitWhileLoop(std::static_pointer_cast<WhileExpression>(node), constantMap, byteCode);
+			return CompileWhileLoop(std::static_pointer_cast<WhileExpression>(node), constantMap, byteCode);
 		default:
 			throw NotImplementedException(
 				Format(U"not supported node type: {}", Enum<ExpressionType>::ToString(node->nodeType)));
@@ -512,6 +518,44 @@ namespace cygni
 			{
 				throw CompilerException(node->location,
 					U"illegal format of boolean value. should be 'true' or 'false'");
+			}
+		}
+		else if (node->type->typeCode == TypeCode::String)
+		{
+			ConstantKey key{ node->type->typeCode, node->constant };
+			if (constantMap.find(key) != constantMap.end())
+			{
+				int index = constantMap.at(key);
+				if (auto moduleInfo = project.GetModule(PackageRoute{ U"Predef" }, U"String"))
+				{
+					if ((*moduleInfo)->methods.ContainsKey(U"New"))
+					{
+						auto methodInfo = (*moduleInfo)->methods.GetValueByKey(U"New");
+						// TO DO: call 'New' function
+
+						byteCode.AppendOp(OpCode::PUSH_STRING);
+						byteCode.AppendUShort(index);
+
+						byteCode.AppendOp(OpCode::PUSH_FUNCTION);
+						byteCode.AppendUShort((*moduleInfo)->index);
+						byteCode.AppendUShort(methodInfo.index);
+
+						byteCode.AppendOp(OpCode::INVOKE);
+					}
+					else
+					{
+						throw CompilerException(node->location, U"missing 'New' method in the 'Predef.String' module");
+					}
+				}
+				else
+				{
+					throw CompilerException(node->location, U"missing 'Predef.String' module");
+				}
+			}
+			else
+			{
+				throw CompilerException(node->location,
+					U"the given constant is not in the constant map");
 			}
 		}
 		else
@@ -543,13 +587,9 @@ namespace cygni
 					byteCode.AppendUShort(index);
 					break;
 				}
-				case TypeCode::String: {
-					byteCode.AppendOp(OpCode::PUSH_STRING);
-					byteCode.AppendUShort(index);
-					break;
-				}
 				default: {
-					throw CompilerException(node->location, U"constant type not supported");
+					throw CompilerException(node->location, 
+						Format(U"constant type '{}' not supported", node->type->ToString()));
 				}
 				}
 			}
@@ -639,6 +679,8 @@ namespace cygni
 		case ParameterType::LocalVariable: {
 			switch (parameter->type->typeCode)
 			{
+			case TypeCode::Boolean:
+			case TypeCode::Char:
 			case TypeCode::Int32: {
 				byteCode.AppendOp(OpCode::PUSH_LOCAL_I32);
 				break;
@@ -659,12 +701,51 @@ namespace cygni
 				byteCode.AppendOp(OpCode::PUSH_LOCAL_OBJECT);
 				break;
 			}
+			case TypeCode::Array:
 			case TypeCode::Class: {
 				byteCode.AppendOp(OpCode::PUSH_LOCAL_OBJECT);
 				break;
 			}
 			default: {
-				throw CompilerException(parameter->location, U"not supported parameter type");
+				throw CompilerException(parameter->location,
+					Format(U"not supported local variable type '{}'", parameter->type->ToString()));
+			}
+			}
+			byteCode.AppendUShort(location.offset);
+			break;
+		}
+		case ParameterType::ClassField: {
+			byteCode.AppendOp(OpCode::PUSH_LOCAL_OBJECT);
+			byteCode.AppendUShort(0); /* this */
+			switch (parameter->type->typeCode)
+			{
+			case TypeCode::Int32: {
+				byteCode.AppendOp(OpCode::PUSH_FIELD_I32);
+				break;
+			}
+			case TypeCode::Int64: {
+				byteCode.AppendOp(OpCode::PUSH_FIELD_I64);
+				break;
+			}
+			case TypeCode::Float32: {
+				byteCode.AppendOp(OpCode::PUSH_FIELD_F32);
+				break;
+			}
+			case TypeCode::Float64: {
+				byteCode.AppendOp(OpCode::PUSH_FIELD_F64);
+				break;
+			}
+			case TypeCode::String: {
+				byteCode.AppendOp(OpCode::PUSH_FIELD_OBJECT);
+				break;
+			}
+			case TypeCode::Array:
+			case TypeCode::Class: {
+				byteCode.AppendOp(OpCode::PUSH_FIELD_OBJECT);
+				break;
+			}
+			default: {
+				throw CompilerException(parameter->location, Format(U"not supported class field access type '{}'", parameter->type->ToString()));
 			}
 			}
 			byteCode.AppendUShort(location.offset);
@@ -682,7 +763,7 @@ namespace cygni
 		}
 		default:
 			throw NotImplementedException(
-				Format(U"parameter: {}", Enum<ParameterType>::ToString(location.type)));
+				Format(U"not implemented parameter type: {}", Enum<ParameterType>::ToString(location.type)));
 		}
 	}
 	void Compiler::CompileReturn(std::shared_ptr<ReturnExpression> node,
@@ -692,6 +773,7 @@ namespace cygni
 		switch (node->type->typeCode)
 		{
 		case TypeCode::Boolean:
+		case TypeCode::Char:
 		case TypeCode::Int32: {
 			byteCode.AppendOp(OpCode::RETURN_I32);
 			break;
@@ -717,7 +799,8 @@ namespace cygni
 			break;
 		}
 		default: {
-			throw CompilerException(node->location, U"not supported return type");
+			throw CompilerException(node->location,
+				Format(U"not supported return type '{}'", node->type->ToString()));
 		}
 		}
 	}
@@ -768,6 +851,52 @@ namespace cygni
 			}
 			CompileExpression(node->expression, constantMap, byteCode);
 			byteCode.AppendOp(OpCode::INVOKE);
+		}
+		else if (node->expression->type->typeCode == TypeCode::Array)
+		{
+			auto arrayType = std::static_pointer_cast<ArrayType>(node->expression->type);
+			if (node->arguments.size() == 1)
+			{
+				CompileExpression(node->expression, constantMap, byteCode);
+				for (auto arg : node->arguments)
+				{
+					CompileExpression(arg.value, constantMap, byteCode);
+				}
+				switch (arrayType->elementType->typeCode)
+				{
+				case TypeCode::Boolean:
+				case TypeCode::Char:
+				case TypeCode::Int32: {
+					byteCode.AppendOp(OpCode::PUSH_ARRAY_I32);
+					break;
+				}
+				case TypeCode::Int64: {
+					byteCode.AppendOp(OpCode::PUSH_ARRAY_I64);
+					break;
+				}
+				case TypeCode::Float32: {
+					byteCode.AppendOp(OpCode::PUSH_ARRAY_F32);
+					break;
+				}
+				case TypeCode::Float64: {
+					byteCode.AppendOp(OpCode::PUSH_ARRAY_F64);
+					break;
+				}
+				case TypeCode::String:
+				case TypeCode::Object: {
+					byteCode.AppendOp(OpCode::PUSH_ARRAY_OBJECT);
+					break;
+				}
+				default: {
+					throw CompilerException(node->location, U"wrong type of array element");
+				}
+				}
+			}
+			else
+			{
+				throw CompilerException(node->location,
+					Format(U"the number of array index should be 1 instead of {}", static_cast<int>(node->arguments.size())));
+			}
 		}
 		else
 		{
@@ -844,12 +973,14 @@ namespace cygni
 				byteCode.AppendOp(OpCode::PUSH_FIELD_OBJECT);
 				break;
 			}
+			case TypeCode::Array:
 			case TypeCode::Class: {
 				byteCode.AppendOp(OpCode::PUSH_FIELD_OBJECT);
 				break;
 			}
 			default: {
-				throw CompilerException(node->location, U"not supported member access type");
+				throw CompilerException(node->location, Format(U"not supported member '{}' access type '{}'",
+					node->field, node->type->ToString()));
 			}
 			}
 			byteCode.AppendUShort(location.offset);
@@ -860,9 +991,15 @@ namespace cygni
 			byteCode.AppendUShort(location.index);
 			byteCode.AppendUShort(location.offset);
 		}
+		else if (node->object->type->typeCode == TypeCode::Array && node->field == U"Size")
+		{
+			byteCode.AppendOp(OpCode::ARRAY_LENGTH);
+		}
 		else
 		{
-			throw CompilerException(node->location, U"member access: parameter location type is not supported");
+			throw CompilerException(node->location,
+				Format(U"member access: member '{}' parameter location type '{}' is not supported",
+					node->field, Enum<ParameterType>::ToString(location.type)));
 		}
 	}
 	void Compiler::CompileNewExpression(std::shared_ptr<NewExpression> node,
@@ -877,6 +1014,8 @@ namespace cygni
 			CompileExpression(arg.value, constantMap, byteCode);
 			switch (arg.value->type->typeCode)
 			{
+			case TypeCode::Char:
+			case TypeCode::Boolean:
 			case TypeCode::Int32: {
 				byteCode.AppendOp(OpCode::POP_FIELD_I32);
 				break;
@@ -897,12 +1036,14 @@ namespace cygni
 				byteCode.AppendOp(OpCode::POP_FIELD_OBJECT);
 				break;
 			}
+			case TypeCode::Array:
 			case TypeCode::Class: {
 				byteCode.AppendOp(OpCode::POP_FIELD_OBJECT);
 				break;
 			}
 			default: {
-				throw CompilerException(node->location, U"not supported field initializer type");
+				throw CompilerException(node->location,
+					Format(U"not supported field initializer type '{}'", arg.value->type->ToString()));
 			}
 			}
 			byteCode.AppendUShort(arg.index);
