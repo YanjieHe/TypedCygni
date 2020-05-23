@@ -6,14 +6,14 @@
 #include "Unicode.h"
 #include "OpCode.h"
 
-char* parse_string(FILE* file)
+char* parse_string(State* state)
 {
 	uint16_t len;
 	char* str;
 
-	len = parse_ushort(file);
-	str = (char*)malloc(sizeof(char) * (len + 1));
-	if (fread(str, sizeof(char), len, file) == len)
+	len = parse_ushort(state);
+	str = vm_alloc(state, sizeof(char) * (len + 1));
+	if (fread(str, sizeof(char), len, state->source) == len)
 	{
 		str[len] = '\0';
 		return str;
@@ -21,13 +21,13 @@ char* parse_string(FILE* file)
 	else
 	{
 		fprintf(stderr, "cannot read string\n");
-		free(str);
-		exit(-1);
+		vm_throw(state, VM_ERROR_READ_STRING);
+		return NULL; // make the compiler happy
 	}
 }
 
 // Big Endian
-uint16_t parse_ushort(FILE* file)
+uint16_t parse_ushort(State* state)
 {
 	uint16_t value;
 	Byte b1;
@@ -35,8 +35,8 @@ uint16_t parse_ushort(FILE* file)
 	size_t res1;
 	size_t res2;
 
-	res1 = fread(&b1, sizeof(Byte), 1, file);
-	res2 = fread(&b2, sizeof(Byte), 1, file);
+	res1 = fread(&b1, sizeof(Byte), 1, state->source);
+	res2 = fread(&b2, sizeof(Byte), 1, state->source);
 
 	if (res1 == 1 && res2 == 1)
 	{
@@ -46,13 +46,13 @@ uint16_t parse_ushort(FILE* file)
 	else
 	{
 		fprintf(stderr, "cannot read ushort\n");
-		exit(-1);
+		vm_throw(state, VM_ERROR_READ_U16);
+		return 0; // make the compiler happy
 	}
 }
 
-Executable* parse_file(const char* path)
+Executable* parse_file(State* state, const char* path)
 {
-	FILE* file;
 	uint16_t class_count;
 	uint16_t module_count;
 	uint16_t main_func_module_index;
@@ -60,243 +60,214 @@ Executable* parse_file(const char* path)
 	int i;
 	Executable* exe;
 
-	file = fopen(path, "rb");
+	state->source = fopen(path, "rb");
 
-	if (file)
+	if (state->source)
 	{
-		exe = (Executable*)malloc(sizeof(Executable));
-		main_func_module_index = parse_ushort(file);
-		main_func_index = parse_ushort(file);
-		class_count = parse_ushort(file);
-		module_count = parse_ushort(file);
+		exe = vm_alloc(state, sizeof(Executable));
+		main_func_module_index = parse_ushort(state);
+		main_func_index = parse_ushort(state);
+		class_count = parse_ushort(state);
+		module_count = parse_ushort(state);
 		exe->class_count = class_count;
 		exe->module_count = module_count;
-		exe->classes = (ClassInfo*)malloc(sizeof(ClassInfo) * class_count);
-		exe->modules = (ModuleInfo*)malloc(sizeof(ModuleInfo) * module_count);
+		exe->classes = (ClassInfo*)vm_alloc(state, sizeof(ClassInfo) * class_count);
+		exe->modules = (ModuleInfo*)vm_alloc(state, sizeof(ModuleInfo) * module_count);
 
 		printf("main function module: %d, main function: %d\n",
 			main_func_module_index, main_func_index);
 		printf("class count = %d, module count = %d\n", class_count, module_count);
 		for (i = 0; i < class_count; i++)
 		{
-			parse_class(file, &(exe->classes[i]));
+			parse_class(state, &(exe->classes[i]));
 		}
 		for (i = 0; i < module_count; i++)
 		{
-			parse_module(file, &(exe->modules[i]));
+			parse_module(state, &(exe->modules[i]));
 		}
 
 		exe->entry = exe->modules[main_func_module_index].functions[main_func_index];
+		fclose(state->source);
 		return exe;
 	}
 	else
 	{
 		fprintf(stderr, "fail to read file '%s'", path);
-		exit(-1);
+		fclose(state->source);
+		state->source = NULL;
+		vm_throw(state, VM_ERROR_OPEN_FILE);
+		return NULL; // make the compiler happy
 	}
 }
 
-void parse_class(FILE* file, ClassInfo* class_info)
+void parse_class(State* state, ClassInfo* class_info)
 {
-	char* class_name;
-	uint16_t field_count;
-	uint16_t method_count;
-	char** field_names;
-	Function** methods;
 	int i;
 
-	class_name = parse_string(file);
-	printf("class name: %s\n", class_name);
-	field_count = parse_ushort(file);
-	field_names = (char**)malloc(sizeof(char*)*field_count);
+	class_info->name = parse_string(state);
+	printf("class name: %s\n", class_info->name);
+	class_info->n_fields = parse_ushort(state);
+	class_info->field_names = vm_alloc(state, sizeof(char*) * class_info->n_fields);
 
-	for (i = 0; i < field_count; i++)
+	for (i = 0; i < class_info->n_fields; i++)
 	{
-		field_names[i] = parse_string(file);
-		printf("field: %s\n", field_names[i]);
+		class_info->field_names[i] = parse_string(state);
+		printf("field: %s\n", class_info->field_names[i]);
 	}
-	class_info->constant_pool = parse_constant_pool(file);
+	parse_constant_pool(state, &(class_info->constant_pool));
 
-	method_count = parse_ushort(file);
-	methods = (Function**)malloc(sizeof(Function*)*method_count);
-	for (i = 0; i < method_count; i++)
+	class_info->n_methods = parse_ushort(state);
+	class_info->methods = vm_alloc(state, sizeof(Function*) * class_info->n_methods);
+	for (i = 0; i < class_info->n_methods; i++)
 	{
-		methods[i] = parse_function(file);
-		if (!(methods[i]->is_native_function))
+		class_info->methods[i] = parse_function(state);
+		if (!(class_info->methods[i]->is_native_function))
 		{
-			methods[i]->u.func_info->constant_pool = class_info->constant_pool;
+			class_info->methods[i]->u.func_info->n_constants = class_info->constant_pool.n_constants;
+			class_info->methods[i]->u.func_info->constant_pool = class_info->constant_pool.constants;
 		}
-		printf("method: %s\n", methods[i]->name);
+		printf("method: %s\n", class_info->methods[i]->name);
 	}
-
-	class_info->name = class_name;
-	class_info->n_fields = field_count;
-	class_info->field_names = field_names;
-	class_info->n_methods = method_count;
-	class_info->methods = methods;
 }
 
-void parse_module(FILE* file, ModuleInfo* module_info)
+void parse_module(State* state, ModuleInfo* module_info)
 {
-	char* module_name;
-	uint16_t field_count;
-	uint16_t function_count;
-	char** field_names;
-	Function** functions;
 	int i;
 
-	module_name = parse_string(file);
-	printf("module name: %s\n", module_name);
-	field_count = parse_ushort(file);
-	field_names = (char**)malloc(sizeof(char*)*field_count);
+	module_info->name = parse_string(state);
+	printf("module name: %s\n", module_info->name);
+	module_info->n_fields = parse_ushort(state);
+	module_info->field_names = vm_alloc(state, sizeof(char*) * module_info->n_fields);
 
-	for (i = 0; i < field_count; i++)
+	for (i = 0; i < module_info->n_fields; i++)
 	{
-		field_names[i] = parse_string(file);
-		printf("field: %s\n", field_names[i]);
+		module_info->field_names[i] = parse_string(state);
+		printf("field: %s\n", module_info->field_names[i]);
 	}
 
-	module_info->constant_pool = parse_constant_pool(file);
-	function_count = parse_ushort(file);
-	functions = (Function**)malloc(sizeof(Function*)*function_count);
-	for (i = 0; i < function_count; i++)
+	parse_constant_pool(state, &(module_info->constant_pool));
+	module_info->n_functions = parse_ushort(state);
+	module_info->functions = (Function**)vm_alloc(state, sizeof(Function*) * module_info->n_functions);
+	for (i = 0; i < module_info->n_functions; i++)
 	{
-		functions[i] = parse_function(file);
-		if (!(functions[i]->is_native_function))
+		module_info->functions[i] = parse_function(state);
+		if (!(module_info->functions[i]->is_native_function))
 		{
-			functions[i]->u.func_info->constant_pool = module_info->constant_pool;
+			module_info->functions[i]->u.func_info->n_constants = module_info->constant_pool.n_constants;
+			module_info->functions[i]->u.func_info->constant_pool = module_info->constant_pool.constants;
 		}
-		printf("function: %s\n", functions[i]->name);
+		printf("function: %s\n", module_info->functions[i]->name);
 	}
-
-	module_info->name = module_name;
-	module_info->n_fields = field_count;
-	module_info->field_names = field_names;
-	module_info->n_functions = function_count;
-	module_info->functions = functions;
-
 }
 
-Function * parse_function(FILE * file)
+Function * parse_function(State* state)
 {
 	Function* function;
 	Byte is_native_function;
 	uint16_t code_len;
+	NativeFunction* native_function;
 
-	function = (Function*)malloc(sizeof(Function));
-	if (fread(&is_native_function, sizeof(Byte), 1, file) == 1)
+	function = (Function*)vm_alloc(state, sizeof(Function));
+	if (fread(&is_native_function, sizeof(Byte), 1, state->source) == 1)
 	{
 		if (is_native_function)
 		{
 			function->is_native_function = true;
-			function->name = parse_string(file);
-			function->u.native_function = (NativeFunction*)malloc(sizeof(NativeFunction));
-			function->u.native_function->is_loaded = false;
-			function->u.native_function->function_pointer = NULL;
-			function->u.native_function->args_size = parse_ushort(file);
-			function->u.native_function->lib_path = parse_string(file);
-			function->u.native_function->func_name = parse_string(file);
+			function->name = parse_string(state);
+			native_function = (NativeFunction*)vm_alloc(state, sizeof(NativeFunction));
+			native_function->is_loaded = false;
+			native_function->function_pointer = NULL;
+			native_function->args_size = parse_ushort(state);
+			native_function->lib_path = parse_string(state);
+			native_function->func_name = parse_string(state);
+			function->u.native_function = native_function;
 			return function;
 		}
 		else
 		{
-			function->name = parse_string(file);
+			function->name = parse_string(state);
 			function->is_native_function = false;
-			function->u.func_info = (FunctionInfo*)malloc(sizeof(FunctionInfo));
-			function->u.func_info->args_size = parse_ushort(file);
-			function->u.func_info->locals = parse_ushort(file);
+			function->u.func_info = (FunctionInfo*)vm_alloc(state, sizeof(FunctionInfo));
+			function->u.func_info->args_size = parse_ushort(state);
+			function->u.func_info->locals = parse_ushort(state);
 			printf("args_size = %d, locals = %d\n", function->u.func_info->args_size, function->u.func_info->locals);
-			code_len = parse_ushort(file);
+			code_len = parse_ushort(state);
 			function->u.func_info->code_len = code_len;
 			printf("function code len=%d\n", code_len);
-			function->u.func_info->code = (Byte*)malloc(sizeof(Byte) * code_len);
-			if (fread(function->u.func_info->code, sizeof(Byte), code_len, file) == code_len)
+			function->u.func_info->code = (Byte*)vm_alloc(state, sizeof(Byte) * code_len);
+			if (fread(function->u.func_info->code, sizeof(Byte), code_len, state->source) == code_len)
 			{
 				return function;
 			}
 			else
 			{
 				fprintf(stderr, "fail to read byte code\n");
-				free(function->name);
-				free(function->u.func_info->code);
-				free(function);
-				exit(-1);
+				vm_throw(state, VM_ERROR_READ_FUNCTION_BYTE_CODE);
+				return NULL; // make the compiler happy
 			}
 		}
 	}
 	else
 	{
 		fprintf(stderr, "fail to load function");
-		exit(-1);
+		vm_throw(state, -1);
+		return NULL; // make the compiler happy
 	}
 }
 
-Constant * parse_constant_pool(FILE * file)
+void parse_constant_pool(State* state, ConstantPool* constant_pool)
 {
-	uint16_t n_constants;
 	Byte type_tag;
 	int i;
 	char* str;
-	Constant* constants;
 	String* u32_str;
 	char* ptr;
 
-	n_constants = parse_ushort(file);
-	printf("# of constants: %d\n", n_constants);
-	constants = (Constant*)malloc(sizeof(Constant) * n_constants);
-	for (i = 0; i < n_constants; i++)
+	constant_pool->n_constants = parse_ushort(state);
+	printf("# of constants: %d\n", constant_pool->n_constants);
+	constant_pool->constants = (Constant*)vm_alloc(state, sizeof(Constant) * constant_pool->n_constants);
+	for (i = 0; i < constant_pool->n_constants; i++)
 	{
-		if (fread(&type_tag, sizeof(Byte), 1, file) == 1)
+		if (fread(&type_tag, sizeof(Byte), 1, state->source) == 1)
 		{
-			str = parse_string(file);
+			str = parse_string(state);
 			printf("constant: '%s'\n", str);
-			for (ptr = str; (*ptr) != '\0'; ptr++)
-			{
-				printf("_");
-			}
-			printf("\n");
-			constants[i].tag = type_tag;
+			constant_pool->constants[i].tag = type_tag;
 			if (type_tag == TYPE_I32)
 			{
-				constants[i].u.i32_v = atoi(str);
-				free(str);
+				constant_pool->constants[i].u.i32_v = atoi(str);
 			}
 			else if (type_tag == TYPE_I64)
 			{
-				constants[i].u.i64_v = atol(str);
-				free(str);
+				constant_pool->constants[i].u.i64_v = atol(str);
 			}
 			else if (type_tag == TYPE_F32)
 			{
-				constants[i].u.f32_v = (float_t)atof(str);
-				free(str);
+				constant_pool->constants[i].u.f32_v = (float_t)atof(str);
 			}
 			else if (type_tag == TYPE_F64)
 			{
-				constants[i].u.f64_v = (double_t)atof(str);
-				free(str);
+				constant_pool->constants[i].u.f64_v = (double_t)atof(str);
 			}
 			else if (type_tag == TYPE_STRING)
 			{
-				u32_str = malloc(sizeof(String));
+				u32_str = vm_alloc(state, sizeof(String));
 				u32_str->length = utf8_to_utf32_len(str);
 				u32_str->characters = utf8_to_utf32(str, u32_str->length);
-				constants[i].u.str_v = u32_str;
-				free(str);
+				constant_pool->constants[i].u.str_v = u32_str;
 			}
 			else
 			{
 				fprintf(stderr, "wrong type tag\n");
-				exit(-1);
+				vm_throw(state, VM_ERROR_WRONG_TYPE_TAG);
 			}
 		}
 		else
 		{
 			fprintf(stderr, "cannot read type tag\n");
-			exit(-1);
+			vm_throw(state, VM_ERROR_READ_TYPE_TAG);
 		}
 	}
-	return constants;
 }
 
 void view_exe(Executable* exe)
@@ -350,7 +321,7 @@ void view_function(Function * function)
 	{
 		printf("\tmethod: %s\n", function->name);
 		printf("\targs_size=%d\n", function->u.native_function->args_size);
-		printf("\tlibrary name: %s\nfunction name: %s\n", function->u.native_function->lib_path, function->u.native_function->func_name);
+		printf("\tlibrary name: %s\n\tfunction name: %s\n\n", function->u.native_function->lib_path, function->u.native_function->func_name);
 	}
 	else
 	{
@@ -397,7 +368,7 @@ void view_function(Function * function)
 	}
 }
 
-void view_type_tag(Byte tag)
+void view_type_tag(State* state, Byte tag)
 {
 	if (tag == TYPE_I32)
 	{
@@ -426,6 +397,6 @@ void view_type_tag(Byte tag)
 	else
 	{
 		fprintf(stderr, "error type tag\n");
-		exit(-1);
+		vm_throw(state, -1);
 	}
 }

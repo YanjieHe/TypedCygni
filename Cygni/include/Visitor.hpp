@@ -69,7 +69,6 @@ namespace cygni
 		RuleSet ruleSet;
 		Project &project;
 		std::shared_ptr<Package> package;
-		std::unordered_set<PackageRoute> visited;
 		explicit TypeChecker(Project &project);
 
 		TypePtr VisitBinary(std::shared_ptr<BinaryExpression> node, ScopePtr scope);
@@ -88,12 +87,12 @@ namespace cygni
 		TypePtr VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node, ScopePtr scope);
 		TypePtr VisitNewExpression(std::shared_ptr<NewExpression> node, ScopePtr scope);
 		TypePtr VisitVarDefExpression(std::shared_ptr<VarDefExpression> node, ScopePtr scope);
+		void RegisterModulesAndClasses(std::shared_ptr<Package>& pkg, std::unordered_set<PackageRoute>& visited);
 		void VisitPackage(ScopePtr globalScope);
 		void VisitProject(ScopePtr globalScope);
 		TypePtr Attach(ExpPtr node, TypePtr type);
 		TypePtr VisitAssign(std::shared_ptr<BinaryExpression> node, ScopePtr scope);
 		TypePtr VisitWhile(std::shared_ptr<WhileExpression> node, ScopePtr scope);
-		void ImportPackage(ScopePtr scope, const PackageRoute& route);
 	};
 
 	class TreeTraverser

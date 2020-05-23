@@ -674,21 +674,6 @@ namespace cygni
 		}
 	}
 
-	void TypeChecker::ImportPackage(ScopePtr scope, const PackageRoute & route)
-	{
-		auto pkg = project.packages.at(route);
-		for (const auto &module : pkg->modules.values)
-		{
-			TypePtr moduleType = std::make_shared<ModuleType>(route, module->name);
-			scope->Put(module->name, moduleType);
-			this->package->moduleMap.insert({ module->name, module });
-		}
-		for (const auto& _class : pkg->classes.values)
-		{
-			this->package->classMap.insert({ _class->name, _class });
-		}
-	}
-
 	TypePtr TypeChecker::VisitExpression(ExpPtr node, ScopePtr scope)
 	{
 		switch (node->nodeType)
@@ -935,9 +920,9 @@ namespace cygni
 
 	TypePtr TypeChecker::VisitNewExpression(std::shared_ptr<NewExpression> node, ScopePtr scope)
 	{
-		if (package->classes.ContainsKey(node->name))
+		if (package->classMap.find(node->name) != package->classMap.end())
 		{
-			auto classInfo = package->classes.GetValueByKey(node->name);
+			auto classInfo = package->classMap.at(node->name);
 			for (const auto& argument : node->arguments)
 			{
 				if (argument.name)
@@ -1001,32 +986,51 @@ namespace cygni
 		}
 	}
 
+	void TypeChecker::RegisterModulesAndClasses(std::shared_ptr<Package>& pkg, std::unordered_set<PackageRoute>& visited)
+	{
+		if (visited.find(pkg->route) != visited.end())
+		{
+			// pass
+		}
+		else
+		{
+			visited.insert(pkg->route);
+			for (const auto &module : pkg->modules.values)
+			{
+				TypePtr moduleType = std::make_shared<ModuleType>(package->route, module->name);
+				package->moduleMap.insert({ module->name, module });
+			}
+			for (const auto& _class : pkg->classes.values)
+			{
+				package->classMap.insert({ _class->name, _class });
+			}
+
+			for (auto importedPkg : pkg->importedPackages)
+			{
+				if (project.packages.find(importedPkg) != project.packages.end())
+				{
+					std::shared_ptr<Package> next = project.packages.at(importedPkg);
+					RegisterModulesAndClasses(next, visited);
+				}
+				else
+				{
+					throw TypeException(SourceLocation(), Format(U"missing pakcage: {}", PackageRouteToString(importedPkg)));
+				}
+			}
+		}
+	}
+
 	void TypeChecker::VisitPackage(ScopePtr globalScope)
 	{
-		visited.insert(package->route);
+		std::unordered_set<PackageRoute> visited;
 		auto scope = std::make_shared<Scope>(globalScope);
 		// TO DO: type aliases
-		for (const auto& route : package->importedPackages)
+		RegisterModulesAndClasses(package, visited);
+		for (const auto &pair : package->moduleMap)
 		{
-			if (visited.find(route) == visited.end())
-			{
-				// not visited
-				auto currentPackage = package;
-				package = project.packages.at(route);
-				VisitPackage(scope);
-				package = currentPackage;
-			}
-			ImportPackage(scope, route);
-		}
-		for (const auto &module : package->modules.values)
-		{
+			const auto & module = pair.second;
 			TypePtr moduleType = std::make_shared<ModuleType>(package->route, module->name);
-			this->package->moduleMap.insert({ module->name, module });
 			scope->Put(module->name, moduleType);
-		}
-		for (const auto& _class : package->classes.values)
-		{
-			this->package->classMap.insert({ _class->name, _class });
 		}
 		for (const auto &_class : package->classes.values)
 		{
@@ -1323,6 +1327,10 @@ namespace cygni
 	void VariableLocator::VisitMethodDef(const MethodDef & method, ScopePtr outerScope)
 	{
 		auto scope = std::make_shared<Scope>(outerScope);
+		if (method.selfType->typeCode == TypeCode::Class)
+		{
+			scope->Put(U"this", ParameterLocation(ParameterType::LocalVariable, 0));
+		}
 		for (auto parameter : method.parameters)
 		{
 			auto location = parameter->parameterLocation;
@@ -1390,7 +1398,7 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location, U"undefined module");
+				throw TypeException(node->location, Format(U"undefined module '{}'", moduleType->ToString()));
 			}
 		}
 		else if (object->typeCode == TypeCode::Class)
@@ -1402,12 +1410,12 @@ namespace cygni
 				if (classInfo->fields.ContainsKey(node->field))
 				{
 					auto field = classInfo->fields.GetValueByKey(node->field);
-					node->parameterLocation = ParameterLocation(ParameterType::ClassField, field.index);
+					node->parameterLocation = ParameterLocation(ParameterType::ClassField, field.index, classInfo->index);
 				}
 				else if (classInfo->methods.ContainsKey(node->field))
 				{
 					auto method = classInfo->methods.GetValueByKey(node->field);
-					node->parameterLocation = ParameterLocation(ParameterType::ClassMethod, method.index);
+					node->parameterLocation = ParameterLocation(ParameterType::ClassMethod, method.index, classInfo->index);
 				}
 				else
 				{

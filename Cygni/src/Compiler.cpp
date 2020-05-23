@@ -605,7 +605,7 @@ namespace cygni
 			byteCode.Append(1); // native function
 			auto annotation = method.annotations.GetValueByKey(U"LibraryImport");
 			byteCode.AppendString(method.name);
-			byteCode.AppendUShort(static_cast<int>(method.parameters.size()));
+			byteCode.AppendUShort(method.parameters.size());
 			auto libName = std::static_pointer_cast<ConstantExpression>(annotation.arguments.at(0).value)->constant;
 			auto funcName = std::static_pointer_cast<ConstantExpression>(annotation.arguments.at(1).value)->constant;
 			byteCode.AppendString(libName);
@@ -615,7 +615,14 @@ namespace cygni
 		{
 			byteCode.Append(0); // user-defined function
 			byteCode.AppendString(method.name);
-			byteCode.AppendUShort(static_cast<int>(method.parameters.size()));
+			if (method.selfType->typeCode == TypeCode::Class)
+			{
+				byteCode.AppendUShort(method.parameters.size() + 1); // add 'this'
+			}
+			else
+			{
+				byteCode.AppendUShort(method.parameters.size());
+			}
 			byteCode.AppendUShort(static_cast<int>(method.localVariables.size()));
 			ByteCode funcCode;
 			CompileExpression(method.body, constantMap, funcCode);
@@ -849,8 +856,8 @@ namespace cygni
 		}
 		else if (location.type == ParameterType::ClassMethod)
 		{
-			byteCode.AppendOp(OpCode::DUPLICATE);
 			byteCode.AppendOp(OpCode::PUSH_METHOD);
+			byteCode.AppendUShort(location.index);
 			byteCode.AppendUShort(location.offset);
 		}
 		else
@@ -865,10 +872,10 @@ namespace cygni
 		byteCode.AppendUShort(node->parameterLocation.offset);
 		for (auto arg : node->arguments)
 		{
+			byteCode.AppendOp(OpCode::DUPLICATE);
+			//byteCode.AppendUShort(1); // get the initialized class object
 			CompileExpression(arg.value, constantMap, byteCode);
-			byteCode.AppendOp(OpCode::DUPLICATE_OFFSET);
-			byteCode.AppendUShort(1); // get the initialized class object
-			switch (node->type->typeCode)
+			switch (arg.value->type->typeCode)
 			{
 			case TypeCode::Int32: {
 				byteCode.AppendOp(OpCode::POP_FIELD_I32);
@@ -1115,7 +1122,7 @@ namespace cygni
 	}
 	void Compiler::CompileConstantPool(const ConstantMap & constantMap, ByteCode& byteCode)
 	{
-		byteCode.AppendUShort(constantMap.size());
+		byteCode.AppendUShort(static_cast<uint32_t>(constantMap.size()));
 		std::vector<ConstantKey> constants(constantMap.size());
 		for (auto pair : constantMap)
 		{

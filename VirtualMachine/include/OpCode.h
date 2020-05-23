@@ -1,5 +1,5 @@
-#ifndef OP_CODE_H
-#define OP_CODE_H
+#ifndef VM_OP_CODE_H
+#define VM_OP_CODE_H
 #include <stdio.h>
 
 enum OpCode
@@ -191,4 +191,4 @@ static const char* TypeTagToString(TypeTag tag)
 		fprintf(stderr, "type tag enumeration\n");
 	}
 }
-#endif // OP_CODE_H
+#endif // VM_OP_CODE_H

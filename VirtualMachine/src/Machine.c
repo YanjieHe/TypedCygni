@@ -3,7 +3,11 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#ifdef _WIN32
 #include <windows.h>
+#undef DUPLICATE
+#endif
 
 #define STACK_WRITE(VALUE) sp++; stack[sp].u.##VALUE = (VALUE);
 #define STACK_READ(VALUE) (VALUE) = stack[sp].u.##VALUE; sp--;
@@ -12,6 +16,7 @@
 Machine * create_machine(int stack_max_size, Executable * exe)
 {
 	Machine * machine;
+	int i;
 
 	machine = (Machine*)malloc(sizeof(Machine));
 	machine->stack_max_size = stack_max_size;
@@ -22,6 +27,10 @@ Machine * create_machine(int stack_max_size, Executable * exe)
 	machine->pc = 0;
 	machine->function = NULL;
 
+	for (i = 0; i < stack_max_size; i++)
+	{
+		machine->stack[i].is_gc_obj = false;
+	}
 	return machine;
 }
 
@@ -68,7 +77,8 @@ void run(Machine* machine)
 	while (pc < cur_func->u.func_info->code_len)
 	{
 		op = code[pc];
-		//printf("function: %s, op = %s\n", cur_func->name, opcode_info[op][0]);
+		printf("function: %s, op = %s, sp = %d, fp = %d\n", cur_func->name, opcode_info[op][0], sp, fp);
+		view_stack(stack);
 		pc = pc + 1;
 		switch (op)
 		{
@@ -152,6 +162,14 @@ void run(Machine* machine)
 			STACK_WRITE(f64_v);
 			break;
 		}
+		case PUSH_LOCAL_OBJECT: {
+			READ_USHORT(offset);
+			printf("fp = %d, offset = %d\n", fp, offset);
+			gc_obj = stack[fp + offset].u.gc_obj;
+			STACK_WRITE(gc_obj);
+			stack[sp].is_gc_obj = true;
+			break;
+		}
 		case POP_LOCAL_I32: {
 			READ_USHORT(offset);
 			STACK_READ(i32_v);
@@ -174,6 +192,13 @@ void run(Machine* machine)
 			READ_USHORT(offset);
 			STACK_READ(i64_v);
 			stack[fp + offset].u.i64_v = i64_v;
+			break;
+		}
+		case POP_LOCAL_OBJECT: {
+			READ_USHORT(offset);
+			STACK_READ(gc_obj);
+			stack[sp + 1].is_gc_obj = false;
+			stack[fp + offset].u.gc_obj = gc_obj;
 			break;
 		}
 		case PUSH_STATIC_I32: {
@@ -209,6 +234,7 @@ void run(Machine* machine)
 			READ_USHORT(offset);
 			gc_obj = machine->exe->modules[index].variables[offset].u.gc_obj;
 			STACK_WRITE(gc_obj);
+			stack[sp].is_gc_obj = true;
 			break;
 		}
 		case POP_STATIC_I32: {
@@ -243,6 +269,7 @@ void run(Machine* machine)
 			READ_USHORT(index);
 			READ_USHORT(offset);
 			STACK_READ(gc_obj);
+			stack[sp + 1].is_gc_obj = false;
 			machine->exe->modules[index].variables[offset].u.gc_obj = gc_obj;
 			break;
 		}
@@ -449,52 +476,87 @@ void run(Machine* machine)
 		case PUSH_FIELD_I32: {
 			gc_obj = stack[sp].u.gc_obj;
 			READ_USHORT(offset);
+			printf("PUSH_FIELD_I32\n");
+			printf("is gc obj: %d\n", stack[sp].is_gc_obj);
+			printf("offset = %d\n", offset);
+			printf("class index = %d\n", gc_obj->class_index);
+			printf("field name: %s\n", machine->exe->classes[gc_obj->class_index].field_names[offset]);
+			printf("field int: %d\n", gc_obj->u.fields[offset].u.i32_v);
 			stack[sp].u.i32_v = gc_obj->u.fields[offset].u.i32_v;
+			stack[sp].is_gc_obj = false;
 			break;
 		}
 		case PUSH_FIELD_I64: {
 			gc_obj = stack[sp].u.gc_obj;
 			READ_USHORT(offset);
 			stack[sp].u.i64_v = gc_obj->u.fields[offset].u.i64_v;
+			stack[sp].is_gc_obj = false;
 			break;
 		}
 		case PUSH_FIELD_F32: {
 			gc_obj = stack[sp].u.gc_obj;
 			READ_USHORT(offset);
 			stack[sp].u.f32_v = gc_obj->u.fields[offset].u.f32_v;
+			stack[sp].is_gc_obj = false;
 			break;
 		}
 		case PUSH_FIELD_F64: {
 			gc_obj = stack[sp].u.gc_obj;
 			READ_USHORT(offset);
 			stack[sp].u.f64_v = gc_obj->u.fields[offset].u.f64_v;
+			stack[sp].is_gc_obj = false;
+			break;
+		}
+		case PUSH_FIELD_OBJECT: {
+			gc_obj = stack[sp].u.gc_obj;
+			READ_USHORT(offset);
+			stack[sp].u.f64_v = gc_obj->u.fields[offset].u.f64_v;
+			stack[sp].is_gc_obj = true;
 			break;
 		}
 		case POP_FIELD_I32: {
-			gc_obj = stack[sp].u.gc_obj;
+			printf("is gc obj? %d\n", stack[sp - 1].is_gc_obj);
+			gc_obj = stack[sp - 1].u.gc_obj;
+			stack[sp - 1].is_gc_obj = false;
 			READ_USHORT(offset);
-			gc_obj->u.fields[offset].u.i32_v = stack[sp - 1].u.i32_v;
+			gc_obj->u.fields[offset].u.i32_v = stack[sp].u.i32_v;
+			printf("POP_FIELD_I32 gc_obj->u.fields[offset].u.i32 = %d\n", gc_obj->u.fields[offset].u.i32_v);
 			sp = sp - 2;
 			break;
 		}
 		case POP_FIELD_I64: {
-			gc_obj = stack[sp].u.gc_obj;
+			gc_obj = stack[sp - 1].u.gc_obj;
+			stack[sp - 1].is_gc_obj = false;
 			READ_USHORT(offset);
-			gc_obj->u.fields[offset].u.i64_v = stack[sp - 1].u.i64_v;
+			gc_obj->u.fields[offset].u.i64_v = stack[sp].u.i64_v;
 			sp = sp - 2;
 			break;
 		}
 		case POP_FIELD_F32: {
-			gc_obj = stack[sp].u.gc_obj;
+			gc_obj = stack[sp - 1].u.gc_obj;
+			stack[sp - 1].is_gc_obj = false;
 			READ_USHORT(offset);
-			gc_obj->u.fields[offset].u.f32_v = stack[sp - 1].u.f32_v;
+			gc_obj->u.fields[offset].u.f32_v = stack[sp].u.f32_v;
 			sp = sp - 2;
 			break;
 		}
 		case POP_FIELD_F64: {
-			gc_obj = stack[sp].u.gc_obj;
+			gc_obj = stack[sp - 1].u.gc_obj;
+			stack[sp - 1].is_gc_obj = false;
 			READ_USHORT(offset);
-			gc_obj->u.fields[offset].u.f64_v = stack[sp - 1].u.f64_v;
+			gc_obj->u.fields[offset].u.f64_v = stack[sp].u.f64_v;
+			sp = sp - 2;
+			break;
+		}
+		case POP_FIELD_OBJECT: {
+			gc_obj = stack[sp - 1].u.gc_obj;
+			stack[sp - 1].is_gc_obj = false;
+			READ_USHORT(offset);
+			printf("offset = %d\n", offset);
+			printf("class index = %d\n", gc_obj->class_index);
+			printf("field name: %s\n", machine->exe->classes[gc_obj->class_index].field_names[offset]);
+			gc_obj->u.fields[offset].u.gc_obj = stack[sp].u.gc_obj;
+			stack[sp - 1].is_gc_obj = false;
 			sp = sp - 2;
 			break;
 		}
@@ -536,6 +598,7 @@ void run(Machine* machine)
 			gc_obj = stack[sp].u.gc_obj;
 			gc_obj = gc_obj->u.array->u.obj_array[i32_v];
 			STACK_WRITE(gc_obj);
+			stack[sp].is_gc_obj = true;
 			break;
 		}
 		case POP_ARRAY_I32: {
@@ -575,6 +638,7 @@ void run(Machine* machine)
 			array_index = i32_v;
 			STACK_READ(gc_obj);
 			gc_obj->u.array->u.obj_array[array_index] = stack[sp].u.gc_obj;
+			stack[sp].is_gc_obj = false;
 			sp--;
 			break;
 		}
@@ -689,6 +753,7 @@ void run(Machine* machine)
 					next_func->u.native_function->is_loaded = true;
 				}
 				sp = sp - next_func->u.native_function->args_size;
+				printf("call native function from sp = %d\n", sp);
 				next_func->u.native_function->function_pointer(&(stack[sp])); // return value omitted
 			}
 			else
@@ -715,9 +780,10 @@ void run(Machine* machine)
 			break;
 		}
 		case PUSH_METHOD: {
-			gc_obj = stack[sp].u.gc_obj;
+			READ_USHORT(index);
 			READ_USHORT(offset);
-			stack[sp].u.function = machine->exe->classes[gc_obj->class_index].methods[offset];
+			sp++;
+			stack[sp].u.function = machine->exe->classes[index].methods[offset];
 			break;
 		}
 		case NEW: {
@@ -725,7 +791,7 @@ void run(Machine* machine)
 			gc_obj = (Object*)malloc(sizeof(Object));
 			gc_obj->is_array = false;
 			gc_obj->class_index = index;
-			gc_obj->u.fields = (Value*)malloc(sizeof(Value) * machine->exe->classes[index].n_fields);
+			gc_obj->u.fields = malloc(sizeof(Value) * machine->exe->classes[index].n_fields);
 			gc_obj->next = NULL; // TO DO: garbage collection
 			STACK_WRITE(gc_obj);
 			stack[sp].is_gc_obj = true;
@@ -734,12 +800,14 @@ void run(Machine* machine)
 		case DUPLICATE: {
 			sp++;
 			stack[sp].u.gc_obj = stack[sp - 1].u.gc_obj;
+			stack[sp].is_gc_obj = true;
 			break;
 		}
 		case DUPLICATE_OFFSET: {
 			READ_USHORT(offset);
 			sp++;
-			stack[sp].u.gc_obj = stack[sp - offset].u.gc_obj;
+			stack[sp].u.gc_obj = stack[sp - 1 - offset].u.gc_obj;
+			stack[sp].is_gc_obj = true;
 			break;
 		}
 		case NEW_ARRAY: {
@@ -865,7 +933,14 @@ void view_stack(Value* stack)
 {
 	for (int i = 0; i < 100; i++)
 	{
-		printf("%d ", stack[i].u.i32_v);
+		if (stack[i].is_gc_obj)
+		{
+			printf("(OBJ: %d) ", stack[i].u.gc_obj->class_index);
+		}
+		else
+		{
+			printf("%d ", stack[i].u.i32_v);
+		}
 	}
 	printf("\n");
 }

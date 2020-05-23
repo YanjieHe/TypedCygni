@@ -225,9 +225,10 @@ namespace cygni
 	{
 		if (packages.find(route) != packages.end())
 		{
-			if (packages.at(route)->modules.ContainsKey(name))
+			auto pkg = packages.at(route);
+			if (pkg->moduleMap.find(name) != pkg->moduleMap.end())
 			{
-				return { packages.at(route)->modules.GetValueByKey(name) };
+				return { pkg->moduleMap.at(name) };
 			}
 			else
 			{
@@ -244,9 +245,10 @@ namespace cygni
 	{
 		if (packages.find(route) != packages.end())
 		{
-			if (packages.at(route)->classes.ContainsKey(name))
+			auto pkg = packages.at(route);
+			if (pkg->classMap.find(name) != pkg->classMap.end())
 			{
-				return { packages.at(route)->classes.GetValueByKey(name) };
+				return { pkg->classMap.at(name) };
 			}
 			else
 			{

@@ -144,12 +144,13 @@ namespace cygni
 			stream.put(b);
 		}
 	}
-	std::string FormatInternal(const std::string & fmt, std::ostringstream & stream, int i)
+
+	std::u32string FormatInternal(std::u32string fmt, std::basic_ostringstream<char32_t>& stream, int i)
 	{
 		int n = static_cast<int>(fmt.size());
 		while (i < n)
 		{
-			if (fmt[i] == '{')
+			if (fmt[i] == U'{')
 			{
 				if (i + 1 >= n)
 				{
@@ -157,13 +158,13 @@ namespace cygni
 				}
 				else
 				{
-					if (fmt[i + 1] == '{')
+					if (fmt[i + 1] == U'{')
 					{
 						// escape left brace
-						stream.put('{');
+						stream.put(U'{');
 						i = i + 2;
 					}
-					else if (fmt[i + 1] == '}')
+					else if (fmt[i + 1] == U'}')
 					{
 						throw std::invalid_argument("out of arguments");
 					}
@@ -173,7 +174,7 @@ namespace cygni
 					}
 				}
 			}
-			else if (fmt[i] == '}')
+			else if (fmt[i] == U'}')
 			{
 				if (i + 1 >= n)
 				{
@@ -181,9 +182,9 @@ namespace cygni
 				}
 				else
 				{
-					if (fmt[i + 1] == '}')
+					if (fmt[i + 1] == U'}')
 					{
-						stream.put('}');
+						stream.put(U'}');
 						i = i + 2;
 					}
 					else
@@ -200,6 +201,27 @@ namespace cygni
 		}
 		return stream.str();
 	}
+	
+	std::u32string Convert::ToString(const int32_t& i)
+	{
+		return UTF8ToUTF32(std::to_string(i));
+	}
+
+	std::u32string Convert::ToString(const char32_t & c)
+	{
+		return std::u32string(1, c);
+	}
+
+	std::u32string Convert::ToString(const std::u32string & s)
+	{
+		return s;
+	}
+
+	std::u32string Convert::ToString(const std::string & s)
+	{
+		return UTF8ToUTF32(s);
+	}
+
 } // namespace cygni
 
 std::ostream &operator<<(std::ostream &stream, const std::u32string &utf32)

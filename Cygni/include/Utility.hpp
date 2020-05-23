@@ -34,6 +34,7 @@ namespace cygni
 		std::unordered_map<TKey, int> map;
 
 		Table() = default;
+
 		void Add(const TKey &key, const TValue &value)
 		{
 			if (map.find(key) != map.end())
@@ -69,15 +70,25 @@ namespace cygni
 	void WriteText(std::string path, std::string text);
 	void WriteBytes(std::string path, const std::vector<uint8_t>& bytes);
 
-	std::string FormatInternal(const std::string& fmt, std::ostringstream& stream, int i);
+
+	class Convert
+	{
+	public:
+		static std::u32string ToString(const int32_t& i);
+		static std::u32string ToString(const char32_t& c);
+		static std::u32string ToString(const std::u32string& s);
+		static std::u32string ToString(const std::string& s);
+	};
+
+	std::u32string FormatInternal(std::u32string fmt, std::basic_ostringstream<char32_t>& stream, int i);
 
 	template<class T, class... Args>
-	std::string FormatInternal(const std::string& fmt, std::ostringstream& stream, int i, const T& head, const Args&... rest)
+	std::u32string FormatInternal(std::u32string fmt, std::basic_ostringstream<char32_t>& stream, int i, const T& head, const Args&... rest)
 	{
 		int n = static_cast<int>(fmt.size());
 		while (i < n)
 		{
-			if (fmt[i] == '{')
+			if (fmt[i] == U'{')
 			{
 				if (i + 1 >= n)
 				{
@@ -85,15 +96,15 @@ namespace cygni
 				}
 				else
 				{
-					if (fmt[i + 1] == '{')
+					if (fmt[i + 1] == U'{')
 					{
 						// escape left brace
-						stream << '{';
+						stream.put(U'{');
 						i = i + 2;
 					}
-					else if (fmt[i + 1] == '}')
+					else if (fmt[i + 1] == U'}')
 					{
-						stream << head;
+						stream << Convert::ToString(head);
 						i = i + 2;
 						return FormatInternal(fmt, stream, i, rest...);
 					}
@@ -103,7 +114,7 @@ namespace cygni
 					}
 				}
 			}
-			else if (fmt[i] == '}')
+			else if (fmt[i] == U'}')
 			{
 				if (i + 1 >= n)
 				{
@@ -111,9 +122,9 @@ namespace cygni
 				}
 				else
 				{
-					if (fmt[i + 1] == '}')
+					if (fmt[i + 1] == U'}')
 					{
-						stream << '}';
+						stream.put(U'}');
 						i = i + 2;
 					}
 					else
@@ -124,7 +135,7 @@ namespace cygni
 			}
 			else
 			{
-				stream << fmt[i];
+				stream.put(fmt[i]);
 				i = i + 1;
 			}
 		}
@@ -132,16 +143,15 @@ namespace cygni
 	}
 
 	template <class... Args>
-	std::u32string Format(const std::u32string& fmt, const Args&... args)
+	std::u32string Format(std::u32string fmt, const Args&... args)
 	{
-		std::ostringstream stream;
+		std::basic_ostringstream<char32_t> stream;
 		int i = 0;
-		return UTF8ToUTF32(FormatInternal(UTF32ToUTF8(fmt), stream, i, args...));
+		return FormatInternal(fmt, stream, i, args...);
 	}
 
 } // namespace cygni
 
 std::ostream &operator<<(std::ostream &stream, const std::u32string &utf32);
-
 
 #endif // CYGNI_UTILITY_HPP

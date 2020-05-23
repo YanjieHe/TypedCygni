@@ -6,7 +6,7 @@
 
 int print_line_int(Value * env)
 {
-	printf("%d\n", env[0].u.i32_v);
+	printf("print integer: %d\n", env[0].u.i32_v);
 	return 0;
 }
 

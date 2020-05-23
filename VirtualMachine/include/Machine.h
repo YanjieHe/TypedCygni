@@ -1,5 +1,5 @@
-#ifndef MACHINE_H
-#define MACHINE_H
+#ifndef VM_MACHINE_H
+#define VM_MACHINE_H
 #include "OpCode.h"
 #include "Data.h"
 
@@ -29,4 +29,4 @@ void view_stack(Value* stack);
 
 void copy_string(int32_t* char_array, String* str_v);
 
-#endif // MACHINE_H
+#endif // VM_MACHINE_H
