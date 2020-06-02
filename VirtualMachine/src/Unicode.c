@@ -177,7 +177,7 @@ char * utf32_to_utf8(const uint32_t * utf32, int utf32_len, int utf8_len)
 	int utf8_index;
 	uint32_t cp;
 
-	utf8 = malloc(sizeof(char) * utf8_len + 1);
+	utf8 = malloc(sizeof(char) * (utf8_len + 1));
 	utf8_index = 0;
 	for (i = 0; i < utf32_len; i++)
 	{

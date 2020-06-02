@@ -77,6 +77,7 @@ namespace cygni
 		Package,
 		Extends,
 		Interface,
+		To,
 		Eof
 	};
 
@@ -326,17 +327,19 @@ namespace cygni
 		TYPE_STRING,
 		TYPE_OBJECT
 	};
-	template <typename TEnum> class Enum
+	template <typename TEnum>
+	class Enum
 	{
 	public:
 		static std::u32string ToString(TEnum)
 		{
-			std::cout << __FUNCTION__ << std::endl;
+			std::cerr << __FUNCTION__ << std::endl;
 			exit(1);
 		}
 	};
 
-	template <> class Enum<Tag>
+	template <>
+	class Enum<Tag>
 	{
 	public:
 		static std::u32string ToString(Tag tag)
@@ -457,16 +460,19 @@ namespace cygni
 				return U"Extends";
 			case Tag::Interface:
 				return U"Interface";
+			case Tag::To:
+				return U"To";
 			case Tag::Eof:
 				return U"Eof";
 			default:
-				std::cout << __FUNCTION__ << std::endl;
+				std::cerr << __FUNCTION__ << std::endl;
 				exit(1);
 			}
 		}
 	};
 
-	template <> class Enum<ExpressionType>
+	template <>
+	class Enum<ExpressionType>
 	{
 	public:
 		static std::u32string ToString(ExpressionType kind)
@@ -545,7 +551,7 @@ namespace cygni
 				return U"Break";
 
 			default:
-				std::cout << __FUNCTION__ << std::endl;
+				std::cerr << __FUNCTION__ << std::endl;
 				exit(1);
 			}
 		}
@@ -564,7 +570,7 @@ namespace cygni
 			case AccessModifier::Protected:
 				return U"Protected";
 			default:
-				std::cout << __FUNCTION__ << std::endl;
+				std::cerr << __FUNCTION__ << std::endl;
 				exit(1);
 			}
 		}
@@ -625,7 +631,7 @@ namespace cygni
 				return U"Interface";
 
 			default:
-				std::cout << __FUNCTION__ << std::endl;
+				std::cerr << __FUNCTION__ << std::endl;
 				exit(1);
 			}
 		}
@@ -655,7 +661,7 @@ namespace cygni
 			case ParameterType::LocalVariable:
 				return U"LocalVariable";
 			default:
-				std::cout << __FUNCTION__ << std::endl;
+				std::cerr << __FUNCTION__ << std::endl;
 				exit(1);
 			}
 		}
@@ -973,7 +979,7 @@ namespace cygni
 			case OpCode::FINALLY_END:
 				return U"FINALLY_END";
 			default: {
-				std::cout << __FUNCTION__ << std::endl;
+				std::cerr << __FUNCTION__ << std::endl;
 				exit(1);
 			}
 			}
@@ -1000,7 +1006,7 @@ namespace cygni
 			case TypeTag::TYPE_OBJECT:
 				return U"TYPE_OBJECT";
 			default:
-				std::cout << __FUNCTION__ << std::endl;
+				std::cerr << __FUNCTION__ << std::endl;
 				exit(1);
 			}
 		}

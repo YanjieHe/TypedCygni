@@ -109,6 +109,11 @@ namespace cygni
 
 	StringType::StringType() : Type(TypeCode::String) {}
 
+	std::u32string StringType::ToString() const
+	{
+		return U"Predef.String";
+	}
+
 	VoidType::VoidType() : Type(TypeCode::Void) {}
 
 	AnyType::AnyType() : Type(TypeCode::Any) {}
@@ -199,6 +204,18 @@ namespace cygni
 		}
 	}
 
+	TypePtr ClassType::Replace(const Table<std::u32string, TypeParameter>& parameters) const
+	{
+		if (parameters.ContainsKey(name))
+		{
+			return std::make_shared<ClassType>(route, parameters.GetValueByKey(name).name);
+		}
+		else
+		{
+			return std::make_shared<ClassType>(route, name);
+		}
+	}
+
 	ModuleType::ModuleType(PackageRoute route, std::u32string name)
 		: Type(TypeCode::Module), route{ route }, name{ name } {}
 
@@ -217,39 +234,6 @@ namespace cygni
 		else
 		{
 			return false;
-		}
-	}
-
-	std::u32string PackageRouteToString(const PackageRoute & route)
-	{
-		if (route.empty())
-		{
-			return U"";
-		}
-		else
-		{
-			std::u32string text;
-			size_t size = 0;
-			for (size_t i = 0; i < route.size(); i++)
-			{
-				size = size + route[i].size();
-			}
-			size = size + route.size() - 1;
-			text.reserve(size);
-
-			for (auto c : route.front())
-			{
-				text.push_back(c);
-			}
-			for (size_t i = 1; i < route.size(); i++)
-			{
-				text.push_back(U'.');
-				for (auto c : route.at(i))
-				{
-					text.push_back(c);
-				}
-			}
-			return text;
 		}
 	}
 

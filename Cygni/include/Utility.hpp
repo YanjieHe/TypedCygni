@@ -35,7 +35,7 @@ namespace cygni
 
 		Table() = default;
 
-		void Add(const TKey &key, const TValue &value)
+		void Add(const TKey &key, const TValue& value)
 		{
 			if (map.find(key) != map.end())
 			{
@@ -63,6 +63,32 @@ namespace cygni
 		int Size() const
 		{
 			return static_cast<int>(values.size());
+		}
+
+		typename std::vector<TValue>::iterator begin()
+		{
+			return values.begin();
+		}
+
+		typename std::vector<TValue>::iterator end()
+		{
+			return values.end();
+		}
+
+		typename std::vector<TValue>::const_iterator begin() const
+		{
+			return values.begin();
+		}
+
+		typename std::vector<TValue>::const_iterator end() const
+		{
+			return values.end();
+		}
+
+		void Clear()
+		{
+			values.clear();
+			map.clear();
 		}
 	};
 

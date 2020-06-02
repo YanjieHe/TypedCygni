@@ -2,10 +2,9 @@
 #define CYGNI_TYPE_HPP
 #include "Enum.hpp"
 #include "Utility.hpp"
-#include <memory>
+#include "SourceLocation.hpp"
 #include <unordered_map>
 #include <unordered_set>
-#include <vector>
 
 namespace cygni
 {
@@ -95,6 +94,8 @@ namespace cygni
 	{
 	public:
 		StringType();
+
+		std::u32string ToString() const override;
 	};
 
 	class VoidType : public Type
@@ -109,17 +110,34 @@ namespace cygni
 		AnyType();
 	};
 
-	using PackageRoute = std::vector<std::u32string>;
+	class InterfaceType;
+
+	class TypeParameter
+	{
+	public:
+		std::u32string name;
+		std::vector<std::shared_ptr<InterfaceType>> interfaces;
+	};
+
+	class GenericType
+	{
+	public:
+		Table<std::u32string, TypeParameter> parameters;
+		TypePtr type;
+	};
 
 	class ClassType : public Type
 	{
 	public:
 		PackageRoute route;
 		std::u32string name;
+
 		ClassType(PackageRoute route, std::u32string name);
 
 		std::u32string ToString() const override;
 		bool Equals(TypePtr other) const override;
+
+		TypePtr Replace(const Table<std::u32string, TypeParameter>& parameters) const;
 	};
 
 	class ModuleType : public Type
@@ -127,12 +145,12 @@ namespace cygni
 	public:
 		PackageRoute route;
 		std::u32string name;
+
 		ModuleType(PackageRoute route, std::u32string name);
 
 		std::u32string ToString() const override;
 		bool Equals(TypePtr other) const override;
 	};
-
 
 	class InterfaceType : public Type
 	{
@@ -149,6 +167,7 @@ namespace cygni
 	{
 	public:
 		TypePtr elementType;
+
 		explicit ArrayType(TypePtr elementType);
 
 		std::u32string ToString() const override;
@@ -170,37 +189,23 @@ namespace cygni
 		std::u32string ToString() const override;
 	};
 
-	class TypeParameter
-	{
-	public:
-		std::u32string name;
-	};
-
-	class GenericType
-	{
-	public:
-		std::vector<TypeParameter> parameters;
-	};
-
-	std::u32string PackageRouteToString(const PackageRoute& route);
-
 } // namespace cygni
 
-template <> struct std::hash<cygni::TypePtr>
-{
-public:
-	size_t operator()(const cygni::TypePtr &type) const
-	{
-		if (type->typeCode == cygni::TypeCode::Object)
-		{
-			return static_cast<size_t>(type->typeCode);
-		}
-		else
-		{
-			return static_cast<size_t>(type->typeCode);
-		}
-	}
-};
+//template <> struct std::hash<cygni::TypePtr>
+//{
+//public:
+//	size_t operator()(const cygni::TypePtr &type) const
+//	{
+//		if (type->typeCode == cygni::TypeCode::Object)
+//		{
+//			return static_cast<size_t>(type->typeCode);
+//		}
+//		else
+//		{
+//			return static_cast<size_t>(type->typeCode);
+//		}
+//	}
+//};
 
 template <> struct std::equal_to<cygni::TypePtr>
 {

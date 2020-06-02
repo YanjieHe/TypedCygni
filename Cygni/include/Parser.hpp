@@ -10,11 +10,11 @@ namespace cygni
 	{
 	public:
 		std::vector<Token> tokens;
-		std::shared_ptr<SourceDocument> document;
+		std::shared_ptr<FileLocation> document;
 		int offset;
 		PackageRoute route;
 
-		Parser(std::vector<Token> tokens, std::shared_ptr<SourceDocument> document);
+		Parser(std::vector<Token> tokens, std::shared_ptr<FileLocation> document);
 
 		inline bool IsEof() const { return Look().tag == Tag::Eof; }
 
@@ -47,7 +47,7 @@ namespace cygni
 								  Look().column };
 		}
 
-		Program ParseProgram();
+		SourceDocument ParseProgram();
 
 		PackageRouteStatement ParsePackageRouteStatement();
 
@@ -117,7 +117,7 @@ namespace cygni
 
 		Argument ParseArgument();
 
-		std::vector<PackageRoute> ParseImportedPackages();
+		std::vector<ImportStatement> ParseImportedPackages();
 
 		Table<std::u32string, TypeAlias> ParseTypeAliases();
 

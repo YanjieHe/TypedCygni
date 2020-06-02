@@ -4,12 +4,12 @@ using std::vector;
 
 namespace cygni
 {
-	Parser::Parser(std::vector<Token> tokens, std::shared_ptr<SourceDocument> document)
+	Parser::Parser(std::vector<Token> tokens, std::shared_ptr<FileLocation> document)
 		: tokens{ tokens }, document{ document }, offset{ 0 } {}
 
-	Program Parser::ParseProgram()
+	SourceDocument Parser::ParseProgram()
 	{
-		Program program(document);
+		SourceDocument program(document);
 		program.packageRoute = ParsePackageRouteStatement();
 		program.importedPackages = ParseImportedPackages();
 		program.typeAliases = ParseTypeAliases();
@@ -448,14 +448,14 @@ namespace cygni
 		{
 			Match(Tag::Assign);
 			auto value = ParseOr();
-			return FieldDef(GetLoc(start), modifier, isStatic, annotations, name, type,
-				value);
+			return FieldDef(GetLoc(start),
+				modifier, isStatic, annotations, name, type, value);
 		}
 		else
 		{
 			auto value = std::make_shared<DefaultExpression>(GetLoc(Look()), type);
-			return FieldDef(GetLoc(start), modifier, isStatic, annotations, name, type,
-				value);
+			return FieldDef(GetLoc(start),
+				modifier, isStatic, annotations, name, type, value);
 		}
 	}
 
@@ -542,7 +542,7 @@ namespace cygni
 		}
 		else
 		{
-			throw ParserException(Look().line, Look().column, 
+			throw ParserException(Look().line, Look().column,
 				Format(U"wrong number of type arguments for the 'Array' type. should be 1 instead of {}.", static_cast<int>(args.size())));
 		}
 	}
@@ -762,7 +762,8 @@ namespace cygni
 		auto name = Match(Tag::Identifier).text;
 		if (Look().tag != Tag::LeftBrace)
 		{
-			return std::make_shared<NewExpression>(GetLoc(start), name,
+			return std::make_shared<NewExpression>(GetLoc(start),
+				std::make_shared<ClassType>(route, name),
 				std::vector<Argument>{});
 		}
 		else
@@ -776,7 +777,8 @@ namespace cygni
 				arguments.push_back(ParseArgument());
 			}
 			Match(Tag::RightBrace);
-			return std::make_shared<NewExpression>(GetLoc(start), name,
+			return std::make_shared<NewExpression>(GetLoc(start),
+				std::make_shared<ClassType>(route, name),
 				arguments);
 		}
 	}
@@ -806,13 +808,13 @@ namespace cygni
 		}
 	}
 
-	std::vector<PackageRoute> Parser::ParseImportedPackages()
+	std::vector<ImportStatement> Parser::ParseImportedPackages()
 	{
-		std::vector<PackageRoute> importedPackages;
+		std::vector<ImportStatement> importedPackages;
 		while (Look().tag == Tag::Import)
 		{
 			Match(Tag::Import);
-			importedPackages.push_back(ParsePackageRoute());
+			importedPackages.emplace_back(GetLoc(Look()), ParsePackageRoute());
 		}
 		return importedPackages;
 	}
@@ -824,6 +826,7 @@ namespace cygni
 		{
 			auto token = Match(Tag::Rename);
 			auto route = ParsePackageRoute();
+			Match(Tag::To);
 			auto alias = Match(Tag::Identifier).text;
 			auto originalName = route.back();
 			route.pop_back();

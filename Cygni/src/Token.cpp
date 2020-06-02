@@ -30,6 +30,7 @@ namespace cygni
 			{U"import", Tag::Import},
 			{U"require", Tag::Require},
 			{U"rename", Tag::Rename},
+			{U"to", Tag::To},
 			{U"interface", Tag::Interface}
 		};
 		if (tag == Tag::Identifier)

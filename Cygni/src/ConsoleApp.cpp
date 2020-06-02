@@ -9,18 +9,18 @@ using std::endl;
 
 namespace cygni
 {
-	Program ConsoleApp::ParseProgram(std::string path)
+	SourceDocument ConsoleApp::ParseProgram(std::string path)
 	{
 		/* pass 1: read code in text format */
 		std::string code{ ReadText(path) };
-		std::u32string utf32Code = cygni::UTF8ToUTF32(code);
+		std::u32string utf32Code = UTF8ToUTF32(code);
 
 		/* pass 2: tokenize code */
 		Lexer lexer(utf32Code);
 		auto tokens = lexer.ReadAll();
 
 		/* pass 3: parse the code and create an abstract syntax tree */
-		auto document = std::make_shared<cygni::SourceDocument>(path, path);
+		auto document = std::make_shared<FileLocation>(path, path);
 		Parser parser(tokens, document);
 		return parser.ParseProgram();
 	}
@@ -41,23 +41,27 @@ namespace cygni
 
 	void ConsoleApp::SemanticAnalysis(Project & project)
 	{
-		/* pass 4: check and infer types of each node */
+		/* pass 4: rename all the type that needs alias */
+		TypeRenamer typeRenamer;
+		typeRenamer.RenameAll(project);
+
+		/* pass 5: check and infer types of each node */
 		TypeChecker typeChecker(project);
-		ScopePtr globalScope = std::make_shared<cygni::Scope>();
+		ScopePtr globalScope = std::make_shared<Scope>();
 		typeChecker.VisitProject(globalScope);
 		cout << "Complete Type Checking!" << endl;
 
-		/* pass 5: collect local variables */
+		/* pass 6: collect local variables */
 		LocalVariableCollector localVariableCollector;
 		localVariableCollector.VisitProject(project);
 		cout << "Complete Local Variable Collection!" << endl;
 
-		/* pass 6: locate variables */
+		/* pass 7: locate variables */
 		VariableLocator variableLocator(project);
 		variableLocator.VisitProject();
 		cout << "Complete Local Variable Locatoring!" << endl;
 
-		/* pass 7: collect constants */
+		/* pass 8: collect constants */
 		ConstantCollector constantCollector;
 		constantCollector.VisitProject(project);
 		cout << "Complete Constant Collection!" << endl;
@@ -68,7 +72,7 @@ namespace cygni
 		auto project = ParseProject(fileList);
 		SemanticAnalysis(project);
 
-		/* pass 8: convert the abstract syntax tree to json format */
+		/* pass 9: convert the abstract syntax tree to json format */
 		cygni::AstToJsonSerialization astToJson;
 		auto jsonObj = astToJson.VisitProject(project);
 		auto jsonText = jsonObj.dump();

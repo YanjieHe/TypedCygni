@@ -1,5 +1,7 @@
 #include "Compiler.hpp"
 #include "Exception.hpp"
+#include <functional>
+#include <algorithm>
 
 namespace cygni
 {
@@ -19,10 +21,18 @@ namespace cygni
 	{
 		bytes.push_back(static_cast<Byte>(tag));
 	}
-	void ByteCode::AppendUShort(uint32_t value)
+	void ByteCode::AppendUShort(size_t value)
 	{
-		bytes.push_back(value / 256);
-		bytes.push_back(value % 256);
+		if (value > 65535)
+		{
+			// TO DO: better location information
+			throw CompilerException(SourceLocation(), U"unsigned 16-bit integer overflow");
+		}
+		else
+		{
+			bytes.push_back(static_cast<int>(value) / 256);
+			bytes.push_back(static_cast<int>(value) % 256);
+		}
 	}
 	void ByteCode::WriteUShort(int index, int value)
 	{
@@ -100,7 +110,8 @@ namespace cygni
 			break;
 		}
 		default:
-			throw NotImplementedException(Format(U"not supported type code: {}", Enum<TypeCode>::ToString(type->typeCode)));
+			throw NotImplementedException(
+				Format(U"not supported type code: {}", Enum<TypeCode>::ToString(type->typeCode)));
 		}
 	}
 	void ByteCode::AppendString(const std::u32string & u32str)
@@ -127,44 +138,49 @@ namespace cygni
 	{
 		int classCount = 0;
 		int moduleCount = 0;
-		for (auto pair : project.packages)
+		for (auto pkg : project.packages)
 		{
-			auto pkg = pair.second;
-			classCount = classCount + static_cast<int>(pkg->classes.values.size());
-			moduleCount = moduleCount + static_cast<int>(pkg->modules.values.size());
+			for (auto classInfo : pkg->classes.values)
+			{
+				classCount = std::max(classCount, classInfo->index);
+			}
+			for (auto moduleInfo : pkg->modules)
+			{
+				moduleCount = std::max(moduleCount, moduleInfo->index);
+			}
 		}
+		classCount = classCount + 1;
+		moduleCount = moduleCount + 1;
 
 		std::vector<std::shared_ptr<ClassInfo>> classes(classCount);
 		std::vector<std::shared_ptr<ModuleInfo>> modules(moduleCount);
 
-		for (auto pair : project.packages)
+		for (auto pkg : project.packages)
 		{
-			auto pkg = pair.second;
-			for (auto _class : pkg->classes.values)
+			for (auto classInfo : pkg->classes.values)
 			{
-				classes.at(_class->index) = _class;
+				classes.at(classInfo->index) = classInfo;
 			}
-			for (auto module : pkg->modules.values)
+			for (auto moduleInfo : pkg->modules)
 			{
-				modules.at(module->index) = module;
+				modules.at(moduleInfo->index) = moduleInfo;
 			}
 		}
 
 		ByteCode byteCode;
-
 		CompileMainFunction(modules, byteCode);
 
 		byteCode.AppendUShort(static_cast<int>(classes.size()));
 		byteCode.AppendUShort(static_cast<int>(modules.size()));
 
-		for (auto _class : classes)
+		for (auto classInfo : classes)
 		{
-			CompileClassInfo(_class, byteCode);
+			CompileClassInfo(classInfo, byteCode);
 		}
 
-		for (auto module : modules)
+		for (auto moduleInfo : modules)
 		{
-			CompileModuleInfo(module, byteCode);
+			CompileModuleInfo(moduleInfo, byteCode);
 		}
 
 		return byteCode;
@@ -530,7 +546,7 @@ namespace cygni
 				{
 					if ((*moduleInfo)->methods.ContainsKey(U"New"))
 					{
-						auto methodInfo = (*moduleInfo)->methods.GetValueByKey(U"New");
+						auto& methodInfo = (*moduleInfo)->methods.GetValueByKey(U"New");
 						// TO DO: call 'New' function
 
 						byteCode.AppendOp(OpCode::PUSH_STRING);
@@ -588,7 +604,7 @@ namespace cygni
 					break;
 				}
 				default: {
-					throw CompilerException(node->location, 
+					throw CompilerException(node->location,
 						Format(U"constant type '{}' not supported", node->type->ToString()));
 				}
 				}
@@ -829,12 +845,13 @@ namespace cygni
 	{
 		switch (node->type->typeCode)
 		{
-		case TypeCode::Void: {
+		case TypeCode::Int32: {
+			byteCode.AppendOp(OpCode::PUSH_I32_0);
 			break;
 		}
 		default: {
 			throw CompilerException(node->location,
-				U"not supported type of default expression");
+				Format(U"not supported type of default expression of type '{}'", node->type->ToString()));
 		}
 		}
 	}
@@ -1007,46 +1024,103 @@ namespace cygni
 	{
 		byteCode.AppendOp(OpCode::NEW);
 		byteCode.AppendUShort(node->parameterLocation.offset);
+		std::unordered_set<std::u32string> initializedFields;
 		for (auto arg : node->arguments)
 		{
-			byteCode.AppendOp(OpCode::DUPLICATE);
-			//byteCode.AppendUShort(1); // get the initialized class object
-			CompileExpression(arg.value, constantMap, byteCode);
-			switch (arg.value->type->typeCode)
+			if (arg.name)
 			{
-			case TypeCode::Char:
-			case TypeCode::Boolean:
-			case TypeCode::Int32: {
-				byteCode.AppendOp(OpCode::POP_FIELD_I32);
-				break;
+				initializedFields.insert(*arg.name);
 			}
-			case TypeCode::Int64: {
-				byteCode.AppendOp(OpCode::POP_FIELD_I64);
-				break;
+		}
+		auto classType = std::static_pointer_cast<ClassType>(node->type);
+		if (auto res = project.GetClass(classType->route, classType->name))
+		{
+			auto classInfo = *res;
+			for (auto& field : classInfo->fields.values)
+			{
+				// not found
+				if (initializedFields.find(field.name) == initializedFields.end())
+				{
+					byteCode.AppendOp(OpCode::DUPLICATE);
+					CompileExpression(field.value, constantMap, byteCode);
+					switch (field.value->type->typeCode)
+					{
+					case TypeCode::Char:
+					case TypeCode::Boolean:
+					case TypeCode::Int32: {
+						byteCode.AppendOp(OpCode::POP_FIELD_I32);
+						break;
+					}
+					case TypeCode::Int64: {
+						byteCode.AppendOp(OpCode::POP_FIELD_I64);
+						break;
+					}
+					case TypeCode::Float32: {
+						byteCode.AppendOp(OpCode::POP_FIELD_F32);
+						break;
+					}
+					case TypeCode::Float64: {
+						byteCode.AppendOp(OpCode::POP_FIELD_F64);
+						break;
+					}
+					case TypeCode::String: {
+						byteCode.AppendOp(OpCode::POP_FIELD_OBJECT);
+						break;
+					}
+					case TypeCode::Array:
+					case TypeCode::Class: {
+						byteCode.AppendOp(OpCode::POP_FIELD_OBJECT);
+						break;
+					}
+					default: {
+						throw CompilerException(node->location,
+							Format(U"not supported field initializer type '{}'", field.value->type->ToString()));
+					}
+					}
+					byteCode.AppendUShort(field.index);
+				}
 			}
-			case TypeCode::Float32: {
-				byteCode.AppendOp(OpCode::POP_FIELD_F32);
-				break;
+			for (auto arg : node->arguments)
+			{
+				byteCode.AppendOp(OpCode::DUPLICATE);
+				//byteCode.AppendUShort(1); // get the initialized class object
+				CompileExpression(arg.value, constantMap, byteCode);
+				switch (arg.value->type->typeCode)
+				{
+				case TypeCode::Char:
+				case TypeCode::Boolean:
+				case TypeCode::Int32: {
+					byteCode.AppendOp(OpCode::POP_FIELD_I32);
+					break;
+				}
+				case TypeCode::Int64: {
+					byteCode.AppendOp(OpCode::POP_FIELD_I64);
+					break;
+				}
+				case TypeCode::Float32: {
+					byteCode.AppendOp(OpCode::POP_FIELD_F32);
+					break;
+				}
+				case TypeCode::Float64: {
+					byteCode.AppendOp(OpCode::POP_FIELD_F64);
+					break;
+				}
+				case TypeCode::String: {
+					byteCode.AppendOp(OpCode::POP_FIELD_OBJECT);
+					break;
+				}
+				case TypeCode::Array:
+				case TypeCode::Class: {
+					byteCode.AppendOp(OpCode::POP_FIELD_OBJECT);
+					break;
+				}
+				default: {
+					throw CompilerException(node->location,
+						Format(U"not supported field initializer type '{}'", arg.value->type->ToString()));
+				}
+				}
+				byteCode.AppendUShort(arg.index);
 			}
-			case TypeCode::Float64: {
-				byteCode.AppendOp(OpCode::POP_FIELD_F64);
-				break;
-			}
-			case TypeCode::String: {
-				byteCode.AppendOp(OpCode::POP_FIELD_OBJECT);
-				break;
-			}
-			case TypeCode::Array:
-			case TypeCode::Class: {
-				byteCode.AppendOp(OpCode::POP_FIELD_OBJECT);
-				break;
-			}
-			default: {
-				throw CompilerException(node->location,
-					Format(U"not supported field initializer type '{}'", arg.value->type->ToString()));
-			}
-			}
-			byteCode.AppendUShort(arg.index);
 		}
 	}
 	void Compiler::CompileVarDefExpression(std::shared_ptr<VarDefExpression> node,
@@ -1243,7 +1317,7 @@ namespace cygni
 		{
 			if (module->methods.ContainsKey(U"Main"))
 			{
-				auto method = module->methods.GetValueByKey(U"Main");
+				auto& method = module->methods.GetValueByKey(U"Main");
 				if (found)
 				{
 					throw CompilerException(method.location, U"multiple definitions of the Main function");

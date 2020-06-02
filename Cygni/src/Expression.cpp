@@ -59,10 +59,12 @@ namespace cygni
 		: Expression(location, ExpressionType::MethodCall), object{ object },
 		method{ method }, arguments{ arguments } {}
 
-	NewExpression::NewExpression(SourceLocation location, std::u32string name,
+	NewExpression::NewExpression(SourceLocation location, TypePtr type,
 		std::vector<Argument> arguments)
-		: Expression(location, ExpressionType::New), name{ name }, arguments{
-																	 arguments } {}
+		: Expression(location, ExpressionType::New), arguments{ arguments }
+	{
+		this->type = type;
+	}
 
 	ParameterExpression::ParameterExpression(SourceLocation location,
 		std::u32string name, TypePtr type)
@@ -170,7 +172,7 @@ namespace cygni
 	}
 
 
-	Program::Program(std::shared_ptr<SourceDocument> document) : document{ document }
+	SourceDocument::SourceDocument(std::shared_ptr<FileLocation> document) : fileLocation{ document }
 	{
 	}
 
@@ -191,44 +193,44 @@ namespace cygni
 		{
 			auto route = program.packageRoute.route;
 			std::shared_ptr<Package> package;
-			if (packages.find(route) != packages.end())
+			if (packages.ContainsKey(route))
 			{
 				// found package
-				package = packages.at(route);
+				package = packages.GetValueByKey(route);
 			}
 			else
 			{
 				// package not found. create a new package
 				package = std::make_shared<Package>(route);
 			}
-			for (auto _class : program.classes.values)
+			for (auto classInfo : program.classes.values)
 			{
-				package->classes.Add(_class->name, _class);
+				package->classes.Add(classInfo->name, classInfo);
 			}
-			for (auto module : program.modules.values)
+			for (auto moduleInfo : program.modules.values)
 			{
-				package->modules.Add(module->name, module);
+				package->modules.Add(moduleInfo->name, moduleInfo);
 			}
 			for (auto pair : program.typeAliases.map)
 			{
 				package->typeAliases.Add(pair.first, program.typeAliases.GetValueByKey(pair.first));
 			}
-			for (auto route : program.importedPackages)
+			for (auto importStatement : program.importedPackages)
 			{
-				package->importedPackages.push_back(route);
+				package->importedPackages.push_back(importStatement);
 			}
-			this->packages.insert({ route, package });
+			this->packages.Add( route, package );
 		}
 	}
 
 	std::optional<std::shared_ptr<ModuleInfo>> Project::GetModule(PackageRoute route, std::u32string name)
 	{
-		if (packages.find(route) != packages.end())
+		if (packages.ContainsKey(route))
 		{
-			auto pkg = packages.at(route);
-			if (pkg->moduleMap.find(name) != pkg->moduleMap.end())
+			auto pkg = packages.GetValueByKey(route);
+			if (pkg->modules.ContainsKey(name) )
 			{
-				return { pkg->moduleMap.at(name) };
+				return { pkg->modules.GetValueByKey(name) };
 			}
 			else
 			{
@@ -243,12 +245,32 @@ namespace cygni
 
 	std::optional<std::shared_ptr<ClassInfo>> Project::GetClass(PackageRoute route, std::u32string name)
 	{
-		if (packages.find(route) != packages.end())
+		if (packages.ContainsKey(route))
 		{
-			auto pkg = packages.at(route);
-			if (pkg->classMap.find(name) != pkg->classMap.end())
+			auto pkg = packages.GetValueByKey(route);
+			if (pkg->classes.ContainsKey(name))
 			{
-				return { pkg->classMap.at(name) };
+				return { pkg->classes.GetValueByKey(name) };
+			}
+			else
+			{
+				return {};
+			}
+		}
+		else
+		{
+			return {};
+		}
+	}
+
+	std::optional<std::shared_ptr<InterfaceInfo>> Project::GetInterface(PackageRoute route, std::u32string name)
+	{
+		if (packages.ContainsKey(route))
+		{
+			auto pkg = packages.GetValueByKey(route);
+			if (pkg->interfaces.ContainsKey(name))
+			{
+				return { pkg->interfaces.GetValueByKey(name) };
 			}
 			else
 			{
@@ -263,6 +285,14 @@ namespace cygni
 
 	InterfaceInfo::InterfaceInfo(SourceLocation location, std::u32string name)
 		: location{ location }, name{ name }
+	{
+	}
+
+	ImportStatement::ImportStatement() : location{}, route{}
+	{
+	}
+
+	ImportStatement::ImportStatement(SourceLocation location, PackageRoute route) : location{ location }, route{ route }
 	{
 	}
 

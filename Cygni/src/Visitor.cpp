@@ -1,6 +1,8 @@
 #include "Visitor.hpp"
 #include "Exception.hpp"
 #include <algorithm>
+#include <stack>
+
 using std::cout;
 using std::endl;
 
@@ -195,7 +197,6 @@ namespace cygni
 	{
 		json obj;
 		AttachNodeInformation(obj, node);
-		obj["class"] = UTF32ToUTF8(node->name);
 		obj["arguments"] = VisitArgumentList(node->arguments);
 		obj["parameterLocation"] = VisitParameterLocation(node->parameterLocation);
 		return obj;
@@ -300,11 +301,9 @@ namespace cygni
 	json AstToJsonSerialization::VisitProject(Project & project)
 	{
 		json obj;
-		for (auto pair : project.packages)
+		for (auto pkg : project.packages)
 		{
-			auto route = pair.first;
-			auto package = pair.second;
-			obj[UTF32ToUTF8(PackageRouteToString(route))] = VisitPackage(package);
+			obj[UTF32ToUTF8(PackageRouteToString(pkg->route))] = VisitPackage(pkg);
 		}
 		return obj;
 	}
@@ -681,6 +680,22 @@ namespace cygni
 		}
 	}
 
+	bool TypeChecker::CheckInterfaceConstraint(std::shared_ptr<ClassInfo> classInfo, std::shared_ptr<InterfaceInfo> interfaceInfo)
+	{
+		for (const auto& method : interfaceInfo->methodMap.values)
+		{
+			if (classInfo->methods.ContainsKey(method.name))
+			{
+			}
+			else
+			{
+				throw TypeException(method.location,
+					Format(U"interface constraint function '{}' not implemented", method.name));
+			}
+		}
+		// TO DO
+	}
+
 	TypePtr TypeChecker::VisitExpression(ExpPtr node, ScopePtr scope)
 	{
 		switch (node->nodeType)
@@ -734,14 +749,17 @@ namespace cygni
 	TypePtr TypeChecker::VisitClassInfo(std::shared_ptr<ClassInfo> info, ScopePtr outerScope)
 	{
 		ScopePtr scope{ outerScope };
-
-		for (const auto &field : info->fields.values)
+		for (const auto& field : info->fields.values)
 		{
-			VisitFieldDef(field, scope);
+			scope->Put(field.name, field.type);
 		}
 		for (const auto &method : info->methods.values)
 		{
 			scope->Put(method.name, method.signature);
+		}
+		for (const auto &field : info->fields.values)
+		{
+			VisitFieldDef(field, scope);
 		}
 		for (const auto &method : info->methods.values)
 		{
@@ -753,14 +771,17 @@ namespace cygni
 	TypePtr TypeChecker::VisitModuleInfo(std::shared_ptr<ModuleInfo> info, ScopePtr outerScope)
 	{
 		ScopePtr scope = std::make_shared<Scope>(outerScope);
-
-		for (const auto &field : info->fields.values)
+		for (const auto& field : info->fields.values)
 		{
-			VisitFieldDef(field, scope);
+			scope->Put(field.name, field.type);
 		}
 		for (const auto &method : info->methods.values)
 		{
 			scope->Put(method.name, method.signature);
+		}
+		for (const auto &field : info->fields.values)
+		{
+			VisitFieldDef(field, scope);
 		}
 		for (const auto &method : info->methods.values)
 		{
@@ -902,15 +923,15 @@ namespace cygni
 		if (object->typeCode == TypeCode::Module)
 		{
 			auto moduleType = std::static_pointer_cast<ModuleType>(object);
-			const auto &moduleInfo = package->moduleMap.at(moduleType->name);
+			const auto &moduleInfo = package->modules.GetValueByKey(moduleType->name);
 			if (moduleInfo->fields.ContainsKey(node->field))
 			{
-				auto field = moduleInfo->fields.GetValueByKey(node->field);
+				auto& field = moduleInfo->fields.GetValueByKey(node->field);
 				return Attach(node, field.type);
 			}
 			else if (moduleInfo->methods.ContainsKey(node->field))
 			{
-				auto method = moduleInfo->methods.GetValueByKey(node->field);
+				auto& method = moduleInfo->methods.GetValueByKey(node->field);
 				return Attach(node, method.signature);
 			}
 			else
@@ -922,15 +943,15 @@ namespace cygni
 		else if (object->typeCode == TypeCode::Class)
 		{
 			auto classType = std::static_pointer_cast<ClassType>(object);
-			const auto &classInfo = package->classMap.at(classType->name);
+			const auto &classInfo = package->classes.GetValueByKey(classType->name);
 			if (classInfo->fields.ContainsKey(node->field))
 			{
-				auto field = classInfo->fields.GetValueByKey(node->field);
+				auto& field = classInfo->fields.GetValueByKey(node->field);
 				return Attach(node, field.type);
 			}
 			else if (classInfo->methods.ContainsKey(node->field))
 			{
-				auto method = classInfo->methods.GetValueByKey(node->field);
+				auto& method = classInfo->methods.GetValueByKey(node->field);
 				return Attach(node, method.signature);
 			}
 			else
@@ -953,23 +974,25 @@ namespace cygni
 		}
 		else
 		{
-			throw TypeException(node->location, 
+			throw TypeException(node->location,
 				Format(U"object '{}' does not have any field", object->ToString()));
 		}
 	}
 
 	TypePtr TypeChecker::VisitNewExpression(std::shared_ptr<NewExpression> node, ScopePtr scope)
 	{
-		if (package->classMap.find(node->name) != package->classMap.end())
+		auto newExpType = std::static_pointer_cast<ClassType>(node->type);
+
+		if (auto res = project.GetClass(newExpType->route, newExpType->name))
 		{
-			auto classInfo = package->classMap.at(node->name);
+			auto classInfo = *res;
 			for (const auto& argument : node->arguments)
 			{
 				if (argument.name)
 				{
 					if (classInfo->fields.ContainsKey(*argument.name))
 					{
-						auto field = classInfo->fields.GetValueByKey(*(argument.name));
+						auto& field = classInfo->fields.GetValueByKey(*(argument.name));
 						auto value = VisitExpression(argument.value, scope);
 						if (field.type->Equals(value))
 						{
@@ -993,14 +1016,12 @@ namespace cygni
 				}
 			}
 			node->parameterLocation = ParameterLocation(ParameterType::ClassName, classInfo->index);
-			auto type = std::make_shared<ClassType>(package->route, node->name);
-			node->type = type;
-			return type;
+			return node->type;
 		}
 		else
 		{
 			throw TypeException(node->location,
-				Format(U"error new expression: undefined class '{}'", node->name));
+				Format(U"error new expression: undefined class '{}'", newExpType->ToString()));
 		}
 	}
 
@@ -1025,69 +1046,33 @@ namespace cygni
 			throw TypeException(node->location, U"variable initialization type mismatch");
 		}
 	}
-
-	void TypeChecker::RegisterModulesAndClasses(std::shared_ptr<Package>& pkg, std::unordered_set<PackageRoute>& visited)
-	{
-		if (visited.find(pkg->route) != visited.end())
-		{
-			// pass
-		}
-		else
-		{
-			visited.insert(pkg->route);
-			for (const auto &module : pkg->modules.values)
-			{
-				TypePtr moduleType = std::make_shared<ModuleType>(package->route, module->name);
-				package->moduleMap.insert({ module->name, module });
-			}
-			for (const auto& _class : pkg->classes.values)
-			{
-				package->classMap.insert({ _class->name, _class });
-			}
-
-			for (auto importedPkg : pkg->importedPackages)
-			{
-				if (project.packages.find(importedPkg) != project.packages.end())
-				{
-					std::shared_ptr<Package> next = project.packages.at(importedPkg);
-					RegisterModulesAndClasses(next, visited);
-				}
-				else
-				{
-					throw TypeException(SourceLocation(), Format(U"missing pakcage: {}", PackageRouteToString(importedPkg)));
-				}
-			}
-		}
-	}
-
 	void TypeChecker::VisitPackage(ScopePtr globalScope)
 	{
 		std::unordered_set<PackageRoute> visited;
 		auto scope = std::make_shared<Scope>(globalScope);
-		// TO DO: type aliases
-		RegisterModulesAndClasses(package, visited);
-		for (const auto &pair : package->moduleMap)
+		PackageImporter packageImporter;
+		packageImporter.ImportPackages(project);
+		for (const auto &moduleInfo : package->modules)
 		{
-			const auto & module = pair.second;
-			TypePtr moduleType = std::make_shared<ModuleType>(package->route, module->name);
-			scope->Put(module->name, moduleType);
+			TypePtr moduleType = std::make_shared<ModuleType>(package->route, moduleInfo->name);
+			scope->Put(moduleInfo->name, moduleType);
 		}
-		for (const auto &_class : package->classes.values)
+		for (const auto &classInfo : package->classes)
 		{
-			VisitClassInfo(_class, scope);
+			VisitClassInfo(classInfo, scope);
 		}
-		for (const auto &module : package->modules.values)
+		for (const auto &moduleInfo : package->modules)
 		{
-			VisitModuleInfo(module, scope);
+			VisitModuleInfo(moduleInfo, scope);
 		}
 	}
 
 	void TypeChecker::VisitProject(ScopePtr globalScope)
 	{
 		auto scope = std::make_shared<Scope>(globalScope);
-		for (auto pair : project.packages)
+		for (auto pkg : project.packages)
 		{
-			this->package = pair.second;
+			this->package = pkg;
 			VisitPackage(scope);
 		}
 	}
@@ -1247,9 +1232,8 @@ namespace cygni
 	}
 	void LocalVariableCollector::VisitProject(Project & project)
 	{
-		for (auto pair : project.packages)
+		for (auto package : project.packages)
 		{
-			auto package = pair.second;
 			VisitPackage(package);
 		}
 	}
@@ -1339,7 +1323,7 @@ namespace cygni
 			method.index = offset;
 			offset++;
 		}
-		for (auto method : info->methods.values)
+		for (auto& method : info->methods.values)
 		{
 			VisitMethodDef(method, scope);
 		}
@@ -1348,7 +1332,7 @@ namespace cygni
 	{
 		auto scope = std::make_shared<Scope>(outerScope);
 		int offset = 0;
-		for (auto field : info->fields.values)
+		for (auto& field : info->fields.values)
 		{
 			scope->Put(field.name, ParameterLocation(ParameterType::ModuleField, offset));
 			offset++;
@@ -1423,12 +1407,12 @@ namespace cygni
 				const auto &moduleInfo = *res;
 				if (moduleInfo->fields.ContainsKey(node->field))
 				{
-					auto field = moduleInfo->fields.GetValueByKey(node->field);
+					auto& field = moduleInfo->fields.GetValueByKey(node->field);
 					node->parameterLocation = ParameterLocation(ParameterType::ModuleField, field.index, moduleInfo->index);
 				}
 				else if (moduleInfo->methods.ContainsKey(node->field))
 				{
-					auto method = moduleInfo->methods.GetValueByKey(node->field);
+					auto& method = moduleInfo->methods.GetValueByKey(node->field);
 					node->parameterLocation = ParameterLocation(ParameterType::ModuleMethod, method.index, moduleInfo->index);
 				}
 				else
@@ -1450,12 +1434,12 @@ namespace cygni
 				const auto &classInfo = *res;
 				if (classInfo->fields.ContainsKey(node->field))
 				{
-					auto field = classInfo->fields.GetValueByKey(node->field);
+					auto& field = classInfo->fields.GetValueByKey(node->field);
 					node->parameterLocation = ParameterLocation(ParameterType::ClassField, field.index, classInfo->index);
 				}
 				else if (classInfo->methods.ContainsKey(node->field))
 				{
-					auto method = classInfo->methods.GetValueByKey(node->field);
+					auto& method = classInfo->methods.GetValueByKey(node->field);
 					node->parameterLocation = ParameterLocation(ParameterType::ClassMethod, method.index, classInfo->index);
 				}
 				else
@@ -1476,7 +1460,7 @@ namespace cygni
 		}
 		else
 		{
-			throw TypeException(node->location, 
+			throw TypeException(node->location,
 				Format(U"object '{}' does not have any field", object->ToString()));
 		}
 	}
@@ -1526,10 +1510,9 @@ namespace cygni
 	void VariableLocator::VisitPackage(std::shared_ptr<Package> package, ScopePtr globalScope)
 	{
 		auto scope = std::make_shared<Scope>(globalScope);
-		for (auto pair : package->moduleMap)
+		for (auto moduleInfo : package->modules)
 		{
-			auto module = pair.second;
-			scope->Put(module->name, ParameterLocation(ParameterType::ModuleName, module->index));
+			scope->Put(moduleInfo->name, ParameterLocation(ParameterType::ModuleName, moduleInfo->index));
 		}
 		for (auto _class : package->classes.values)
 		{
@@ -1543,9 +1526,8 @@ namespace cygni
 	void VariableLocator::VisitProject()
 	{
 		auto scope = std::make_shared<Scope>();
-		for (auto pair : project.packages)
+		for (auto package : project.packages)
 		{
-			auto package = pair.second;
 			VisitPackage(package, scope);
 		}
 	}
@@ -1606,9 +1588,8 @@ namespace cygni
 	}
 	void ConstantCollector::VisitProject(Project & project)
 	{
-		for (auto pair : project.packages)
+		for (auto package : project.packages)
 		{
-			auto package = pair.second;
 			VisitPackage(package);
 		}
 	}
@@ -1616,9 +1597,8 @@ namespace cygni
 	{
 		int classIndex = 0;
 		int moduleIndex = 0;
-		for (auto pair : project.packages)
+		for (auto pkg : project.packages)
 		{
-			auto pkg = pair.second;
 			for (auto _class : pkg->classes.values)
 			{
 				_class->index = classIndex;
@@ -1628,6 +1608,309 @@ namespace cygni
 			{
 				module->index = moduleIndex;
 				moduleIndex++;
+			}
+		}
+	}
+	void TypeRenamer::RenameAll(Project & project)
+	{
+		for (auto pkg : project.packages)
+		{
+			auto& typeAliases = pkg->typeAliases;
+			for (auto classInfo : pkg->classes)
+			{
+				std::cout << "rename class: " << classInfo->name << std::endl;
+				for (auto& superClass : classInfo->superClasses)
+				{
+					superClass = RenameType(superClass, typeAliases);
+				}
+				for (auto& field : classInfo->fields.values)
+				{
+					RenameField(field, typeAliases);
+				}
+				for (auto& method : classInfo->methods.values)
+				{
+					RenameMethod(method, typeAliases);
+				}
+			}
+			for (auto moduleInfo : pkg->modules.values)
+			{
+				std::cout << "rename module: " << moduleInfo->name << std::endl;
+				for (auto& field : moduleInfo->fields.values)
+				{
+					RenameField(field, typeAliases);
+				}
+				for (auto& method : moduleInfo->methods.values)
+				{
+					RenameMethod(method, typeAliases);
+				}
+			}
+		}
+	}
+	void TypeRenamer::RenameMethod(MethodDef& method, Table<std::u32string, TypeAlias>& typeAliases)
+	{
+		std::function<bool(ExpPtr)> filter = [](ExpPtr node)
+		{
+			return node->nodeType == ExpressionType::VariableDefinition || node->nodeType == ExpressionType::New;
+		};
+		TreeTraverser traverser(filter);
+		std::vector<ExpPtr> nodeList;
+		traverser.VisitExpression(method.body, nodeList);
+
+		for (auto node : nodeList)
+		{
+			if (node->nodeType == ExpressionType::VariableDefinition)
+			{
+				auto varDef = std::static_pointer_cast<VarDefExpression>(node);
+				varDef->variable->type = RenameType(varDef->variable->type, typeAliases);
+			}
+			else
+			{
+				// New
+				auto newExp = std::static_pointer_cast<NewExpression>(node);
+				newExp->type = RenameType(newExp->type, typeAliases);
+			}
+		}
+
+		method.selfType = RenameType(method.selfType, typeAliases);
+		method.returnType = RenameType(method.returnType, typeAliases);
+		method.signature = RenameType(method.signature, typeAliases);
+		for (auto parameter : method.parameters)
+		{
+			parameter->type = RenameType(parameter->type, typeAliases);
+		}
+	}
+	void TypeRenamer::RenameField(FieldDef & field, Table<std::u32string, TypeAlias>& typeAliases)
+	{
+		field.type = RenameType(field.type, typeAliases);
+	}
+	TypePtr TypeRenamer::RenameType(TypePtr type, Table<std::u32string, TypeAlias>& typeAliases)
+	{
+		if (type->typeCode == TypeCode::Class)
+		{
+			auto classType = std::static_pointer_cast<ClassType>(type);
+			if (typeAliases.ContainsKey(classType->name))
+			{
+				auto typeAlias = typeAliases.GetValueByKey(classType->name);
+				return std::make_shared<ClassType>(typeAlias.route, typeAlias.typeName);
+			}
+			else
+			{
+				return type;
+			}
+		}
+		else if (type->typeCode == TypeCode::Module)
+		{
+			auto moduleType = std::static_pointer_cast<ModuleType>(type);
+			if (typeAliases.ContainsKey(moduleType->name))
+			{
+				auto typeAlias = typeAliases.GetValueByKey(moduleType->name);
+				return std::make_shared<ClassType>(typeAlias.route, typeAlias.typeName);
+			}
+			else
+			{
+				return type;
+			}
+		}
+		else if (type->typeCode == TypeCode::Function)
+		{
+			auto functionType = std::static_pointer_cast<FunctionType>(type);
+			std::vector<TypePtr> parameters;
+			std::transform(
+				functionType->parameters.begin(),
+				functionType->parameters.end(),
+				std::back_inserter(parameters),
+				[&](TypePtr t) -> TypePtr { return RenameType(t, typeAliases); });
+			return std::make_shared<FunctionType>(
+				RenameType(functionType->selfType, typeAliases),
+				parameters,
+				RenameType(functionType->returnType, typeAliases));
+		}
+		else if (type->typeCode == TypeCode::Array)
+		{
+			auto arrayType = std::static_pointer_cast<ArrayType>(type);
+			return std::make_shared<ArrayType>(
+				RenameType(arrayType->elementType, typeAliases));
+		}
+		else
+		{
+			// TO DO: GENERIC TYPE
+			return type;
+		}
+	}
+	void InheritanceProcessor::VisitProject(Project & project)
+	{
+		for (auto& program : project.programs.values)
+		{
+			for (auto& classInfo : program.classes.values)
+			{
+				int n = static_cast<int>(classInfo->superClasses.size());
+				for (int i = 0; i < n; i++)
+				{
+					auto type = classInfo->superClasses.at(i);
+					for (auto type : classInfo->superClasses)
+					{
+						auto classType = std::static_pointer_cast<ClassType>(type);
+						if (auto res = project.GetClass(classType->route, classType->name))
+						{
+							auto classInfo = *res;
+							if (i != 0)
+							{
+								throw TypeException(
+									classInfo->location,
+									U"the super class must be at the first of the extends list"
+								);
+							}
+						}
+						else if (auto res = project.GetInterface(classType->route, classType->name))
+						{
+							classInfo->superClasses.at(i) = std::make_shared<InterfaceType>(classType->route, classType->name);
+						}
+						else
+						{
+							throw TypeException(
+								classInfo->location,
+								Format(U"missing super class '{}", classType->ToString())
+							);
+						}
+					}
+				}
+
+			}
+		}
+		for (auto& program : project.programs.values)
+		{
+			for (auto& classInfo : program.classes.values)
+			{
+				VisitClass(project, classInfo);
+			}
+		}
+	}
+	void InheritanceProcessor::VisitClass(Project& project, std::shared_ptr<ClassInfo> classInfo)
+	{
+		std::stack<FieldDef> fieldStack;
+		auto originalClass = classInfo;
+		bool done = false;
+		while (!done)
+		{
+			int n = static_cast<int>(classInfo->fields.Size());
+			for (int i = n - 1; i >= 0; i--)
+			{
+				auto& field = classInfo->fields.values[i];
+				fieldStack.push(field);
+			}
+			if (classInfo->superClasses.size() >= 1)
+			{
+				auto type = classInfo->superClasses.front();
+				if (type->typeCode == TypeCode::Class)
+				{
+					auto classType = std::static_pointer_cast<ClassType>(type);
+					if (auto res = project.GetClass(classType->route, classType->name))
+					{
+						classInfo = *res;
+					}
+					else
+					{
+						throw TypeException(
+							classInfo->location,
+							Format(U"error in extending the class '{}'", classInfo->name)
+						);
+					}
+				}
+				else
+				{
+					done = true;
+				}
+			}
+			else
+			{
+				done = true;
+			}
+		}
+		while (!(fieldStack.empty()))
+		{
+			auto field = fieldStack.top();
+			originalClass->allFields.Add(field.name, field);
+			fieldStack.pop();
+		}
+	}
+	void PackageImporter::ImportPackages(Project & project)
+	{
+		std::unordered_map<PackageRoute, std::vector<std::shared_ptr<ClassInfo>>> classMap;
+		std::unordered_map<PackageRoute, std::vector<std::shared_ptr<ModuleInfo>>> moduleMap;
+		std::unordered_map<PackageRoute, std::vector<std::shared_ptr<InterfaceInfo>>> interfaceMap;
+		for (auto pkg : project.packages)
+		{
+			std::unordered_set<PackageRoute> visited;
+			CollectInfo(project, classMap, moduleMap, interfaceMap, pkg->route, pkg, visited);
+		}
+		for (auto pkg : project.packages)
+		{
+			pkg->classes.Clear();
+			if (classMap.find(pkg->route) != classMap.end())
+			{
+				for (auto classInfo : classMap.at(pkg->route))
+				{
+					pkg->classes.Add(classInfo->name, classInfo);
+				}
+			}
+			pkg->modules.Clear();
+			if (moduleMap.find(pkg->route) != moduleMap.end())
+			{
+				for (auto moduleInfo : moduleMap.at(pkg->route))
+				{
+					pkg->modules.Add(moduleInfo->name, moduleInfo);
+				}
+			}
+			pkg->interfaces.Clear();
+			if (interfaceMap.find(pkg->route) != interfaceMap.end())
+			{
+				for (auto interfaceInfo : interfaceMap.at(pkg->route))
+				{
+					pkg->interfaces.Add(interfaceInfo->name, interfaceInfo);
+				}
+			}
+		}
+	}
+	void PackageImporter::CollectInfo(Project& project,
+		std::unordered_map<PackageRoute, std::vector<std::shared_ptr<ClassInfo>>>& classMap,
+		std::unordered_map<PackageRoute, std::vector<std::shared_ptr<ModuleInfo>>>& moduleMap,
+		std::unordered_map<PackageRoute, std::vector<std::shared_ptr<InterfaceInfo>>>& interfaceMap,
+		PackageRoute currentRoute,
+		std::shared_ptr<Package> pkg, std::unordered_set<PackageRoute>& visited)
+	{
+		if (visited.find(pkg->route) != visited.end())
+		{
+			// already visited the package, pass
+		}
+		else
+		{
+			visited.insert(pkg->route);
+
+			for (const auto& classInfo : pkg->classes)
+			{
+				classMap[currentRoute].push_back(classInfo);
+			}
+			for (const auto& moduleInfo : pkg->modules)
+			{
+				moduleMap[currentRoute].push_back(moduleInfo);
+			}
+			for (const auto& interfaceInfo : pkg->interfaces)
+			{
+				interfaceMap[currentRoute].push_back(interfaceInfo);
+			}
+
+			for (auto importedPkg : pkg->importedPackages)
+			{
+				if (project.packages.ContainsKey(importedPkg.route))
+				{
+					std::shared_ptr<Package> next = project.packages.GetValueByKey(importedPkg.route);
+					CollectInfo(project, classMap, moduleMap, interfaceMap, currentRoute, next, visited);
+				}
+				else
+				{
+					throw TypeException(importedPkg.location,
+						Format(U"missing pakcage: {}", PackageRouteToString(importedPkg.route)));
+				}
 			}
 		}
 	}

@@ -2,6 +2,7 @@
 #define VM_MACHINE_H
 #include "OpCode.h"
 #include "Data.h"
+#include "Memory.h"
 
 typedef struct
 {
@@ -12,6 +13,7 @@ typedef struct
 	int fp;
 	int sp;
 	int pc;
+	State* state;
 } Machine;
 
 static inline uint16_t bytes_to_u16(Byte* bytes, int index)
@@ -22,8 +24,6 @@ static inline uint16_t bytes_to_u16(Byte* bytes, int index)
 Machine* create_machine(int stack_max_size, Executable* exe);
 
 void run(Machine* machine);
-
-FunctionPointer load_library_function(const char* library_path, const char* function_name);
 
 void view_stack(Value* stack);
 

@@ -8,7 +8,7 @@ namespace cygni
 	class ConsoleApp
 	{
 	public:
-		Program ParseProgram(std::string path);
+		SourceDocument ParseProgram(std::string path);
 		Project ParseProject(std::vector<std::string> fileList);
 
 		void SemanticAnalysis(Project& project);

@@ -14,8 +14,6 @@ namespace cygni
 		TypeCode typeCode;
 		std::u32string constant;
 	};
-
-	using PackageRoute = std::vector<std::u32string>;
 }
 
 namespace std
@@ -37,44 +35,6 @@ namespace std
 		bool operator()(const cygni::ConstantKey& lhs, const cygni::ConstantKey& rhs) const
 		{
 			return lhs.typeCode == rhs.typeCode && lhs.constant == rhs.constant;
-		}
-	};
-
-	template <>
-	struct hash<cygni::PackageRoute>
-	{
-		std::hash<std::u32string> hashFunction;
-		std::size_t operator()(const cygni::PackageRoute& key) const
-		{
-			std::size_t seed = key.size();
-			for (const auto& i : key)
-			{
-				seed = seed ^ (hashFunction(i) + 0x9e3779b9 + (seed << 6) + (seed >> 2));
-			}
-			return seed;
-		}
-	};
-
-	template <>
-	struct equal_to<cygni::PackageRoute>
-	{
-		bool operator()(const cygni::PackageRoute& lhs, const cygni::PackageRoute& rhs) const
-		{
-			if (lhs.size() == rhs.size())
-			{
-				for (int i = 0; i < static_cast<int>(lhs.size()); i++)
-				{
-					if (lhs[i] != rhs[i])
-					{
-						return false;
-					}
-				}
-				return true;
-			}
-			else
-			{
-				return false;
-			}
 		}
 	};
 }
@@ -242,9 +202,7 @@ namespace cygni
 		TypePtr returnType;
 		ExpPtr body;
 		TypePtr signature;
-
 		std::vector<std::shared_ptr<VarDefExpression>> localVariables;
-
 		int index = -1;
 
 		MethodDef() = default;
@@ -316,10 +274,9 @@ namespace cygni
 	class NewExpression : public Expression
 	{
 	public:
-		std::u32string name;
 		std::vector<Argument> arguments;
 		ParameterLocation parameterLocation;
-		NewExpression(SourceLocation location, std::u32string name,
+		NewExpression(SourceLocation location, TypePtr type,
 			std::vector<Argument> arguments);
 	};
 
@@ -330,6 +287,7 @@ namespace cygni
 		std::u32string name;
 		Table<std::u32string, FieldDef> fields;
 		Table<std::u32string, MethodDef> methods;
+		Table<std::u32string, FieldDef> allFields;
 		int index = -1;
 		std::unordered_map<ConstantKey, int> constantMap;
 		std::vector<TypePtr> superClasses;
@@ -356,6 +314,7 @@ namespace cygni
 		SourceLocation location;
 		std::u32string name;
 		Table<std::u32string, MethodDef> methods;
+		Table<std::u32string, MethodDef> methodMap;
 		std::vector<TypePtr> superInterfaces;
 		InterfaceInfo() = default;
 		InterfaceInfo(SourceLocation location, std::u32string name);
@@ -373,22 +332,6 @@ namespace cygni
 		TypeAlias(SourceLocation location, PackageRoute route, std::u32string typeName, std::u32string alias);
 	};
 
-	class Package : public std::enable_shared_from_this<Package>
-	{
-	public:
-		PackageRoute route;
-		std::vector<PackageRoute> importedPackages;
-		Table<std::u32string, TypeAlias> typeAliases;
-
-		Table<std::u32string, std::shared_ptr<ClassInfo>> classes;
-		Table<std::u32string, std::shared_ptr<ModuleInfo>> modules;
-
-		std::unordered_map<std::u32string, std::shared_ptr<ModuleInfo>> moduleMap;
-		std::unordered_map<std::u32string, std::shared_ptr<ClassInfo>> classMap;
-
-		explicit Package(PackageRoute route);
-	};
-
 	class PackageRouteStatement
 	{
 	public:
@@ -398,29 +341,58 @@ namespace cygni
 		PackageRouteStatement(SourceLocation location, PackageRoute route);
 	};
 
-	class Program
+	class ImportStatement
 	{
 	public:
-		std::shared_ptr<SourceDocument> document;
+		SourceLocation location;
+		PackageRoute route;
+
+		ImportStatement();
+		ImportStatement(SourceLocation location, PackageRoute route);
+	};
+
+	class Package
+	{
+	public:
+		PackageRoute route;
+		std::vector<ImportStatement> importedPackages;
+		Table<std::u32string, TypeAlias> typeAliases;
+
+		Table<std::u32string, std::shared_ptr<ClassInfo>> classes;
+		Table<std::u32string, std::shared_ptr<ModuleInfo>> modules;
+		Table<std::u32string, std::shared_ptr<InterfaceInfo>> interfaces;
+
+		//std::unordered_map<std::u32string, std::shared_ptr<ModuleInfo>> moduleMap;
+		//std::unordered_map<std::u32string, std::shared_ptr<ClassInfo>> classMap;
+		//std::unordered_map<std::u32string, std::shared_ptr<InterfaceInfo>> interfaceMap;
+
+		explicit Package(PackageRoute route);
+	};
+
+	class SourceDocument
+	{
+	public:
+		std::shared_ptr<FileLocation> fileLocation;
 		PackageRouteStatement packageRoute;
-		std::vector<PackageRoute> importedPackages;
+		std::vector<ImportStatement> importedPackages;
 		Table<std::u32string, TypeAlias> typeAliases;
 		Table<std::u32string, std::shared_ptr<ClassInfo>> classes;
 		Table<std::u32string, std::shared_ptr<ModuleInfo>> modules;
 		Table<std::u32string, std::shared_ptr<InterfaceInfo>> interfaces;
 
-		explicit Program(std::shared_ptr<SourceDocument> document);
+		explicit SourceDocument(std::shared_ptr<FileLocation> document);
 	};
 
 	class Project
 	{
 	public:
-		Table<std::string, Program> programs;
-		std::unordered_map<PackageRoute, std::shared_ptr<Package>> packages;
+		Table<std::string, SourceDocument> programs;
+		Table<PackageRoute, std::shared_ptr<Package>> packages;
 
 		void MergeAllPrograms();
 		std::optional<std::shared_ptr<ModuleInfo>> GetModule(PackageRoute route, std::u32string name);
 		std::optional<std::shared_ptr<ClassInfo>> GetClass(PackageRoute route, std::u32string name);
+		std::optional<std::shared_ptr<InterfaceInfo>> GetInterface(PackageRoute route, std::u32string name);
 	};
 
 } // namespace cygni

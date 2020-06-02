@@ -1,13 +1,9 @@
 #include "Machine.h"
+#include "Library.h"
 #include <malloc.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#ifdef _WIN32
-#include <windows.h>
-#undef DUPLICATE
-#endif
 
 #define STACK_WRITE(VALUE) sp++; stack[sp].u.##VALUE = (VALUE);
 #define STACK_READ(VALUE) (VALUE) = stack[sp].u.##VALUE; sp--;
@@ -759,6 +755,7 @@ void run(Machine* machine)
 				if (next_func->u.native_function->is_loaded == false)
 				{
 					next_func->u.native_function->function_pointer = load_library_function(
+						machine,
 						next_func->u.native_function->lib_path,
 						next_func->u.native_function->func_name);
 					next_func->u.native_function->is_loaded = true;
@@ -897,7 +894,7 @@ void run(Machine* machine)
 			default:
 			{
 				fprintf(stderr, "wrong array type\n");
-				exit(-1);
+				vm_throw(machine->state, VM_ERROR_ARRAY_TYPE_CODE);
 			}
 			}
 		}
@@ -910,39 +907,9 @@ void run(Machine* machine)
 		default: {
 			fprintf(stderr, "unsupported operation code: ");
 			fprintf(stderr, "%d\n", op);
-			exit(-1);
+			vm_throw(machine->state, VM_ERROR_OPCODE);
 		}
 		}
-	}
-}
-
-FunctionPointer load_library_function(const char * library_path, const char * function_name)
-{
-	HINSTANCE lib;
-	FunctionPointer function_pointer;
-
-	lib = LoadLibrary(library_path);
-	//printf("try to load function '%s' from library '%s'\n", function_name, library_path);
-
-	if (lib)
-	{
-		function_pointer = (FunctionPointer)GetProcAddress(lib, function_name);
-		if (function_pointer)
-		{
-			return function_pointer;
-		}
-		else
-		{
-			fprintf(stderr, "cannot load function '%s' in the library: %s\n", function_name, library_path);
-			fprintf(stderr, "error code: %d", GetLastError());
-			exit(-1);
-		}
-	}
-	else
-	{
-		fprintf(stderr, "cannot load library: %s\n", library_path);
-		fprintf(stderr, "error code: %d", GetLastError());
-		exit(-1);
 	}
 }
 
