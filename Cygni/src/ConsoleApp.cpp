@@ -41,6 +41,9 @@ namespace cygni
 
 	void ConsoleApp::SemanticAnalysis(Project & project)
 	{
+		PackageImporter packageImporter;
+		packageImporter.ImportPackages(project);
+
 		/* pass 4: rename all the type that needs alias */
 		TypeRenamer typeRenamer;
 		typeRenamer.RenameAll(project);

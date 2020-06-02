@@ -284,6 +284,7 @@ namespace cygni
 	{
 	public:
 		SourceLocation location;
+		PackageRoute route;
 		std::u32string name;
 		Table<std::u32string, FieldDef> fields;
 		Table<std::u32string, MethodDef> methods;
@@ -292,20 +293,21 @@ namespace cygni
 		std::unordered_map<ConstantKey, int> constantMap;
 		std::vector<TypePtr> superClasses;
 		ClassInfo() = default;
-		ClassInfo(SourceLocation location, std::u32string name);
+		ClassInfo(SourceLocation location, PackageRoute route, std::u32string name);
 	};
 
 	class ModuleInfo
 	{
 	public:
 		SourceLocation location;
+		PackageRoute route;
 		std::u32string name;
 		Table<std::u32string, FieldDef> fields;
 		Table<std::u32string, MethodDef> methods;
 		int index = -1;
 		std::unordered_map<ConstantKey, int> constantMap;
 		ModuleInfo() = default;
-		ModuleInfo(SourceLocation location, std::u32string name);
+		ModuleInfo(SourceLocation location, PackageRoute route, std::u32string name);
 	};
 
 	class InterfaceInfo
@@ -358,13 +360,15 @@ namespace cygni
 		std::vector<ImportStatement> importedPackages;
 		Table<std::u32string, TypeAlias> typeAliases;
 
+		/* Definitions */
+		Table<std::u32string, std::shared_ptr<ClassInfo>> classDefs;
+		Table<std::u32string, std::shared_ptr<ModuleInfo>> moduleDefs;
+		Table<std::u32string, std::shared_ptr<InterfaceInfo>> interfaceDefs;
+
+		/* All Information */
 		Table<std::u32string, std::shared_ptr<ClassInfo>> classes;
 		Table<std::u32string, std::shared_ptr<ModuleInfo>> modules;
 		Table<std::u32string, std::shared_ptr<InterfaceInfo>> interfaces;
-
-		//std::unordered_map<std::u32string, std::shared_ptr<ModuleInfo>> moduleMap;
-		//std::unordered_map<std::u32string, std::shared_ptr<ClassInfo>> classMap;
-		//std::unordered_map<std::u32string, std::shared_ptr<InterfaceInfo>> interfaceMap;
 
 		explicit Package(PackageRoute route);
 	};
@@ -376,9 +380,9 @@ namespace cygni
 		PackageRouteStatement packageRoute;
 		std::vector<ImportStatement> importedPackages;
 		Table<std::u32string, TypeAlias> typeAliases;
-		Table<std::u32string, std::shared_ptr<ClassInfo>> classes;
-		Table<std::u32string, std::shared_ptr<ModuleInfo>> modules;
-		Table<std::u32string, std::shared_ptr<InterfaceInfo>> interfaces;
+		Table<std::u32string, std::shared_ptr<ClassInfo>> classDefs;
+		Table<std::u32string, std::shared_ptr<ModuleInfo>> moduleDefs;
+		Table<std::u32string, std::shared_ptr<InterfaceInfo>> interfaceDefs;
 
 		explicit SourceDocument(std::shared_ptr<FileLocation> document);
 	};

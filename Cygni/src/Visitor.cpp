@@ -281,13 +281,13 @@ namespace cygni
 	{
 		json obj;
 		json classesJson(std::unordered_map<std::string, json>{});
-		for (const auto &info : package->classes.values)
+		for (const auto &info : package->classDefs)
 		{
 			std::string name = UTF32ToUTF8(info->name);
 			classesJson[name] = VisitClassInfo(info);
 		}
 		json moduleJson(std::unordered_map<std::string, json>{});
-		for (const auto &info : package->modules.values)
+		for (const auto &info : package->moduleDefs)
 		{
 			std::string name = UTF32ToUTF8(info->name);
 			moduleJson[name] = VisitModuleInfo(info);
@@ -1050,8 +1050,6 @@ namespace cygni
 	{
 		std::unordered_set<PackageRoute> visited;
 		auto scope = std::make_shared<Scope>(globalScope);
-		PackageImporter packageImporter;
-		packageImporter.ImportPackages(project);
 		for (const auto &moduleInfo : package->modules)
 		{
 			TypePtr moduleType = std::make_shared<ModuleType>(package->route, moduleInfo->name);
@@ -1557,31 +1555,31 @@ namespace cygni
 	}
 	void ConstantCollector::VisitPackage(std::shared_ptr<Package> package)
 	{
-		for (auto& _class : package->classes.values)
+		for (auto& classInfo : package->classes)
 		{
 			std::unordered_set<ConstantKey> constantSet;
-			for (auto& method : _class->methods.values)
+			for (auto& method : classInfo->methods.values)
 			{
 				VisitMethodDef(method, constantSet);
 			}
 			int index = 0;
 			for (auto key : constantSet)
 			{
-				_class->constantMap.insert({ key, index });
+				classInfo->constantMap.insert({ key, index });
 				index++;
 			}
 		}
-		for (auto& module : package->modules.values)
+		for (auto& moduleInfo : package->modules)
 		{
 			std::unordered_set<ConstantKey> constantSet;
-			for (auto& method : module->methods.values)
+			for (auto& method : moduleInfo->methods.values)
 			{
 				VisitMethodDef(method, constantSet);
 			}
 			int index = 0;
 			for (auto key : constantSet)
 			{
-				module->constantMap.insert({ key, index });
+				moduleInfo->constantMap.insert({ key, index });
 				index++;
 			}
 		}
@@ -1599,14 +1597,14 @@ namespace cygni
 		int moduleIndex = 0;
 		for (auto pkg : project.packages)
 		{
-			for (auto _class : pkg->classes.values)
+			for (auto classInfo : pkg->classDefs)
 			{
-				_class->index = classIndex;
+				classInfo->index = classIndex;
 				classIndex++;
 			}
-			for (auto module : pkg->modules.values)
+			for (auto moduleInfo : pkg->moduleDefs)
 			{
-				module->index = moduleIndex;
+				moduleInfo->index = moduleIndex;
 				moduleIndex++;
 			}
 		}
@@ -1632,7 +1630,7 @@ namespace cygni
 					RenameMethod(method, typeAliases);
 				}
 			}
-			for (auto moduleInfo : pkg->modules.values)
+			for (auto moduleInfo : pkg->modules)
 			{
 				std::cout << "rename module: " << moduleInfo->name << std::endl;
 				for (auto& field : moduleInfo->fields.values)
@@ -1704,7 +1702,7 @@ namespace cygni
 			if (typeAliases.ContainsKey(moduleType->name))
 			{
 				auto typeAlias = typeAliases.GetValueByKey(moduleType->name);
-				return std::make_shared<ClassType>(typeAlias.route, typeAlias.typeName);
+				return std::make_shared<ModuleType>(typeAlias.route, typeAlias.typeName);
 			}
 			else
 			{
@@ -1741,7 +1739,7 @@ namespace cygni
 	{
 		for (auto& program : project.programs.values)
 		{
-			for (auto& classInfo : program.classes.values)
+			for (auto& classInfo : program.classDefs.values)
 			{
 				int n = static_cast<int>(classInfo->superClasses.size());
 				for (int i = 0; i < n; i++)
@@ -1779,7 +1777,7 @@ namespace cygni
 		}
 		for (auto& program : project.programs.values)
 		{
-			for (auto& classInfo : program.classes.values)
+			for (auto& classInfo : program.classDefs.values)
 			{
 				VisitClass(project, classInfo);
 			}
@@ -1788,10 +1786,22 @@ namespace cygni
 	void InheritanceProcessor::VisitClass(Project& project, std::shared_ptr<ClassInfo> classInfo)
 	{
 		std::stack<FieldDef> fieldStack;
+		std::unordered_set<TypePtr> typeSet;
 		auto originalClass = classInfo;
 		bool done = false;
 		while (!done)
 		{
+			if (typeSet.find(
+				std::make_shared<ClassType>(classInfo->route, classInfo->name)) != typeSet.end())
+			{
+				throw TypeException(originalClass->location,
+					U"mutual inheritance exists");
+			}
+			else
+			{
+				typeSet.insert(
+					std::make_shared<ClassType>(classInfo->route, classInfo->name));
+			}
 			int n = static_cast<int>(classInfo->fields.Size());
 			for (int i = n - 1; i >= 0; i--)
 			{
@@ -1845,7 +1855,6 @@ namespace cygni
 		}
 		for (auto pkg : project.packages)
 		{
-			pkg->classes.Clear();
 			if (classMap.find(pkg->route) != classMap.end())
 			{
 				for (auto classInfo : classMap.at(pkg->route))
@@ -1853,7 +1862,6 @@ namespace cygni
 					pkg->classes.Add(classInfo->name, classInfo);
 				}
 			}
-			pkg->modules.Clear();
 			if (moduleMap.find(pkg->route) != moduleMap.end())
 			{
 				for (auto moduleInfo : moduleMap.at(pkg->route))
@@ -1861,7 +1869,6 @@ namespace cygni
 					pkg->modules.Add(moduleInfo->name, moduleInfo);
 				}
 			}
-			pkg->interfaces.Clear();
 			if (interfaceMap.find(pkg->route) != interfaceMap.end())
 			{
 				for (auto interfaceInfo : interfaceMap.at(pkg->route))
@@ -1886,15 +1893,15 @@ namespace cygni
 		{
 			visited.insert(pkg->route);
 
-			for (const auto& classInfo : pkg->classes)
+			for (const auto& classInfo : pkg->classDefs)
 			{
 				classMap[currentRoute].push_back(classInfo);
 			}
-			for (const auto& moduleInfo : pkg->modules)
+			for (const auto& moduleInfo : pkg->moduleDefs)
 			{
 				moduleMap[currentRoute].push_back(moduleInfo);
 			}
-			for (const auto& interfaceInfo : pkg->interfaces)
+			for (const auto& interfaceInfo : pkg->interfaceDefs)
 			{
 				interfaceMap[currentRoute].push_back(interfaceInfo);
 			}

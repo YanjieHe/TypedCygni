@@ -191,21 +191,24 @@ namespace cygni
 
 } // namespace cygni
 
-//template <> struct std::hash<cygni::TypePtr>
-//{
-//public:
-//	size_t operator()(const cygni::TypePtr &type) const
-//	{
-//		if (type->typeCode == cygni::TypeCode::Object)
-//		{
-//			return static_cast<size_t>(type->typeCode);
-//		}
-//		else
-//		{
-//			return static_cast<size_t>(type->typeCode);
-//		}
-//	}
-//};
+template <> struct std::hash<cygni::TypePtr>
+{
+public:
+	std::hash<cygni::PackageRoute> h1;
+	std::hash<std::u32string> h2;
+	size_t operator()(const cygni::TypePtr &type) const
+	{
+		if (type->typeCode == cygni::TypeCode::Class)
+		{
+			auto classType = std::static_pointer_cast<cygni::ClassType>(type);
+			return h1(classType->route) ^ h2(classType->name);
+		}
+		else
+		{
+			return static_cast<size_t>(type->typeCode);
+		}
+	}
+};
 
 template <> struct std::equal_to<cygni::TypePtr>
 {

@@ -583,7 +583,7 @@ namespace cygni
 		const Token &start = Look();
 		Match(Tag::Class);
 		auto name = Match(Tag::Identifier).text;
-		auto info = std::make_shared<ClassInfo>(GetLoc(start), name);
+		auto info = std::make_shared<ClassInfo>(GetLoc(start), route, name);
 
 		if (Look().tag == Tag::UpperBound)
 		{
@@ -629,7 +629,7 @@ namespace cygni
 		const Token &start = Look();
 		Match(Tag::Module);
 		auto name = Match(Tag::Identifier).text;
-		auto info = std::make_shared<ModuleInfo>(GetLoc(start), name);
+		auto info = std::make_shared<ModuleInfo>(GetLoc(start), route, name);
 		Match(Tag::LeftBrace);
 		while (!IsEof() && Look().tag != Tag::RightBrace)
 		{

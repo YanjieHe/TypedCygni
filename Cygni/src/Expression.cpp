@@ -104,11 +104,11 @@ namespace cygni
 		this->signature = std::make_shared<FunctionType>(selfType, parameterTypes, returnType);
 	}
 
-	ClassInfo::ClassInfo(SourceLocation location, std::u32string name)
-		: location{ location }, name{ name } {}
+	ClassInfo::ClassInfo(SourceLocation location, PackageRoute route, std::u32string name)
+		: location{ location }, route{ route }, name{ name } {}
 
-	ModuleInfo::ModuleInfo(SourceLocation location, std::u32string name)
-		: location{ location }, name{ name } {}
+	ModuleInfo::ModuleInfo(SourceLocation location, PackageRoute route, std::u32string name)
+		: location{ location }, route{ route }, name{ name } {}
 
 	ReturnExpression::ReturnExpression(SourceLocation location, ExpPtr value)
 		: Expression(location, ExpressionType::Return), value{ value } {}
@@ -203,23 +203,27 @@ namespace cygni
 				// package not found. create a new package
 				package = std::make_shared<Package>(route);
 			}
-			for (auto classInfo : program.classes.values)
+			for (auto classInfo : program.classDefs.values)
 			{
-				package->classes.Add(classInfo->name, classInfo);
+				package->classDefs.Add(classInfo->name, classInfo);
 			}
-			for (auto moduleInfo : program.modules.values)
+			for (auto moduleInfo : program.moduleDefs.values)
 			{
-				package->modules.Add(moduleInfo->name, moduleInfo);
+				package->moduleDefs.Add(moduleInfo->name, moduleInfo);
 			}
-			for (auto pair : program.typeAliases.map)
+			for (auto interfaceInfo : program.interfaceDefs.values)
 			{
-				package->typeAliases.Add(pair.first, program.typeAliases.GetValueByKey(pair.first));
+				package->interfaceDefs.Add(interfaceInfo->name, interfaceInfo);
+			}
+			for (auto typeAlias : program.typeAliases)
+			{
+				package->typeAliases.Add(typeAlias.alias, typeAlias);
 			}
 			for (auto importStatement : program.importedPackages)
 			{
 				package->importedPackages.push_back(importStatement);
 			}
-			this->packages.Add( route, package );
+			this->packages.Add(route, package);
 		}
 	}
 
@@ -228,7 +232,7 @@ namespace cygni
 		if (packages.ContainsKey(route))
 		{
 			auto pkg = packages.GetValueByKey(route);
-			if (pkg->modules.ContainsKey(name) )
+			if (pkg->modules.ContainsKey(name))
 			{
 				return { pkg->modules.GetValueByKey(name) };
 			}
