@@ -2,9 +2,10 @@
 #define CYGNI_EXPRESSION_HPP
 #include "Enum.hpp"
 #include "Scope.hpp"
-#include "SourceLocation.hpp"
+#include "SourcePosition.hpp"
 #include "Type.hpp"
 #include <iostream>
+#include "Location.hpp"
 
 namespace cygni
 {
@@ -49,18 +50,18 @@ namespace cygni
 	{
 	public:
 		int id;
-		SourceLocation location;
+		SourcePosition position;
 		ExpressionType nodeType;
 		TypePtr type;
 
-		Expression(SourceLocation location, ExpressionType nodeType);
+		Expression(SourcePosition position, ExpressionType nodeType);
 	};
 
 	class ConstantExpression : public Expression
 	{
 	public:
 		std::u32string constant;
-		ConstantExpression(SourceLocation location, TypePtr type,
+		ConstantExpression(SourcePosition position, TypePtr type,
 			std::u32string constant);
 	};
 
@@ -70,7 +71,7 @@ namespace cygni
 		ExpPtr left;
 		ExpPtr right;
 
-		BinaryExpression(SourceLocation location, ExpressionType nodeType,
+		BinaryExpression(SourcePosition position, ExpressionType nodeType,
 			ExpPtr left, ExpPtr right);
 	};
 
@@ -79,7 +80,7 @@ namespace cygni
 	public:
 		ExpPtr operand;
 
-		UnaryExpression(SourceLocation location, ExpressionType nodeType,
+		UnaryExpression(SourcePosition position, ExpressionType nodeType,
 			ExpPtr operand);
 	};
 
@@ -87,8 +88,7 @@ namespace cygni
 	{
 	public:
 		ExpList expressions;
-		std::shared_ptr<Scope> scope;
-		BlockExpression(SourceLocation location, ExpList expressions);
+		BlockExpression(SourcePosition position, ExpList expressions);
 	};
 
 	class ConditionalExpression : public Expression
@@ -98,14 +98,14 @@ namespace cygni
 		ExpPtr ifTrue;
 		ExpPtr ifFalse;
 
-		ConditionalExpression(SourceLocation location, ExpPtr condition,
+		ConditionalExpression(SourcePosition position, ExpPtr condition,
 			ExpPtr ifTrue, ExpPtr ifFalse);
 	};
 
 	class DefaultExpression : public Expression
 	{
 	public:
-		DefaultExpression(SourceLocation location, TypePtr type);
+		DefaultExpression(SourcePosition position, TypePtr type);
 	};
 
 	class Argument
@@ -113,7 +113,7 @@ namespace cygni
 	public:
 		std::optional<std::u32string> name;
 		ExpPtr value;
-		int index = -1; // parameter index
+		std::optional<int> index; // parameter index
 
 		Argument() = default;
 		explicit Argument(ExpPtr value);
@@ -125,28 +125,16 @@ namespace cygni
 	public:
 		ExpPtr expression;
 		std::vector<Argument> arguments;
-		InvocationExpression(SourceLocation location, ExpPtr expression,
+		InvocationExpression(SourcePosition position, ExpPtr expression,
 			std::vector<Argument> arguments);
-	};
-
-	class ParameterLocation
-	{
-	public:
-		ParameterType type;
-		int offset;
-		// module of class index
-		int index;
-		ParameterLocation();
-		ParameterLocation(ParameterType type, int offset);
-		ParameterLocation(ParameterType type, int offset, int index);
 	};
 
 	class ParameterExpression : public Expression
 	{
 	public:
 		std::u32string name;
-		ParameterLocation parameterLocation;
-		ParameterExpression(SourceLocation location, std::u32string name,
+		LocationPtr location;
+		ParameterExpression(SourcePosition position, std::u32string name,
 			TypePtr type);
 	};
 
@@ -156,7 +144,7 @@ namespace cygni
 		std::shared_ptr<ParameterExpression> variable;
 		ExpPtr value;
 
-		VarDefExpression(SourceLocation location,
+		VarDefExpression(SourcePosition position,
 			std::shared_ptr<ParameterExpression> variable, TypePtr type,
 			ExpPtr value);
 	};
@@ -164,27 +152,27 @@ namespace cygni
 	class AnnotationInfo
 	{
 	public:
-		SourceLocation location;
+		SourcePosition position;
 		std::u32string name;
 		std::vector<Argument> arguments;
 
-		AnnotationInfo(SourceLocation location, std::u32string name,
+		AnnotationInfo(SourcePosition position, std::u32string name,
 			std::vector<Argument> arguments);
 	};
 
 	class FieldDef
 	{
 	public:
-		SourceLocation location;
+		SourcePosition position;
 		AccessModifier modifier;
 		bool isStatic;
 		Table<std::u32string, AnnotationInfo> annotations;
 		std::u32string name;
 		TypePtr type;
 		ExpPtr value;
-		int index = -1;
+		std::optional<int> index;
 		FieldDef() = default;
-		FieldDef(SourceLocation location, AccessModifier modifier, bool isStatic,
+		FieldDef(SourcePosition position, AccessModifier modifier, bool isStatic,
 			Table<std::u32string, AnnotationInfo> annotations, std::u32string name,
 			TypePtr type, ExpPtr value);
 	};
@@ -192,7 +180,7 @@ namespace cygni
 	class MethodDef
 	{
 	public:
-		SourceLocation location;
+		SourcePosition position;
 		AccessModifier modifier;
 		bool isStatic;
 		TypePtr selfType;
@@ -203,10 +191,10 @@ namespace cygni
 		ExpPtr body;
 		TypePtr signature;
 		std::vector<std::shared_ptr<VarDefExpression>> localVariables;
-		int index = -1;
+		std::optional<int> index;
 
 		MethodDef() = default;
-		MethodDef(SourceLocation location, AccessModifier modifier, bool isStatic, TypePtr selfType,
+		MethodDef(SourcePosition position, AccessModifier modifier, bool isStatic, TypePtr selfType,
 			Table<std::u32string, AnnotationInfo> annotations, std::u32string name,
 			std::vector<std::shared_ptr<ParameterExpression>> parameters,
 			TypePtr returnType, ExpPtr body);
@@ -235,8 +223,8 @@ namespace cygni
 	public:
 		ExpPtr object;
 		std::u32string field;
-		ParameterLocation parameterLocation;
-		MemberAccessExpression(SourceLocation location, ExpPtr object,
+		LocationPtr location;
+		MemberAccessExpression(SourcePosition position, ExpPtr object,
 			std::u32string field);
 	};
 
@@ -246,7 +234,7 @@ namespace cygni
 		ExpPtr object;
 		std::shared_ptr<MethodDef> method;
 		ExpList arguments;
-		MethodCallExpression(SourceLocation location, ExpPtr object,
+		MethodCallExpression(SourcePosition position, ExpPtr object,
 			std::shared_ptr<MethodDef> method, ExpList arguments);
 	};
 
@@ -254,13 +242,13 @@ namespace cygni
 	{
 	public:
 		ExpPtr value;
-		ReturnExpression(SourceLocation location, ExpPtr value);
+		ReturnExpression(SourcePosition position, ExpPtr value);
 	};
 
 	class BreakExpression : public Expression
 	{
 	public:
-		BreakExpression(SourceLocation location);
+		BreakExpression(SourcePosition position);
 	};
 
 	class WhileExpression : public Expression
@@ -268,89 +256,96 @@ namespace cygni
 	public:
 		ExpPtr condition;
 		ExpPtr body;
-		WhileExpression(SourceLocation location, ExpPtr condition, ExpPtr body);
+		WhileExpression(SourcePosition position, ExpPtr condition, ExpPtr body);
 	};
 
 	class NewExpression : public Expression
 	{
 	public:
 		std::vector<Argument> arguments;
-		ParameterLocation parameterLocation;
-		NewExpression(SourceLocation location, TypePtr type,
+		LocationPtr location;
+		NewExpression(SourcePosition position, TypePtr type,
 			std::vector<Argument> arguments);
 	};
 
 	class ClassInfo
 	{
 	public:
-		SourceLocation location;
+		SourcePosition position;
 		PackageRoute route;
 		std::u32string name;
+
+		/* definitions */
+		Table<std::u32string, FieldDef> fieldDefs;
+		Table<std::u32string, MethodDef> methodDefs;
+
+		/* all information */
 		Table<std::u32string, FieldDef> fields;
 		Table<std::u32string, MethodDef> methods;
-		Table<std::u32string, FieldDef> allFields;
-		int index = -1;
+
 		std::unordered_map<ConstantKey, int> constantMap;
 		std::vector<TypePtr> superClasses;
+		std::optional<int> index;
+
 		ClassInfo() = default;
-		ClassInfo(SourceLocation location, PackageRoute route, std::u32string name);
+		ClassInfo(SourcePosition position, PackageRoute route, std::u32string name);
 	};
 
 	class ModuleInfo
 	{
 	public:
-		SourceLocation location;
+		SourcePosition position;
 		PackageRoute route;
 		std::u32string name;
 		Table<std::u32string, FieldDef> fields;
 		Table<std::u32string, MethodDef> methods;
-		int index = -1;
+		std::optional<int> index;
 		std::unordered_map<ConstantKey, int> constantMap;
 		ModuleInfo() = default;
-		ModuleInfo(SourceLocation location, PackageRoute route, std::u32string name);
+		ModuleInfo(SourcePosition position, PackageRoute route, std::u32string name);
 	};
 
 	class InterfaceInfo
 	{
 	public:
-		SourceLocation location;
+		SourcePosition position;
 		std::u32string name;
 		Table<std::u32string, MethodDef> methods;
 		Table<std::u32string, MethodDef> methodMap;
 		std::vector<TypePtr> superInterfaces;
 		InterfaceInfo() = default;
-		InterfaceInfo(SourceLocation location, std::u32string name);
+		InterfaceInfo(SourcePosition position, std::u32string name);
 	};
 
 	class TypeAlias
 	{
 	public:
-		SourceLocation location;
+		SourcePosition position;
 		PackageRoute route;
 		std::u32string typeName;
 		std::u32string alias;
 
 		TypeAlias() = default;
-		TypeAlias(SourceLocation location, PackageRoute route, std::u32string typeName, std::u32string alias);
+		TypeAlias(SourcePosition position, PackageRoute route, std::u32string typeName, std::u32string alias);
 	};
 
 	class PackageRouteStatement
 	{
 	public:
-		SourceLocation location;
+		SourcePosition position;
 		PackageRoute route;
 		PackageRouteStatement() = default;
-		PackageRouteStatement(SourceLocation location, PackageRoute route);
+		PackageRouteStatement(SourcePosition position, PackageRoute route);
 	};
 
 	class ImportStatement
 	{
 	public:
-		SourceLocation location;
+		SourcePosition position;
 		PackageRoute route;
 
 		ImportStatement();
-		ImportStatement(SourceLocation location, PackageRoute route);
+		ImportStatement(SourcePosition position, PackageRoute route);
 	};
 
 	class Package

@@ -2,9 +2,10 @@
 #define CYGNI_TYPE_HPP
 #include "Enum.hpp"
 #include "Utility.hpp"
-#include "SourceLocation.hpp"
 #include <unordered_map>
 #include <unordered_set>
+#include <list>
+#include "SourcePosition.hpp"
 
 namespace cygni
 {
@@ -133,10 +134,8 @@ namespace cygni
 		std::u32string name;
 
 		ClassType(PackageRoute route, std::u32string name);
-
 		std::u32string ToString() const override;
 		bool Equals(TypePtr other) const override;
-
 		TypePtr Replace(const Table<std::u32string, TypeParameter>& parameters) const;
 	};
 
@@ -147,7 +146,6 @@ namespace cygni
 		std::u32string name;
 
 		ModuleType(PackageRoute route, std::u32string name);
-
 		std::u32string ToString() const override;
 		bool Equals(TypePtr other) const override;
 	};
@@ -157,8 +155,8 @@ namespace cygni
 	public:
 		PackageRoute route;
 		std::u32string name;
-		InterfaceType(PackageRoute route, std::u32string name);
 
+		InterfaceType(PackageRoute route, std::u32string name);
 		std::u32string ToString() const override;
 		bool Equals(TypePtr other) const override;
 	};
@@ -169,9 +167,7 @@ namespace cygni
 		TypePtr elementType;
 
 		explicit ArrayType(TypePtr elementType);
-
 		std::u32string ToString() const override;
-
 		bool Equals(TypePtr other) const override;
 	};
 
@@ -196,6 +192,7 @@ template <> struct std::hash<cygni::TypePtr>
 public:
 	std::hash<cygni::PackageRoute> h1;
 	std::hash<std::u32string> h2;
+
 	size_t operator()(const cygni::TypePtr &type) const
 	{
 		if (type->typeCode == cygni::TypeCode::Class)

@@ -9,7 +9,7 @@ using std::endl;
 namespace cygni
 {
 
-	json AstToJsonSerialization::VisitSourceLocation(SourceLocation location)
+	json AstToJsonSerialization::VisitSourceLocation(SourcePosition location)
 	{
 		json obj;
 		obj["startLine"] = location.startLine;
@@ -44,7 +44,7 @@ namespace cygni
 		obj["name"] = UTF32ToUTF8(info->name);
 
 		json fieldsJson(std::unordered_map<std::string, json>{});
-		for (const auto &field : info->fields.values)
+		for (const auto &field : info->fieldDefs.values)
 		{
 			std::string name = UTF32ToUTF8(field.name);
 			fieldsJson[name] = VisitFieldDef(field);
@@ -52,7 +52,7 @@ namespace cygni
 		obj["fields"] = fieldsJson;
 
 		json methodsJson(std::unordered_map<std::string, json>{});
-		for (const auto &method : info->methods.values)
+		for (const auto &method : info->methodDefs.values)
 		{
 			std::string name = UTF32ToUTF8(method.name);
 			methodsJson[name] = VisitMethodDef(method);
@@ -89,7 +89,7 @@ namespace cygni
 	{
 		json obj;
 		obj["isStatic"] = field.isStatic;
-		obj["location"] = VisitSourceLocation(field.location);
+		obj["position"] = VisitSourceLocation(field.position);
 		obj["accessModifier"] =
 			UTF32ToUTF8(Enum<AccessModifier>::ToString(field.modifier));
 		obj["annotations"] = VisitAnnotationList(field.annotations);
@@ -104,7 +104,7 @@ namespace cygni
 		json obj;
 
 		obj["isStatic"] = method.isStatic;
-		obj["location"] = VisitSourceLocation(method.location);
+		obj["position"] = VisitSourceLocation(method.position);
 		obj["accessModifier"] =
 			UTF32ToUTF8(Enum<AccessModifier>::ToString(method.modifier));
 		obj["annotations"] = VisitAnnotationList(method.annotations);
@@ -134,7 +134,7 @@ namespace cygni
 		json obj;
 		obj["name"] = UTF32ToUTF8(parameter->name);
 		AttachNodeInformation(obj, parameter);
-		obj["parameterLocation"] = VisitParameterLocation(parameter->parameterLocation);
+		obj["location"] = VisitLocation(parameter->location);
 		return obj;
 	}
 
@@ -198,7 +198,7 @@ namespace cygni
 		json obj;
 		AttachNodeInformation(obj, node);
 		obj["arguments"] = VisitArgumentList(node->arguments);
-		obj["parameterLocation"] = VisitParameterLocation(node->parameterLocation);
+		obj["parameterLocation"] = VisitLocation(node->location);
 		return obj;
 	}
 
@@ -225,7 +225,7 @@ namespace cygni
 	void AstToJsonSerialization::AttachNodeInformation(json &obj, ExpPtr node)
 	{
 		obj["id"] = node->id;
-		obj["location"] = VisitSourceLocation(node->location);
+		obj["position"] = VisitSourceLocation(node->position);
 		obj["nodeType"] = UTF32ToUTF8(Enum<ExpressionType>::ToString(node->nodeType));
 		obj["type"] = UTF32ToUTF8(node->type->ToString());
 	}
@@ -338,7 +338,7 @@ namespace cygni
 		{
 			json obj;
 			std::string name = UTF32ToUTF8(annotation.name);
-			obj["location"] = VisitSourceLocation(annotation.location);
+			obj["position"] = VisitSourceLocation(annotation.position);
 			obj["name"] = name;
 			obj["arguments"] = VisitArgumentList(annotation.arguments);
 			annotationList[name] = obj;
@@ -357,11 +357,10 @@ namespace cygni
 		return expressionList;
 	}
 
-	json AstToJsonSerialization::VisitParameterLocation(const ParameterLocation & location)
+	json AstToJsonSerialization::VisitLocation(LocationPtr location)
 	{
 		json obj;
-		obj["parameterType"] = UTF32ToUTF8(Enum<ParameterType>::ToString(location.type));
-		obj["offset"] = location.offset;
+		obj["type"] = UTF32ToUTF8(Enum<LocationType>::ToString(location->type));
 		return obj;
 	}
 
@@ -480,7 +479,7 @@ namespace cygni
 
 	}
 
-	TypePtr TypeChecker::VisitBinary(std::shared_ptr<BinaryExpression> node, ScopePtr scope)
+	TypePtr TypeChecker::VisitBinary(std::shared_ptr<BinaryExpression> node, Scope<TypePtr>* scope)
 	{
 		auto left = VisitExpression(node->left, scope);
 		auto right = VisitExpression(node->right, scope);
@@ -492,7 +491,7 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location,
+				throw TypeException(node->position,
 					Format(U"type mismatch: +, left: {}, right: {}", left->ToString(), right->ToString()));
 			}
 		}
@@ -504,7 +503,7 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location,
+				throw TypeException(node->position,
 					Format(U"type mismatch: -, left: {}, right: {}", left->ToString(), right->ToString()));
 			}
 		}
@@ -516,7 +515,7 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location,
+				throw TypeException(node->position,
 					Format(U"type mismatch: *, left: {}, right: {}", left->ToString(), right->ToString()));
 			}
 		}
@@ -528,7 +527,7 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location,
+				throw TypeException(node->position,
 					Format(U"type mismatch: /, left: {}, right: {}", left->ToString(), right->ToString()));
 			}
 		}
@@ -540,7 +539,7 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location,
+				throw TypeException(node->position,
 					Format(U"type mismatch: >, left: {}, right: {}", left->ToString(), right->ToString()));
 			}
 		}
@@ -552,7 +551,7 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location,
+				throw TypeException(node->position,
 					Format(U"type mismatch: <, left: {}, right: {}", left->ToString(), right->ToString()));
 			}
 		}
@@ -564,7 +563,7 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location,
+				throw TypeException(node->position,
 					Format(U"type mismatch: >=, left: {}, right: {}", left->ToString(), right->ToString()));
 			}
 		}
@@ -576,7 +575,7 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location,
+				throw TypeException(node->position,
 					Format(U"type mismatch: <=, left: {}, right: {}", left->ToString(), right->ToString()));
 			}
 		}
@@ -588,7 +587,7 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location,
+				throw TypeException(node->position,
 					Format(U"type mismatch: ==, left: {}, right: {}", left->ToString(), right->ToString()));
 			}
 		}
@@ -600,7 +599,7 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location,
+				throw TypeException(node->position,
 					Format(U"type mismatch: !=, left: {}, right: {}", left->ToString(), right->ToString()));
 			}
 		}
@@ -610,9 +609,9 @@ namespace cygni
 		}
 	}
 
-	TypePtr TypeChecker::VisitBlock(std::shared_ptr<BlockExpression> node, ScopePtr outerScope)
+	TypePtr TypeChecker::VisitBlock(std::shared_ptr<BlockExpression> node, Scope<TypePtr>* outerScope)
 	{
-		ScopePtr scope = std::make_shared<Scope>(outerScope);
+		auto scope = scopeFactory->New(outerScope);
 		for (const auto &exp : node->expressions)
 		{
 			VisitExpression(exp, scope);
@@ -627,7 +626,7 @@ namespace cygni
 		return type;
 	}
 
-	TypePtr TypeChecker::VisitAssign(std::shared_ptr<BinaryExpression> node, ScopePtr scope)
+	TypePtr TypeChecker::VisitAssign(std::shared_ptr<BinaryExpression> node, Scope<TypePtr>* scope)
 	{
 		if (node->left->nodeType == ExpressionType::Parameter)
 		{
@@ -640,7 +639,7 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location, U"type mismtach: =");
+				throw TypeException(node->position, U"type mismtach: =");
 			}
 		}
 		else if (node->left->nodeType == ExpressionType::MemberAccess)
@@ -654,18 +653,18 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location,
+				throw TypeException(node->position,
 					U"type mismtach: assignment to field");
 			}
 		}
 		else
 		{
-			throw TypeException(node->location,
+			throw TypeException(node->position,
 				U"cannot assign to the left expression");
 		}
 	}
 
-	TypePtr TypeChecker::VisitWhile(std::shared_ptr<WhileExpression> node, ScopePtr scope)
+	TypePtr TypeChecker::VisitWhile(std::shared_ptr<WhileExpression> node, Scope<TypePtr>* scope)
 	{
 		TypePtr condition = VisitExpression(node->condition, scope);
 		if (condition->typeCode == TypeCode::Boolean)
@@ -675,7 +674,7 @@ namespace cygni
 		}
 		else
 		{
-			throw TypeException(node->location,
+			throw TypeException(node->position,
 				U"while condition must be boolean type");
 		}
 	}
@@ -684,19 +683,20 @@ namespace cygni
 	{
 		for (const auto& method : interfaceInfo->methodMap.values)
 		{
-			if (classInfo->methods.ContainsKey(method.name))
+			if (classInfo->methodDefs.ContainsKey(method.name))
 			{
 			}
 			else
 			{
-				throw TypeException(method.location,
+				throw TypeException(method.position,
 					Format(U"interface constraint function '{}' not implemented", method.name));
 			}
 		}
 		// TO DO
+		throw NotImplementedException();
 	}
 
-	TypePtr TypeChecker::VisitExpression(ExpPtr node, ScopePtr scope)
+	TypePtr TypeChecker::VisitExpression(ExpPtr node, Scope<TypePtr>* scope)
 	{
 		switch (node->nodeType)
 		{
@@ -746,9 +746,31 @@ namespace cygni
 		return node->type;
 	}
 
-	TypePtr TypeChecker::VisitClassInfo(std::shared_ptr<ClassInfo> info, ScopePtr outerScope)
+	TypePtr TypeChecker::VisitClassInfo(std::shared_ptr<ClassInfo> info, Scope<TypePtr>* outerScope)
 	{
-		ScopePtr scope{ outerScope };
+		auto scope = scopeFactory->New(outerScope);
+		for (const auto& field : info->fields.values)
+		{
+			scope->Put(field.name, field.type);
+		}
+		for (const auto &method : info->methods.values)
+		{
+			scope->Put(method.name, method.signature);
+		}
+		for (const auto &field : info->fieldDefs.values)
+		{
+			VisitFieldDef(field, scope);
+		}
+		for (const auto &method : info->methodDefs.values)
+		{
+			VisitMethodDef(method, scope);
+		}
+		return Type::Void();
+	}
+
+	TypePtr TypeChecker::VisitModuleInfo(std::shared_ptr<ModuleInfo> info, Scope<TypePtr>* outerScope)
+	{
+		auto scope = scopeFactory->New(outerScope);
 		for (const auto& field : info->fields.values)
 		{
 			scope->Put(field.name, field.type);
@@ -768,29 +790,7 @@ namespace cygni
 		return Type::Void();
 	}
 
-	TypePtr TypeChecker::VisitModuleInfo(std::shared_ptr<ModuleInfo> info, ScopePtr outerScope)
-	{
-		ScopePtr scope = std::make_shared<Scope>(outerScope);
-		for (const auto& field : info->fields.values)
-		{
-			scope->Put(field.name, field.type);
-		}
-		for (const auto &method : info->methods.values)
-		{
-			scope->Put(method.name, method.signature);
-		}
-		for (const auto &field : info->fields.values)
-		{
-			VisitFieldDef(field, scope);
-		}
-		for (const auto &method : info->methods.values)
-		{
-			VisitMethodDef(method, scope);
-		}
-		return Type::Void();
-	}
-
-	TypePtr TypeChecker::VisitFieldDef(const FieldDef &field, ScopePtr scope)
+	TypePtr TypeChecker::VisitFieldDef(const FieldDef &field, Scope<TypePtr>* scope)
 	{
 		if (field.value->nodeType == ExpressionType::Default)
 		{
@@ -802,7 +802,7 @@ namespace cygni
 			auto type = VisitExpression(field.value, scope);
 			if (!field.type->Equals(type))
 			{
-				throw TypeException(field.location, U"field type mismatch");
+				throw TypeException(field.position, U"field type mismatch");
 			}
 			else
 			{
@@ -812,9 +812,9 @@ namespace cygni
 		}
 	}
 
-	TypePtr TypeChecker::VisitMethodDef(const MethodDef &method, ScopePtr outerScope)
+	TypePtr TypeChecker::VisitMethodDef(const MethodDef &method, Scope<TypePtr>* outerScope)
 	{
-		ScopePtr scope{ outerScope };
+		auto scope = scopeFactory->New(outerScope);
 		if (method.selfType->typeCode == TypeCode::Class)
 		{
 			scope->Put(U"this", method.selfType);
@@ -827,7 +827,7 @@ namespace cygni
 		return method.returnType;
 	}
 
-	TypePtr TypeChecker::VisitParameter(std::shared_ptr<ParameterExpression> parameter, ScopePtr scope)
+	TypePtr TypeChecker::VisitParameter(std::shared_ptr<ParameterExpression> parameter, Scope<TypePtr>* scope)
 	{
 		auto result = scope->Get(parameter->name);
 		if (result)
@@ -838,18 +838,18 @@ namespace cygni
 		}
 		else
 		{
-			throw TypeException(parameter->location, Format(U"parameter name '{}' not found", parameter->name));
+			throw TypeException(parameter->position, Format(U"parameter name '{}' not found", parameter->name));
 		}
 	}
 
-	TypePtr TypeChecker::VisitReturn(std::shared_ptr<ReturnExpression> node, ScopePtr scope)
+	TypePtr TypeChecker::VisitReturn(std::shared_ptr<ReturnExpression> node, Scope<TypePtr>* scope)
 	{
 		TypePtr returnType = VisitExpression(node->value, scope);
 		Attach(node, returnType);
 		return returnType;
 	}
 
-	TypePtr TypeChecker::VisitConditional(std::shared_ptr<ConditionalExpression> node, ScopePtr scope)
+	TypePtr TypeChecker::VisitConditional(std::shared_ptr<ConditionalExpression> node, Scope<TypePtr>* scope)
 	{
 		auto condition = VisitExpression(node->condition, scope);
 		auto ifTrue = VisitExpression(node->ifTrue, scope);
@@ -861,7 +861,7 @@ namespace cygni
 		}
 		else
 		{
-			throw TypeException(node->condition->location, U"condition type must be boolean");
+			throw TypeException(node->condition->position, U"condition type must be boolean");
 		}
 	}
 
@@ -870,7 +870,7 @@ namespace cygni
 		return node->type;
 	}
 
-	TypePtr TypeChecker::VisitInvocation(std::shared_ptr<InvocationExpression> node, ScopePtr scope)
+	TypePtr TypeChecker::VisitInvocation(std::shared_ptr<InvocationExpression> node, Scope<TypePtr>* scope)
 	{
 		auto exp = VisitExpression(node->expression, scope);
 		// TO DO: named arguments
@@ -889,7 +889,7 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location, U"function call argument(s)' type(s) do not match");
+				throw TypeException(node->position, U"function call argument(s)' type(s) do not match");
 			}
 		}
 		else if (exp->typeCode == TypeCode::Array)
@@ -903,21 +903,21 @@ namespace cygni
 				}
 				else
 				{
-					throw TypeException(node->location, U"array index should be 'Int' type");
+					throw TypeException(node->position, U"array index should be 'Int' type");
 				}
 			}
 			else
 			{
-				throw TypeException(node->location, U"array should be accessed by one index");
+				throw TypeException(node->position, U"array should be accessed by one index");
 			}
 		}
 		else
 		{
-			throw TypeException(node->location, U"expression is not a function");
+			throw TypeException(node->position, U"expression is not a function");
 		}
 	}
 
-	TypePtr TypeChecker::VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node, ScopePtr scope)
+	TypePtr TypeChecker::VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node, Scope<TypePtr>* scope)
 	{
 		TypePtr object = VisitExpression(node->object, scope);
 		if (object->typeCode == TypeCode::Module)
@@ -936,7 +936,7 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location,
+				throw TypeException(node->position,
 					Format(U"undefined field '{}' in module '{}'", node->field, moduleType->name));
 			}
 		}
@@ -956,7 +956,7 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location, Format(U"undefined field '{}'", node->field));
+				throw TypeException(node->position, Format(U"undefined field '{}'", node->field));
 			}
 		}
 		else if (object->typeCode == TypeCode::Array)
@@ -969,17 +969,17 @@ namespace cygni
 			}
 			else
 			{
-				throw TypeException(node->location, Format(U"undefined field '{}' of array", node->field));
+				throw TypeException(node->position, Format(U"undefined field '{}' of array", node->field));
 			}
 		}
 		else
 		{
-			throw TypeException(node->location,
+			throw TypeException(node->position,
 				Format(U"object '{}' does not have any field", object->ToString()));
 		}
 	}
 
-	TypePtr TypeChecker::VisitNewExpression(std::shared_ptr<NewExpression> node, ScopePtr scope)
+	TypePtr TypeChecker::VisitNewExpression(std::shared_ptr<NewExpression> node, Scope<TypePtr>* scope)
 	{
 		auto newExpType = std::static_pointer_cast<ClassType>(node->type);
 
@@ -1000,32 +1000,32 @@ namespace cygni
 						}
 						else
 						{
-							throw TypeException(node->location,
+							throw TypeException(node->position,
 								Format(U"field '{}' initialization type does not match", *(argument.name)));
 						}
 					}
 					else
 					{
-						throw TypeException(node->location,
+						throw TypeException(node->position,
 							Format(U"field initialization name '{}' not found", *(argument.name)));
 					}
 				}
 				else
 				{
-					throw TypeException(node->location, U"field initialization name not specified");
+					throw TypeException(node->position, U"field initialization name not specified");
 				}
 			}
-			node->parameterLocation = ParameterLocation(ParameterType::ClassName, classInfo->index);
+			node->location = std::make_shared<TypeLocation>(LocationType::ClassName, *classInfo->index);
 			return node->type;
 		}
 		else
 		{
-			throw TypeException(node->location,
+			throw TypeException(node->position,
 				Format(U"error new expression: undefined class '{}'", newExpType->ToString()));
 		}
 	}
 
-	TypePtr TypeChecker::VisitVarDefExpression(std::shared_ptr<VarDefExpression> node, ScopePtr scope)
+	TypePtr TypeChecker::VisitVarDefExpression(std::shared_ptr<VarDefExpression> node, Scope<TypePtr>* scope)
 	{
 		TypePtr value = VisitExpression(node->value, scope);
 		if (node->type->typeCode == TypeCode::Unknown)
@@ -1043,13 +1043,13 @@ namespace cygni
 		}
 		else
 		{
-			throw TypeException(node->location, U"variable initialization type mismatch");
+			throw TypeException(node->position, U"variable initialization type mismatch");
 		}
 	}
-	void TypeChecker::VisitPackage(ScopePtr globalScope)
+	void TypeChecker::VisitPackage(Scope<TypePtr>* globalScope)
 	{
 		std::unordered_set<PackageRoute> visited;
-		auto scope = std::make_shared<Scope>(globalScope);
+		auto scope = scopeFactory->New(globalScope);
 		for (const auto &moduleInfo : package->modules)
 		{
 			TypePtr moduleType = std::make_shared<ModuleType>(package->route, moduleInfo->name);
@@ -1065,9 +1065,9 @@ namespace cygni
 		}
 	}
 
-	void TypeChecker::VisitProject(ScopePtr globalScope)
+	void TypeChecker::VisitProject(Scope<TypePtr>* globalScope)
 	{
-		auto scope = std::make_shared<Scope>(globalScope);
+		auto scope = scopeFactory->New(globalScope);
 		for (auto pkg : project.packages)
 		{
 			this->package = pkg;
@@ -1200,13 +1200,13 @@ namespace cygni
 		}
 		for (auto parameter : method.parameters)
 		{
-			parameter->parameterLocation = ParameterLocation(ParameterType::LocalVariable, offset);
+			parameter->location = std::make_shared<ParameterLocation>(offset);
 			offset++;
 		}
 		for (auto node : nodeList)
 		{
 			auto varDef = std::static_pointer_cast<VarDefExpression>(node);
-			varDef->variable->parameterLocation = ParameterLocation(ParameterType::LocalVariable, offset);
+			varDef->variable->location = std::make_shared<ParameterLocation>(offset);
 			method.localVariables.push_back(varDef);
 			offset++;
 		}
@@ -1215,7 +1215,7 @@ namespace cygni
 	{
 		for (auto& _class : package->classes.values)
 		{
-			for (auto& method : _class->methods.values)
+			for (auto& method : _class->methodDefs.values)
 			{
 				VisitMethodDef(method);
 			}
@@ -1239,7 +1239,7 @@ namespace cygni
 	{
 
 	}
-	void VariableLocator::VisitExpression(ExpPtr node, ScopePtr scope)
+	void VariableLocator::VisitExpression(ExpPtr node, Scope<LocationPtr>* scope)
 	{
 		switch (node->nodeType)
 		{
@@ -1291,100 +1291,93 @@ namespace cygni
 				Format(U"not implemented node type '{}' for variable locator", Enum<ExpressionType>::ToString(node->nodeType)));
 		}
 	}
-	void VariableLocator::VisitBlock(std::shared_ptr<BlockExpression> node, ScopePtr outerScope)
+	void VariableLocator::VisitBlock(std::shared_ptr<BlockExpression> node, Scope<LocationPtr>* outerScope)
 	{
-		ScopePtr scope = std::make_shared<Scope>(outerScope);
+		auto scope = scopeFactory->New(outerScope);
 		for (auto exp : node->expressions)
 		{
 			VisitExpression(exp, scope);
 		}
 	}
-	void VariableLocator::VisitBinary(std::shared_ptr<BinaryExpression> node, ScopePtr scope)
+	void VariableLocator::VisitBinary(std::shared_ptr<BinaryExpression> node, Scope<LocationPtr>* scope)
 	{
 		VisitExpression(node->left, scope);
 		VisitExpression(node->right, scope);
 	}
-	void VariableLocator::VisitClassInfo(std::shared_ptr<ClassInfo> info, ScopePtr outerScope)
+	void VariableLocator::VisitClassInfo(std::shared_ptr<ClassInfo> info, Scope<LocationPtr>* outerScope)
 	{
-		auto scope = std::make_shared<Scope>(outerScope);
+		auto scope = scopeFactory->New(outerScope);
 		int offset = 0;
-		for (auto& field : info->fields.values)
+		for (auto& field : info->fields)
 		{
-			scope->Put(field.name, ParameterLocation(ParameterType::ClassField, offset));
+			scope->Put(field.name, std::make_shared<MemberLocation>(LocationType::ClassField, *info->index, offset));
 			field.index = offset;
 			offset++;
 		}
-		offset = 0;
-		for (auto& method : info->methods.values)
+		for (auto& method : info->methods)
 		{
-			scope->Put(method.name, ParameterLocation(ParameterType::ClassMethod, offset));
-			method.index = offset;
-			offset++;
+			scope->Put(method.name, std::make_shared<MemberLocation>(LocationType::ClassMethod, *info->index, offset));
 		}
-		for (auto& method : info->methods.values)
+		for (auto& method : info->methodDefs)
 		{
 			VisitMethodDef(method, scope);
 		}
 	}
-	void VariableLocator::VisitModuleInfo(std::shared_ptr<ModuleInfo> info, ScopePtr outerScope)
+	void VariableLocator::VisitModuleInfo(std::shared_ptr<ModuleInfo> info, Scope<LocationPtr>* outerScope)
 	{
-		auto scope = std::make_shared<Scope>(outerScope);
+		auto scope = scopeFactory->New(outerScope);
 		int offset = 0;
 		for (auto& field : info->fields.values)
 		{
-			scope->Put(field.name, ParameterLocation(ParameterType::ModuleField, offset));
+			scope->Put(field.name, std::make_shared<MemberLocation>(LocationType::ModuleField, *info->index, *field.index));
 			offset++;
 		}
-		offset = 0;
 		for (auto& method : info->methods.values)
 		{
-			method.index = offset;
-			scope->Put(method.name, ParameterLocation(ParameterType::ModuleMethod, offset, info->index));
-			offset++;
+			scope->Put(method.name, std::make_shared<MemberLocation>(LocationType::ModuleMethod, *info->index, *method.index));
 		}
 		for (const auto& method : info->methods.values)
 		{
 			VisitMethodDef(method, scope);
 		}
 	}
-	void VariableLocator::VisitMethodDef(const MethodDef & method, ScopePtr outerScope)
+	void VariableLocator::VisitMethodDef(const MethodDef & method, Scope<LocationPtr>* outerScope)
 	{
-		auto scope = std::make_shared<Scope>(outerScope);
+		auto scope = scopeFactory->New(outerScope);
 		if (method.selfType->typeCode == TypeCode::Class)
 		{
-			scope->Put(U"this", ParameterLocation(ParameterType::LocalVariable, 0));
+			scope->Put(U"this", std::make_shared<ParameterLocation>(0));
 		}
 		for (auto parameter : method.parameters)
 		{
-			auto location = parameter->parameterLocation;
+			auto location = parameter->location;
 			scope->Put(parameter->name, location);
 		}
 		VisitExpression(method.body, scope);
 	}
-	void VariableLocator::VisitParameter(std::shared_ptr<ParameterExpression> parameter, ScopePtr scope)
+	void VariableLocator::VisitParameter(std::shared_ptr<ParameterExpression> parameter, Scope<LocationPtr>* scope)
 	{
 		if (auto value = scope->Get(parameter->name))
 		{
-			auto location = std::any_cast<ParameterLocation>(*value);
-			parameter->parameterLocation = location;
+			parameter->location = *value;
 		}
 		else
 		{
-			throw TypeException(parameter->location,
+			throw TypeException(parameter->position,
 				Format(U"parameter '{}' is not defined", parameter->name));
 		}
 	}
-	void VariableLocator::VisitReturn(std::shared_ptr<ReturnExpression> node, ScopePtr scope)
+	void VariableLocator::VisitReturn(std::shared_ptr<ReturnExpression> node, Scope<LocationPtr>* scope)
 	{
 		VisitExpression(node->value, scope);
 	}
-	void VariableLocator::VisitConditional(std::shared_ptr<ConditionalExpression> node, ScopePtr scope)
+	void VariableLocator::VisitConditional(std::shared_ptr<ConditionalExpression> node, Scope<LocationPtr>* scope)
 	{
 		VisitExpression(node->condition, scope);
 		VisitExpression(node->ifTrue, scope);
 		VisitExpression(node->ifFalse, scope);
 	}
-	void VariableLocator::VisitInvocation(std::shared_ptr<InvocationExpression> node, ScopePtr scope)
+	void VariableLocator::VisitInvocation(std::shared_ptr<InvocationExpression> node, Scope<LocationPtr>* scope)
 	{
 		VisitExpression(node->expression, scope);
 		for (auto arg : node->arguments)
@@ -1392,7 +1385,7 @@ namespace cygni
 			VisitExpression(arg.value, scope);
 		}
 	}
-	void VariableLocator::VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node, ScopePtr scope)
+	void VariableLocator::VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node, Scope<LocationPtr>* scope)
 	{
 		VisitExpression(node->object, scope);
 		TypePtr object = node->object->type;
@@ -1406,22 +1399,22 @@ namespace cygni
 				if (moduleInfo->fields.ContainsKey(node->field))
 				{
 					auto& field = moduleInfo->fields.GetValueByKey(node->field);
-					node->parameterLocation = ParameterLocation(ParameterType::ModuleField, field.index, moduleInfo->index);
+					node->location = std::make_shared<MemberLocation>(LocationType::ModuleField, *moduleInfo->index, *field.index);
 				}
 				else if (moduleInfo->methods.ContainsKey(node->field))
 				{
 					auto& method = moduleInfo->methods.GetValueByKey(node->field);
-					node->parameterLocation = ParameterLocation(ParameterType::ModuleMethod, method.index, moduleInfo->index);
+					node->location = std::make_shared<MemberLocation>(LocationType::ModuleMethod, *moduleInfo->index, *method.index);
 				}
 				else
 				{
-					throw TypeException(node->location,
+					throw TypeException(node->position,
 						Format(U"undefined field '{}' in module '{}'", node->field, moduleType->name));
 				}
 			}
 			else
 			{
-				throw TypeException(node->location, Format(U"undefined module '{}'", moduleType->ToString()));
+				throw TypeException(node->position, Format(U"undefined module '{}'", moduleType->ToString()));
 			}
 		}
 		else if (object->typeCode == TypeCode::Class)
@@ -1433,22 +1426,22 @@ namespace cygni
 				if (classInfo->fields.ContainsKey(node->field))
 				{
 					auto& field = classInfo->fields.GetValueByKey(node->field);
-					node->parameterLocation = ParameterLocation(ParameterType::ClassField, field.index, classInfo->index);
+					node->location = std::make_shared<MemberLocation>(LocationType::ClassField, *classInfo->index, *field.index);
 				}
 				else if (classInfo->methods.ContainsKey(node->field))
 				{
 					auto& method = classInfo->methods.GetValueByKey(node->field);
-					node->parameterLocation = ParameterLocation(ParameterType::ClassMethod, method.index, classInfo->index);
+					node->location = std::make_shared<MemberLocation>(LocationType::ClassMethod, *classInfo->index, *method.index);
 				}
 				else
 				{
-					throw TypeException(node->location,
-						Format(U"undefined field '{}' in module '{}'", node->field, classType->name));
+					throw TypeException(node->position,
+						Format(U"undefined field '{}' in class '{}'", node->field, classType->name));
 				}
 			}
 			else
 			{
-				throw TypeException(node->location,
+				throw TypeException(node->position,
 					Format(U"undefined class '{}'", classType->name));
 			}
 		}
@@ -1458,11 +1451,11 @@ namespace cygni
 		}
 		else
 		{
-			throw TypeException(node->location,
+			throw TypeException(node->position,
 				Format(U"object '{}' does not have any field", object->ToString()));
 		}
 	}
-	void VariableLocator::VisitNewExpression(std::shared_ptr<NewExpression> node, ScopePtr scope)
+	void VariableLocator::VisitNewExpression(std::shared_ptr<NewExpression> node, Scope<LocationPtr>* scope)
 	{
 		if (node->type->typeCode == TypeCode::Class)
 		{
@@ -1474,43 +1467,50 @@ namespace cygni
 				{
 					if (arg.name)
 					{
-						int index = classInfo->fields.GetIndexByKey(*arg.name);
-						arg.index = index;
-						VisitExpression(arg.value, scope);
+						if (classInfo->fields.ContainsKey(*arg.name))
+						{
+							int index = classInfo->fields.GetIndexByKey(*arg.name);
+							arg.index = index;
+							VisitExpression(arg.value, scope);
+						}
+						else
+						{
+							throw TypeException(node->position, U"missing field name in the new statement");
+						}
 					}
 					else
 					{
-						throw TypeException(node->location, U"missing field name in the new statement");
+						throw TypeException(node->position, U"missing field name in the new statement");
 					}
 				}
 			}
 			else
 			{
-				throw TypeException(node->location,
+				throw TypeException(node->position,
 					Format(U"undefined class '{}'", classType->name));
 			}
 		}
 		else
 		{
-			throw TypeException(node->location, U"wrong new statement: type is not a class");
+			throw TypeException(node->position, U"wrong new statement: type is not a class");
 		}
 	}
-	void VariableLocator::VisitVarDefExpression(std::shared_ptr<VarDefExpression> node, ScopePtr scope)
+	void VariableLocator::VisitVarDefExpression(std::shared_ptr<VarDefExpression> node, Scope<LocationPtr>* scope)
 	{
-		scope->Put(node->variable->name, node->variable->parameterLocation);
+		scope->Put(node->variable->name, node->variable->location);
 		VisitExpression(node->value, scope);
 	}
-	void VariableLocator::VisitWhileExpression(std::shared_ptr<WhileExpression> node, ScopePtr scope)
+	void VariableLocator::VisitWhileExpression(std::shared_ptr<WhileExpression> node, Scope<LocationPtr>* scope)
 	{
 		VisitExpression(node->condition, scope);
 		VisitExpression(node->body, scope);
 	}
-	void VariableLocator::VisitPackage(std::shared_ptr<Package> package, ScopePtr globalScope)
+	void VariableLocator::VisitPackage(std::shared_ptr<Package> package, Scope<LocationPtr>* globalScope)
 	{
-		auto scope = std::make_shared<Scope>(globalScope);
+		auto scope = scopeFactory->New(globalScope);
 		for (auto moduleInfo : package->modules)
 		{
-			scope->Put(moduleInfo->name, ParameterLocation(ParameterType::ModuleName, moduleInfo->index));
+			scope->Put(moduleInfo->name, std::make_shared<TypeLocation>(LocationType::ModuleName, *moduleInfo->index));
 		}
 		for (auto _class : package->classes.values)
 		{
@@ -1523,7 +1523,8 @@ namespace cygni
 	}
 	void VariableLocator::VisitProject()
 	{
-		auto scope = std::make_shared<Scope>();
+		scopeFactory = ScopeFactory<LocationPtr>::Create();
+		auto scope = scopeFactory->New();
 		for (auto package : project.packages)
 		{
 			VisitPackage(package, scope);
@@ -1558,7 +1559,7 @@ namespace cygni
 		for (auto& classInfo : package->classes)
 		{
 			std::unordered_set<ConstantKey> constantSet;
-			for (auto& method : classInfo->methods.values)
+			for (auto& method : classInfo->methodDefs.values)
 			{
 				VisitMethodDef(method, constantSet);
 			}
@@ -1591,24 +1592,7 @@ namespace cygni
 			VisitPackage(package);
 		}
 	}
-	void ClassAndModuleLocator::VisitProject(Project & project)
-	{
-		int classIndex = 0;
-		int moduleIndex = 0;
-		for (auto pkg : project.packages)
-		{
-			for (auto classInfo : pkg->classDefs)
-			{
-				classInfo->index = classIndex;
-				classIndex++;
-			}
-			for (auto moduleInfo : pkg->moduleDefs)
-			{
-				moduleInfo->index = moduleIndex;
-				moduleIndex++;
-			}
-		}
-	}
+
 	void TypeRenamer::RenameAll(Project & project)
 	{
 		for (auto pkg : project.packages)
@@ -1621,11 +1605,11 @@ namespace cygni
 				{
 					superClass = RenameType(superClass, typeAliases);
 				}
-				for (auto& field : classInfo->fields.values)
+				for (auto& field : classInfo->fieldDefs.values)
 				{
 					RenameField(field, typeAliases);
 				}
-				for (auto& method : classInfo->methods.values)
+				for (auto& method : classInfo->methodDefs.values)
 				{
 					RenameMethod(method, typeAliases);
 				}
@@ -1754,7 +1738,7 @@ namespace cygni
 							if (i != 0)
 							{
 								throw TypeException(
-									classInfo->location,
+									classInfo->position,
 									U"the super class must be at the first of the extends list"
 								);
 							}
@@ -1766,7 +1750,7 @@ namespace cygni
 						else
 						{
 							throw TypeException(
-								classInfo->location,
+								classInfo->position,
 								Format(U"missing super class '{}", classType->ToString())
 							);
 						}
@@ -1786,7 +1770,10 @@ namespace cygni
 	void InheritanceProcessor::VisitClass(Project& project, std::shared_ptr<ClassInfo> classInfo)
 	{
 		std::stack<FieldDef> fieldStack;
+		std::stack<MethodDef> methodStack;
 		std::unordered_set<TypePtr> typeSet;
+		std::unordered_set<std::u32string> fieldNames;
+		std::unordered_set<std::u32string> methodNames;
 		auto originalClass = classInfo;
 		bool done = false;
 		while (!done)
@@ -1794,19 +1781,46 @@ namespace cygni
 			if (typeSet.find(
 				std::make_shared<ClassType>(classInfo->route, classInfo->name)) != typeSet.end())
 			{
-				throw TypeException(originalClass->location,
-					U"mutual inheritance exists");
+				throw TypeException(originalClass->position,
+					U"cycle detected in the inheritance chain");
 			}
 			else
 			{
 				typeSet.insert(
 					std::make_shared<ClassType>(classInfo->route, classInfo->name));
 			}
-			int n = static_cast<int>(classInfo->fields.Size());
-			for (int i = n - 1; i >= 0; i--)
+			int nFields = static_cast<int>(classInfo->fieldDefs.Size());
+			for (int i = nFields - 1; i >= 0; i--)
 			{
-				auto& field = classInfo->fields.values[i];
-				fieldStack.push(field);
+				auto& field = classInfo->fieldDefs.values[i];
+				if (fieldNames.find(field.name) != fieldNames.end())
+				{
+					throw TypeException(originalClass->position,
+						Format(
+							U"duplicate field definition '{}' detected in the inheritance chain", field.name));
+				}
+				else
+				{
+					fieldNames.insert(field.name);
+					fieldStack.push(field);
+				}
+			}
+			int nMethods = static_cast<int>(classInfo->methodDefs.Size());
+			for (int i = nMethods - 1; i >= 0; i--)
+			{
+				auto& method = classInfo->methodDefs.values[i];
+				if (methodNames.find(method.name) != methodNames.end())
+				{
+					// override support
+					throw TypeException(originalClass->position,
+						Format(
+							U"duplicate method definition '{}' detected in the inheritance chain", method.name));
+				}
+				else
+				{
+					methodNames.insert(method.name);
+					methodStack.push(method);
+				}
 			}
 			if (classInfo->superClasses.size() >= 1)
 			{
@@ -1821,7 +1835,7 @@ namespace cygni
 					else
 					{
 						throw TypeException(
-							classInfo->location,
+							classInfo->position,
 							Format(U"error in extending the class '{}'", classInfo->name)
 						);
 					}
@@ -1839,8 +1853,14 @@ namespace cygni
 		while (!(fieldStack.empty()))
 		{
 			auto field = fieldStack.top();
-			originalClass->allFields.Add(field.name, field);
+			originalClass->fields.Add(field.name, field);
 			fieldStack.pop();
+		}
+		while (!(methodStack.empty()))
+		{
+			auto method = methodStack.top();
+			originalClass->methods.Add(method.name, method);
+			methodStack.pop();
 		}
 	}
 	void PackageImporter::ImportPackages(Project & project)
@@ -1915,8 +1935,38 @@ namespace cygni
 				}
 				else
 				{
-					throw TypeException(importedPkg.location,
+					throw TypeException(importedPkg.position,
 						Format(U"missing pakcage: {}", PackageRouteToString(importedPkg.route)));
+				}
+			}
+		}
+	}
+	void AssignIndex(Project & project)
+	{
+		int classIndex = 0;
+		int moduleIndex = 0;
+		for (auto pkg : project.packages)
+		{
+			for (auto classInfo : pkg->classDefs)
+			{
+				classInfo->index = classIndex;
+				classIndex++;
+				int methodIndex = 0;
+				for (auto& method : classInfo->methodDefs)
+				{
+					method.index = methodIndex;
+					methodIndex++;
+				}
+			}
+			for (auto moduleInfo : pkg->moduleDefs)
+			{
+				moduleInfo->index = moduleIndex;
+				moduleIndex++;
+				int methodIndex = 0;
+				for (auto& method : moduleInfo->methods)
+				{
+					method.index = methodIndex;
+					methodIndex++;
 				}
 			}
 		}

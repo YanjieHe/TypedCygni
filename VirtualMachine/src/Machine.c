@@ -49,32 +49,34 @@ void run(Machine* machine)
 	Function* prev_func;
 	Function* cur_func;
 	Function* next_func;
-	void* pointer;
+	//void* pointer;
 	int stack_index;
 	int32_t array_index;
 	String* str_v;
-	Object* str_obj;
+	//Object* str_obj;
 	int32_t cur_fp;
+	int i;
 
 	machine->function = machine->exe->entry;
 	cur_func = machine->function;
-	code = machine->function->u.func_info->code;
-	constant_pool = machine->function->u.func_info->constant_pool;
+	code = machine->function->u.func->code;
+	constant_pool = machine->function->u.func->constant_pool;
 	stack = machine->stack;
 	pc = 0;
 	fp = 0;
 
 	// arguments ... (fp) | local variables ... | previous function | last pc | last fp
-	stack_index = fp + cur_func->u.func_info->args_size + cur_func->u.func_info->locals;
+	stack_index = fp + cur_func->u.func->args_size + cur_func->u.func->locals;
 	stack[stack_index + 1].u.i32_v = pc;
 	stack[stack_index + 2].u.i32_v = fp;
 	sp = stack_index + 3;
 
-	while (pc < cur_func->u.func_info->code_len)
+	while (pc < cur_func->u.func->code_len)
 	{
 		op = code[pc];
-		//printf("function: %s, op = %s, sp = %d, fp = %d\n", cur_func->name, opcode_info[op][0], sp, fp);
-		//view_stack(stack);
+		//view_stack(machine, stack, sp);
+		//printf("function: %s, op = %s, sp = %d, fp = %d, pc = %d\n",
+		//	cur_func->name, opcode_info[op][0], sp, fp, pc);
 		pc = pc + 1;
 		switch (op)
 		{
@@ -175,6 +177,15 @@ void run(Machine* machine)
 			gc_obj = stack[fp + offset].u.gc_obj;
 			STACK_WRITE(gc_obj);
 			stack[sp].is_gc_obj = true;
+			/*printf("object class name = %s\n", machine->exe->classes[(stack[sp]).u.gc_obj->class_index].name);
+			printf("field count = %d\n", machine->exe->classes[(stack[sp]).u.gc_obj->class_index].n_fields);
+			printf("is local object an object? %d\n",
+				(stack[sp]).u.gc_obj->u.fields[0].is_gc_obj);*/
+			//if ((stack[sp]).u.gc_obj->u.fields[0].is_gc_obj)
+			//{
+			//	printf("is array? %d\n", (stack[sp]).u.gc_obj->u.fields[0].u.i32_v);
+			//	printf("is array? %d\n", (stack[sp]).u.gc_obj->u.fields[0].u.gc_obj->class_index);
+			//}
 			break;
 		}
 		case POP_LOCAL_I32: {
@@ -206,6 +217,7 @@ void run(Machine* machine)
 			STACK_READ(gc_obj);
 			stack[sp + 1].is_gc_obj = false;
 			stack[fp + offset].u.gc_obj = gc_obj;
+			stack[fp + offset].is_gc_obj = true;
 			break;
 		}
 		case PUSH_STATIC_I32: {
@@ -483,12 +495,13 @@ void run(Machine* machine)
 		case PUSH_FIELD_I32: {
 			gc_obj = stack[sp].u.gc_obj;
 			READ_USHORT(offset);
-			/*printf("PUSH_FIELD_I32\n");
-			printf("is gc obj: %d\n", stack[sp].is_gc_obj);
-			printf("offset = %d\n", offset);
-			printf("class index = %d\n", gc_obj->class_index);
-			printf("field name: %s\n", machine->exe->classes[gc_obj->class_index].field_names[offset]);
-			printf("field int: %d\n", gc_obj->u.fields[offset].u.i32_v);*/
+			//printf("PUSH_FIELD_I32\n");
+			//printf("is gc obj: %d\n", stack[sp].is_gc_obj);
+			//printf("offset = %d\n", offset);
+			//view_stack(stack, sp);
+			//printf("class index = %d\n", gc_obj->class_index);
+			//printf("field name: %s\n", machine->exe->classes[gc_obj->class_index].field_names[offset]);
+			//printf("field int: %d\n", gc_obj->u.fields[offset].u.i32_v);
 			stack[sp].u.i32_v = gc_obj->u.fields[offset].u.i32_v;
 			stack[sp].is_gc_obj = false;
 			break;
@@ -517,8 +530,11 @@ void run(Machine* machine)
 		case PUSH_FIELD_OBJECT: {
 			gc_obj = stack[sp].u.gc_obj;
 			READ_USHORT(offset);
-			stack[sp].u.f64_v = gc_obj->u.fields[offset].u.f64_v;
+			//printf("rect address %ld\n", (long)gc_obj);
+			//printf("address %ld\n", (long)gc_obj->u.fields[offset].u.gc_obj);
+			stack[sp].u.gc_obj = gc_obj->u.fields[offset].u.gc_obj;
 			stack[sp].is_gc_obj = true;
+			//printf("address %ld\n", (long)stack[sp].u.gc_obj);
 			break;
 		}
 		case POP_FIELD_I32: {
@@ -526,6 +542,7 @@ void run(Machine* machine)
 			gc_obj = stack[sp - 1].u.gc_obj;
 			stack[sp - 1].is_gc_obj = false;
 			READ_USHORT(offset);
+			//printf("offset = %d\n", offset);
 			gc_obj->u.fields[offset].u.i32_v = stack[sp].u.i32_v;
 			//printf("POP_FIELD_I32 gc_obj->u.fields[offset].u.i32 = %d\n", gc_obj->u.fields[offset].u.i32_v);
 			sp = sp - 2;
@@ -562,8 +579,16 @@ void run(Machine* machine)
 			//printf("offset = %d\n", offset);
 			//printf("class index = %d\n", gc_obj->class_index);
 			//printf("field name: %s\n", machine->exe->classes[gc_obj->class_index].field_names[offset]);
+			//printf("field string: is array? %d\n", stack[sp].u.gc_obj->u.fields[0].u.gc_obj->is_array);
+			//printf("rect address %ld\n", (long)stack[sp - 1].u.gc_obj);
+			//printf("rect address %ld\n", (long)gc_obj);
+			//printf("address %ld\n", (long)stack[sp].u.gc_obj);
 			gc_obj->u.fields[offset].u.gc_obj = stack[sp].u.gc_obj;
-			stack[sp - 1].is_gc_obj = false;
+			stack[sp].is_gc_obj = false;
+			gc_obj->u.fields[offset].is_gc_obj = true;
+			//printf("address %ld\n", (long)gc_obj->u.fields[offset].u.gc_obj);
+			//printf("field 'name' class %s\n",
+			//	machine->exe->classes[gc_obj->u.fields[offset].u.gc_obj->class_index].name);
 			sp = sp - 2;
 			break;
 		}
@@ -679,13 +704,13 @@ void run(Machine* machine)
 		}
 		case RETURN_I32: {
 			STACK_READ(i32_v);
-			stack_index = fp + cur_func->u.func_info->args_size + cur_func->u.func_info->locals;
+			stack_index = fp + cur_func->u.func->args_size + cur_func->u.func->locals;
 			prev_func = stack[stack_index].u.function;
 			sp = fp;
 			pc = stack[stack_index + 1].u.i32_v;
 			fp = stack[stack_index + 2].u.i32_v;
-			code = prev_func->u.func_info->code;
-			constant_pool = prev_func->u.func_info->constant_pool;
+			code = prev_func->u.func->code;
+			constant_pool = prev_func->u.func->constant_pool;
 			cur_func = prev_func;
 
 			stack[sp].u.i32_v = i32_v;
@@ -694,13 +719,13 @@ void run(Machine* machine)
 		}
 		case RETURN_I64: {
 			STACK_READ(i64_v);
-			stack_index = fp + cur_func->u.func_info->args_size + cur_func->u.func_info->locals;
+			stack_index = fp + cur_func->u.func->args_size + cur_func->u.func->locals;
 			prev_func = stack[stack_index].u.function;
 			sp = fp;
 			pc = stack[stack_index + 1].u.i32_v;
 			fp = stack[stack_index + 2].u.i32_v;
-			code = prev_func->u.func_info->code;
-			constant_pool = prev_func->u.func_info->constant_pool;
+			code = prev_func->u.func->code;
+			constant_pool = prev_func->u.func->constant_pool;
 			cur_func = prev_func;
 
 			stack[sp].u.i64_v = i64_v;
@@ -708,13 +733,13 @@ void run(Machine* machine)
 		}
 		case RETURN_F32: {
 			STACK_READ(f32_v);
-			stack_index = fp + cur_func->u.func_info->args_size + cur_func->u.func_info->locals;
+			stack_index = fp + cur_func->u.func->args_size + cur_func->u.func->locals;
 			prev_func = stack[stack_index].u.function;
 			sp = fp;
 			pc = stack[stack_index + 1].u.i32_v;
 			fp = stack[stack_index + 2].u.i32_v;
-			code = prev_func->u.func_info->code;
-			constant_pool = prev_func->u.func_info->constant_pool;
+			code = prev_func->u.func->code;
+			constant_pool = prev_func->u.func->constant_pool;
 			cur_func = prev_func;
 
 			stack[sp].u.f32_v = f32_v;
@@ -722,13 +747,13 @@ void run(Machine* machine)
 		}
 		case RETURN_F64: {
 			STACK_READ(f64_v);
-			stack_index = fp + cur_func->u.func_info->args_size + cur_func->u.func_info->locals;
+			stack_index = fp + cur_func->u.func->args_size + cur_func->u.func->locals;
 			prev_func = stack[stack_index].u.function;
 			sp = fp;
 			pc = stack[stack_index + 1].u.i32_v;
 			fp = stack[stack_index + 2].u.i32_v;
-			code = prev_func->u.func_info->code;
-			constant_pool = prev_func->u.func_info->constant_pool;
+			code = prev_func->u.func->code;
+			constant_pool = prev_func->u.func->constant_pool;
 			cur_func = prev_func;
 
 			stack[sp].u.f64_v = f64_v;
@@ -736,13 +761,13 @@ void run(Machine* machine)
 		}
 		case RETURN_OBJECT: {
 			STACK_READ(gc_obj);
-			stack_index = fp + cur_func->u.func_info->args_size + cur_func->u.func_info->locals;
+			stack_index = fp + cur_func->u.func->args_size + cur_func->u.func->locals;
 			prev_func = stack[stack_index].u.function;
 			sp = fp;
 			pc = stack[stack_index + 1].u.i32_v;
 			fp = stack[stack_index + 2].u.i32_v;
-			code = prev_func->u.func_info->code;
-			constant_pool = prev_func->u.func_info->constant_pool;
+			code = prev_func->u.func->code;
+			constant_pool = prev_func->u.func->constant_pool;
 			cur_func = prev_func;
 
 			stack[sp].u.gc_obj = gc_obj;
@@ -752,31 +777,32 @@ void run(Machine* machine)
 			next_func = stack[sp].u.function;
 			if (next_func->is_native_function)
 			{
-				if (next_func->u.native_function->is_loaded == false)
+				if (next_func->u.nv->is_loaded == false)
 				{
-					next_func->u.native_function->function_pointer = load_library_function(
-						machine,
-						next_func->u.native_function->lib_path,
-						next_func->u.native_function->func_name);
-					next_func->u.native_function->is_loaded = true;
+					next_func->u.nv->function_pointer = load_library_function(
+						machine->state,
+						next_func->u.nv->lib_path,
+						next_func->u.nv->func_name);
+					next_func->u.nv->is_loaded = true;
 				}
-				sp = sp - next_func->u.native_function->args_size;
+				sp = sp - next_func->u.nv->args_size;
 				//printf("call native function from sp = %d\n", sp);
-				next_func->u.native_function->function_pointer(&(stack[sp])); // return value omitted
+				next_func->u.nv->function_pointer(&(stack[sp])); // return value omitted
 			}
 			else
 			{
+				//printf("func name = %s, sp = %d, args size = %d\n", next_func->name, sp, next_func->u.func_info->args_size);
 				cur_fp = fp;
-				fp = sp - next_func->u.func_info->args_size;
-				stack_index = fp + next_func->u.func_info->args_size + next_func->u.func_info->locals;
+				fp = sp - next_func->u.func->args_size;
+				stack_index = fp + next_func->u.func->args_size + next_func->u.func->locals;
 				stack[stack_index].u.function = cur_func;
 				stack[stack_index + 1].u.i32_v = pc;
 				stack[stack_index + 2].u.i32_v = cur_fp;
 				cur_func = next_func;
 				pc = 0;
 				sp = stack_index + 3;
-				code = next_func->u.func_info->code;
-				constant_pool = next_func->u.func_info->constant_pool;
+				code = next_func->u.func->code;
+				constant_pool = next_func->u.func->constant_pool;
 			}
 			break;
 		}
@@ -801,6 +827,10 @@ void run(Machine* machine)
 			gc_obj->class_index = index;
 			gc_obj->u.fields = malloc(sizeof(Value) * machine->exe->classes[index].n_fields);
 			gc_obj->next = NULL; // TO DO: garbage collection
+			for (i = 0; i < machine->exe->classes[index].n_fields; i++)
+			{
+				gc_obj->u.fields[0].is_gc_obj = false;
+			}
 			STACK_WRITE(gc_obj);
 			stack[sp].is_gc_obj = true;
 			break;
@@ -913,18 +943,35 @@ void run(Machine* machine)
 	}
 }
 
-void view_stack(Value* stack)
+void view_stack(Machine* machine, Value* stack, int sp)
 {
-	for (int i = 0; i < 100; i++)
+	for (int i = 0; i <= sp; i++)
 	{
+		printf("%d: ", i);
 		if (stack[i].is_gc_obj)
 		{
-			printf("(OBJ: %d) ", stack[i].u.gc_obj->class_index);
+			if (stack[i].u.gc_obj->is_array)
+			{
+				printf("[ARRAY]  %d", stack[i].u.gc_obj->u.array->type);
+			}
+			else
+			{
+				printf("[OBJECT]  %s", machine->exe->classes[stack[i].u.gc_obj->class_index].name);
+			}
+			printf("\n");
 		}
 		else
 		{
-			printf("%d ", stack[i].u.i32_v);
+			printf("[VALUE]  %d\n", stack[i].u.i32_v);
 		}
+		//if (stack[i].is_gc_obj)
+		//{
+		//	printf("(OBJ)");
+		//}
+		//else
+		//{
+		//	printf("%d ", stack[i].u.i32_v);
+		//}
 	}
 	printf("\n");
 }

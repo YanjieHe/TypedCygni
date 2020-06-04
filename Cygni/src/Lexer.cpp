@@ -5,8 +5,8 @@
 namespace cygni
 {
 
-	Lexer::Lexer(const std::u32string &code)
-		: code{ code }, line{ 1 }, column{ 1 }, offset{ 0 } {}
+	Lexer::Lexer(std::shared_ptr<FileLocation> document, const std::u32string &code)
+		: document{ document }, code{ code }, line{ 1 }, column{ 1 }, offset{ 0 } {}
 
 	std::vector<Token> Lexer::ReadAll()
 	{
@@ -46,7 +46,7 @@ namespace cygni
 			}
 			else
 			{
-				throw LexicalException(line, column, U"unsupported token");
+				throw LexicalException(document, line, column, U"unsupported token");
 			}
 			SkipWhitespaces();
 		}
@@ -106,7 +106,7 @@ namespace cygni
 		}
 		if (IsEof() || !IsDigit(Peek()))
 		{
-			throw LexicalException(line, column, U"float literal");
+			throw LexicalException(document, line, column, U"float literal");
 		}
 		else
 		{
@@ -136,7 +136,7 @@ namespace cygni
 	{
 		if (IsEof())
 		{
-			throw LexicalException(line, column, U"character literal");
+			throw LexicalException(document, line, column, U"character literal");
 		}
 		else
 		{
@@ -180,7 +180,7 @@ namespace cygni
 		}
 		else
 		{
-			throw LexicalException(line, column, U"expecting an hex digit");
+			throw LexicalException(document, line, column, U"expecting an hex digit");
 		}
 
 		for (int i = 0; i < 3 && IsHexDigit(); i++)
@@ -195,7 +195,7 @@ namespace cygni
 		}
 		catch (ArgumentException &)
 		{
-			throw LexicalException(line, column, U"wrong format for hex digit");
+			throw LexicalException(document, line, column, U"wrong format for hex digit");
 		}
 	}
 
@@ -214,7 +214,7 @@ namespace cygni
 				}
 				else
 				{
-					throw LexicalException(line, column, U"expecting an hex digit");
+					throw LexicalException(document, line, column, U"expecting an hex digit");
 				}
 			}
 		}
@@ -230,13 +230,13 @@ namespace cygni
 				}
 				else
 				{
-					throw LexicalException(line, column, U"expecting an hex digit");
+					throw LexicalException(document, line, column, U"expecting an hex digit");
 				}
 			}
 		}
 		else
 		{
-			throw LexicalException(line, column, U"expecting 'u' or 'U'");
+			throw LexicalException(document, line, column, U"expecting 'u' or 'U'");
 		}
 		try
 		{
@@ -245,7 +245,7 @@ namespace cygni
 		}
 		catch (ArgumentException &)
 		{
-			throw LexicalException(line, column, U"wrong format for hex digit");
+			throw LexicalException(document, line, column, U"wrong format for hex digit");
 		}
 	}
 
@@ -280,7 +280,7 @@ namespace cygni
 				Forward();
 				if (IsEof())
 				{
-					throw LexicalException(line, column, U"string literal");
+					throw LexicalException(document, line, column, U"string literal");
 				}
 				else
 				{
@@ -295,7 +295,7 @@ namespace cygni
 		}
 		if (IsEof())
 		{
-			throw LexicalException(line, column, U"string literal");
+			throw LexicalException(document, line, column, U"string literal");
 		}
 		else
 		{
@@ -325,7 +325,7 @@ namespace cygni
 		case U'\\':
 			return U'\\';
 		default:
-			throw LexicalException(line, column, U"unsupported escaped character");
+			throw LexicalException(document, line, column, U"unsupported escaped character");
 		}
 	}
 
@@ -384,7 +384,7 @@ namespace cygni
 			}
 			else
 			{
-				throw LexicalException(line, column, U"operator literal");
+				throw LexicalException(document, line, column, U"operator literal");
 			}
 		}
 		else
@@ -404,7 +404,7 @@ namespace cygni
 			}
 			else
 			{
-				throw LexicalException(line, column, U"operator literal");
+				throw LexicalException(document, line, column, U"operator literal");
 			}
 		}
 	}
@@ -428,7 +428,7 @@ namespace cygni
 		else
 		{
 			tokens.push_back(Token(line, column, Tag::Divide, U"/"));
-			//throw LexicalException(line, column, U"expecting '/' for comment");
+			//throw LexicalException(document, line, column, U"expecting '/' for comment");
 		}
 	}
 

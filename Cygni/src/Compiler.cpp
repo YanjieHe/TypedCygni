@@ -26,7 +26,7 @@ namespace cygni
 		if (value > 65535)
 		{
 			// TO DO: better location information
-			throw CompilerException(SourceLocation(), U"unsigned 16-bit integer overflow");
+			throw CompilerException(SourcePosition(), U"unsigned 16-bit integer overflow");
 		}
 		else
 		{
@@ -142,11 +142,11 @@ namespace cygni
 		{
 			for (auto classInfo : pkg->classes.values)
 			{
-				classCount = std::max(classCount, classInfo->index);
+				classCount = std::max(classCount, *classInfo->index);
 			}
 			for (auto moduleInfo : pkg->modules)
 			{
-				moduleCount = std::max(moduleCount, moduleInfo->index);
+				moduleCount = std::max(moduleCount, *moduleInfo->index);
 			}
 		}
 		classCount = classCount + 1;
@@ -159,11 +159,11 @@ namespace cygni
 		{
 			for (auto classInfo : pkg->classes.values)
 			{
-				classes.at(classInfo->index) = classInfo;
+				classes.at(*classInfo->index) = classInfo;
 			}
 			for (auto moduleInfo : pkg->modules)
 			{
-				modules.at(moduleInfo->index) = moduleInfo;
+				modules.at(*moduleInfo->index) = moduleInfo;
 			}
 		}
 
@@ -215,7 +215,7 @@ namespace cygni
 				break;
 			}
 			default: {
-				throw CompilerException(node->location, U"not supported type for addition");
+				throw CompilerException(node->position, U"not supported type for addition");
 			}
 			}
 			break;
@@ -240,7 +240,7 @@ namespace cygni
 				break;
 			}
 			default: {
-				throw CompilerException(node->location, U"not supported type for subtraction");
+				throw CompilerException(node->position, U"not supported type for subtraction");
 			}
 			}
 			break;
@@ -265,7 +265,7 @@ namespace cygni
 				break;
 			}
 			default: {
-				throw CompilerException(node->location, U"not supported type for multiplication");
+				throw CompilerException(node->position, U"not supported type for multiplication");
 			}
 			}
 			break;
@@ -290,7 +290,7 @@ namespace cygni
 				break;
 			}
 			default: {
-				throw CompilerException(node->location, U"not supported type for division");
+				throw CompilerException(node->position, U"not supported type for division");
 			}
 			}
 			break;
@@ -314,7 +314,7 @@ namespace cygni
 			}
 			else
 			{
-				throw CompilerException(node->location,
+				throw CompilerException(node->position,
 					Format(U"not supported type for '>', left: '{}', right: '{}'", node->left->type->ToString(), node->right->type->ToString()));
 			}
 			break;
@@ -338,7 +338,7 @@ namespace cygni
 			}
 			else
 			{
-				throw CompilerException(node->location,
+				throw CompilerException(node->position,
 					Format(U"not supported type for '<', left: '{}', right: '{}'", node->left->type->ToString(), node->right->type->ToString()));
 			}
 			break;
@@ -362,7 +362,7 @@ namespace cygni
 			}
 			else
 			{
-				throw CompilerException(node->location, U"not supported type for '>='");
+				throw CompilerException(node->position, U"not supported type for '>='");
 			}
 			break;
 		}
@@ -385,7 +385,7 @@ namespace cygni
 			}
 			else
 			{
-				throw CompilerException(node->location, U"not supported type for '<='");
+				throw CompilerException(node->position, U"not supported type for '<='");
 			}
 			break;
 		}
@@ -416,7 +416,7 @@ namespace cygni
 			}
 			else
 			{
-				throw CompilerException(node->location, U"not supported type for '=='");
+				throw CompilerException(node->position, U"not supported type for '=='");
 			}
 			break;
 		}
@@ -447,7 +447,7 @@ namespace cygni
 			}
 			else
 			{
-				throw CompilerException(node->location, U"not supported type for '!='");
+				throw CompilerException(node->position, U"not supported type for '!='");
 			}
 			break;
 		}
@@ -532,7 +532,7 @@ namespace cygni
 			}
 			else
 			{
-				throw CompilerException(node->location,
+				throw CompilerException(node->position,
 					U"illegal format of boolean value. should be 'true' or 'false'");
 			}
 		}
@@ -553,24 +553,24 @@ namespace cygni
 						byteCode.AppendUShort(index);
 
 						byteCode.AppendOp(OpCode::PUSH_FUNCTION);
-						byteCode.AppendUShort((*moduleInfo)->index);
-						byteCode.AppendUShort(methodInfo.index);
+						byteCode.AppendUShort(*(*moduleInfo)->index);
+						byteCode.AppendUShort(*methodInfo.index);
 
 						byteCode.AppendOp(OpCode::INVOKE);
 					}
 					else
 					{
-						throw CompilerException(node->location, U"missing 'New' method in the 'Predef.String' module");
+						throw CompilerException(node->position, U"missing 'New' method in the 'Predef.String' module");
 					}
 				}
 				else
 				{
-					throw CompilerException(node->location, U"missing 'Predef.String' module");
+					throw CompilerException(node->position, U"missing 'Predef.String' module");
 				}
 			}
 			else
 			{
-				throw CompilerException(node->location,
+				throw CompilerException(node->position,
 					U"the given constant is not in the constant map");
 			}
 		}
@@ -604,14 +604,14 @@ namespace cygni
 					break;
 				}
 				default: {
-					throw CompilerException(node->location,
+					throw CompilerException(node->position,
 						Format(U"constant type '{}' not supported", node->type->ToString()));
 				}
 				}
 			}
 			else
 			{
-				throw CompilerException(node->location,
+				throw CompilerException(node->position,
 					U"the given constant is not in the constant map");
 			}
 		}
@@ -628,8 +628,8 @@ namespace cygni
 		// constant pool
 		CompileConstantPool(info->constantMap, byteCode);
 
-		byteCode.AppendUShort(info->methods.Size());
-		for (const auto& method : info->methods.values)
+		byteCode.AppendUShort(info->methodDefs.Size());
+		for (const auto& method : info->methodDefs.values)
 		{
 			CompileMethodDef(method, info->constantMap, byteCode);
 		}
@@ -689,10 +689,10 @@ namespace cygni
 	void Compiler::CompileParameter(std::shared_ptr<ParameterExpression> parameter,
 		ByteCode& byteCode)
 	{
-		auto location = parameter->parameterLocation;
-		switch (location.type)
+		auto location = parameter->location;
+		switch (location->type)
 		{
-		case ParameterType::LocalVariable: {
+		case LocationType::LocalVariable: {
 			switch (parameter->type->typeCode)
 			{
 			case TypeCode::Boolean:
@@ -723,14 +723,14 @@ namespace cygni
 				break;
 			}
 			default: {
-				throw CompilerException(parameter->location,
+				throw CompilerException(parameter->position,
 					Format(U"not supported local variable type '{}'", parameter->type->ToString()));
 			}
 			}
-			byteCode.AppendUShort(location.offset);
+			byteCode.AppendUShort(std::static_pointer_cast<ParameterLocation>(location)->offset);
 			break;
 		}
-		case ParameterType::ClassField: {
+		case LocationType::ClassField: {
 			byteCode.AppendOp(OpCode::PUSH_LOCAL_OBJECT);
 			byteCode.AppendUShort(0); /* this */
 			switch (parameter->type->typeCode)
@@ -761,25 +761,33 @@ namespace cygni
 				break;
 			}
 			default: {
-				throw CompilerException(parameter->location, Format(U"not supported class field access type '{}'", parameter->type->ToString()));
+				throw CompilerException(parameter->position, Format(U"not supported class field access type '{}'", parameter->type->ToString()));
 			}
 			}
-			byteCode.AppendUShort(location.offset);
+			byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->offset);
 			break;
 		}
-		case ParameterType::ModuleMethod: {
+		case LocationType::ModuleMethod: {
 			byteCode.AppendOp(OpCode::PUSH_FUNCTION);
-			byteCode.AppendUShort(parameter->parameterLocation.index);
-			byteCode.AppendUShort(parameter->parameterLocation.offset);
+			byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->index);
+			byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->offset);
 			break;
 		}
-		case ParameterType::ModuleName: {
+		case LocationType::ClassMethod: {
+			byteCode.AppendOp(OpCode::PUSH_LOCAL_OBJECT);
+			byteCode.AppendUShort(0); /* this */
+			byteCode.AppendOp(OpCode::PUSH_METHOD);
+			byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->index);
+			byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->offset);
+			break;
+		}
+		case LocationType::ModuleName: {
 			std::cout << "module name: " << parameter->name << std::endl;
 			break;
 		}
 		default:
 			throw NotImplementedException(
-				Format(U"not implemented parameter type: {}", Enum<ParameterType>::ToString(location.type)));
+				Format(U"not implemented parameter type: {}", Enum<LocationType>::ToString(location->type)));
 		}
 	}
 	void Compiler::CompileReturn(std::shared_ptr<ReturnExpression> node,
@@ -815,7 +823,7 @@ namespace cygni
 			break;
 		}
 		default: {
-			throw CompilerException(node->location,
+			throw CompilerException(node->position,
 				Format(U"not supported return type '{}'", node->type->ToString()));
 		}
 		}
@@ -850,7 +858,7 @@ namespace cygni
 			break;
 		}
 		default: {
-			throw CompilerException(node->location,
+			throw CompilerException(node->position,
 				Format(U"not supported type of default expression of type '{}'", node->type->ToString()));
 		}
 		}
@@ -862,12 +870,20 @@ namespace cygni
 		if (node->expression->type->typeCode == TypeCode::Function)
 		{
 			auto function = std::static_pointer_cast<FunctionType>(node->expression->type);
-			for (auto arg : node->arguments)
+			if (function->selfType->typeCode == TypeCode::Array)
 			{
-				CompileExpression(arg.value, constantMap, byteCode);
+				// omit
+				// Size
 			}
-			CompileExpression(node->expression, constantMap, byteCode);
-			byteCode.AppendOp(OpCode::INVOKE);
+			else
+			{
+				for (auto arg : node->arguments)
+				{
+					CompileExpression(arg.value, constantMap, byteCode);
+				}
+				CompileExpression(node->expression, constantMap, byteCode);
+				byteCode.AppendOp(OpCode::INVOKE);
+			}
 		}
 		else if (node->expression->type->typeCode == TypeCode::Array)
 		{
@@ -905,27 +921,31 @@ namespace cygni
 					break;
 				}
 				default: {
-					throw CompilerException(node->location, U"wrong type of array element");
+					throw CompilerException(node->position, U"wrong type of array element");
 				}
 				}
 			}
 			else
 			{
-				throw CompilerException(node->location,
+				throw CompilerException(node->position,
 					Format(U"the number of array index should be 1 instead of {}", static_cast<int>(node->arguments.size())));
 			}
 		}
 		else
 		{
-			throw CompilerException(node->location, U"object is not callable");
+			throw CompilerException(node->position, U"object is not callable");
 		}
 	}
 	void Compiler::CompileMemberAccess(std::shared_ptr<MemberAccessExpression> node,
 		const ConstantMap& constantMap, ByteCode& byteCode)
 	{
 		CompileExpression(node->object, constantMap, byteCode);
-		auto location = node->parameterLocation;
-		if (location.type == ParameterType::ModuleField)
+		auto location = node->location;
+		if (node->object->type->typeCode == TypeCode::Array && node->field == U"Size")
+		{
+			byteCode.AppendOp(OpCode::ARRAY_LENGTH);
+		}
+		else if (location->type == LocationType::ModuleField)
 		{
 			switch (node->type->typeCode)
 			{
@@ -954,19 +974,19 @@ namespace cygni
 				break;
 			}
 			default: {
-				throw CompilerException(node->location, U"not supported member access type");
+				throw CompilerException(node->position, U"not supported member access type");
 			}
 			}
-			byteCode.AppendUShort(location.index);
-			byteCode.AppendUShort(location.offset);
+			byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->index);
+			byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->offset);
 		}
-		else if (location.type == ParameterType::ModuleMethod)
+		else if (location->type == LocationType::ModuleMethod)
 		{
 			byteCode.AppendOp(OpCode::PUSH_FUNCTION);
-			byteCode.AppendUShort(location.index);
-			byteCode.AppendUShort(location.offset);
+			byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->index);
+			byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->offset);
 		}
-		else if (location.type == ParameterType::ClassField)
+		else if (location->type == LocationType::ClassField)
 		{
 			switch (node->type->typeCode)
 			{
@@ -996,34 +1016,30 @@ namespace cygni
 				break;
 			}
 			default: {
-				throw CompilerException(node->location, Format(U"not supported member '{}' access type '{}'",
+				throw CompilerException(node->position, Format(U"not supported member '{}' access type '{}'",
 					node->field, node->type->ToString()));
 			}
 			}
-			byteCode.AppendUShort(location.offset);
+			byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->offset);
 		}
-		else if (location.type == ParameterType::ClassMethod)
+		else if (location->type == LocationType::ClassMethod)
 		{
 			byteCode.AppendOp(OpCode::PUSH_METHOD);
-			byteCode.AppendUShort(location.index);
-			byteCode.AppendUShort(location.offset);
-		}
-		else if (node->object->type->typeCode == TypeCode::Array && node->field == U"Size")
-		{
-			byteCode.AppendOp(OpCode::ARRAY_LENGTH);
+			byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->index);
+			byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->offset);
 		}
 		else
 		{
-			throw CompilerException(node->location,
+			throw CompilerException(node->position,
 				Format(U"member access: member '{}' parameter location type '{}' is not supported",
-					node->field, Enum<ParameterType>::ToString(location.type)));
+					node->field, Enum<LocationType>::ToString(location->type)));
 		}
 	}
 	void Compiler::CompileNewExpression(std::shared_ptr<NewExpression> node,
 		const ConstantMap& constantMap, ByteCode& byteCode)
 	{
 		byteCode.AppendOp(OpCode::NEW);
-		byteCode.AppendUShort(node->parameterLocation.offset);
+		byteCode.AppendUShort(std::static_pointer_cast<TypeLocation>(node->location)->index);
 		std::unordered_set<std::u32string> initializedFields;
 		for (auto arg : node->arguments)
 		{
@@ -1036,7 +1052,7 @@ namespace cygni
 		if (auto res = project.GetClass(classType->route, classType->name))
 		{
 			auto classInfo = *res;
-			for (auto& field : classInfo->fields.values)
+			for (auto& field : classInfo->fields)
 			{
 				// not found
 				if (initializedFields.find(field.name) == initializedFields.end())
@@ -1073,11 +1089,19 @@ namespace cygni
 						break;
 					}
 					default: {
-						throw CompilerException(node->location,
+						throw CompilerException(node->position,
 							Format(U"not supported field initializer type '{}'", field.value->type->ToString()));
 					}
 					}
-					byteCode.AppendUShort(field.index);
+					if (field.index)
+					{
+						byteCode.AppendUShort(*field.index);
+					}
+					else
+					{
+						throw CompilerException(node->position,
+							Format(U"field '{}' index not assigned", field.name));
+					}
 				}
 			}
 			for (auto arg : node->arguments)
@@ -1115,11 +1139,19 @@ namespace cygni
 					break;
 				}
 				default: {
-					throw CompilerException(node->location,
+					throw CompilerException(node->position,
 						Format(U"not supported field initializer type '{}'", arg.value->type->ToString()));
 				}
 				}
-				byteCode.AppendUShort(arg.index);
+				if (arg.index)
+				{
+					byteCode.AppendUShort(*arg.index);
+				}
+				else
+				{
+					throw CompilerException(node->position,
+						Format(U"field '{}' index not assigned", *arg.name));
+				}
 			}
 		}
 	}
@@ -1154,16 +1186,16 @@ namespace cygni
 			break;
 		}
 		default: {
-			throw CompilerException(node->location, U"not supported member access type");
+			throw CompilerException(node->position, U"not supported member access type");
 		}
 		}
-		if (node->variable->parameterLocation.type == ParameterType::LocalVariable)
+		if (node->variable->location->type == LocationType::LocalVariable)
 		{
-			byteCode.AppendUShort(node->variable->parameterLocation.offset);
+			byteCode.AppendUShort(std::static_pointer_cast<ParameterLocation>(node->variable->location)->offset);
 		}
 		else
 		{
-			throw CompilerException(node->location, U"cannot compile non-local variable definition");
+			throw CompilerException(node->position, U"cannot compile non-local variable definition");
 		}
 	}
 	void Compiler::CompileAssign(std::shared_ptr<BinaryExpression> node, const ConstantMap & constantMap, ByteCode & byteCode)
@@ -1173,7 +1205,7 @@ namespace cygni
 		if (node->left->nodeType == ExpressionType::Parameter)
 		{
 			auto parameter = std::static_pointer_cast<ParameterExpression>(node->left);
-			if (parameter->parameterLocation.type == ParameterType::LocalVariable)
+			if (parameter->location->type == LocationType::LocalVariable)
 			{
 				switch (node->left->type->typeCode)
 				{
@@ -1202,22 +1234,22 @@ namespace cygni
 					break;
 				}
 				default: {
-					throw CompilerException(node->location, U"not supported assignment type");
+					throw CompilerException(node->position, U"not supported assignment type");
 				}
 				}
-				byteCode.AppendUShort(parameter->parameterLocation.offset);
+				byteCode.AppendUShort(std::static_pointer_cast<ParameterLocation>(parameter->location)->offset);
 			}
 			else
 			{
-				throw CompilerException(node->location, U"cannot compile non-local variable definition");
+				throw CompilerException(node->position, U"cannot compile non-local variable definition");
 			}
 		}
 		else if (node->left->nodeType == ExpressionType::MemberAccess)
 		{
 			auto memberAccess = std::static_pointer_cast<MemberAccessExpression>(node->left);
-			auto location = memberAccess->parameterLocation;
+			auto location = memberAccess->location;
 			CompileExpression(memberAccess->object, constantMap, byteCode);
-			if (location.type == ParameterType::ModuleField)
+			if (location->type == LocationType::ModuleField)
 			{
 				switch (memberAccess->type->typeCode)
 				{
@@ -1246,13 +1278,13 @@ namespace cygni
 					break;
 				}
 				default: {
-					throw CompilerException(node->location, U"not supported module field type");
+					throw CompilerException(node->position, U"not supported module field type");
 				}
 				}
-				byteCode.AppendUShort(location.index);
-				byteCode.AppendUShort(location.offset);
+				byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->index);
+				byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->offset);
 			}
-			else if (location.type == ParameterType::ClassField)
+			else if (location->type == LocationType::ClassField)
 			{
 				switch (memberAccess->type->typeCode)
 				{
@@ -1281,19 +1313,19 @@ namespace cygni
 					break;
 				}
 				default: {
-					throw CompilerException(node->location, U"not supported class field type");
+					throw CompilerException(node->position, U"not supported class field type");
 				}
 				}
-				byteCode.AppendUShort(location.offset);
+				byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->offset);
 			}
 			else
 			{
-				throw CompilerException(memberAccess->location, U"member access: parameter location type is not supported");
+				throw CompilerException(memberAccess->position, U"member access: parameter location type is not supported");
 			}
 		}
 		else
 		{
-			throw CompilerException(node->location, U"wrong assignment");
+			throw CompilerException(node->position, U"wrong assignment");
 		}
 	}
 	void Compiler::CompileWhileLoop(std::shared_ptr<WhileExpression> node, const ConstantMap & constantMap, ByteCode & byteCode)
@@ -1313,26 +1345,27 @@ namespace cygni
 	void Compiler::CompileMainFunction(const std::vector<std::shared_ptr<ModuleInfo>>& modules, ByteCode & byteCode)
 	{
 		bool found = false;
-		for (auto module : modules)
+		for (auto moduleInfo : modules)
 		{
-			if (module->methods.ContainsKey(U"Main"))
+			if (moduleInfo->methods.ContainsKey(U"Main"))
 			{
-				auto& method = module->methods.GetValueByKey(U"Main");
+				auto& method = moduleInfo->methods.GetValueByKey(U"Main");
+				int index = moduleInfo->methods.GetIndexByKey(U"Main");
 				if (found)
 				{
-					throw CompilerException(method.location, U"multiple definitions of the Main function");
+					throw CompilerException(method.position, U"multiple definitions of the Main function");
 				}
 				else
 				{
-					byteCode.AppendUShort(module->index);
-					byteCode.AppendUShort(method.index);
+					byteCode.AppendUShort(*moduleInfo->index);
+					byteCode.AppendUShort(index);
 					found = true;
 				}
 			}
 		}
 		if (found == false)
 		{
-			throw CompilerException(SourceLocation(), U"cannot find Main function");
+			throw CompilerException(SourcePosition(), U"cannot find Main function");
 		}
 	}
 	void Compiler::CompileConstantPool(const ConstantMap & constantMap, ByteCode& byteCode)
@@ -1341,7 +1374,9 @@ namespace cygni
 		std::vector<ConstantKey> constants(constantMap.size());
 		for (auto pair : constantMap)
 		{
-			constants[pair.second] = pair.first;
+			auto key = pair.first;
+			auto index = pair.second;
+			constants[index] = key;
 		}
 		for (ConstantKey constant : constants)
 		{

@@ -20,7 +20,7 @@ void parse_constant_pool(State* state, ConstantPool* constant_pool);
 
 void view_exe(Executable* exe);
 
-void view_function(Function* function);
+void view_function(Function* function, Executable* exe);
 
 void view_type_tag(State* state, Byte tag);
 

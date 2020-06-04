@@ -123,8 +123,8 @@ void parse_class(State* state, ClassInfo* class_info)
 		class_info->methods[i] = parse_function(state);
 		if (!(class_info->methods[i]->is_native_function))
 		{
-			class_info->methods[i]->u.func_info->n_constants = class_info->constant_pool.n_constants;
-			class_info->methods[i]->u.func_info->constant_pool = class_info->constant_pool.constants;
+			class_info->methods[i]->u.func->n_constants = class_info->constant_pool.n_constants;
+			class_info->methods[i]->u.func->constant_pool = class_info->constant_pool.constants;
 		}
 		printf("method: %s\n", class_info->methods[i]->name);
 	}
@@ -153,8 +153,8 @@ void parse_module(State* state, ModuleInfo* module_info)
 		module_info->functions[i] = parse_function(state);
 		if (!(module_info->functions[i]->is_native_function))
 		{
-			module_info->functions[i]->u.func_info->n_constants = module_info->constant_pool.n_constants;
-			module_info->functions[i]->u.func_info->constant_pool = module_info->constant_pool.constants;
+			module_info->functions[i]->u.func->n_constants = module_info->constant_pool.n_constants;
+			module_info->functions[i]->u.func->constant_pool = module_info->constant_pool.constants;
 		}
 		printf("function: %s\n", module_info->functions[i]->name);
 	}
@@ -180,22 +180,22 @@ Function * parse_function(State* state)
 			native_function->args_size = parse_ushort(state);
 			native_function->lib_path = parse_string(state);
 			native_function->func_name = parse_string(state);
-			function->u.native_function = native_function;
+			function->u.nv = native_function;
 			return function;
 		}
 		else
 		{
 			function->name = parse_string(state);
 			function->is_native_function = false;
-			function->u.func_info = (FunctionInfo*)vm_alloc(state, sizeof(FunctionInfo));
-			function->u.func_info->args_size = parse_ushort(state);
-			function->u.func_info->locals = parse_ushort(state);
-			printf("args_size = %d, locals = %d\n", function->u.func_info->args_size, function->u.func_info->locals);
+			function->u.func = (FunctionInfo*)vm_alloc(state, sizeof(FunctionInfo));
+			function->u.func->args_size = parse_ushort(state);
+			function->u.func->locals = parse_ushort(state);
+			//printf("args_size = %d, locals = %d\n", function->u.func->args_size, function->u.func->locals);
 			code_len = parse_ushort(state);
-			function->u.func_info->code_len = code_len;
-			printf("function code len=%d\n", code_len);
-			function->u.func_info->code = (Byte*)vm_alloc(state, sizeof(Byte) * code_len);
-			if (fread(function->u.func_info->code, sizeof(Byte), code_len, state->source) == code_len)
+			function->u.func->code_len = code_len;
+			//printf("function code len=%d\n", code_len);
+			function->u.func->code = (Byte*)vm_alloc(state, sizeof(Byte) * code_len);
+			if (fread(function->u.func->code, sizeof(Byte), code_len, state->source) == code_len)
 			{
 				return function;
 			}
@@ -221,7 +221,6 @@ void parse_constant_pool(State* state, ConstantPool* constant_pool)
 	int i;
 	char* str;
 	String* u32_str;
-	char* ptr;
 
 	constant_pool->n_constants = parse_ushort(state);
 	printf("# of constants: %d\n", constant_pool->n_constants);
@@ -288,7 +287,7 @@ void view_exe(Executable* exe)
 		for (j = 0; j < exe->classes[i].n_methods; j++)
 		{
 			function = exe->classes[i].methods[j];
-			view_function(function);
+			view_function(function, exe);
 		}
 		printf("\n");
 	}
@@ -303,63 +302,90 @@ void view_exe(Executable* exe)
 		for (j = 0; j < exe->modules[i].n_functions; j++)
 		{
 			function = exe->modules[i].functions[j];
-			view_function(function);
+			view_function(function, exe);
 		}
 		printf("\n");
 	}
 }
 
-void view_function(Function * function)
+void view_function(Function * function, Executable* exe)
 {
 	int i;
 	Byte op_code;
 	const char* op_name;
 	const char* op_type;
 	uint32_t u32_v;
+	uint32_t module_index;
 
 	if (function->is_native_function)
 	{
 		printf("\tmethod: %s\n", function->name);
-		printf("\targs_size=%d\n", function->u.native_function->args_size);
-		printf("\tlibrary name: %s\n\tfunction name: %s\n\n", function->u.native_function->lib_path, function->u.native_function->func_name);
+		printf("\targs_size=%d\n", function->u.nv->args_size);
+		printf("\tlibrary name: %s\n\tfunction name: %s\n\n", function->u.nv->lib_path, function->u.nv->func_name);
 	}
 	else
 	{
 		printf("\tmethod: %s\n", function->name);
-		printf("\targs_size=%d, locals=%d\n", function->u.func_info->args_size, function->u.func_info->locals);
+		printf("\targs_size=%d, locals=%d\n", function->u.func->args_size, function->u.func->locals);
 
 		printf("\tcode:\n");
 		i = 0;
-		while (i < function->u.func_info->code_len)
+		while (i < function->u.func->code_len)
 		{
-			op_code = function->u.func_info->code[i];
+			op_code = function->u.func->code[i];
 			op_name = opcode_info[op_code][0];
-			printf("\t\t%d: %s", i, op_name);
-			i++;
-			op_type = opcode_info[op_code][1];
-			if (strcmp(op_type, "b") == 0)
+			if (strcmp(op_name, "PUSH_FUNCTION") == 0)
 			{
-				printf(" %d", (int)function->u.func_info->code[i]);
+				printf("\t\t%d: %s", i, op_name);
 				i++;
-			}
-			else if (strcmp(op_type, "u") == 0 || strcmp(op_type, "p") == 0)
-			{
-				u32_v = function->u.func_info->code[i];
-				u32_v = u32_v * 256 + ((uint16_t)function->u.func_info->code[i + 1]);
-				printf(" %d", u32_v);
-				i = i + 2;
-			}
-			else if (strcmp(op_type, "uu") == 0)
-			{
-				u32_v = function->u.func_info->code[i];
-				u32_v = u32_v * 256 + ((uint16_t)function->u.func_info->code[i + 1]);
-				printf(" %d", u32_v);
+				module_index = function->u.func->code[i];
+				module_index = module_index * 256 + ((uint16_t)function->u.func->code[i + 1]);
+				printf(" %s", exe->modules[module_index].name);
 				i = i + 2;
 
-				u32_v = function->u.func_info->code[i];
-				u32_v = u32_v * 256 + ((uint16_t)function->u.func_info->code[i + 1]);
-				printf(" %d", u32_v);
+				u32_v = function->u.func->code[i];
+				u32_v = u32_v * 256 + ((uint16_t)function->u.func->code[i + 1]);
+				printf(".%s", exe->modules[module_index].functions[u32_v]->name);
 				i = i + 2;
+			}
+			else if (strcmp(op_name, "NEW") == 0)
+			{
+				printf("\t\t%d: %s", i, op_name);
+				i++;
+				u32_v = function->u.func->code[i];
+				u32_v = u32_v * 256 + ((uint16_t)function->u.func->code[i + 1]);
+				printf(" %s", exe->classes[u32_v].name);
+				i = i + 2;
+			}
+			else
+			{
+				printf("\t\t%d: %s", i, op_name);
+				i++;
+				op_type = opcode_info[op_code][1];
+				if (strcmp(op_type, "b") == 0)
+				{
+					printf(" %d", (int)function->u.func->code[i]);
+					i++;
+				}
+				else if (strcmp(op_type, "u") == 0 || strcmp(op_type, "p") == 0)
+				{
+					u32_v = function->u.func->code[i];
+					u32_v = u32_v * 256 + ((uint16_t)function->u.func->code[i + 1]);
+					printf(" %d", u32_v);
+					i = i + 2;
+				}
+				else if (strcmp(op_type, "uu") == 0)
+				{
+					u32_v = function->u.func->code[i];
+					u32_v = u32_v * 256 + ((uint16_t)function->u.func->code[i + 1]);
+					printf(" %d", u32_v);
+					i = i + 2;
+
+					u32_v = function->u.func->code[i];
+					u32_v = u32_v * 256 + ((uint16_t)function->u.func->code[i + 1]);
+					printf(" %d", u32_v);
+					i = i + 2;
+				}
 			}
 			printf("\n");
 		}

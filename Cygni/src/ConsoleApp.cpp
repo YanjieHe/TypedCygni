@@ -11,16 +11,17 @@ namespace cygni
 {
 	SourceDocument ConsoleApp::ParseProgram(std::string path)
 	{
+		auto document = std::make_shared<FileLocation>(path, path);
+
 		/* pass 1: read code in text format */
 		std::string code{ ReadText(path) };
 		std::u32string utf32Code = UTF8ToUTF32(code);
 
 		/* pass 2: tokenize code */
-		Lexer lexer(utf32Code);
+		Lexer lexer(document, utf32Code);
 		auto tokens = lexer.ReadAll();
 
 		/* pass 3: parse the code and create an abstract syntax tree */
-		auto document = std::make_shared<FileLocation>(path, path);
 		Parser parser(tokens, document);
 		return parser.ParseProgram();
 	}
@@ -34,8 +35,7 @@ namespace cygni
 			project.programs.Add(path, program);
 		}
 		project.MergeAllPrograms();
-		ClassAndModuleLocator classAndModuleLocator;
-		classAndModuleLocator.VisitProject(project);
+		AssignIndex(project);
 		return project;
 	}
 
@@ -48,23 +48,29 @@ namespace cygni
 		TypeRenamer typeRenamer;
 		typeRenamer.RenameAll(project);
 
-		/* pass 5: check and infer types of each node */
+		/* pass 5: process inheritance */
+		InheritanceProcessor inheritanceProcesser;
+		inheritanceProcesser.VisitProject(project);
+
+		/* pass 6: check and infer types of each node */
 		TypeChecker typeChecker(project);
-		ScopePtr globalScope = std::make_shared<Scope>();
+		auto scopeFactory = ScopeFactory<TypePtr>::Create();
+		typeChecker.scopeFactory = scopeFactory;
+		auto globalScope = scopeFactory->New();
 		typeChecker.VisitProject(globalScope);
 		cout << "Complete Type Checking!" << endl;
 
-		/* pass 6: collect local variables */
+		/* pass 7: collect local variables */
 		LocalVariableCollector localVariableCollector;
 		localVariableCollector.VisitProject(project);
 		cout << "Complete Local Variable Collection!" << endl;
 
-		/* pass 7: locate variables */
+		/* pass 8: locate variables */
 		VariableLocator variableLocator(project);
 		variableLocator.VisitProject();
 		cout << "Complete Local Variable Locatoring!" << endl;
 
-		/* pass 8: collect constants */
+		/* pass 9: collect constants */
 		ConstantCollector constantCollector;
 		constantCollector.VisitProject(project);
 		cout << "Complete Constant Collection!" << endl;
@@ -75,7 +81,7 @@ namespace cygni
 		auto project = ParseProject(fileList);
 		SemanticAnalysis(project);
 
-		/* pass 9: convert the abstract syntax tree to json format */
+		/* pass 10: convert the abstract syntax tree to json format */
 		cygni::AstToJsonSerialization astToJson;
 		auto jsonObj = astToJson.VisitProject(project);
 		auto jsonText = jsonObj.dump();

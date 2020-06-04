@@ -150,7 +150,7 @@ namespace cygni
 
 	};
 
-	enum class ParameterType
+	enum class LocationType
 	{
 		Unknown,
 		ModuleName,
@@ -637,28 +637,28 @@ namespace cygni
 		}
 	};
 
-	template <> class Enum<ParameterType>
+	template <> class Enum<LocationType>
 	{
 	public:
-		static std::u32string ToString(ParameterType type)
+		static std::u32string ToString(LocationType type)
 		{
 			switch (type)
 			{
-			case ParameterType::Unknown:
+			case LocationType::Unknown:
 				return U"Unknown";
-			case ParameterType::ModuleName:
+			case LocationType::ModuleName:
 				return U"ModuleName";
-			case ParameterType::ModuleField:
+			case LocationType::ModuleField:
 				return U"ModuleField";
-			case ParameterType::ModuleMethod:
+			case LocationType::ModuleMethod:
 				return U"ModuleMethod";
-			case ParameterType::ClassName:
+			case LocationType::ClassName:
 				return U"ClassName";
-			case ParameterType::ClassField:
+			case LocationType::ClassField:
 				return U"ClassField";
-			case ParameterType::ClassMethod:
+			case LocationType::ClassMethod:
 				return U"ClassMethod";
-			case ParameterType::LocalVariable:
+			case LocationType::LocalVariable:
 				return U"LocalVariable";
 			default:
 				std::cerr << __FUNCTION__ << std::endl;

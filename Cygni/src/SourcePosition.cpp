@@ -1,4 +1,4 @@
-#include "SourceLocation.hpp"
+#include "SourcePosition.hpp"
 
 namespace cygni
 {
@@ -6,11 +6,11 @@ namespace cygni
 		: filePath{ filePath }, fileName{ fileName } {
 	}
 
-	SourceLocation::SourceLocation()
+	SourcePosition::SourcePosition()
 		: document(), startLine{ 0 }, startCol{ 0 }, endLine{ 0 }, endCol{ 0 } {
 	}
 
-	SourceLocation::SourceLocation::SourceLocation(
+	SourcePosition::SourcePosition::SourcePosition(
 		std::shared_ptr<FileLocation> document, int startLine, int startCol,
 		int endLine, int endCol)
 		: document{ document }, startLine{ startLine }, startCol{ startCol },

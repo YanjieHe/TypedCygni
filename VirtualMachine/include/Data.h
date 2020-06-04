@@ -70,7 +70,7 @@ typedef struct
 
 typedef struct
 {
-	uint8_t tag;
+	uint8_t tag: 1;
 	union
 	{
 		int32_t i32_v;
@@ -109,8 +109,8 @@ typedef struct Function
 	char* name;
 	union
 	{
-		FunctionInfo* func_info; // NULL if it is a native function
-		NativeFunction* native_function;
+		FunctionInfo* func; // NULL if it is a native function
+		NativeFunction* nv;
 	}u;
 } Function;
 

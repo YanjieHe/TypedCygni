@@ -25,7 +25,7 @@ Machine* create_machine(int stack_max_size, Executable* exe);
 
 void run(Machine* machine);
 
-void view_stack(Value* stack);
+void view_stack(Machine* machine, Value* stack, int sp);
 
 void copy_string(int32_t* char_array, String* str_v);
 

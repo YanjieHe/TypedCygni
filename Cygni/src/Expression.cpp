@@ -6,8 +6,8 @@
 namespace cygni
 {
 
-	Expression::Expression(SourceLocation location, ExpressionType nodeType)
-		: location{ location }, nodeType{ nodeType } {
+	Expression::Expression(SourcePosition position, ExpressionType nodeType)
+		: position{ position }, nodeType{ nodeType } {
 		static int currentId = 0;
 		this->id = currentId;
 		currentId++;
@@ -16,82 +16,82 @@ namespace cygni
 		this->type = unknownType;
 	}
 
-	ConstantExpression::ConstantExpression(SourceLocation location, TypePtr type,
+	ConstantExpression::ConstantExpression(SourcePosition position, TypePtr type,
 		std::u32string constant)
-		: Expression(location, ExpressionType::Constant), constant{ constant } {
+		: Expression(position, ExpressionType::Constant), constant{ constant } {
 		this->type = type;
 	}
 
-	BinaryExpression::BinaryExpression(SourceLocation location,
+	BinaryExpression::BinaryExpression(SourcePosition position,
 		ExpressionType nodeType, ExpPtr left,
 		ExpPtr right)
-		: Expression(location, nodeType), left{ left }, right{ right } {}
+		: Expression(position, nodeType), left{ left }, right{ right } {}
 
-	UnaryExpression::UnaryExpression(SourceLocation location,
+	UnaryExpression::UnaryExpression(SourcePosition position,
 		ExpressionType nodeType, ExpPtr operand)
-		: Expression(location, nodeType), operand{ operand } {}
+		: Expression(position, nodeType), operand{ operand } {}
 
-	BlockExpression::BlockExpression(SourceLocation location, ExpList expressions)
-		: Expression(location, ExpressionType::Block), expressions{ expressions } {}
+	BlockExpression::BlockExpression(SourcePosition position, ExpList expressions)
+		: Expression(position, ExpressionType::Block), expressions{ expressions } {}
 
-	ConditionalExpression::ConditionalExpression(SourceLocation location,
+	ConditionalExpression::ConditionalExpression(SourcePosition position,
 		ExpPtr condition, ExpPtr ifTrue,
 		ExpPtr ifFalse)
-		: Expression(location, ExpressionType::Conditional), condition{ condition },
+		: Expression(position, ExpressionType::Conditional), condition{ condition },
 		ifTrue{ ifTrue }, ifFalse{ ifFalse } {}
 
-	DefaultExpression::DefaultExpression(SourceLocation location, TypePtr type)
-		: Expression(location, ExpressionType::Default)
+	DefaultExpression::DefaultExpression(SourcePosition position, TypePtr type)
+		: Expression(position, ExpressionType::Default)
 	{
 		this->type = type;
 	}
 
-	InvocationExpression::InvocationExpression(SourceLocation location,
+	InvocationExpression::InvocationExpression(SourcePosition position,
 		ExpPtr expression,
 		std::vector<Argument> arguments)
-		: Expression(location, ExpressionType::Invoke),
+		: Expression(position, ExpressionType::Invoke),
 		expression{ expression }, arguments{ arguments } {}
 
-	MethodCallExpression::MethodCallExpression(SourceLocation location,
+	MethodCallExpression::MethodCallExpression(SourcePosition position,
 		ExpPtr object,
 		std::shared_ptr<MethodDef> method,
 		ExpList arguments)
-		: Expression(location, ExpressionType::MethodCall), object{ object },
+		: Expression(position, ExpressionType::MethodCall), object{ object },
 		method{ method }, arguments{ arguments } {}
 
-	NewExpression::NewExpression(SourceLocation location, TypePtr type,
+	NewExpression::NewExpression(SourcePosition position, TypePtr type,
 		std::vector<Argument> arguments)
-		: Expression(location, ExpressionType::New), arguments{ arguments }
+		: Expression(position, ExpressionType::New), arguments{ arguments }
 	{
 		this->type = type;
 	}
 
-	ParameterExpression::ParameterExpression(SourceLocation location,
+	ParameterExpression::ParameterExpression(SourcePosition position,
 		std::u32string name, TypePtr type)
-		: Expression(location, ExpressionType::Parameter), name{ name } {
+		: Expression(position, ExpressionType::Parameter), name{ name } {
 		this->type = type;
 	}
 
 	VarDefExpression::VarDefExpression(
-		SourceLocation location, std::shared_ptr<ParameterExpression> variable,
+		SourcePosition position, std::shared_ptr<ParameterExpression> variable,
 		TypePtr type, ExpPtr value)
-		: Expression(location, ExpressionType::VariableDefinition),
+		: Expression(position, ExpressionType::VariableDefinition),
 		variable{ variable }, value{ value } {
 		this->type = type;
 	}
 
-	FieldDef::FieldDef(SourceLocation location, AccessModifier modifier,
+	FieldDef::FieldDef(SourcePosition position, AccessModifier modifier,
 		bool isStatic, Table<std::u32string, AnnotationInfo> annotations,
 		std::u32string name, TypePtr type, ExpPtr value)
-		: location{ location }, modifier{ modifier }, isStatic{ isStatic },
+		: position{position}, modifier{ modifier }, isStatic{ isStatic },
 		annotations{ annotations }, name{ name }, type{ type }, value{ value } {}
 
 	MethodDef::MethodDef(
-		SourceLocation location, AccessModifier modifier, bool isStatic, TypePtr selfType,
+		SourcePosition position, AccessModifier modifier, bool isStatic, TypePtr selfType,
 		Table<std::u32string, AnnotationInfo> annotations, std::u32string name,
 		std::vector<std::shared_ptr<ParameterExpression>> parameters,
 		TypePtr returnType, ExpPtr body)
-		: location{ location }, modifier{ modifier }, isStatic{ isStatic },
+		: position{position}, modifier{ modifier }, isStatic{ isStatic },
 		selfType{ selfType }, annotations{ annotations }, name{ name }, parameters{ parameters },
 		returnType{ returnType }, body{ body }
 	{
@@ -104,33 +104,33 @@ namespace cygni
 		this->signature = std::make_shared<FunctionType>(selfType, parameterTypes, returnType);
 	}
 
-	ClassInfo::ClassInfo(SourceLocation location, PackageRoute route, std::u32string name)
-		: location{ location }, route{ route }, name{ name } {}
+	ClassInfo::ClassInfo(SourcePosition position, PackageRoute route, std::u32string name)
+		: position{position}, route{ route }, name{ name } {}
 
-	ModuleInfo::ModuleInfo(SourceLocation location, PackageRoute route, std::u32string name)
-		: location{ location }, route{ route }, name{ name } {}
+	ModuleInfo::ModuleInfo(SourcePosition position, PackageRoute route, std::u32string name)
+		: position{position}, route{ route }, name{ name } {}
 
-	ReturnExpression::ReturnExpression(SourceLocation location, ExpPtr value)
-		: Expression(location, ExpressionType::Return), value{ value } {}
+	ReturnExpression::ReturnExpression(SourcePosition position, ExpPtr value)
+		: Expression(position, ExpressionType::Return), value{ value } {}
 
-	BreakExpression::BreakExpression(SourceLocation location)
-		: Expression(location, ExpressionType::Break)
+	BreakExpression::BreakExpression(SourcePosition position)
+		: Expression(position, ExpressionType::Break)
 	{
 	}
 
-	WhileExpression::WhileExpression(SourceLocation location, ExpPtr condition,
+	WhileExpression::WhileExpression(SourcePosition position, ExpPtr condition,
 		ExpPtr body)
-		: Expression(location, ExpressionType::While), condition{ condition },
+		: Expression(position, ExpressionType::While), condition{ condition },
 		body{ body } {}
 
-	AnnotationInfo::AnnotationInfo(SourceLocation location, std::u32string name,
+	AnnotationInfo::AnnotationInfo(SourcePosition position, std::u32string name,
 		std::vector<Argument> arguments)
-		: location{ location }, name{ name }, arguments{ arguments } {}
+		: position{position}, name{ name }, arguments{ arguments } {}
 
-	MemberAccessExpression::MemberAccessExpression(SourceLocation location,
+	MemberAccessExpression::MemberAccessExpression(SourcePosition position,
 		ExpPtr object,
 		std::u32string field)
-		: Expression(location, ExpressionType::MemberAccess), object{ object },
+		: Expression(position, ExpressionType::MemberAccess), object{ object },
 		field{ field } {}
 
 	//ConstructorInfo::ConstructorInfo(
@@ -138,7 +138,7 @@ namespace cygni
 	//	Table<std::u32string, AnnotationInfo> annotations, std::u32string name,
 	//	std::vector<std::shared_ptr<ParameterExpression>> parameters,
 	//	TypePtr returnType, ExpPtr body)
-	//	: location{ location }, modifier{ modifier }, annotations{ annotations },
+	//	: position{position}, modifier{ modifier }, annotations{ annotations },
 	//	name{ name }, parameters{ parameters }, returnType{ returnType }, body{ body } {
 	//	std::vector<TypePtr> parameterTypes(parameters.size());
 	//	std::transform(parameters.begin(), parameters.end(), parameterTypes.begin(),
@@ -155,18 +155,6 @@ namespace cygni
 		: name{ name }, value{ value } {}
 
 
-	ParameterLocation::ParameterLocation() : type{ ParameterType::Unknown }, offset{ -1 }, index{ -1 }
-	{
-	}
-
-	ParameterLocation::ParameterLocation(ParameterType type, int offset) : type{ type }, offset{ offset }, index{ -1 }
-	{
-	}
-
-	ParameterLocation::ParameterLocation(ParameterType type, int offset, int index) : type{ type }, offset{ offset }, index{ index }
-	{
-	}
-
 	Package::Package(PackageRoute route) : route{ route }
 	{
 	}
@@ -176,14 +164,14 @@ namespace cygni
 	{
 	}
 
-	TypeAlias::TypeAlias(SourceLocation location, PackageRoute route, std::u32string typeName, std::u32string alias)
-		: location{ location }, route{ route }, typeName{ typeName }, alias{ alias }
+	TypeAlias::TypeAlias(SourcePosition position, PackageRoute route, std::u32string typeName, std::u32string alias)
+		: position{position}, route{ route }, typeName{ typeName }, alias{ alias }
 	{
 	}
 
 
-	PackageRouteStatement::PackageRouteStatement(SourceLocation location, PackageRoute route)
-		: location{ location }, route{ route }
+	PackageRouteStatement::PackageRouteStatement(SourcePosition position, PackageRoute route)
+		: position{position}, route{ route }
 	{
 	}
 
@@ -287,16 +275,16 @@ namespace cygni
 		}
 	}
 
-	InterfaceInfo::InterfaceInfo(SourceLocation location, std::u32string name)
-		: location{ location }, name{ name }
+	InterfaceInfo::InterfaceInfo(SourcePosition position, std::u32string name)
+		: position{position}, name{ name }
 	{
 	}
 
-	ImportStatement::ImportStatement() : location{}, route{}
+	ImportStatement::ImportStatement() : position{}, route{}
 	{
 	}
 
-	ImportStatement::ImportStatement(SourceLocation location, PackageRoute route) : location{ location }, route{ route }
+	ImportStatement::ImportStatement(SourcePosition position, PackageRoute route) : position{position}, route{ route }
 	{
 	}
 

@@ -34,16 +34,16 @@ namespace cygni
 			}
 			else
 			{
-				throw ParserException(Look().line, Look().column,
+				throw ParserException(document, Look().line, Look().column,
 					Format(U"expecting '{}', got '{}'",
 						Enum<Tag>::ToString(tag),
 						Enum<Tag>::ToString(Look().tag)));
 			}
 		}
 
-		inline SourceLocation GetLoc(const Token &token) const
+		inline SourcePosition Pos(const Token &token) const
 		{
-			return SourceLocation{ document, token.line, token.column, Look().line,
+			return SourcePosition{ document, token.line, token.column, Look().line,
 								  Look().column };
 		}
 

@@ -56,7 +56,17 @@ namespace cygni
 
 		TValue &GetValueByKey(const TKey &key) { return values[map[key]]; }
 
-		int GetIndexByKey(const TKey &key) { return map[key]; }
+		int GetIndexByKey(const TKey &key)
+		{
+			if (map.find(key) != map.end())
+			{
+				return map[key];
+			}
+			else
+			{
+				return -1;
+			}
+		}
 
 		bool ContainsKey(const TKey &key) const { return map.find(key) != map.end(); }
 

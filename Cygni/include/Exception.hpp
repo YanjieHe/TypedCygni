@@ -1,6 +1,6 @@
 #ifndef CYGNI_EXCEPTION_HPP
 #define CYGNI_EXCEPTION_HPP
-#include "SourceLocation.hpp"
+#include "SourcePosition.hpp"
 #include "Utility.hpp"
 #include <string>
 
@@ -9,18 +9,19 @@ namespace cygni
 	class LexicalException
 	{
 	public:
+		std::shared_ptr<FileLocation> document;
 		int line;
 		int column;
 		std::u32string message;
 
-		LexicalException(int line, int column, const std::u32string &message)
-			: line{ line }, column{ column }, message{ message } {}
+		LexicalException(std::shared_ptr<FileLocation> document, int line, int column, const std::u32string &message)
+			: document{ document }, line{ line }, column{ column }, message{ message } {}
 
 		std::u32string FormattedErrorMessage() const
 		{
 			auto actualLine = std::to_string(line + 1);
 			auto actualColumn = std::to_string(column + 1);
-			return Format(U"Syntax Error: ({}, {}) {} ", actualLine, actualColumn, message);
+			return Format(U"File: {} Syntax Error: ({}, {}) {} ", document->fileName, actualLine, actualColumn, message);
 		}
 	};
 
@@ -37,18 +38,19 @@ namespace cygni
 	class ParserException
 	{
 	public:
+		std::shared_ptr<FileLocation> document;
 		int line;
 		int column;
 		std::u32string message;
 
-		ParserException(int line, int column, const std::u32string &message)
-			: line{ line }, column{ column }, message{ message } {}
+		ParserException(std::shared_ptr<FileLocation> document, int line, int column, const std::u32string &message)
+			: document{ document }, line{ line }, column{ column }, message{ message } {}
 
 		std::u32string FormattedErrorMessage() const
 		{
 			auto actualLine = std::to_string(line + 1);
 			auto actualColumn = std::to_string(column + 1);
-			return Format(U"Syntax Error: ({}, {}) {} ", actualLine, actualColumn, message);
+			return Format(U"File: {} Syntax Error: ({}, {}) {} ", document->fileName, actualLine, actualColumn, message);
 		}
 	};
 
@@ -68,54 +70,54 @@ namespace cygni
 	class TypeException
 	{
 	public:
-		SourceLocation location;
+		SourcePosition position;
 		std::u32string message;
 
 		TypeException() = default;
-		TypeException(SourceLocation location, const std::u32string &message)
-			: location{ location }, message{ message } {}
+		TypeException(SourcePosition position, const std::u32string &message)
+			: position{ position }, message{ message } {}
 
 		std::u32string FormattedErrorMessage() const
 		{
-			auto actualStartLine = std::to_string(location.startLine + 1);
-			auto actualStartColumn = std::to_string(location.startCol + 1);
-			auto actualEndLine = std::to_string(location.endLine + 1);
-			auto actualEndColumn = std::to_string(location.endCol + 1);
+			auto actualStartLine = std::to_string(position.startLine + 1);
+			auto actualStartColumn = std::to_string(position.startCol + 1);
+			auto actualEndLine = std::to_string(position.endLine + 1);
+			auto actualEndColumn = std::to_string(position.endCol + 1);
 			return Format(U"File: {} Type Error: ({}, {}) - ({}, {}) {}",
-				location.document->fileName, actualStartLine, actualStartColumn, actualEndLine, actualEndColumn, message);
+				position.document->fileName, actualStartLine, actualStartColumn, actualEndLine, actualEndColumn, message);
 		}
 	};
 
 	class SyntaxException
 	{
 	public:
-		SourceLocation location;
+		SourcePosition position;
 		std::u32string message;
 
 		SyntaxException() = default;
-		SyntaxException(SourceLocation location, const std::u32string &message)
-			: location{ location }, message{ message } {}
+		SyntaxException(SourcePosition position, const std::u32string &message)
+			: position{ position }, message{ message } {}
 	};
 
 	class CompilerException
 	{
 	public:
-		SourceLocation location;
+		SourcePosition position;
 		std::u32string message;
 		CompilerException() = default;
-		CompilerException(SourceLocation location, const std::u32string& message)
-			:location{ location }, message{ message }
+		CompilerException(SourcePosition position, const std::u32string& message)
+			:position{ position }, message{ message }
 		{
 
 		}
 		std::u32string FormattedErrorMessage() const
 		{
-			auto actualStartLine = std::to_string(location.startLine + 1);
-			auto actualStartColumn = std::to_string(location.startCol + 1);
-			auto actualEndLine = std::to_string(location.endLine + 1);
-			auto actualEndColumn = std::to_string(location.endCol + 1);
+			auto actualStartLine = std::to_string(position.startLine + 1);
+			auto actualStartColumn = std::to_string(position.startCol + 1);
+			auto actualEndLine = std::to_string(position.endLine + 1);
+			auto actualEndColumn = std::to_string(position.endCol + 1);
 			return Format(U"File: {} Compiler Error: ({}, {}) - ({}, {}) {}",
-				location.document->fileName, actualStartLine, actualStartColumn, actualEndLine, actualEndColumn, message);
+				position.document->fileName, actualStartLine, actualStartColumn, actualEndLine, actualEndColumn, message);
 		}
 	};
 

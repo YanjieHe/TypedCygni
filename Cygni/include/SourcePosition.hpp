@@ -1,5 +1,5 @@
-#ifndef CYGNI_SOURCE_LOCATION
-#define CYGNI_SOURCE_LOCATION
+#ifndef CYGNI_SOURCE_POSITION
+#define CYGNI_SOURCE_POSITION
 #include <memory>
 #include <vector>
 #include <string>
@@ -14,7 +14,7 @@ namespace cygni
 		FileLocation(std::string filePath, std::string fileName);
 	};
 
-	class SourceLocation
+	class SourcePosition
 	{
 	public:
 		std::shared_ptr<FileLocation> document;
@@ -23,8 +23,8 @@ namespace cygni
 		int endLine;
 		int endCol;
 
-		SourceLocation();
-		SourceLocation(std::shared_ptr<FileLocation> document, int startLine,
+		SourcePosition();
+		SourcePosition(std::shared_ptr<FileLocation> document, int startLine,
 			int startCol, int endLine, int endCol);
 	};
 
@@ -73,4 +73,4 @@ namespace std
 		}
 	};
 };
-#endif // CYGNI_SOURCE_LOCATION
+#endif // CYGNI_SOURCE_POSITION

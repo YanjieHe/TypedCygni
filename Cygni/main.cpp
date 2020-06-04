@@ -109,10 +109,10 @@ int main(int argc, char **argv)
 	{
 		cout << ex.message << endl;
 	}
-	catch (CompilerException& ex)
-	{
-		cout << ex.FormattedErrorMessage() << endl;
-	}
+	//catch (CompilerException& ex)
+	//{
+	//	cout << ex.FormattedErrorMessage() << endl;
+	//}
 	cout << "Press any key to close..." << endl;
 	cin.get();
 	return 0;

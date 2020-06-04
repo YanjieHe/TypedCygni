@@ -1,6 +1,7 @@
 #include "Library.h"
+#include "Machine.h"
 
-FunctionPointer load_library_function(Machine* machine, const char * library_path, const char * function_name)
+FunctionPointer load_library_function(State* state, const char * library_path, const char * function_name)
 {
 	HINSTANCE lib;
 	FunctionPointer function_pointer;
@@ -19,7 +20,7 @@ FunctionPointer load_library_function(Machine* machine, const char * library_pat
 		{
 			fprintf(stderr, "cannot load function '%s' in the library: %s\n", function_name, library_path);
 			fprintf(stderr, "error code: %d", GetLastError());
-			vm_throw(machine->state, VM_ERROR_LOAD_LIBRARY_FUNCTION);
+			vm_throw(state, VM_ERROR_LOAD_LIBRARY_FUNCTION);
 			return NULL; // make the compiler happy
 		}
 	}
@@ -27,7 +28,7 @@ FunctionPointer load_library_function(Machine* machine, const char * library_pat
 	{
 		fprintf(stderr, "cannot load library: %s\n", library_path);
 		fprintf(stderr, "error code: %d", GetLastError());
-		vm_throw(machine->state, VM_ERROR_LOAD_LIBRARY);
+		vm_throw(state, VM_ERROR_LOAD_LIBRARY);
 		return NULL; // make the compiler happy
 	}
 }

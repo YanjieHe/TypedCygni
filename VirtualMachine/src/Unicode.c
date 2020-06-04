@@ -11,7 +11,7 @@ int utf8_to_utf32_len(const char * utf8)
 	char c;
 
 	i = 0;
-	utf8_len = strlen(utf8);
+	utf8_len = (int)strlen(utf8);
 	utf32_len = 0;
 	while (i < utf8_len)
 	{
@@ -73,7 +73,7 @@ uint32_t* utf8_to_utf32(const char * utf8, int utf32_len)
 	uint32_t* utf32;
 
 	i = 0;
-	utf8_len = strlen(utf8);
+	utf8_len = (int)strlen(utf8);
 	utf32_index = 0;
 	utf32 = (uint32_t*)malloc(sizeof(uint32_t) * utf32_len);
 

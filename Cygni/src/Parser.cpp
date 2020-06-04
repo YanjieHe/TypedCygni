@@ -19,21 +19,21 @@ namespace cygni
 			if (Look().tag == Tag::Class)
 			{
 				auto classInfo = ParseDefClass();
-				program.classes.Add(classInfo->name, classInfo);
+				program.classDefs.Add(classInfo->name, classInfo);
 			}
 			else if (Look().tag == Tag::Module)
 			{
 				auto moduleInfo = ParseDefModule();
-				program.modules.Add(moduleInfo->name, moduleInfo);
+				program.moduleDefs.Add(moduleInfo->name, moduleInfo);
 			}
 			else if (Look().tag == Tag::Interface)
 			{
 				auto interfaceInfo = ParseDefInterface();
-				program.interfaces.Add(interfaceInfo->name, interfaceInfo);
+				program.interfaceDefs.Add(interfaceInfo->name, interfaceInfo);
 			}
 			else
 			{
-				throw ParserException(Look().line, Look().column, U"expecting 'class', 'module' or 'interface'");
+				throw ParserException(document, Look().line, Look().column, U"expecting 'class', 'module' or 'interface'");
 			}
 		}
 		return program;
@@ -41,7 +41,7 @@ namespace cygni
 
 	PackageRouteStatement Parser::ParsePackageRouteStatement()
 	{
-		auto location = GetLoc(Look());
+		auto location = Pos(Look());
 		Match(Tag::Package);
 		auto route = ParsePackageRoute();
 		return { location, route };
@@ -84,7 +84,7 @@ namespace cygni
 		{
 			Match(Tag::Assign);
 			auto y = ParseOr();
-			return std::make_shared<BinaryExpression>(GetLoc(start),
+			return std::make_shared<BinaryExpression>(Pos(start),
 				ExpressionType::Assign, x, y);
 		}
 		else
@@ -101,7 +101,7 @@ namespace cygni
 		{
 			Match(Tag::Or);
 			auto y = ParseAnd();
-			x = std::make_shared<BinaryExpression>(GetLoc(start),
+			x = std::make_shared<BinaryExpression>(Pos(start),
 				ExpressionType::Or, x, y);
 		}
 		return x;
@@ -115,7 +115,7 @@ namespace cygni
 		{
 			Match(Tag::And);
 			auto y = ParseEquality();
-			x = std::make_shared<BinaryExpression>(GetLoc(start),
+			x = std::make_shared<BinaryExpression>(Pos(start),
 				ExpressionType::And, x, y);
 		}
 		return x;
@@ -132,12 +132,12 @@ namespace cygni
 			auto y = ParseRelation();
 			if (t.tag == Tag::Equal)
 			{
-				x = std::make_shared<BinaryExpression>(GetLoc(start),
+				x = std::make_shared<BinaryExpression>(Pos(start),
 					ExpressionType::Equal, x, y);
 			}
 			else
 			{
-				x = std::make_shared<BinaryExpression>(GetLoc(start),
+				x = std::make_shared<BinaryExpression>(Pos(start),
 					ExpressionType::NotEqual, x, y);
 			}
 		}
@@ -158,22 +158,22 @@ namespace cygni
 			if (t.tag == Tag::GreaterThan)
 			{
 				return std::make_shared<BinaryExpression>(
-					GetLoc(start), ExpressionType::GreaterThan, x, y);
+					Pos(start), ExpressionType::GreaterThan, x, y);
 			}
 			else if (t.tag == Tag::LessThan)
 			{
-				return std::make_shared<BinaryExpression>(GetLoc(start),
+				return std::make_shared<BinaryExpression>(Pos(start),
 					ExpressionType::LessThan, x, y);
 			}
 			else if (t.tag == Tag::GreaterThanOrEqual)
 			{
 				return std::make_shared<BinaryExpression>(
-					GetLoc(start), ExpressionType::GreaterThanOrEqual, x, y);
+					Pos(start), ExpressionType::GreaterThanOrEqual, x, y);
 			}
 			else
 			{
 				return std::make_shared<BinaryExpression>(
-					GetLoc(start), ExpressionType::LessThanOrEqual, x, y);
+					Pos(start), ExpressionType::LessThanOrEqual, x, y);
 			}
 		}
 		else
@@ -193,12 +193,12 @@ namespace cygni
 			auto y = ParseTerm();
 			if (t.tag == Tag::Add)
 			{
-				x = std::make_shared<BinaryExpression>(GetLoc(start),
+				x = std::make_shared<BinaryExpression>(Pos(start),
 					ExpressionType::Add, x, y);
 			}
 			else
 			{
-				x = std::make_shared<BinaryExpression>(GetLoc(start),
+				x = std::make_shared<BinaryExpression>(Pos(start),
 					ExpressionType::Subtract, x, y);
 			}
 		}
@@ -216,12 +216,12 @@ namespace cygni
 			auto y = ParseUnary();
 			if (t.tag == Tag::Multiply)
 			{
-				x = std::make_shared<BinaryExpression>(GetLoc(start),
+				x = std::make_shared<BinaryExpression>(Pos(start),
 					ExpressionType::Multiply, x, y);
 			}
 			else
 			{
-				x = std::make_shared<BinaryExpression>(GetLoc(start),
+				x = std::make_shared<BinaryExpression>(Pos(start),
 					ExpressionType::Divide, x, y);
 			}
 		}
@@ -235,21 +235,21 @@ namespace cygni
 		{
 			Advance();
 			auto x = ParseUnary();
-			return std::make_shared<UnaryExpression>(GetLoc(start),
+			return std::make_shared<UnaryExpression>(Pos(start),
 				ExpressionType::UnaryPlus, x);
 		}
 		else if (Look().tag == Tag::Subtract)
 		{
 			Advance();
 			auto x = ParseUnary();
-			return std::make_shared<UnaryExpression>(GetLoc(start),
+			return std::make_shared<UnaryExpression>(Pos(start),
 				ExpressionType::UnaryMinus, x);
 		}
 		else if (Look().tag == Tag::Not)
 		{
 			Advance();
 			auto x = ParseUnary();
-			return std::make_shared<UnaryExpression>(GetLoc(start), ExpressionType::Not,
+			return std::make_shared<UnaryExpression>(Pos(start), ExpressionType::Not,
 				x);
 		}
 		else
@@ -269,7 +269,7 @@ namespace cygni
 			if (Look().tag == Tag::LeftParenthesis)
 			{
 				auto arguments = ParseArguments();
-				x = std::make_shared<InvocationExpression>(GetLoc(start), x, arguments);
+				x = std::make_shared<InvocationExpression>(Pos(start), x, arguments);
 			}
 			else if (Look().tag == Tag::LeftBracket)
 			{
@@ -280,7 +280,7 @@ namespace cygni
 			{
 				Match(Tag::Dot);
 				auto name = Match(Tag::Identifier).text;
-				x = std::make_shared<MemberAccessExpression>(GetLoc(start), x, name);
+				x = std::make_shared<MemberAccessExpression>(Pos(start), x, name);
 			}
 		}
 		return x;
@@ -301,7 +301,7 @@ namespace cygni
 			const Token &start = Look();
 			Advance();
 			return std::make_shared<ConstantExpression>(
-				GetLoc(start), std::make_shared<Int32Type>(), v);
+				Pos(start), std::make_shared<Int32Type>(), v);
 		}
 		else if (Look().tag == Tag::Float)
 		{
@@ -309,7 +309,7 @@ namespace cygni
 			const Token &start = Look();
 			Advance();
 			return std::make_shared<ConstantExpression>(
-				GetLoc(start), std::make_shared<Float64Type>(), v);
+				Pos(start), std::make_shared<Float64Type>(), v);
 		}
 		else if (Look().tag == Tag::String)
 		{
@@ -317,21 +317,21 @@ namespace cygni
 			const Token &start = Look();
 			Advance();
 			return std::make_shared<ConstantExpression>(
-				GetLoc(start), std::make_shared<StringType>(), v);
+				Pos(start), std::make_shared<StringType>(), v);
 		}
 		else if (Look().tag == Tag::True)
 		{
 			const Token &start = Look();
 			Advance();
 			return std::make_shared<ConstantExpression>(
-				GetLoc(start), std::make_shared<BooleanType>(), U"true");
+				Pos(start), std::make_shared<BooleanType>(), U"true");
 		}
 		else if (Look().tag == Tag::False)
 		{
 			const Token &start = Look();
 			Advance();
 			return std::make_shared<ConstantExpression>(
-				GetLoc(start), std::make_shared<BooleanType>(), U"false");
+				Pos(start), std::make_shared<BooleanType>(), U"false");
 		}
 		else if (Look().tag == Tag::Identifier)
 		{
@@ -339,7 +339,7 @@ namespace cygni
 			const Token &start = Look();
 			Advance();
 			return std::make_shared<ParameterExpression>(
-				GetLoc(start), name, Type::Unknown());
+				Pos(start), name, Type::Unknown());
 		}
 		else if (Look().tag == Tag::New)
 		{
@@ -347,7 +347,7 @@ namespace cygni
 		}
 		else
 		{
-			throw ParserException(Look().line, Look().column,
+			throw ParserException(document, Look().line, Look().column,
 				Format(U"unexpected token type: {}", Enum<Tag>::ToString(Look().tag)));
 		}
 	}
@@ -362,7 +362,7 @@ namespace cygni
 			expressions.push_back(Statement());
 		}
 		Match(Tag::RightBrace);
-		return std::make_shared<BlockExpression>(GetLoc(start), expressions);
+		return std::make_shared<BlockExpression>(Pos(start), expressions);
 	}
 
 	ExpPtr Parser::IfStatement()
@@ -377,21 +377,21 @@ namespace cygni
 			if (Look().tag == Tag::If)
 			{
 				auto chunk = IfStatement();
-				return std::make_shared<ConditionalExpression>(GetLoc(start), condition,
+				return std::make_shared<ConditionalExpression>(Pos(start), condition,
 					ifTrue, chunk);
 			}
 			else
 			{
 				auto chunk = ParseBlock();
-				return std::make_shared<ConditionalExpression>(GetLoc(start), condition,
+				return std::make_shared<ConditionalExpression>(Pos(start), condition,
 					ifTrue, chunk);
 			}
 		}
 		else
 		{
 			auto empty =
-				std::make_shared<DefaultExpression>(GetLoc(Look()), Type::Void());
-			return std::make_shared<ConditionalExpression>(GetLoc(start), condition,
+				std::make_shared<DefaultExpression>(Pos(Look()), Type::Void());
+			return std::make_shared<ConditionalExpression>(Pos(start), condition,
 				ifTrue, empty);
 		}
 	}
@@ -411,16 +411,16 @@ namespace cygni
 				Match(Tag::Assign);
 				auto value = ParseOr();
 				auto variable =
-					std::make_shared<ParameterExpression>(GetLoc(Look()), name, type);
-				return std::make_shared<VarDefExpression>(GetLoc(start), variable, type,
+					std::make_shared<ParameterExpression>(Pos(Look()), name, type);
+				return std::make_shared<VarDefExpression>(Pos(start), variable, type,
 					value);
 			}
 			else
 			{ /* var x: Int */
-				auto value = std::make_shared<DefaultExpression>(GetLoc(Look()), type);
+				auto value = std::make_shared<DefaultExpression>(Pos(Look()), type);
 				auto variable =
-					std::make_shared<ParameterExpression>(GetLoc(Look()), name, type);
-				return std::make_shared<VarDefExpression>(GetLoc(start), variable, type,
+					std::make_shared<ParameterExpression>(Pos(Look()), name, type);
+				return std::make_shared<VarDefExpression>(Pos(start), variable, type,
 					value);
 			}
 		}
@@ -430,8 +430,8 @@ namespace cygni
 			auto type = std::make_shared<UnknownType>();
 			auto value = ParseOr();
 			auto variable =
-				std::make_shared<ParameterExpression>(GetLoc(Look()), name, type);
-			return std::make_shared<VarDefExpression>(GetLoc(start), variable, type,
+				std::make_shared<ParameterExpression>(Pos(Look()), name, type);
+			return std::make_shared<VarDefExpression>(Pos(start), variable, type,
 				value);
 		}
 	}
@@ -448,13 +448,13 @@ namespace cygni
 		{
 			Match(Tag::Assign);
 			auto value = ParseOr();
-			return FieldDef(GetLoc(start),
+			return FieldDef(Pos(start),
 				modifier, isStatic, annotations, name, type, value);
 		}
 		else
 		{
-			auto value = std::make_shared<DefaultExpression>(GetLoc(Look()), type);
-			return FieldDef(GetLoc(start),
+			auto value = std::make_shared<DefaultExpression>(Pos(Look()), type);
+			return FieldDef(Pos(start),
 				modifier, isStatic, annotations, name, type, value);
 		}
 	}
@@ -483,14 +483,14 @@ namespace cygni
 		if (Look().tag == Tag::LeftBrace)
 		{
 			auto body = ParseBlock();
-			return MethodDef(GetLoc(start), modifier, isStatic, selfType,
+			return MethodDef(Pos(start), modifier, isStatic, selfType,
 				annotations, name, parameters, returnType, body);
 		}
 		else
 		{
 			auto empty =
-				std::make_shared<DefaultExpression>(GetLoc(Look()), returnType);
-			return MethodDef(GetLoc(start), modifier, isStatic, selfType,
+				std::make_shared<DefaultExpression>(Pos(Look()), returnType);
+			return MethodDef(Pos(start), modifier, isStatic, selfType,
 				annotations, name, parameters, returnType, empty);
 		}
 	}
@@ -502,7 +502,7 @@ namespace cygni
 		Match(Tag::Colon);
 		auto type = ParseType();
 		auto parameter =
-			std::make_shared<ParameterExpression>(GetLoc(start), name, type);
+			std::make_shared<ParameterExpression>(Pos(start), name, type);
 		return parameter;
 	}
 
@@ -542,7 +542,7 @@ namespace cygni
 		}
 		else
 		{
-			throw ParserException(Look().line, Look().column,
+			throw ParserException(document, Look().line, Look().column,
 				Format(U"wrong number of type arguments for the 'Array' type. should be 1 instead of {}.", static_cast<int>(args.size())));
 		}
 	}
@@ -552,7 +552,7 @@ namespace cygni
 		const Token &start = Look();
 		Match(Tag::Return);
 		auto value = ParseOr();
-		return std::make_shared<ReturnExpression>(GetLoc(start), value);
+		return std::make_shared<ReturnExpression>(Pos(start), value);
 	}
 
 	std::vector<TypePtr> Parser::ParseTypeArguments()
@@ -575,7 +575,7 @@ namespace cygni
 		Match(Tag::While);
 		auto condition = ParseOr();
 		auto body = ParseBlock();
-		return std::make_shared<WhileExpression>(GetLoc(start), condition, body);
+		return std::make_shared<WhileExpression>(Pos(start), condition, body);
 	}
 
 	std::shared_ptr<ClassInfo> Parser::ParseDefClass()
@@ -583,7 +583,7 @@ namespace cygni
 		const Token &start = Look();
 		Match(Tag::Class);
 		auto name = Match(Tag::Identifier).text;
-		auto info = std::make_shared<ClassInfo>(GetLoc(start), route, name);
+		auto info = std::make_shared<ClassInfo>(Pos(start), route, name);
 
 		if (Look().tag == Tag::UpperBound)
 		{
@@ -605,18 +605,18 @@ namespace cygni
 			{
 				// ParseVar field: Type
 				auto field = ParseFieldDefinition(access, annotations, false);
-				info->fields.Add(field.name, field);
+				info->fieldDefs.Add(field.name, field);
 			}
 			else if (Look().tag == Tag::Def)
 			{
 				// def method(args..) { }
 				auto selfType = std::make_shared<ClassType>(route, name);
 				auto method = ParseMethodDefinition(access, annotations, false, selfType);
-				info->methods.Add(method.name, method);
+				info->methodDefs.Add(method.name, method);
 			}
 			else
 			{
-				throw ParserException(Look().line, Look().column,
+				throw ParserException(document, Look().line, Look().column,
 					Format(U"unexpected token type '{}', expecting 'var' or 'def'", Enum<Tag>::ToString(Look().tag)));
 			}
 		}
@@ -629,7 +629,7 @@ namespace cygni
 		const Token &start = Look();
 		Match(Tag::Module);
 		auto name = Match(Tag::Identifier).text;
-		auto info = std::make_shared<ModuleInfo>(GetLoc(start), route, name);
+		auto info = std::make_shared<ModuleInfo>(Pos(start), route, name);
 		Match(Tag::LeftBrace);
 		while (!IsEof() && Look().tag != Tag::RightBrace)
 		{
@@ -651,7 +651,7 @@ namespace cygni
 			}
 			else
 			{
-				throw ParserException(Look().line, Look().column,
+				throw ParserException(document, Look().line, Look().column,
 					Format(U"unexpected token type '{}', expecting 'var' or 'def'", Enum<Tag>::ToString(Look().tag)));
 			}
 		}
@@ -664,7 +664,7 @@ namespace cygni
 		const Token &start = Look();
 		Match(Tag::Module);
 		auto name = Match(Tag::Identifier).text;
-		auto info = std::make_shared<InterfaceInfo>(GetLoc(start), name);
+		auto info = std::make_shared<InterfaceInfo>(Pos(start), name);
 		if (Look().tag == Tag::UpperBound)
 		{
 			Match(Tag::UpperBound);
@@ -688,7 +688,7 @@ namespace cygni
 			}
 			else
 			{
-				throw ParserException(Look().line, Look().column,
+				throw ParserException(document, Look().line, Look().column,
 					Format(U"unexpected token type '{}', expecting 'def'", Enum<Tag>::ToString(Look().tag)));
 			}
 		}
@@ -720,7 +720,7 @@ namespace cygni
 		Match(Tag::At);
 		auto name = Match(Tag::Identifier).text;
 		auto arguments = ParseArguments();
-		return AnnotationInfo(GetLoc(start), name, arguments);
+		return AnnotationInfo(Pos(start), name, arguments);
 	}
 
 	Table<std::u32string, AnnotationInfo> Parser::ParseAnnotationList()
@@ -762,7 +762,7 @@ namespace cygni
 		auto name = Match(Tag::Identifier).text;
 		if (Look().tag != Tag::LeftBrace)
 		{
-			return std::make_shared<NewExpression>(GetLoc(start),
+			return std::make_shared<NewExpression>(Pos(start),
 				std::make_shared<ClassType>(route, name),
 				std::vector<Argument>{});
 		}
@@ -777,7 +777,7 @@ namespace cygni
 				arguments.push_back(ParseArgument());
 			}
 			Match(Tag::RightBrace);
-			return std::make_shared<NewExpression>(GetLoc(start),
+			return std::make_shared<NewExpression>(Pos(start),
 				std::make_shared<ClassType>(route, name),
 				arguments);
 		}
@@ -814,7 +814,7 @@ namespace cygni
 		while (Look().tag == Tag::Import)
 		{
 			Match(Tag::Import);
-			importedPackages.emplace_back(GetLoc(Look()), ParsePackageRoute());
+			importedPackages.emplace_back(Pos(Look()), ParsePackageRoute());
 		}
 		return importedPackages;
 	}
@@ -830,7 +830,7 @@ namespace cygni
 			auto alias = Match(Tag::Identifier).text;
 			auto originalName = route.back();
 			route.pop_back();
-			typeAliases.Add(alias, TypeAlias(GetLoc(token), route, originalName, alias));
+			typeAliases.Add(alias, TypeAlias(Pos(token), route, originalName, alias));
 		}
 		return typeAliases;
 	}

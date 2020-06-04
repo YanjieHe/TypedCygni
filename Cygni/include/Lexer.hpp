@@ -12,6 +12,7 @@ namespace cygni
 	class Lexer
 	{
 	private:
+		std::shared_ptr<FileLocation> document;
 		std::u32string code;
 		int line;
 		int column;
@@ -24,7 +25,7 @@ namespace cygni
 		static inline const char32_t BACKSLASH = U'\\';
 
 	public:
-		explicit Lexer(const std::u32string &code);
+		Lexer(std::shared_ptr<FileLocation> document, const std::u32string &code);
 
 		std::vector<Token> ReadAll();
 
@@ -108,7 +109,7 @@ namespace cygni
 			}
 			else
 			{
-				throw LexicalException(line, column, Format(U"unexpected character '{}'", Peek()));
+				throw LexicalException(document, line, column, Format(U"unexpected character '{}'", Peek()));
 			}
 		}
 
@@ -120,7 +121,7 @@ namespace cygni
 			}
 			else
 			{
-				throw LexicalException(line, column, Format(U"unexpected character '{}'", Peek()));
+				throw LexicalException(document, line, column, Format(U"unexpected character '{}'", Peek()));
 			}
 		}
 
@@ -132,7 +133,7 @@ namespace cygni
 			}
 			else
 			{
-				throw LexicalException(line, column, Format(U"unexpected character '{}'", Peek()));
+				throw LexicalException(document, line, column, Format(U"unexpected character '{}'", Peek()));
 			}
 		}
 	};
