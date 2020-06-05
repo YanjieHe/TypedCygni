@@ -23,10 +23,10 @@ namespace cygni
 	}
 	void ByteCode::AppendUShort(size_t value)
 	{
-		if (value > 65535)
+		if (value > std::numeric_limits<uint16_t>::max())
 		{
 			// TO DO: better location information
-			throw CompilerException(SourcePosition(), U"unsigned 16-bit integer overflow");
+			throw std::invalid_argument("unsigned 16-bit integer overflow");
 		}
 		else
 		{
@@ -77,7 +77,8 @@ namespace cygni
 			break;
 		}
 		default:
-			throw NotImplementedException(Format(U"not supported type code: {}", Enum<TypeCode>::ToString(typeCode)));
+			throw NotImplementedException(
+				Format(U"not supported type code: {}", Enum<TypeCode>::ToString(typeCode)));
 		}
 	}
 	void ByteCode::AppendType(TypePtr type)
@@ -117,7 +118,7 @@ namespace cygni
 	void ByteCode::AppendString(const std::u32string & u32str)
 	{
 		std::string u8str = UTF32ToUTF8(u32str);
-		AppendUShort(static_cast<int>(u8str.size()));
+		AppendUShort(u8str.size());
 		for (Byte c : u8str)
 		{
 			Append(c);
@@ -152,38 +153,53 @@ namespace cygni
 		classCount = classCount + 1;
 		moduleCount = moduleCount + 1;
 
-		std::vector<std::shared_ptr<ClassInfo>> classes(classCount);
-		std::vector<std::shared_ptr<ModuleInfo>> modules(moduleCount);
-
-		for (auto pkg : project.packages)
+		if (InRange<uint16_t>(classCount) && InRange<uint16_t>(moduleCount))
 		{
-			for (auto classInfo : pkg->classes.values)
+
+			std::vector<std::shared_ptr<ClassInfo>> classes(classCount);
+			std::vector<std::shared_ptr<ModuleInfo>> modules(moduleCount);
+
+			for (auto pkg : project.packages)
 			{
-				classes.at(*classInfo->index) = classInfo;
+				for (auto classInfo : pkg->classes.values)
+				{
+					classes.at(*classInfo->index) = classInfo;
+				}
+				for (auto moduleInfo : pkg->modules)
+				{
+					modules.at(*moduleInfo->index) = moduleInfo;
+				}
 			}
-			for (auto moduleInfo : pkg->modules)
+
+			ByteCode byteCode;
+			CompileMainFunction(modules, byteCode);
+
+			byteCode.AppendUShort(classes.size());
+			byteCode.AppendUShort(modules.size());
+
+			for (auto classInfo : classes)
 			{
-				modules.at(*moduleInfo->index) = moduleInfo;
+				CompileClassInfo(classInfo, byteCode);
+			}
+
+			for (auto moduleInfo : modules)
+			{
+				CompileModuleInfo(moduleInfo, byteCode);
+			}
+
+			return byteCode;
+		}
+		else
+		{
+			if (!InRange<uint16_t>(classCount))
+			{
+				throw CompilerException(SourcePosition(), U"class count exceed 65535");
+			}
+			else
+			{
+				throw CompilerException(SourcePosition(), U"module count exceed 65535");
 			}
 		}
-
-		ByteCode byteCode;
-		CompileMainFunction(modules, byteCode);
-
-		byteCode.AppendUShort(static_cast<int>(classes.size()));
-		byteCode.AppendUShort(static_cast<int>(modules.size()));
-
-		for (auto classInfo : classes)
-		{
-			CompileClassInfo(classInfo, byteCode);
-		}
-
-		for (auto moduleInfo : modules)
-		{
-			CompileModuleInfo(moduleInfo, byteCode);
-		}
-
-		return byteCode;
 	}
 	void Compiler::CompileBinary(std::shared_ptr<BinaryExpression> node,
 		const ConstantMap& constantMap,
@@ -552,11 +568,9 @@ namespace cygni
 						byteCode.AppendOp(OpCode::PUSH_STRING);
 						byteCode.AppendUShort(index);
 
-						byteCode.AppendOp(OpCode::PUSH_FUNCTION);
+						byteCode.AppendOp(OpCode::INVOKE_FUNCTION);
 						byteCode.AppendUShort(*(*moduleInfo)->index);
 						byteCode.AppendUShort(*methodInfo.index);
-
-						byteCode.AppendOp(OpCode::INVOKE);
 					}
 					else
 					{
@@ -628,6 +642,18 @@ namespace cygni
 		// constant pool
 		CompileConstantPool(info->constantMap, byteCode);
 
+		//for (auto pair : info->virtualMethodTable)
+		//{
+		//	auto interfaceName = 
+		//}
+		//for (auto superClass : info->superClasses)
+		//{
+		//	if (superClass->typeCode == TypeCode::Interface)
+		//	{
+		//		auto interfaceType = std::static_pointer_cast<InterfaceType>(superClass);
+		//		auto interfaceInfo = project.GetInterface(interfaceType)
+		//	}
+		//}
 		byteCode.AppendUShort(info->methodDefs.Size());
 		for (const auto& method : info->methodDefs.values)
 		{
@@ -679,7 +705,7 @@ namespace cygni
 			{
 				byteCode.AppendUShort(method.parameters.size());
 			}
-			byteCode.AppendUShort(static_cast<int>(method.localVariables.size()));
+			byteCode.AppendUShort(method.localVariables.size());
 			ByteCode funcCode;
 			CompileExpression(method.body, constantMap, funcCode);
 			byteCode.AppendUShort(funcCode.Size());
@@ -768,17 +794,19 @@ namespace cygni
 			break;
 		}
 		case LocationType::ModuleMethod: {
-			byteCode.AppendOp(OpCode::PUSH_FUNCTION);
-			byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->index);
-			byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->offset);
+			std::cout << "push module method: " << parameter->name << std::endl;
+			//byteCode.AppendOp(OpCode::PUSH_FUNCTION);
+			//byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->index);
+			//byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->offset);
 			break;
 		}
 		case LocationType::ClassMethod: {
-			byteCode.AppendOp(OpCode::PUSH_LOCAL_OBJECT);
-			byteCode.AppendUShort(0); /* this */
-			byteCode.AppendOp(OpCode::PUSH_METHOD);
-			byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->index);
-			byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->offset);
+			std::cout << "push class method: " << parameter->name << std::endl;
+			//byteCode.AppendOp(OpCode::PUSH_LOCAL_OBJECT);
+			//byteCode.AppendUShort(0); /* this */
+			//byteCode.AppendOp(OpCode::PUSH_METHOD);
+			//byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->index);
+			//byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->offset);
 			break;
 		}
 		case LocationType::ModuleName: {
@@ -875,14 +903,77 @@ namespace cygni
 				// omit
 				// Size
 			}
-			else
+			else if (function->selfType->typeCode == TypeCode::Module)
 			{
 				for (auto arg : node->arguments)
 				{
 					CompileExpression(arg.value, constantMap, byteCode);
 				}
-				CompileExpression(node->expression, constantMap, byteCode);
-				byteCode.AppendOp(OpCode::INVOKE);
+				//CompileExpression(node->expression, constantMap, byteCode);
+				auto moduleType = std::static_pointer_cast<ModuleType>(function->selfType);
+				if (auto moduleInfo = project.GetModule(moduleType->route, moduleType->name))
+				{
+					byteCode.AppendOp(OpCode::INVOKE_FUNCTION);
+					if ((*moduleInfo)->methods.ContainsKey(function->name))
+					{
+						auto& method = (*moduleInfo)->methods.GetValueByKey(function->name);
+						byteCode.AppendUShort(*(*moduleInfo)->index);
+						byteCode.AppendUShort(*method.index);
+					}
+					else
+					{
+						throw CompilerException(node->position,
+							Format(U"missing module function '{}'", function->name));
+					}
+				}
+				else
+				{
+					throw CompilerException(node->position,
+						Format(U"missing module '{}'", moduleType->ToString()));
+				}
+			}
+			else if (function->selfType->typeCode == TypeCode::Class)
+			{
+				if (node->expression->nodeType == ExpressionType::MemberAccess)
+				{
+					auto memberAccessExp = std::static_pointer_cast<MemberAccessExpression>(node->expression);
+					CompileExpression(memberAccessExp->object, constantMap, byteCode);
+				}
+				else if (node->expression->nodeType == ExpressionType::Parameter)
+				{
+					byteCode.AppendOp(OpCode::PUSH_LOCAL_OBJECT);
+					byteCode.AppendUShort(0); /* this */
+				}
+				else
+				{
+					throw CompilerException(node->position, U"not supported method call");
+				}
+				for (auto arg : node->arguments)
+				{
+					CompileExpression(arg.value, constantMap, byteCode);
+				}
+				auto classType = std::static_pointer_cast<ClassType>(function->selfType);
+				if (auto classInfo = project.GetClass(classType->route, classType->name))
+				{
+					byteCode.AppendOp(OpCode::INVOKE_METHOD);
+					if ((*classInfo)->methods.ContainsKey(function->name))
+					{
+						auto& method = (*classInfo)->methods.GetValueByKey(function->name);
+						byteCode.AppendUShort(*(*classInfo)->index);
+						byteCode.AppendUShort(*method.index);
+					}
+					else
+					{
+						throw CompilerException(node->position,
+							Format(U"missing class method '{}'", function->name));
+					}
+				}
+				else
+				{
+					throw CompilerException(node->position,
+						Format(U"missing class '{}'", classType->ToString()));
+				}
+
 			}
 		}
 		else if (node->expression->type->typeCode == TypeCode::Array)
@@ -982,9 +1073,10 @@ namespace cygni
 		}
 		else if (location->type == LocationType::ModuleMethod)
 		{
-			byteCode.AppendOp(OpCode::PUSH_FUNCTION);
+			std::cout << "push module method: " << node->field << std::endl;
+			/*byteCode.AppendOp(OpCode::PUSH_FUNCTION);
 			byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->index);
-			byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->offset);
+			byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->offset);*/
 		}
 		else if (location->type == LocationType::ClassField)
 		{
@@ -1024,9 +1116,10 @@ namespace cygni
 		}
 		else if (location->type == LocationType::ClassMethod)
 		{
-			byteCode.AppendOp(OpCode::PUSH_METHOD);
-			byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->index);
-			byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->offset);
+			std::cout << "push class method: " << node->field << std::endl;
+			//byteCode.AppendOp(OpCode::PUSH_METHOD);
+			//byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->index);
+			//byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->offset);
 		}
 		else
 		{

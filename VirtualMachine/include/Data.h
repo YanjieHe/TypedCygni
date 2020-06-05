@@ -48,11 +48,18 @@ typedef struct
 	}u;
 } Array;
 
+typedef struct
+{
+	uint16_t n_methods;
+	Function** methods;
+}VirtualTable;
+
 typedef struct Object
 {
 	uint8_t marked: 1;
-	uint8_t is_array;
+	uint8_t is_array: 1;
 	uint16_t class_index;
+	VirtualTable* v_table;
 	union
 	{
 		Value* fields;
@@ -129,6 +136,13 @@ typedef struct
 	Function** methods;
 	ConstantPool constant_pool;
 } ClassInfo;
+
+typedef struct
+{
+	char* name;
+	uint16_t n_classes;
+	VirtualTable* v_tables;
+} InterfaceInfo;
 
 typedef struct
 {

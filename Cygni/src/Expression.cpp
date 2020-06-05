@@ -52,12 +52,12 @@ namespace cygni
 		: Expression(position, ExpressionType::Invoke),
 		expression{ expression }, arguments{ arguments } {}
 
-	MethodCallExpression::MethodCallExpression(SourcePosition position,
-		ExpPtr object,
-		std::shared_ptr<MethodDef> method,
-		ExpList arguments)
-		: Expression(position, ExpressionType::MethodCall), object{ object },
-		method{ method }, arguments{ arguments } {}
+	//MethodCallExpression::MethodCallExpression(SourcePosition position,
+	//	ExpPtr object,
+	//	std::u32string method,
+	//	std::vector<Argument> arguments)
+	//	: Expression(position, ExpressionType::MethodCall), object{ object },
+	//	method{ method }, arguments{ arguments } {}
 
 	NewExpression::NewExpression(SourcePosition position, TypePtr type,
 		std::vector<Argument> arguments)
@@ -101,7 +101,7 @@ namespace cygni
 		{
 			return p->type;
 		});
-		this->signature = std::make_shared<FunctionType>(selfType, parameterTypes, returnType);
+		this->signature = std::make_shared<FunctionType>(selfType, name, parameterTypes, returnType);
 	}
 
 	ClassInfo::ClassInfo(SourcePosition position, PackageRoute route, std::u32string name)
@@ -132,22 +132,6 @@ namespace cygni
 		std::u32string field)
 		: Expression(position, ExpressionType::MemberAccess), object{ object },
 		field{ field } {}
-
-	//ConstructorInfo::ConstructorInfo(
-	//	SourceLocation location, AccessModifier modifier,
-	//	Table<std::u32string, AnnotationInfo> annotations, std::u32string name,
-	//	std::vector<std::shared_ptr<ParameterExpression>> parameters,
-	//	TypePtr returnType, ExpPtr body)
-	//	: position{position}, modifier{ modifier }, annotations{ annotations },
-	//	name{ name }, parameters{ parameters }, returnType{ returnType }, body{ body } {
-	//	std::vector<TypePtr> parameterTypes(parameters.size());
-	//	std::transform(parameters.begin(), parameters.end(), parameterTypes.begin(),
-	//		[](const std::shared_ptr<ParameterExpression> &p) -> TypePtr
-	//	{
-	//		return p->type;
-	//	});
-	//	this->signature = std::make_shared<FunctionType>(parameterTypes, returnType);
-	//}
 
 	Argument::Argument(ExpPtr value) : name(), value{ value } {}
 

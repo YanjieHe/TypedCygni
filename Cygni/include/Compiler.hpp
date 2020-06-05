@@ -3,6 +3,7 @@
 #include "Expression.hpp"
 #include <cstdint>
 #include <vector>
+#include <numeric>
 
 namespace cygni
 {
@@ -66,6 +67,17 @@ namespace cygni
 			const ConstantMap& constantMap, ByteCode& byteCode);
 		void CompileMainFunction(const std::vector<std::shared_ptr<ModuleInfo>>& modules, ByteCode& byteCode);
 		void CompileConstantPool(const ConstantMap& constantMap, ByteCode& byteCode);
+
+		template <typename T>
+		static inline bool InRange(int value)
+		{
+			return value >= std::numeric_limits<T>::min() && value <= std::numeric_limits<T>::max();
+		}
+		template <typename T>
+		static inline bool InRange(size_t value)
+		{
+			return value <= std::numeric_limits<T>::max();
+		}
 	};
 } // namespace cygni
 

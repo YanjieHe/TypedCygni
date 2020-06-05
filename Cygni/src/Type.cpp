@@ -140,8 +140,8 @@ namespace cygni
 		return U"Array[" + elementType->ToString() + U"]";
 	}
 
-	FunctionType::FunctionType(TypePtr selfType, std::vector<TypePtr> parameters, TypePtr returnType)
-		: Type(TypeCode::Function), selfType{ selfType }, parameters{ parameters }, returnType{ returnType } {
+	FunctionType::FunctionType(TypePtr selfType, std::u32string name, std::vector<TypePtr> parameters, TypePtr returnType)
+		: Type(TypeCode::Function), selfType{ selfType }, name{ name }, parameters{ parameters }, returnType{ returnType } {
 	}
 
 	bool FunctionType::Match(const std::vector<TypePtr> &args) const

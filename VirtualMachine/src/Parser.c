@@ -334,7 +334,7 @@ void view_function(Function * function, Executable* exe)
 		{
 			op_code = function->u.func->code[i];
 			op_name = opcode_info[op_code][0];
-			if (strcmp(op_name, "PUSH_FUNCTION") == 0)
+			if (strcmp(op_name, "INVOKE_FUNCTION") == 0)
 			{
 				printf("\t\t%d: %s", i, op_name);
 				i++;

@@ -342,45 +342,15 @@ namespace cygni
 
 	Token Lexer::ReadOperator()
 	{
-		static std::unordered_map<std::u32string, Tag> operators = {
-			{U"+", Tag::Add},
-			{U"-", Tag::Subtract},
-			{U"*", Tag::Multiply},
-			{U"/", Tag::Divide},
-			{U"%", Tag::Modulo},
-			{U">", Tag::GreaterThan},
-			{U"<", Tag::LessThan},
-			{U">=", Tag::GreaterThanOrEqual},
-			{U"<=", Tag::LessThanOrEqual},
-			{U"==", Tag::Equal},
-			{U"!=", Tag::NotEqual},
-			{U"(", Tag::LeftParenthesis},
-			{U")", Tag::RightParenthesis},
-			{U"[", Tag::LeftBracket},
-			{U"]", Tag::RightBracket},
-			{U"{", Tag::LeftBrace},
-			{U"}", Tag::RightBrace},
-			{U":", Tag::Colon},
-			{U",", Tag::Comma},
-			{U".", Tag::Dot},
-			{U";", Tag::Semicolon},
-			{U"=", Tag::Assign},
-			{U"->", Tag::RightArrow},
-			{U"=>", Tag::GoesTo},
-			{U"@", Tag::At},
-			{U"<:", Tag::UpperBound},
-			{U":>", Tag::LowerBound}
-		};
-
 		char32_t c1 = Peek();
 		std::u32string s1;
 		s1.push_back(c1);
 		Forward();
 		if (IsEof())
 		{
-			if (operators.find(s1) != operators.end())
+			if (Token::operators.find(s1) != Token::operators.end())
 			{
-				return Token(line, column, operators[s1], s1);
+				return Token(line, column, Token::operators[s1], s1);
 			}
 			else
 			{
@@ -393,14 +363,14 @@ namespace cygni
 			std::u32string s12;
 			s12.push_back(c1);
 			s12.push_back(c2);
-			if (operators.find(s12) != operators.end())
+			if (Token::operators.find(s12) != Token::operators.end())
 			{
 				Forward();
-				return Token(line, column, operators[s12], s12);
+				return Token(line, column, Token::operators[s12], s12);
 			}
-			else if (operators.find(s1) != operators.end())
+			else if (Token::operators.find(s1) != Token::operators.end())
 			{
-				return Token(line, column, operators[s1], s1);
+				return Token(line, column, Token::operators[s1], s1);
 			}
 			else
 			{

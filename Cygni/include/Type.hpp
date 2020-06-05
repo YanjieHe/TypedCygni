@@ -175,14 +175,30 @@ namespace cygni
 	{
 	public:
 		TypePtr selfType;
+		std::u32string name;
 		std::vector<TypePtr> parameters;
 		TypePtr returnType;
 
-		FunctionType(TypePtr selfType, std::vector<TypePtr> parameters, TypePtr returnType);
+		FunctionType(TypePtr selfType, std::u32string name, std::vector<TypePtr> parameters, TypePtr returnType);
 
 		bool Match(const std::vector<TypePtr> &args) const;
 
 		std::u32string ToString() const override;
+	};
+
+	class TypeGraph
+	{
+	public:
+		class Edge
+		{
+		public:
+			int src;
+			int dest;
+		};
+		int V; // number of vertices
+		int E; // number of edges
+
+		std::vector<std::vector<Edge>> edges;
 	};
 
 } // namespace cygni

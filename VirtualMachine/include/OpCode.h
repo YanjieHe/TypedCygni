@@ -134,9 +134,9 @@ enum OpCode
 	JUMP = 127,
 	JUMP_IF_TRUE = 128,
 	JUMP_IF_FALSE = 129,
-	PUSH_FUNCTION = 130,
-	PUSH_METHOD = 131,
-	INVOKE = 132,
+	INVOKE_FUNCTION = 130,
+	INVOKE_METHOD = 131,
+	INVOKE_INTERFACE = 132,
 	RETURN_I32 = 133,
 	RETURN_I64 = 134,
 	RETURN_F32 = 135,
@@ -171,25 +171,5 @@ typedef enum
 } TypeTag;
 
 
-static const char* TypeTagToString(TypeTag tag)
-{
-	switch (tag)
-	{
-	case TYPE_I32:
-		return "TYPE_I32";
-	case TYPE_I64:
-		return "TYPE_I64";
-	case TYPE_F32:
-		return "TYPE_F32";
-	case TYPE_F64:
-		return "TYPE_F64";
-	case TYPE_STRING:
-		return "TYPE_STRING";
-	case TYPE_OBJECT:
-		return "TYPE_OBJECT";
-	default:
-		fprintf(stderr, __FUNCTION__);
-		fprintf(stderr, "type tag enumeration\n");
-	}
-}
+const char* type_tag_to_string(TypeTag tag);
 #endif // VM_OP_CODE_H

@@ -74,9 +74,9 @@ void run(Machine* machine)
 	while (pc < cur_func->u.func->code_len)
 	{
 		op = code[pc];
-		//view_stack(machine, stack, sp);
-		//printf("function: %s, op = %s, sp = %d, fp = %d, pc = %d\n",
-		//	cur_func->name, opcode_info[op][0], sp, fp, pc);
+		view_stack(machine, stack, sp);
+		printf("function: %s, op = %s, sp = %d, fp = %d, pc = %d\n",
+			cur_func->name, opcode_info[op][0], sp, fp, pc);
 		pc = pc + 1;
 		switch (op)
 		{
@@ -773,8 +773,12 @@ void run(Machine* machine)
 			stack[sp].u.gc_obj = gc_obj;
 			break;
 		}
-		case INVOKE: {
-			next_func = stack[sp].u.function;
+		case INVOKE_FUNCTION: {
+			READ_USHORT(index);
+			READ_USHORT(offset);
+			next_func = machine->exe->modules[index].functions[offset];
+			sp++;
+			stack[sp].u.function = next_func;
 			if (next_func->is_native_function)
 			{
 				if (next_func->u.nv->is_loaded == false)
@@ -791,9 +795,10 @@ void run(Machine* machine)
 			}
 			else
 			{
-				//printf("func name = %s, sp = %d, args size = %d\n", next_func->name, sp, next_func->u.func_info->args_size);
+				printf("func name = %s, sp = %d, args size = %d\n", next_func->name, sp, next_func->u.func->args_size);
 				cur_fp = fp;
 				fp = sp - next_func->u.func->args_size;
+				printf("fp = %d\n", fp);
 				stack_index = fp + next_func->u.func->args_size + next_func->u.func->locals;
 				stack[stack_index].u.function = cur_func;
 				stack[stack_index + 1].u.i32_v = pc;
@@ -806,7 +811,61 @@ void run(Machine* machine)
 			}
 			break;
 		}
-		case PUSH_FUNCTION: {
+		case INVOKE_METHOD: {
+			READ_USHORT(index);
+			READ_USHORT(offset);
+
+			next_func = machine->exe->classes[index].methods[offset];
+			sp++;
+			stack[sp].u.function = next_func;
+
+			cur_fp = fp;
+			fp = sp - next_func->u.func->args_size;
+			stack_index = fp + next_func->u.func->args_size + next_func->u.func->locals;
+			stack[stack_index].u.function = cur_func;
+			stack[stack_index + 1].u.i32_v = pc;
+			stack[stack_index + 2].u.i32_v = cur_fp;
+			cur_func = next_func;
+			pc = 0;
+			sp = stack_index + 3;
+			code = next_func->u.func->code;
+			constant_pool = next_func->u.func->constant_pool;
+			break;
+		}
+		//case INVOKE: {
+		//	next_func = stack[sp].u.function;
+		//	if (next_func->is_native_function)
+		//	{
+		//		if (next_func->u.nv->is_loaded == false)
+		//		{
+		//			next_func->u.nv->function_pointer = load_library_function(
+		//				machine->state,
+		//				next_func->u.nv->lib_path,
+		//				next_func->u.nv->func_name);
+		//			next_func->u.nv->is_loaded = true;
+		//		}
+		//		sp = sp - next_func->u.nv->args_size;
+		//		//printf("call native function from sp = %d\n", sp);
+		//		next_func->u.nv->function_pointer(&(stack[sp])); // return value omitted
+		//	}
+		//	else
+		//	{
+		//		//printf("func name = %s, sp = %d, args size = %d\n", next_func->name, sp, next_func->u.func_info->args_size);
+		//		cur_fp = fp;
+		//		fp = sp - next_func->u.func->args_size;
+		//		stack_index = fp + next_func->u.func->args_size + next_func->u.func->locals;
+		//		stack[stack_index].u.function = cur_func;
+		//		stack[stack_index + 1].u.i32_v = pc;
+		//		stack[stack_index + 2].u.i32_v = cur_fp;
+		//		cur_func = next_func;
+		//		pc = 0;
+		//		sp = stack_index + 3;
+		//		code = next_func->u.func->code;
+		//		constant_pool = next_func->u.func->constant_pool;
+		//	}
+		//	break;
+		//}
+		/*case PUSH_FUNCTION: {
 			READ_USHORT(index);
 			READ_USHORT(offset);
 			sp++;
@@ -819,7 +878,7 @@ void run(Machine* machine)
 			sp++;
 			stack[sp].u.function = machine->exe->classes[index].methods[offset];
 			break;
-		}
+		}*/
 		case NEW: {
 			READ_USHORT(index);
 			gc_obj = (Object*)malloc(sizeof(Object));
@@ -952,7 +1011,7 @@ void view_stack(Machine* machine, Value* stack, int sp)
 		{
 			if (stack[i].u.gc_obj->is_array)
 			{
-				printf("[ARRAY]  %d", stack[i].u.gc_obj->u.array->type);
+				printf("[ARRAY]  [%s]", type_tag_to_string(stack[i].u.gc_obj->u.array->type));
 			}
 			else
 			{
@@ -964,14 +1023,6 @@ void view_stack(Machine* machine, Value* stack, int sp)
 		{
 			printf("[VALUE]  %d\n", stack[i].u.i32_v);
 		}
-		//if (stack[i].is_gc_obj)
-		//{
-		//	printf("(OBJ)");
-		//}
-		//else
-		//{
-		//	printf("%d ", stack[i].u.i32_v);
-		//}
 	}
 	printf("\n");
 }

@@ -57,7 +57,7 @@ namespace cygni
 		auto scopeFactory = ScopeFactory<TypePtr>::Create();
 		typeChecker.scopeFactory = scopeFactory;
 		auto globalScope = scopeFactory->New();
-		typeChecker.VisitProject(globalScope);
+		typeChecker.CheckProject(globalScope);
 		cout << "Complete Type Checking!" << endl;
 
 		/* pass 7: collect local variables */

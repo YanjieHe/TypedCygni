@@ -3,6 +3,7 @@
 
 #include "Enum.hpp"
 #include <string>
+#include <unordered_map>
 
 namespace cygni
 {
@@ -19,8 +20,9 @@ namespace cygni
 
 		Token(int line, int column, Tag tag, const std::u32string& text);
 
-	private:
 		static Tag IdentifyKeyword(Tag tag, const std::u32string& text);
+		static std::unordered_map<std::u32string, Tag> keywords;
+		static std::unordered_map<std::u32string, Tag> operators;
 	};
 
 } // namespace cygni

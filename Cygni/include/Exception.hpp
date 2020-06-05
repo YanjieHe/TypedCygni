@@ -116,8 +116,16 @@ namespace cygni
 			auto actualStartColumn = std::to_string(position.startCol + 1);
 			auto actualEndLine = std::to_string(position.endLine + 1);
 			auto actualEndColumn = std::to_string(position.endCol + 1);
-			return Format(U"File: {} Compiler Error: ({}, {}) - ({}, {}) {}",
-				position.document->fileName, actualStartLine, actualStartColumn, actualEndLine, actualEndColumn, message);
+			if (position.document)
+			{
+				return Format(U"File: {} Compiler Error: ({}, {}) - ({}, {}) {}",
+					position.document->fileName, actualStartLine, actualStartColumn, actualEndLine, actualEndColumn, message);
+			}
+			else
+			{
+				return Format(U"Compiler Error: ({}, {}) - ({}, {}) {}",
+					actualStartLine, actualStartColumn, actualEndLine, actualEndColumn, message);
+			}
 		}
 	};
 

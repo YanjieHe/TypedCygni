@@ -1,6 +1,5 @@
 #include "Token.hpp"
 #include <iostream>
-#include <unordered_map>
 
 namespace cygni
 {
@@ -12,7 +11,24 @@ namespace cygni
 
 	Tag Token::IdentifyKeyword(Tag tag, const std::u32string &text)
 	{
-		static std::unordered_map<std::u32string, Tag> keywords = {
+		if (tag == Tag::Identifier)
+		{
+			if (keywords.find(text) != keywords.end())
+			{
+				return keywords[text];
+			}
+			else
+			{
+				return tag;
+			}
+		}
+		else
+		{
+			return tag;
+		}
+	}
+
+	std::unordered_map<std::u32string, Tag> Token::keywords = {
 			{U"if", Tag::If},
 			{U"else", Tag::Else},
 			{U"var", Tag::Var},
@@ -32,21 +48,35 @@ namespace cygni
 			{U"rename", Tag::Rename},
 			{U"to", Tag::To},
 			{U"interface", Tag::Interface}
-		};
-		if (tag == Tag::Identifier)
-		{
-			if (keywords.find(text) != keywords.end())
-			{
-				return keywords[text];
-			}
-			else
-			{
-				return tag;
-			}
-		}
-		else
-		{
-			return tag;
-		}
-	}
+	};
+
+	std::unordered_map<std::u32string, Tag> Token::operators = {
+			{U"+", Tag::Add},
+			{U"-", Tag::Subtract},
+			{U"*", Tag::Multiply},
+			{U"/", Tag::Divide},
+			{U"%", Tag::Modulo},
+			{U">", Tag::GreaterThan},
+			{U"<", Tag::LessThan},
+			{U">=", Tag::GreaterThanOrEqual},
+			{U"<=", Tag::LessThanOrEqual},
+			{U"==", Tag::Equal},
+			{U"!=", Tag::NotEqual},
+			{U"(", Tag::LeftParenthesis},
+			{U")", Tag::RightParenthesis},
+			{U"[", Tag::LeftBracket},
+			{U"]", Tag::RightBracket},
+			{U"{", Tag::LeftBrace},
+			{U"}", Tag::RightBrace},
+			{U":", Tag::Colon},
+			{U",", Tag::Comma},
+			{U".", Tag::Dot},
+			{U";", Tag::Semicolon},
+			{U"=", Tag::Assign},
+			{U"->", Tag::RightArrow},
+			{U"=>", Tag::GoesTo},
+			{U"@", Tag::At},
+			{U"<:", Tag::UpperBound},
+			{U":>", Tag::LowerBound}
+	};
 } // namespace cygni

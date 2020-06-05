@@ -200,24 +200,6 @@ namespace cygni
 			TypePtr returnType, ExpPtr body);
 	};
 
-	//class ConstructorInfo
-	//{
-	//public:
-	//	SourceLocation location;
-	//	AccessModifier modifier;
-	//	Table<std::u32string, AnnotationInfo> annotations;
-	//	std::u32string name;
-	//	std::vector<std::shared_ptr<ParameterExpression>> parameters;
-	//	TypePtr returnType;
-	//	ExpPtr body;
-	//	TypePtr signature;
-	//	ConstructorInfo() = default;
-	//	ConstructorInfo(SourceLocation location, AccessModifier modifier,
-	//		Table<std::u32string, AnnotationInfo> annotations, std::u32string name,
-	//		std::vector<std::shared_ptr<ParameterExpression>> parameters,
-	//		TypePtr returnType, ExpPtr body);
-	//};
-
 	class MemberAccessExpression : public Expression
 	{
 	public:
@@ -228,15 +210,16 @@ namespace cygni
 			std::u32string field);
 	};
 
-	class MethodCallExpression : public Expression
-	{
-	public:
-		ExpPtr object;
-		std::shared_ptr<MethodDef> method;
-		ExpList arguments;
-		MethodCallExpression(SourcePosition position, ExpPtr object,
-			std::shared_ptr<MethodDef> method, ExpList arguments);
-	};
+	//class MethodCallExpression : public Expression
+	//{
+	//public:
+	//	ExpPtr object;
+	//	std::u32string method;
+	//	std::vector<Argument> arguments;
+	//	LocationPtr location;
+	//	MethodCallExpression(SourcePosition position, ExpPtr object,
+	//		std::u32string method, std::vector<Argument> arguments);
+	//};
 
 	class ReturnExpression : public Expression
 	{
@@ -282,6 +265,9 @@ namespace cygni
 		/* all information */
 		Table<std::u32string, FieldDef> fields;
 		Table<std::u32string, MethodDef> methods;
+
+		/* virtual function table */
+		std::unordered_map<int, std::vector<MethodDef>> virtualMethodTable;
 
 		std::unordered_map<ConstantKey, int> constantMap;
 		std::vector<TypePtr> superClasses;

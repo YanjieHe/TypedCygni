@@ -131,9 +131,9 @@ const char* opcode_info[][2] = {
 	{ "JUMP", "u" },
 	{ "JUMP_IF_TRUE", "u" },
 	{ "JUMP_IF_FALSE", "u" },
-	{ "PUSH_FUNCTION", "uu" },
-	{ "PUSH_METHOD", "uu" },
-	{ "INVOKE", "" },
+	{ "INVOKE_FUNCTION", "uu" },
+	{ "INVOKE_METHOD", "uu" },
+	{ "INVOKE_INTERFACE", "uu" },
 	{ "RETURN_I32", "" },
 	{ "RETURN_I64", "" },
 	{ "RETURN_F32", "" },
@@ -154,3 +154,26 @@ const char* opcode_info[][2] = {
 	{ "GO_FINALLY", "u" },
 	{ "FINALLY_END", "" }
 };
+
+const char* type_tag_to_string(TypeTag tag)
+{
+	switch (tag)
+	{
+	case TYPE_I32:
+		return "TYPE_I32";
+	case TYPE_I64:
+		return "TYPE_I64";
+	case TYPE_F32:
+		return "TYPE_F32";
+	case TYPE_F64:
+		return "TYPE_F64";
+	case TYPE_STRING:
+		return "TYPE_STRING";
+	case TYPE_OBJECT:
+		return "TYPE_OBJECT";
+	default:
+		fprintf(stderr, __FUNCTION__);
+		fprintf(stderr, "type tag enumeration\n");
+		exit(-1);
+	}
+}

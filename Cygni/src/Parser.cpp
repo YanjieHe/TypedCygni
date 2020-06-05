@@ -662,7 +662,7 @@ namespace cygni
 	std::shared_ptr<InterfaceInfo> Parser::ParseDefInterface()
 	{
 		const Token &start = Look();
-		Match(Tag::Module);
+		Match(Tag::Interface);
 		auto name = Match(Tag::Identifier).text;
 		auto info = std::make_shared<InterfaceInfo>(Pos(start), name);
 		if (Look().tag == Tag::UpperBound)

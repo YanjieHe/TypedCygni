@@ -73,28 +73,28 @@ namespace cygni
 
 		explicit TypeChecker(Project &project);
 
-		TypePtr VisitBinary(std::shared_ptr<BinaryExpression> node, Scope<TypePtr>* scope);
-		TypePtr VisitBlock(std::shared_ptr<BlockExpression> node, Scope<TypePtr>* outerScope);
-		TypePtr VisitExpression(ExpPtr node, Scope<TypePtr>* scope);
-		TypePtr VisitConstant(std::shared_ptr<ConstantExpression> node);
-		TypePtr VisitClassInfo(std::shared_ptr<ClassInfo> info, Scope<TypePtr>* outerScope);
-		TypePtr VisitModuleInfo(std::shared_ptr<ModuleInfo> info, Scope<TypePtr>* outerScope);
-		TypePtr VisitFieldDef(const FieldDef &field, Scope<TypePtr>* scope);
-		TypePtr VisitMethodDef(const MethodDef &method, Scope<TypePtr>* outerScope);
-		TypePtr VisitParameter(std::shared_ptr<ParameterExpression> parameter, Scope<TypePtr>* scope);
-		TypePtr VisitReturn(std::shared_ptr<ReturnExpression> node, Scope<TypePtr>* scope);
-		TypePtr VisitConditional(std::shared_ptr<ConditionalExpression> node, Scope<TypePtr>* scope);
-		TypePtr VisitDefault(std::shared_ptr<DefaultExpression> node);
-		TypePtr VisitInvocation(std::shared_ptr<InvocationExpression> node, Scope<TypePtr>* scope);
-		TypePtr VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node, Scope<TypePtr>* scope);
-		TypePtr VisitNewExpression(std::shared_ptr<NewExpression> node, Scope<TypePtr>* scope);
-		TypePtr VisitVarDefExpression(std::shared_ptr<VarDefExpression> node, Scope<TypePtr>* scope);
-		void VisitPackage(Scope<TypePtr>* globalScope);
-		void VisitProject(Scope<TypePtr>* globalScope);
+		TypePtr CheckBinary(std::shared_ptr<BinaryExpression> node, Scope<TypePtr>* scope);
+		TypePtr CheckBlock(std::shared_ptr<BlockExpression> node, Scope<TypePtr>* outerScope);
+		TypePtr CheckExpression(ExpPtr node, Scope<TypePtr>* scope);
+		TypePtr CheckConstant(std::shared_ptr<ConstantExpression> node);
+		TypePtr CheckClassInfo(std::shared_ptr<ClassInfo> info, Scope<TypePtr>* outerScope);
+		TypePtr CheckModuleInfo(std::shared_ptr<ModuleInfo> info, Scope<TypePtr>* outerScope);
+		TypePtr CheckFieldDef(const FieldDef &field, Scope<TypePtr>* scope);
+		TypePtr CheckMethodDef(const MethodDef &method, Scope<TypePtr>* outerScope);
+		TypePtr CheckParameter(std::shared_ptr<ParameterExpression> parameter, Scope<TypePtr>* scope);
+		TypePtr CheckReturn(std::shared_ptr<ReturnExpression> node, Scope<TypePtr>* scope);
+		TypePtr CheckConditional(std::shared_ptr<ConditionalExpression> node, Scope<TypePtr>* scope);
+		TypePtr CheckDefault(std::shared_ptr<DefaultExpression> node);
+		TypePtr CheckInvocation(std::shared_ptr<InvocationExpression> node, Scope<TypePtr>* scope);
+		TypePtr CheckMemberAccess(std::shared_ptr<MemberAccessExpression> node, Scope<TypePtr>* scope);
+		TypePtr CheckNewExpression(std::shared_ptr<NewExpression> node, Scope<TypePtr>* scope);
+		TypePtr CheckVarDefExpression(std::shared_ptr<VarDefExpression> node, Scope<TypePtr>* scope);
+		TypePtr CheckAssign(std::shared_ptr<BinaryExpression> node, Scope<TypePtr>* scope);
+		TypePtr CheckWhile(std::shared_ptr<WhileExpression> node, Scope<TypePtr>* scope);
+		void CheckPackage(Scope<TypePtr>* globalScope);
+		void CheckProject(Scope<TypePtr>* globalScope);
 		TypePtr Attach(ExpPtr node, TypePtr type);
-		TypePtr VisitAssign(std::shared_ptr<BinaryExpression> node, Scope<TypePtr>* scope);
-		TypePtr VisitWhile(std::shared_ptr<WhileExpression> node, Scope<TypePtr>* scope);
-		bool CheckInterfaceConstraint(std::shared_ptr<ClassInfo> classInfo, std::shared_ptr<InterfaceInfo> interfaceInfo);
+		void CheckInterfaceConstraint(std::shared_ptr<ClassInfo> classInfo, std::shared_ptr<InterfaceInfo> interfaceInfo);
 	};
 
 	class TreeTraverser
