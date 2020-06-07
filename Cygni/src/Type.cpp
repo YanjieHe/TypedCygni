@@ -1,4 +1,6 @@
 #include "Type.hpp"
+#include <stack>
+#include <unordered_set>
 
 namespace cygni
 {
@@ -256,6 +258,211 @@ namespace cygni
 		else
 		{
 			return false;
+		}
+	}
+
+	TypeGraph::TypeGraph() :V{ 0 }, E{ 0 }
+	{
+	}
+
+	void TypeGraph::AddEdge(TypePtr type, TypePtr superType)
+	{
+		if (table.find(type) == table.end())
+		{
+			table.insert({ type, V });
+			types.push_back(type);
+			V++;
+		}
+		if (table.find(superType) == table.end())
+		{
+			table.insert({ superType, V });
+			types.push_back(superType);
+			V++;
+		}
+		int src = table.at(type);
+		int dest = table.at(superType);
+		E = E + 2;
+		while (adj.size() <= src)
+		{
+			adj.push_back(std::vector<Edge>());
+		}
+		while (adj.size() <= dest)
+		{
+			adj.push_back(std::vector<Edge>());
+		}
+		adj.at(src).push_back(Edge{ src, dest, true });
+		adj.at(dest).push_back(Edge{ dest, src, false });
+	}
+
+	bool TypeGraph::IsSubTypeof(TypePtr type, TypePtr superType)
+	{
+		std::stack<int> stack;
+		std::unordered_set<int> visited;
+		if (table.find(type) != table.end())
+		{
+			int node = table.at(type);
+			stack.push(node);
+
+			while (!stack.empty())
+			{
+				node = stack.top();
+				stack.pop();
+
+				if (visited.find(node) == visited.end())
+				{
+					// not visited
+					visited.insert(node);
+					if (types[node]->Equals(superType))
+					{
+						return true;
+					}
+					else
+					{
+						for (const Edge& edge : adj.at(node))
+						{
+							if (edge.isSubtypeOf)
+							{
+								stack.push(edge.dest);
+							}
+						}
+					}
+				}
+			}
+			return false;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	bool TypeGraph::IsSuperTypeof(TypePtr superType, TypePtr type)
+	{
+		return IsSubTypeof(type, superType);
+	}
+
+	std::vector<std::shared_ptr<ClassType>> TypeGraph::InheritanceChain(std::shared_ptr<ClassType> originalType)
+	{
+		std::stack<int> stack;
+		std::unordered_set<int> visited;
+		std::vector<std::shared_ptr<ClassType>> inheritanceChain;
+		if (table.find(originalType) != table.end())
+		{
+			int node = table.at(originalType);
+			stack.push(node);
+
+			while (!stack.empty())
+			{
+				node = stack.top();
+				stack.pop();
+
+				if (visited.find(node) == visited.end())
+				{
+					// not visited
+					visited.insert(node);
+					if (types[node]->typeCode == TypeCode::Class)
+					{
+						auto classType = std::static_pointer_cast<ClassType>(types[node]);
+						inheritanceChain.push_back(classType);
+					}
+					for (const Edge& edge : adj.at(node))
+					{
+						if (edge.isSubtypeOf)
+						{
+							stack.push(edge.dest);
+						}
+					}
+				}
+			}
+			return inheritanceChain;
+		}
+		else
+		{
+			return {};
+		}
+	}
+
+	std::vector<std::shared_ptr<InterfaceType>> TypeGraph::GetAllInterfaces(std::shared_ptr<ClassType> originalType)
+	{
+		std::vector<std::shared_ptr<InterfaceType>> interfaceList;
+		std::stack<int> stack;
+		std::unordered_set<int> visited;
+		if (table.find(originalType) != table.end())
+		{
+			int node = table.at(originalType);
+			stack.push(node);
+
+			while (!stack.empty())
+			{
+				node = stack.top();
+				stack.pop();
+
+				if (visited.find(node) == visited.end())
+				{
+					// not visited
+					visited.insert(node);
+					if (types[node]->typeCode == TypeCode::Interface)
+					{
+						auto interfaceType = std::static_pointer_cast<InterfaceType>(types[node]);
+						interfaceList.push_back(interfaceType);
+					}
+					for (const Edge& edge : adj.at(node))
+					{
+						if (edge.isSubtypeOf)
+						{
+							stack.push(edge.dest);
+						}
+					}
+				}
+			}
+			std::reverse(interfaceList.begin(), interfaceList.end());
+			return interfaceList;
+		}
+		else
+		{
+			return {};
+		}
+	}
+
+	std::vector<std::shared_ptr<InterfaceType>> TypeGraph::GetAllSuperInterfaces(std::shared_ptr<InterfaceType> originalType)
+	{
+		std::vector<std::shared_ptr<InterfaceType>> interfaceList;
+		std::stack<int> stack;
+		std::unordered_set<int> visited;
+		if (table.find(originalType) != table.end())
+		{
+			int node = table.at(originalType);
+			stack.push(node);
+
+			while (!stack.empty())
+			{
+				node = stack.top();
+				stack.pop();
+
+				if (visited.find(node) == visited.end())
+				{
+					// not visited
+					visited.insert(node);
+					if (types[node]->typeCode == TypeCode::Interface)
+					{
+						auto interfaceType = std::static_pointer_cast<InterfaceType>(types[node]);
+						interfaceList.push_back(interfaceType);
+					}
+					for (const Edge& edge : adj.at(node))
+					{
+						if (edge.isSubtypeOf)
+						{
+							stack.push(edge.dest);
+						}
+					}
+				}
+			}
+			std::reverse(interfaceList.begin(), interfaceList.end());
+			return interfaceList;
+		}
+		else
+		{
+			return {};
 		}
 	}
 

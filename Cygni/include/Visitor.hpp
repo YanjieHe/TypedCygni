@@ -12,6 +12,7 @@ namespace cygni
 	{
 	public:
 		json VisitSourceLocation(SourcePosition location);
+		json VisitUnary(std::shared_ptr<UnaryExpression> node);
 		json VisitBinary(std::shared_ptr<BinaryExpression> node);
 		json VisitBlock(std::shared_ptr<BlockExpression> node);
 		json VisitExpression(ExpPtr node);
@@ -70,17 +71,19 @@ namespace cygni
 		Project &project;
 		std::shared_ptr<ScopeFactory<TypePtr>> scopeFactory;
 		std::shared_ptr<Package> package;
+		TypeGraph typeGraph;
 
 		explicit TypeChecker(Project &project);
 
+		TypePtr CheckUnary(std::shared_ptr<UnaryExpression> node, Scope<TypePtr>* scope);
 		TypePtr CheckBinary(std::shared_ptr<BinaryExpression> node, Scope<TypePtr>* scope);
 		TypePtr CheckBlock(std::shared_ptr<BlockExpression> node, Scope<TypePtr>* outerScope);
 		TypePtr CheckExpression(ExpPtr node, Scope<TypePtr>* scope);
 		TypePtr CheckConstant(std::shared_ptr<ConstantExpression> node);
 		TypePtr CheckClassInfo(std::shared_ptr<ClassInfo> info, Scope<TypePtr>* outerScope);
 		TypePtr CheckModuleInfo(std::shared_ptr<ModuleInfo> info, Scope<TypePtr>* outerScope);
-		TypePtr CheckFieldDef(const FieldDef &field, Scope<TypePtr>* scope);
-		TypePtr CheckMethodDef(const MethodDef &method, Scope<TypePtr>* outerScope);
+		TypePtr CheckFieldDef(FieldDef &field, Scope<TypePtr>* scope);
+		TypePtr CheckMethodDef(MethodDef &method, Scope<TypePtr>* outerScope);
 		TypePtr CheckParameter(std::shared_ptr<ParameterExpression> parameter, Scope<TypePtr>* scope);
 		TypePtr CheckReturn(std::shared_ptr<ReturnExpression> node, Scope<TypePtr>* scope);
 		TypePtr CheckConditional(std::shared_ptr<ConditionalExpression> node, Scope<TypePtr>* scope);
@@ -91,6 +94,7 @@ namespace cygni
 		TypePtr CheckVarDefExpression(std::shared_ptr<VarDefExpression> node, Scope<TypePtr>* scope);
 		TypePtr CheckAssign(std::shared_ptr<BinaryExpression> node, Scope<TypePtr>* scope);
 		TypePtr CheckWhile(std::shared_ptr<WhileExpression> node, Scope<TypePtr>* scope);
+		TypePtr CheckType(SourcePosition position, TypePtr type);
 		void CheckPackage(Scope<TypePtr>* globalScope);
 		void CheckProject(Scope<TypePtr>* globalScope);
 		TypePtr Attach(ExpPtr node, TypePtr type);
@@ -104,6 +108,7 @@ namespace cygni
 		explicit TreeTraverser(std::function<bool(ExpPtr)> filter);
 		void VisitExpression(ExpPtr node, std::vector<ExpPtr>& nodeList);
 
+		void VisitUnary(std::shared_ptr<UnaryExpression> node, std::vector<ExpPtr>& nodeList);
 		void VisitBinary(std::shared_ptr<BinaryExpression> node, std::vector<ExpPtr>& nodeList);
 		void VisitBlock(std::shared_ptr<BlockExpression>node, std::vector<ExpPtr>&nodeList);
 		void VisitReturn(std::shared_ptr<ReturnExpression>node, std::vector<ExpPtr>&nodeList);
@@ -130,8 +135,11 @@ namespace cygni
 		std::shared_ptr<ScopeFactory<LocationPtr>> scopeFactory;
 
 		explicit VariableLocator(Project& project);
+
+
 		void VisitExpression(ExpPtr node, Scope<LocationPtr>* scope);
 		void VisitBlock(std::shared_ptr<BlockExpression> node, Scope<LocationPtr>* outerScope);
+		void VisitUnary(std::shared_ptr<UnaryExpression> node, Scope<LocationPtr>* scope);
 		void VisitBinary(std::shared_ptr<BinaryExpression> node, Scope<LocationPtr>* scope);
 		void VisitClassInfo(std::shared_ptr<ClassInfo> info, Scope<LocationPtr>* outerScope);
 		void VisitModuleInfo(std::shared_ptr<ModuleInfo> info, Scope<LocationPtr>* outerScope);

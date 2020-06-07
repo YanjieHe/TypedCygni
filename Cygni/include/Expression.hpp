@@ -79,6 +79,7 @@ namespace cygni
 	{
 	public:
 		ExpPtr operand;
+		bool upCasting = true;
 
 		UnaryExpression(SourcePosition position, ExpressionType nodeType,
 			ExpPtr operand);
@@ -270,8 +271,11 @@ namespace cygni
 		std::unordered_map<int, std::vector<MethodDef>> virtualMethodTable;
 
 		std::unordered_map<ConstantKey, int> constantMap;
-		std::vector<TypePtr> superClasses;
+		std::vector<TypePtr> superTypes;
 		std::optional<int> index;
+
+		std::vector<std::shared_ptr<ClassType>> inheritanceChain;
+		std::vector<std::shared_ptr<InterfaceType>> interfaceList;
 
 		ClassInfo() = default;
 		ClassInfo(SourcePosition position, PackageRoute route, std::u32string name);
@@ -295,12 +299,17 @@ namespace cygni
 	{
 	public:
 		SourcePosition position;
+		PackageRoute route;
 		std::u32string name;
-		Table<std::u32string, MethodDef> methods;
-		Table<std::u32string, MethodDef> methodMap;
+		Table<std::u32string, MethodDef> methodDefs;
 		std::vector<TypePtr> superInterfaces;
+
+		std::vector<std::shared_ptr<InterfaceType>> allSuperInterfaces;
+		std::vector<MethodDef> allMethods;
+
+		std::optional<int> index;
 		InterfaceInfo() = default;
-		InterfaceInfo(SourcePosition position, std::u32string name);
+		InterfaceInfo(SourcePosition position, PackageRoute route, std::u32string name);
 	};
 
 	class TypeAlias
@@ -375,9 +384,9 @@ namespace cygni
 		Table<PackageRoute, std::shared_ptr<Package>> packages;
 
 		void MergeAllPrograms();
-		std::optional<std::shared_ptr<ModuleInfo>> GetModule(PackageRoute route, std::u32string name);
-		std::optional<std::shared_ptr<ClassInfo>> GetClass(PackageRoute route, std::u32string name);
-		std::optional<std::shared_ptr<InterfaceInfo>> GetInterface(PackageRoute route, std::u32string name);
+		std::optional<std::shared_ptr<ModuleInfo>> GetModule(std::shared_ptr<ModuleType> moduleType);
+		std::optional<std::shared_ptr<ClassInfo>> GetClass(std::shared_ptr<ClassType> classType);
+		std::optional<std::shared_ptr<InterfaceInfo>> GetInterface(std::shared_ptr<InterfaceType> interfaceType);
 	};
 
 } // namespace cygni

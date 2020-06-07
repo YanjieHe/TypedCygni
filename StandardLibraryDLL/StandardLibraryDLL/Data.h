@@ -48,11 +48,18 @@ typedef struct
 	}u;
 } Array;
 
+typedef struct
+{
+	uint16_t n_methods;
+	Function** methods;
+}VirtualTable;
+
 typedef struct Object
 {
 	uint8_t marked : 1;
-	uint8_t is_array;
+	uint8_t is_array : 1;
 	uint16_t class_index;
+	VirtualTable* v_table;
 	union
 	{
 		Value* fields;
@@ -70,7 +77,7 @@ typedef struct
 
 typedef struct
 {
-	uint8_t tag;
+	uint8_t tag : 1;
 	union
 	{
 		int32_t i32_v;
@@ -109,8 +116,8 @@ typedef struct Function
 	char* name;
 	union
 	{
-		FunctionInfo* func_info; // NULL if it is a native function
-		NativeFunction* native_function;
+		FunctionInfo* func; // NULL if it is a native function
+		NativeFunction* nv;
 	}u;
 } Function;
 
@@ -125,10 +132,16 @@ typedef struct
 	char* name;
 	uint16_t n_fields;
 	char** field_names;
-	uint16_t n_methods;
-	Function** methods;
 	ConstantPool constant_pool;
+	VirtualTable v_table;
 } ClassInfo;
+
+typedef struct
+{
+	char* name;
+	uint16_t n_classes;
+	VirtualTable* v_tables;
+} InterfaceInfo;
 
 typedef struct
 {
@@ -167,6 +180,10 @@ typedef enum VM_Error
 	VM_ERROR_READ_FUNCTION_BYTE_CODE,
 	VM_ERROR_WRONG_TYPE_TAG,
 	VM_ERROR_READ_TYPE_TAG,
+	VM_ERROR_OPCODE,
+	VM_ERROR_ARRAY_TYPE_CODE,
+	VM_ERROR_LOAD_LIBRARY,
+	VM_ERROR_LOAD_LIBRARY_FUNCTION,
 } VM_Error;
 
 #endif // VM_DATA_H

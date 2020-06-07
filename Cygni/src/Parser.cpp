@@ -427,11 +427,10 @@ namespace cygni
 		else
 		{ /* var x = 46 */
 			Match(Tag::Assign);
-			auto type = std::make_shared<UnknownType>();
 			auto value = ParseOr();
 			auto variable =
-				std::make_shared<ParameterExpression>(Pos(Look()), name, type);
-			return std::make_shared<VarDefExpression>(Pos(start), variable, type,
+				std::make_shared<ParameterExpression>(Pos(Look()), name, Type::Unknown());
+			return std::make_shared<VarDefExpression>(Pos(start), variable, Type::Unknown(),
 				value);
 		}
 	}
@@ -588,11 +587,11 @@ namespace cygni
 		if (Look().tag == Tag::UpperBound)
 		{
 			Match(Tag::UpperBound);
-			info->superClasses.push_back(ParseType());
+			info->superTypes.push_back(ParseType());
 			while (!IsEof() && Look().tag != Tag::LeftBrace)
 			{
 				Match(Tag::Comma);
-				info->superClasses.push_back(ParseType());
+				info->superTypes.push_back(ParseType());
 			}
 		}
 		Match(Tag::LeftBrace);
@@ -664,7 +663,7 @@ namespace cygni
 		const Token &start = Look();
 		Match(Tag::Interface);
 		auto name = Match(Tag::Identifier).text;
-		auto info = std::make_shared<InterfaceInfo>(Pos(start), name);
+		auto info = std::make_shared<InterfaceInfo>(Pos(start), route, name);
 		if (Look().tag == Tag::UpperBound)
 		{
 			Match(Tag::UpperBound);
@@ -684,7 +683,7 @@ namespace cygni
 				// def method(args..) { }
 				auto selfType = std::make_shared<InterfaceType>(route, name);
 				auto method = ParseMethodDefinition(AccessModifier::Public, annotations, false, selfType);
-				info->methods.Add(method.name, method); // only definition, no implementation
+				info->methodDefs.Add(method.name, method); // only definition, no implementation
 			}
 			else
 			{

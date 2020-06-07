@@ -6,7 +6,7 @@ namespace cygni
 {
 
 	Lexer::Lexer(std::shared_ptr<FileLocation> document, const std::u32string &code)
-		: document{ document }, code{ code }, line{ 1 }, column{ 1 }, offset{ 0 } {}
+		: document{ document }, code{ code }, line{ 0 }, column{ 0 }, offset{ 0 } {}
 
 	std::vector<Token> Lexer::ReadAll()
 	{
@@ -300,7 +300,14 @@ namespace cygni
 		else
 		{
 			Forward();
-			return Token(line, column, Tag::String, builder);
+			if (builder.size() > 65535)
+			{
+				throw LexicalException(document, line, column, U"string literal is too long");
+			}
+			else
+			{
+				return Token(line, column, Tag::String, builder);
+			}
 		}
 	}
 
@@ -337,7 +344,14 @@ namespace cygni
 		{
 			Consume();
 		}
-		return Token(line, column, Tag::Identifier, builder);
+		if (builder.size() > 65535)
+		{
+			throw LexicalException(document, line, column, U"the identifier length is too long");
+		}
+		else
+		{
+			return Token(line, column, Tag::Identifier, builder);
+		}
 	}
 
 	Token Lexer::ReadOperator()

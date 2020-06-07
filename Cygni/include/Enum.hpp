@@ -117,7 +117,8 @@ namespace cygni
 		Goto,
 		VariableDefinition,
 		While,
-		Break
+		Break,
+		Convert
 	};
 
 	enum class AccessModifier { Public, Private, Protected };
@@ -159,6 +160,8 @@ namespace cygni
 		ClassName,
 		ClassField,
 		ClassMethod,
+		InterfaceField,
+		InterfaceMethod,
 		LocalVariable
 	};
 
@@ -550,6 +553,8 @@ namespace cygni
 				return U"While";
 			case ExpressionType::Break:
 				return U"Break";
+			case ExpressionType::Convert:
+				return U"Convert";
 
 			default:
 				std::cerr << __FUNCTION__ << std::endl;
@@ -659,6 +664,10 @@ namespace cygni
 				return U"ClassField";
 			case LocationType::ClassMethod:
 				return U"ClassMethod";
+			case LocationType::InterfaceField:
+				return U"InterfaceField";
+			case LocationType::InterfaceMethod:
+				return U"InterfaceMethod";
 			case LocationType::LocalVariable:
 				return U"LocalVariable";
 			default:

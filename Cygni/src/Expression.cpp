@@ -199,14 +199,14 @@ namespace cygni
 		}
 	}
 
-	std::optional<std::shared_ptr<ModuleInfo>> Project::GetModule(PackageRoute route, std::u32string name)
+	std::optional<std::shared_ptr<ModuleInfo>> Project::GetModule(std::shared_ptr<ModuleType> moduleType)
 	{
-		if (packages.ContainsKey(route))
+		if (packages.ContainsKey(moduleType->route))
 		{
-			auto pkg = packages.GetValueByKey(route);
-			if (pkg->modules.ContainsKey(name))
+			auto pkg = packages.GetValueByKey(moduleType->route);
+			if (pkg->modules.ContainsKey(moduleType->name))
 			{
-				return { pkg->modules.GetValueByKey(name) };
+				return { pkg->modules.GetValueByKey(moduleType->name) };
 			}
 			else
 			{
@@ -219,14 +219,14 @@ namespace cygni
 		}
 	}
 
-	std::optional<std::shared_ptr<ClassInfo>> Project::GetClass(PackageRoute route, std::u32string name)
+	std::optional<std::shared_ptr<ClassInfo>> Project::GetClass(std::shared_ptr<ClassType> classType)
 	{
-		if (packages.ContainsKey(route))
+		if (packages.ContainsKey(classType->route))
 		{
-			auto pkg = packages.GetValueByKey(route);
-			if (pkg->classes.ContainsKey(name))
+			auto pkg = packages.GetValueByKey(classType->route);
+			if (pkg->classes.ContainsKey(classType->name))
 			{
-				return { pkg->classes.GetValueByKey(name) };
+				return { pkg->classes.GetValueByKey(classType->name) };
 			}
 			else
 			{
@@ -239,14 +239,14 @@ namespace cygni
 		}
 	}
 
-	std::optional<std::shared_ptr<InterfaceInfo>> Project::GetInterface(PackageRoute route, std::u32string name)
+	std::optional<std::shared_ptr<InterfaceInfo>> Project::GetInterface(std::shared_ptr<InterfaceType> interfaceType)
 	{
-		if (packages.ContainsKey(route))
+		if (packages.ContainsKey(interfaceType->route))
 		{
-			auto pkg = packages.GetValueByKey(route);
-			if (pkg->interfaces.ContainsKey(name))
+			auto pkg = packages.GetValueByKey(interfaceType->route);
+			if (pkg->interfaces.ContainsKey(interfaceType->name))
 			{
-				return { pkg->interfaces.GetValueByKey(name) };
+				return { pkg->interfaces.GetValueByKey(interfaceType->name) };
 			}
 			else
 			{
@@ -259,8 +259,8 @@ namespace cygni
 		}
 	}
 
-	InterfaceInfo::InterfaceInfo(SourcePosition position, std::u32string name)
-		: position{position}, name{ name }
+	InterfaceInfo::InterfaceInfo(SourcePosition position, PackageRoute route, std::u32string name)
+		: position{ position }, route{ route }, name{ name }
 	{
 	}
 

@@ -1,9 +1,11 @@
 #ifndef CYGNI_COMPILER_HPP
 #define CYGNI_COMPILER_HPP
 #include "Expression.hpp"
+#include "Exception.hpp"
 #include <cstdint>
 #include <vector>
 #include <numeric>
+#include <functional>
 
 namespace cygni
 {
@@ -14,11 +16,11 @@ namespace cygni
 	public:
 		std::vector<Byte> bytes;
 		ByteCode() = default;
-		explicit ByteCode(std::u32string u32str);
 		void Append(Byte byte);
 		void AppendOp(OpCode op);
 		void AppendTypeTag(TypeTag tag);
-		void AppendUShort(size_t value);
+		void AppendU16Checked(size_t value, const std::function<CompilerException()>& exceptionHandler);
+		void AppendU16Unchecked(size_t value);
 		void WriteUShort(int index, int value);
 		void AppendUInt(uint32_t value);
 		void AppendTypeCode(TypeCode typeCode);
@@ -34,8 +36,11 @@ namespace cygni
 	{
 	public:
 		Project& project;
-		explicit Compiler(Project& project);
+		Compiler(Project& project);
 		ByteCode Compile();
+
+		void CompileUnary(std::shared_ptr<UnaryExpression> node,
+			const ConstantMap& constantMap, ByteCode& byteCode);
 		void CompileBinary(std::shared_ptr<BinaryExpression> node,
 			const ConstantMap& constantMap, ByteCode& byteCode);
 		void CompileBlock(std::shared_ptr<BlockExpression> node,
@@ -66,18 +71,7 @@ namespace cygni
 		void CompileWhileLoop(std::shared_ptr<WhileExpression> node,
 			const ConstantMap& constantMap, ByteCode& byteCode);
 		void CompileMainFunction(const std::vector<std::shared_ptr<ModuleInfo>>& modules, ByteCode& byteCode);
-		void CompileConstantPool(const ConstantMap& constantMap, ByteCode& byteCode);
-
-		template <typename T>
-		static inline bool InRange(int value)
-		{
-			return value >= std::numeric_limits<T>::min() && value <= std::numeric_limits<T>::max();
-		}
-		template <typename T>
-		static inline bool InRange(size_t value)
-		{
-			return value <= std::numeric_limits<T>::max();
-		}
+		void CompileConstantPool(SourcePosition position, const ConstantMap& constantMap, ByteCode& byteCode);
 	};
 } // namespace cygni
 

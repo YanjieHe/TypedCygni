@@ -19,6 +19,14 @@ namespace cygni
 		return obj;
 	}
 
+	json AstToJsonSerialization::VisitUnary(std::shared_ptr<UnaryExpression> node)
+	{
+		json obj;
+		AttachNodeInformation(obj, node);
+		obj["operand"] = VisitExpression(node->operand);
+		return obj;
+	}
+
 	json AstToJsonSerialization::VisitBinary(std::shared_ptr<BinaryExpression> node)
 	{
 		json obj;
@@ -246,6 +254,10 @@ namespace cygni
 		case ExpressionType::NotEqual:
 		case ExpressionType::Assign:
 			return VisitBinary(std::static_pointer_cast<BinaryExpression>(node));
+		case ExpressionType::UnaryPlus:
+		case ExpressionType::UnaryMinus:
+		case ExpressionType::Convert:
+			return VisitUnary(std::static_pointer_cast<UnaryExpression>(node));
 		case ExpressionType::Constant:
 			return VisitConstant(std::static_pointer_cast<ConstantExpression>(node));
 		case ExpressionType::Block:
@@ -477,6 +489,91 @@ namespace cygni
 		ruleSet.Add(U"!=", { Type::Float64(), Type::Float64() }, Type::Boolean());
 		ruleSet.Add(U"!=", { Type::Char(), Type::Char() }, Type::Boolean());
 
+
+		ruleSet.Add(U"+", { Type::Int32() }, Type::Int32());
+		ruleSet.Add(U"+", { Type::Int64() }, Type::Int64());
+		ruleSet.Add(U"+", { Type::Float32() }, Type::Float32());
+		ruleSet.Add(U"+", { Type::Float64() }, Type::Float64());
+
+		ruleSet.Add(U"-", { Type::Int32() }, Type::Int32());
+		ruleSet.Add(U"-", { Type::Int64() }, Type::Int64());
+		ruleSet.Add(U"-", { Type::Float32() }, Type::Float32());
+		ruleSet.Add(U"-", { Type::Float64() }, Type::Float64());
+
+		for (auto pkg : project.packages)
+		{
+			for (auto classInfo : pkg->classDefs)
+			{
+				for (auto& superClass : classInfo->superTypes)
+				{
+					superClass = CheckType(classInfo->position, superClass);
+					auto classType = std::make_shared<ClassType>(classInfo->route, classInfo->name);
+					typeGraph.AddEdge(classType, superClass);
+				}
+			}
+			for (auto interfaceInfo : pkg->interfaceDefs)
+			{
+				for (auto& superInterface : interfaceInfo->superInterfaces)
+				{
+					auto interfaceType = std::make_shared<InterfaceType>(interfaceInfo->route, interfaceInfo->name);
+					superInterface = CheckType(interfaceInfo->position, superInterface);
+					typeGraph.AddEdge(interfaceType, superInterface);
+				}
+			}
+		}
+	}
+
+	TypePtr TypeChecker::CheckUnary(std::shared_ptr<UnaryExpression> node, Scope<TypePtr>* scope)
+	{
+		auto operand = CheckExpression(node->operand, scope);
+		if (node->nodeType == ExpressionType::UnaryPlus)
+		{
+			if (auto res = ruleSet.Match(U"+", { operand }))
+			{
+				return Attach(node, *res);
+			}
+			else
+			{
+				throw TypeException(node->position,
+					Format(U"type mismatch: +, operand: {}", operand->ToString()));
+			}
+		}
+		else if (node->nodeType == ExpressionType::UnaryMinus)
+		{
+			if (auto res = ruleSet.Match(U"-", { operand }))
+			{
+				return Attach(node, *res);
+			}
+			else
+			{
+				throw TypeException(node->position,
+					Format(U"type mismatch: -, operand: {}", operand->ToString()));
+			}
+		}
+		else if (node->nodeType == ExpressionType::Convert)
+		{
+			TypePtr from = CheckExpression(node->operand, scope);
+			TypePtr to = node->type;
+			if (typeGraph.IsSubTypeof(from, to))
+			{
+				node->upCasting = true;
+				return to;
+			}
+			else if (typeGraph.IsSuperTypeof(from, to))
+			{
+				node->upCasting = false;
+				return to;
+			}
+			else
+			{
+				throw TypeException(node->position,
+					Format(U"cannot convert the object from type '{}' to '{}'", from->ToString(), to->ToString()));
+			}
+		}
+		else
+		{
+			throw NotImplementedException(U"not implemented unary operation");
+		}
 	}
 
 	TypePtr TypeChecker::CheckBinary(std::shared_ptr<BinaryExpression> node, Scope<TypePtr>* scope)
@@ -679,6 +776,86 @@ namespace cygni
 		}
 	}
 
+	TypePtr TypeChecker::CheckType(SourcePosition position, TypePtr type)
+	{
+		if (type->typeCode == TypeCode::Class)
+		{
+			auto classType = std::static_pointer_cast<ClassType>(type);
+			if (auto classInfo = project.GetClass(classType))
+			{
+				return std::make_shared<ClassType>((*classInfo)->route, (*classInfo)->name);
+			}
+			else if (auto moduleInfo = project.GetModule(std::make_shared<ModuleType>(classType->route, classType->name)))
+			{
+				return std::make_shared<ModuleType>((*moduleInfo)->route, (*moduleInfo)->name);
+			}
+			else if (auto interfaceInfo = project.GetInterface(std::make_shared<InterfaceType>(classType->route, classType->name)))
+			{
+				return std::make_shared<InterfaceType>((*interfaceInfo)->route, (*interfaceInfo)->name);
+			}
+			else
+			{
+				throw TypeException(position,
+					Format(U"type '{}' not defined", classType->ToString()));
+			}
+		}
+		else if (type->typeCode == TypeCode::Module)
+		{
+			auto moduleType = std::static_pointer_cast<ModuleType>(type);
+			if (auto moduleInfo = project.GetModule(moduleType))
+			{
+				return std::make_shared<ModuleType>((*moduleInfo)->route, (*moduleInfo)->name);
+			}
+			else
+			{
+				throw TypeException(position,
+					Format(U"type '{}' not defined", moduleType->ToString()));
+			}
+		}
+		else if (type->typeCode == TypeCode::Interface)
+		{
+			auto interfaceType = std::static_pointer_cast<InterfaceType>(type);
+			if (auto interfaceInfo = project.GetInterface(interfaceType))
+			{
+				return std::make_shared<InterfaceType>((*interfaceInfo)->route, (*interfaceInfo)->name);
+			}
+			else
+			{
+				throw TypeException(position,
+					Format(U"type '{}' not defined", interfaceType->ToString()));
+			}
+		}
+		else if (type->typeCode == TypeCode::Function)
+		{
+			auto functionType = std::static_pointer_cast<FunctionType>(type);
+			std::vector<TypePtr> parameters;
+			std::transform(
+				functionType->parameters.begin(),
+				functionType->parameters.end(),
+				std::back_inserter(parameters),
+				[this, position](TypePtr t) -> TypePtr
+			{
+				return CheckType(position, t);
+			}
+			);
+			return std::make_shared<FunctionType>(
+				CheckType(position, functionType->selfType),
+				functionType->name,
+				parameters,
+				CheckType(position, functionType->returnType));
+		}
+		else if (type->typeCode == TypeCode::Array)
+		{
+			auto arrayType = std::static_pointer_cast<ArrayType>(type);
+			return std::make_shared<ArrayType>(
+				CheckType(position, arrayType->elementType));
+		}
+		else
+		{
+			return type;
+		}
+	}
+
 	void TypeChecker::CheckInterfaceConstraint(std::shared_ptr<ClassInfo> classInfo, std::shared_ptr<InterfaceInfo> interfaceInfo)
 	{
 		/*for (auto superClass : classInfo->superClasses)
@@ -686,7 +863,7 @@ namespace cygni
 			if (superClass->typeCode == TypeCode::Interface)
 			{
 				auto interfaceType = std::static_pointer_cast<InterfaceType>(superClass);
-				auto interfaceInfo = project.GetInterface(interfaceType->route, interfaceType->name);
+				auto interfaceInfo = project.GetInterface(interfaceType);
 				if (interfaceInfo)
 				{
 					for (const auto& method : (*interfaceInfo)->methodMap.values)
@@ -727,6 +904,10 @@ namespace cygni
 		case ExpressionType::Equal:
 		case ExpressionType::NotEqual:
 			return CheckBinary(std::static_pointer_cast<BinaryExpression>(node), scope);
+		case ExpressionType::UnaryPlus:
+		case ExpressionType::UnaryMinus:
+		case ExpressionType::Convert:
+			return CheckUnary(std::static_pointer_cast<UnaryExpression>(node), scope);
 		case ExpressionType::Assign:
 			return CheckAssign(std::static_pointer_cast<BinaryExpression>(node), scope);
 		case ExpressionType::Block:
@@ -774,11 +955,11 @@ namespace cygni
 		{
 			scope->Put(method.name, method.signature);
 		}
-		for (const auto &field : info->fieldDefs.values)
+		for (auto &field : info->fieldDefs.values)
 		{
 			CheckFieldDef(field, scope);
 		}
-		for (const auto &method : info->methodDefs.values)
+		for (auto &method : info->methodDefs.values)
 		{
 			CheckMethodDef(method, scope);
 		}
@@ -796,19 +977,20 @@ namespace cygni
 		{
 			scope->Put(method.name, method.signature);
 		}
-		for (const auto &field : info->fields.values)
+		for (auto &field : info->fields.values)
 		{
 			CheckFieldDef(field, scope);
 		}
-		for (const auto &method : info->methods.values)
+		for (auto &method : info->methods.values)
 		{
 			CheckMethodDef(method, scope);
 		}
 		return Type::Void();
 	}
 
-	TypePtr TypeChecker::CheckFieldDef(const FieldDef &field, Scope<TypePtr>* scope)
+	TypePtr TypeChecker::CheckFieldDef(FieldDef &field, Scope<TypePtr>* scope)
 	{
+		field.type = CheckType(field.position, field.type);
 		if (field.value->nodeType == ExpressionType::Default)
 		{
 			scope->Put(field.name, field.type);
@@ -829,8 +1011,9 @@ namespace cygni
 		}
 	}
 
-	TypePtr TypeChecker::CheckMethodDef(const MethodDef &method, Scope<TypePtr>* outerScope)
+	TypePtr TypeChecker::CheckMethodDef(MethodDef &method, Scope<TypePtr>* outerScope)
 	{
+		method.selfType = CheckType(method.position, method.selfType);
 		auto scope = scopeFactory->New(outerScope);
 		if (method.selfType->typeCode == TypeCode::Class)
 		{
@@ -940,40 +1123,76 @@ namespace cygni
 		if (object->typeCode == TypeCode::Module)
 		{
 			auto moduleType = std::static_pointer_cast<ModuleType>(object);
-			const auto &moduleInfo = package->modules.GetValueByKey(moduleType->name);
-			if (moduleInfo->fields.ContainsKey(node->field))
+			if (auto moduleInfo = project.GetModule(moduleType))
 			{
-				auto& field = moduleInfo->fields.GetValueByKey(node->field);
-				return Attach(node, field.type);
-			}
-			else if (moduleInfo->methods.ContainsKey(node->field))
-			{
-				auto& method = moduleInfo->methods.GetValueByKey(node->field);
-				return Attach(node, method.signature);
+				if ((*moduleInfo)->fields.ContainsKey(node->field))
+				{
+					auto& field = (*moduleInfo)->fields.GetValueByKey(node->field);
+					return Attach(node, field.type);
+				}
+				else if ((*moduleInfo)->methods.ContainsKey(node->field))
+				{
+					auto& method = (*moduleInfo)->methods.GetValueByKey(node->field);
+					return Attach(node, method.signature);
+				}
+				else
+				{
+					throw TypeException(node->position,
+						Format(U"undefined field '{}' in module '{}'", node->field, moduleType->name));
+				}
 			}
 			else
 			{
+
 				throw TypeException(node->position,
-					Format(U"undefined field '{}' in module '{}'", node->field, moduleType->name));
+					Format(U"undefined module '{}'", object->ToString()));
 			}
 		}
 		else if (object->typeCode == TypeCode::Class)
 		{
 			auto classType = std::static_pointer_cast<ClassType>(object);
-			const auto &classInfo = package->classes.GetValueByKey(classType->name);
-			if (classInfo->fields.ContainsKey(node->field))
+			if (auto classInfo = project.GetClass(classType))
 			{
-				auto& field = classInfo->fields.GetValueByKey(node->field);
-				return Attach(node, field.type);
-			}
-			else if (classInfo->methods.ContainsKey(node->field))
-			{
-				auto& method = classInfo->methods.GetValueByKey(node->field);
-				return Attach(node, method.signature);
+				if ((*classInfo)->fields.ContainsKey(node->field))
+				{
+					auto& field = (*classInfo)->fields.GetValueByKey(node->field);
+					return Attach(node, field.type);
+				}
+				else if ((*classInfo)->methods.ContainsKey(node->field))
+				{
+					auto& method = (*classInfo)->methods.GetValueByKey(node->field);
+					return Attach(node, method.signature);
+				}
+				else
+				{
+					throw TypeException(node->position, Format(U"undefined field '{}'", node->field));
+				}
 			}
 			else
 			{
-				throw TypeException(node->position, Format(U"undefined field '{}'", node->field));
+				throw TypeException(node->position,
+					Format(U"undefined class '{}'", object->ToString()));
+			}
+		}
+		else if (object->typeCode == TypeCode::Interface)
+		{
+			auto interfaceType = std::static_pointer_cast<InterfaceType>(object);
+			if (auto interfaceInfo = project.GetInterface(interfaceType))
+			{
+				if ((*interfaceInfo)->methodDefs.ContainsKey(node->field))
+				{
+					auto& method = (*interfaceInfo)->methodDefs.GetValueByKey(node->field);
+					return Attach(node, method.signature);
+				}
+				else
+				{
+					throw TypeException(node->position, Format(U"undefined field '{}'", node->field));
+				}
+			}
+			else
+			{
+				throw TypeException(node->position,
+					Format(U"undefined interface '{}'", object->ToString()));
 			}
 		}
 		else if (object->typeCode == TypeCode::Array)
@@ -998,69 +1217,88 @@ namespace cygni
 
 	TypePtr TypeChecker::CheckNewExpression(std::shared_ptr<NewExpression> node, Scope<TypePtr>* scope)
 	{
-		auto newExpType = std::static_pointer_cast<ClassType>(node->type);
-
-		if (auto res = project.GetClass(newExpType->route, newExpType->name))
+		node->type = CheckType(node->position, std::static_pointer_cast<ClassType>(node->type));
+		if (node->type->typeCode == TypeCode::Class)
 		{
-			auto classInfo = *res;
-			for (const auto& argument : node->arguments)
+			auto newExpType = std::static_pointer_cast<ClassType>(node->type);
+			if (auto res = project.GetClass(newExpType))
 			{
-				if (argument.name)
+				auto classInfo = *res;
+				for (const auto& argument : node->arguments)
 				{
-					if (classInfo->fields.ContainsKey(*argument.name))
+					if (argument.name)
 					{
-						auto& field = classInfo->fields.GetValueByKey(*(argument.name));
-						auto value = CheckExpression(argument.value, scope);
-						if (field.type->Equals(value))
+						if (classInfo->fields.ContainsKey(*argument.name))
 						{
-							// pass
+							auto& field = classInfo->fields.GetValueByKey(*(argument.name));
+							auto value = CheckExpression(argument.value, scope);
+							if (field.type->Equals(value))
+							{
+								// pass
+							}
+							else
+							{
+								throw TypeException(node->position,
+									Format(U"field '{}' initialization type does not match", *(argument.name)));
+							}
 						}
 						else
 						{
 							throw TypeException(node->position,
-								Format(U"field '{}' initialization type does not match", *(argument.name)));
+								Format(U"field initialization name '{}' not found", *(argument.name)));
 						}
 					}
 					else
 					{
-						throw TypeException(node->position,
-							Format(U"field initialization name '{}' not found", *(argument.name)));
+						throw TypeException(node->position, U"field initialization name not specified");
 					}
 				}
-				else
-				{
-					throw TypeException(node->position, U"field initialization name not specified");
-				}
+				node->location = std::make_shared<TypeLocation>(LocationType::ClassName, *classInfo->index);
+				return node->type;
 			}
-			node->location = std::make_shared<TypeLocation>(LocationType::ClassName, *classInfo->index);
-			return node->type;
+			else
+			{
+				throw TypeException(node->position,
+					Format(U"error new expression: undefined class '{}'", newExpType->ToString()));
+			}
 		}
 		else
 		{
 			throw TypeException(node->position,
-				Format(U"error new expression: undefined class '{}'", newExpType->ToString()));
+				Format(U"new expression expects a class type, not '{}'", node->type->ToString()));
 		}
 	}
 
 	TypePtr TypeChecker::CheckVarDefExpression(std::shared_ptr<VarDefExpression> node, Scope<TypePtr>* scope)
 	{
 		TypePtr value = CheckExpression(node->value, scope);
-		if (node->type->typeCode == TypeCode::Unknown)
+		node->variable->type = CheckType(node->position, node->variable->type);
+		if (node->variable->type->typeCode == TypeCode::Unknown)
 		{
-			node->type = value;
-			scope->Put(node->variable->name, node->type);
-			node->variable->type = node->type;
-			return node->type;
+			node->variable->type = value;
+			scope->Put(node->variable->name, node->variable->type);
+			return  Attach(node, value);
 		}
-		else if (node->type->Equals(value))
+		else if (node->variable->type->Equals(value))
 		{
-			scope->Put(node->variable->name, node->type);
-			node->variable->type = node->type;
-			return node->type;
+			scope->Put(node->variable->name, node->variable->type);
+			return Attach(node, node->variable->type);
+		}
+		else if (typeGraph.IsSubTypeof(value, node->variable->type))
+		{
+			// add type conversion
+			auto convertExp = std::make_shared<UnaryExpression>(node->position, ExpressionType::Convert, node->value);
+			convertExp->upCasting = true;
+			node->value = convertExp;
+			node->value->type = node->variable->type;
+			scope->Put(node->variable->name, node->value->type);
+			return Attach(node, node->variable->type);
 		}
 		else
 		{
-			throw TypeException(node->position, U"variable initialization type mismatch");
+			throw TypeException(node->position,
+				Format(U"variable initialization type mismatch, variable: '{}', initialization: '{}'",
+					node->variable->type->ToString(), node->value->type->ToString()));
 		}
 	}
 	void TypeChecker::CheckPackage(Scope<TypePtr>* globalScope)
@@ -1079,6 +1317,67 @@ namespace cygni
 		for (const auto &moduleInfo : package->modules)
 		{
 			CheckModuleInfo(moduleInfo, scope);
+		}
+		for (const auto &classInfo : package->classDefs)
+		{
+			auto classType = std::make_shared<ClassType>(classInfo->route, classInfo->name);
+			classInfo->inheritanceChain = typeGraph.InheritanceChain(classType);
+			classInfo->interfaceList = typeGraph.GetAllInterfaces(classType);
+			std::sort(
+				classInfo->interfaceList.begin(),
+				classInfo->interfaceList.end(),
+				[this, classInfo](std::shared_ptr<InterfaceType>&x, std::shared_ptr<InterfaceType>& y) -> bool
+			{
+				auto ix = project.GetInterface(x);
+				auto iy = project.GetInterface(y);
+				if (!ix)
+				{
+					throw CompilerException(classInfo->position,
+						Format(U"missing interface {} for class {}", x->ToString(), classInfo->name));
+				}
+				else if (!iy)
+				{
+					throw CompilerException(classInfo->position,
+						Format(U"missing interface {} for class {}", y->ToString(), classInfo->name));
+				}
+				else
+				{
+					if (!(*ix)->index)
+					{
+						throw CompilerException(classInfo->position,
+							Format(U"missing index of interface {} for class {}", x->ToString(), classInfo->name));
+					}
+					else if (!(*iy)->index)
+					{
+						throw CompilerException(classInfo->position,
+							Format(U"missing index of interface {} for class {}", y->ToString(), classInfo->name));
+					}
+					else
+					{
+						return (*ix)->index < (*iy)->index;
+					}
+				}
+			});
+		}
+		for (auto& interfaceInfo : package->interfaceDefs)
+		{
+			auto interfaceType = std::make_shared<InterfaceType>(interfaceInfo->route, interfaceInfo->name);
+			interfaceInfo->allSuperInterfaces = typeGraph.GetAllSuperInterfaces(interfaceType);
+			for (auto superInterfaceType : interfaceInfo->allSuperInterfaces)
+			{
+				if (auto superInterfaceInfo = project.GetInterface(superInterfaceType))
+				{
+					for (auto method : (*superInterfaceInfo)->methodDefs)
+					{
+						interfaceInfo->allMethods.push_back(method);
+					}
+				}
+				else
+				{
+					throw CompilerException(interfaceInfo->position,
+						Format(U"missing interface {} for interface {}", superInterfaceType->ToString(), interfaceInfo->name));
+				}
+			}
 		}
 	}
 
@@ -1117,6 +1416,11 @@ namespace cygni
 		case ExpressionType::Assign:
 			VisitBinary(std::static_pointer_cast<BinaryExpression>(node), nodeList);
 			return;
+		case ExpressionType::UnaryPlus:
+		case ExpressionType::UnaryMinus:
+		case ExpressionType::Convert:
+			VisitUnary(std::static_pointer_cast<UnaryExpression>(node), nodeList);
+			return;
 		case ExpressionType::Constant:
 			return;
 		case ExpressionType::Block:
@@ -1149,6 +1453,10 @@ namespace cygni
 		default:
 			throw NotImplementedException(U"not implemented node type for tree traverser");
 		}
+	}
+	void TreeTraverser::VisitUnary(std::shared_ptr<UnaryExpression> node, std::vector<ExpPtr>& nodeList)
+	{
+		VisitExpression(node->operand, nodeList);
 	}
 	void TreeTraverser::VisitBinary(std::shared_ptr<BinaryExpression> node, std::vector<ExpPtr>& nodeList)
 	{
@@ -1273,6 +1581,11 @@ namespace cygni
 		case ExpressionType::Assign:
 			VisitBinary(std::static_pointer_cast<BinaryExpression>(node), scope);
 			return;
+		case ExpressionType::UnaryPlus:
+		case ExpressionType::UnaryMinus:
+		case ExpressionType::Convert:
+			VisitUnary(std::static_pointer_cast<UnaryExpression>(node), scope);
+			return;
 		case ExpressionType::Block:
 			VisitBlock(std::static_pointer_cast<BlockExpression>(node), scope);
 			return;
@@ -1315,6 +1628,10 @@ namespace cygni
 		{
 			VisitExpression(exp, scope);
 		}
+	}
+	void VariableLocator::VisitUnary(std::shared_ptr<UnaryExpression> node, Scope<LocationPtr>* scope)
+	{
+		VisitExpression(node->operand, scope);
 	}
 	void VariableLocator::VisitBinary(std::shared_ptr<BinaryExpression> node, Scope<LocationPtr>* scope)
 	{
@@ -1410,7 +1727,7 @@ namespace cygni
 		{
 			auto moduleType = std::static_pointer_cast<ModuleType>(object);
 
-			if (auto res = project.GetModule(moduleType->route, moduleType->name))
+			if (auto res = project.GetModule(moduleType))
 			{
 				const auto &moduleInfo = *res;
 				if (moduleInfo->fields.ContainsKey(node->field))
@@ -1437,7 +1754,7 @@ namespace cygni
 		else if (object->typeCode == TypeCode::Class)
 		{
 			auto classType = std::static_pointer_cast<ClassType>(object);
-			if (auto res = project.GetClass(classType->route, classType->name))
+			if (auto res = project.GetClass(classType))
 			{
 				const auto &classInfo = *res;
 				if (classInfo->fields.ContainsKey(node->field))
@@ -1462,6 +1779,29 @@ namespace cygni
 					Format(U"undefined class '{}'", classType->name));
 			}
 		}
+		else if (object->typeCode == TypeCode::Interface)
+		{
+			auto interfaceType = std::static_pointer_cast<InterfaceType>(object);
+			if (auto res = project.GetInterface(interfaceType))
+			{
+				const auto &interfaceInfo = *res;
+				if (interfaceInfo->methodDefs.ContainsKey(node->field))
+				{
+					auto& method = interfaceInfo->methodDefs.GetValueByKey(node->field);
+					node->location = std::make_shared<MemberLocation>(LocationType::InterfaceMethod, *interfaceInfo->index, *method.index);
+				}
+				else
+				{
+					throw TypeException(node->position,
+						Format(U"undefined field '{}' in class '{}'", node->field, interfaceInfo->name));
+				}
+			}
+			else
+			{
+				throw TypeException(node->position,
+					Format(U"undefined interface '{}'", interfaceType->name));
+			}
+		}
 		else if (object->typeCode == TypeCode::Array)
 		{
 			// pass
@@ -1477,7 +1817,7 @@ namespace cygni
 		if (node->type->typeCode == TypeCode::Class)
 		{
 			auto classType = std::static_pointer_cast<ClassType>(node->type);
-			if (auto res = project.GetClass(classType->route, classType->name))
+			if (auto res = project.GetClass(classType))
 			{
 				const auto &classInfo = *res;
 				for (auto& arg : node->arguments)
@@ -1621,9 +1961,9 @@ namespace cygni
 			for (auto classInfo : pkg->classes)
 			{
 				//std::cout << "rename class: " << classInfo->name << std::endl;
-				for (auto& superClass : classInfo->superClasses)
+				for (auto& superType : classInfo->superTypes)
 				{
-					superClass = RenameType(superClass, typeAliases);
+					superType = RenameType(superType, typeAliases);
 				}
 				for (auto& field : classInfo->fieldDefs.values)
 				{
@@ -1746,12 +2086,12 @@ namespace cygni
 		{
 			for (auto& classInfo : program.classDefs.values)
 			{
-				int n = static_cast<int>(classInfo->superClasses.size());
+				int n = static_cast<int>(classInfo->superTypes.size());
 				for (int i = 0; i < n; i++)
 				{
-					auto type = classInfo->superClasses.at(i);
+					auto type = classInfo->superTypes.at(i);
 					auto classType = std::static_pointer_cast<ClassType>(type);
-					if (auto res = project.GetClass(classType->route, classType->name))
+					if (auto res = project.GetClass(classType))
 					{
 						auto classInfo = *res;
 						if (i != 0)
@@ -1762,9 +2102,10 @@ namespace cygni
 							);
 						}
 					}
-					else if (auto res = project.GetInterface(classType->route, classType->name))
+					else if (auto res = project.GetInterface(
+						std::make_shared<InterfaceType>(classType->route, classType->name)))
 					{
-						classInfo->superClasses.at(i) = std::make_shared<InterfaceType>(classType->route, classType->name);
+						classInfo->superTypes.at(i) = std::make_shared<InterfaceType>(classType->route, classType->name);
 					}
 					else
 					{
@@ -1792,6 +2133,7 @@ namespace cygni
 		std::unordered_set<TypePtr> typeSet;
 		std::unordered_set<std::u32string> fieldNames;
 		std::unordered_set<std::u32string> methodNames;
+
 		auto originalClass = classInfo;
 		bool done = false;
 		while (!done)
@@ -1840,13 +2182,13 @@ namespace cygni
 					methodStack.push(method);
 				}
 			}
-			if (classInfo->superClasses.size() >= 1)
+			if (classInfo->superTypes.size() >= 1)
 			{
-				auto type = classInfo->superClasses.front();
+				auto type = classInfo->superTypes.front();
 				if (type->typeCode == TypeCode::Class)
 				{
 					auto classType = std::static_pointer_cast<ClassType>(type);
-					if (auto res = project.GetClass(classType->route, classType->name))
+					if (auto res = project.GetClass(classType))
 					{
 						classInfo = *res;
 					}
@@ -1963,6 +2305,7 @@ namespace cygni
 	{
 		int classIndex = 0;
 		int moduleIndex = 0;
+		int interfaceIndex = 0;
 		for (auto pkg : project.packages)
 		{
 			for (auto classInfo : pkg->classDefs)
@@ -1982,6 +2325,17 @@ namespace cygni
 				moduleIndex++;
 				int methodIndex = 0;
 				for (auto& method : moduleInfo->methods)
+				{
+					method.index = methodIndex;
+					methodIndex++;
+				}
+			}
+			for (auto interfaceInfo : pkg->interfaceDefs)
+			{
+				interfaceInfo->index = interfaceIndex;
+				interfaceIndex++;
+				int methodIndex = 0;
+				for (auto& method : interfaceInfo->methodDefs)
 				{
 					method.index = methodIndex;
 					methodIndex++;

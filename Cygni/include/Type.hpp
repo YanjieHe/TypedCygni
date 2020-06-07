@@ -6,6 +6,7 @@
 #include <unordered_set>
 #include <list>
 #include "SourcePosition.hpp"
+#include <optional>
 
 namespace cygni
 {
@@ -186,21 +187,6 @@ namespace cygni
 		std::u32string ToString() const override;
 	};
 
-	class TypeGraph
-	{
-	public:
-		class Edge
-		{
-		public:
-			int src;
-			int dest;
-		};
-		int V; // number of vertices
-		int E; // number of edges
-
-		std::vector<std::vector<Edge>> edges;
-	};
-
 } // namespace cygni
 
 template <> struct std::hash<cygni::TypePtr>
@@ -209,21 +195,41 @@ public:
 	std::hash<cygni::PackageRoute> h1;
 	std::hash<std::u32string> h2;
 
-	size_t operator()(const cygni::TypePtr &type) const
+	size_t GetHashCode(const cygni::TypePtr &type) const
 	{
 		if (type->typeCode == cygni::TypeCode::Class)
 		{
 			auto classType = std::static_pointer_cast<cygni::ClassType>(type);
 			return h1(classType->route) ^ h2(classType->name);
 		}
+		else if (type->typeCode == cygni::TypeCode::Module)
+		{
+			auto moduleType = std::static_pointer_cast<cygni::ModuleType>(type);
+			return h1(moduleType->route) ^ h2(moduleType->name);
+		}
+		else if (type->typeCode == cygni::TypeCode::Interface)
+		{
+			auto interfaceType = std::static_pointer_cast<cygni::InterfaceType>(type);
+			return h1(interfaceType->route) ^ h2(interfaceType->name);
+		}
+		else if (type->typeCode == cygni::TypeCode::Array)
+		{
+			auto arrayType = std::static_pointer_cast<cygni::ArrayType>(type);
+			return static_cast<size_t>(type->typeCode) ^ (GetHashCode(arrayType->elementType));
+		}
 		else
 		{
 			return static_cast<size_t>(type->typeCode);
 		}
 	}
+	size_t operator()(const cygni::TypePtr &type) const
+	{
+		return GetHashCode(type);
+	}
 };
 
-template <> struct std::equal_to<cygni::TypePtr>
+template <>
+struct std::equal_to<cygni::TypePtr>
 {
 public:
 	bool operator()(const cygni::TypePtr &x, const cygni::TypePtr &y) const
@@ -234,6 +240,35 @@ public:
 
 namespace cygni
 {
+	class TypeGraph
+	{
+	public:
+		class Edge
+		{
+		public:
+			int src;
+			int dest;
+			bool isSubtypeOf;
+		};
+		int V; // number of vertices
+		int E; // number of edges
+
+		std::vector<std::vector<Edge>> adj;
+		std::vector<TypePtr> types;
+		std::unordered_map<TypePtr, int> table;
+
+		TypeGraph();
+
+		void AddEdge(TypePtr type, TypePtr superType);
+
+		bool IsSubTypeof(TypePtr type, TypePtr superType);
+		bool IsSuperTypeof(TypePtr superType, TypePtr type);
+
+		std::vector<std::shared_ptr<ClassType>> InheritanceChain(std::shared_ptr<ClassType> originalType);
+		std::vector<std::shared_ptr<InterfaceType>> GetAllInterfaces(std::shared_ptr<ClassType> originalType);
+		std::vector<std::shared_ptr<InterfaceType>> GetAllSuperInterfaces(std::shared_ptr<InterfaceType> originalType);
+	};
+
 	class UnionType : public Type
 	{
 	public:

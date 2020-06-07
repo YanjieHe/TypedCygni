@@ -1,14 +1,8 @@
 #include "Compiler.hpp"
-#include "Exception.hpp"
-#include <functional>
 #include <algorithm>
 
 namespace cygni
 {
-	ByteCode::ByteCode(std::u32string u32str)
-	{
-		AppendString(u32str);
-	}
 	void ByteCode::Append(Byte byte)
 	{
 		bytes.push_back(byte);
@@ -21,18 +15,23 @@ namespace cygni
 	{
 		bytes.push_back(static_cast<Byte>(tag));
 	}
-	void ByteCode::AppendUShort(size_t value)
+	void ByteCode::AppendU16Checked(size_t value, const std::function<CompilerException()>& exceptionHandler)
 	{
 		if (value > std::numeric_limits<uint16_t>::max())
 		{
-			// TO DO: better location information
-			throw std::invalid_argument("unsigned 16-bit integer overflow");
+			//throw std::invalid_argument("unsigned 16-bit integer overflow");
+			throw exceptionHandler();
 		}
 		else
 		{
-			bytes.push_back(static_cast<int>(value) / 256);
-			bytes.push_back(static_cast<int>(value) % 256);
+			bytes.push_back(value / 256);
+			bytes.push_back(value % 256);
 		}
+	}
+	void ByteCode::AppendU16Unchecked(size_t value)
+	{
+		bytes.push_back(value / 256);
+		bytes.push_back(value % 256);
 	}
 	void ByteCode::WriteUShort(int index, int value)
 	{
@@ -118,7 +117,7 @@ namespace cygni
 	void ByteCode::AppendString(const std::u32string & u32str)
 	{
 		std::string u8str = UTF32ToUTF8(u32str);
-		AppendUShort(u8str.size());
+		AppendU16Unchecked(u8str.size());
 		for (Byte c : u8str)
 		{
 			Append(c);
@@ -153,52 +152,214 @@ namespace cygni
 		classCount = classCount + 1;
 		moduleCount = moduleCount + 1;
 
-		if (InRange<uint16_t>(classCount) && InRange<uint16_t>(moduleCount))
+		std::vector<std::shared_ptr<ClassInfo>> classes(classCount);
+		std::vector<std::shared_ptr<ModuleInfo>> modules(moduleCount);
+
+		for (auto pkg : project.packages)
 		{
-
-			std::vector<std::shared_ptr<ClassInfo>> classes(classCount);
-			std::vector<std::shared_ptr<ModuleInfo>> modules(moduleCount);
-
-			for (auto pkg : project.packages)
+			for (auto classInfo : pkg->classes.values)
 			{
-				for (auto classInfo : pkg->classes.values)
-				{
-					classes.at(*classInfo->index) = classInfo;
-				}
-				for (auto moduleInfo : pkg->modules)
-				{
-					modules.at(*moduleInfo->index) = moduleInfo;
-				}
+				classes.at(*classInfo->index) = classInfo;
 			}
-
-			ByteCode byteCode;
-			CompileMainFunction(modules, byteCode);
-
-			byteCode.AppendUShort(classes.size());
-			byteCode.AppendUShort(modules.size());
-
-			for (auto classInfo : classes)
+			for (auto moduleInfo : pkg->modules)
 			{
-				CompileClassInfo(classInfo, byteCode);
+				modules.at(*moduleInfo->index) = moduleInfo;
 			}
-
-			for (auto moduleInfo : modules)
-			{
-				CompileModuleInfo(moduleInfo, byteCode);
-			}
-
-			return byteCode;
 		}
-		else
+
+		ByteCode byteCode;
+		CompileMainFunction(modules, byteCode);
+
+		byteCode.AppendU16Checked(classes.size(), []() -> CompilerException
 		{
-			if (!InRange<uint16_t>(classCount))
+			return CompilerException(SourcePosition(), U"number of class cannot exceed 65535");
+		});
+		byteCode.AppendU16Checked(modules.size(), []() -> CompilerException
+		{
+			return CompilerException(SourcePosition(), U"number of module cannot exceed 65535");
+		});
+
+		for (auto classInfo : classes)
+		{
+			CompileClassInfo(classInfo, byteCode);
+		}
+
+		for (auto moduleInfo : modules)
+		{
+			CompileModuleInfo(moduleInfo, byteCode);
+		}
+
+		return byteCode;
+	}
+	void Compiler::CompileUnary(std::shared_ptr<UnaryExpression> node, const ConstantMap & constantMap, ByteCode & byteCode)
+	{
+		CompileExpression(node->operand, constantMap, byteCode);
+		switch (node->nodeType)
+		{
+		case ExpressionType::UnaryPlus:
+		{
+			switch (node->operand->type->typeCode)
 			{
-				throw CompilerException(SourcePosition(), U"class count exceed 65535");
+			case TypeCode::Int32:
+			case TypeCode::Int64:
+			case TypeCode::Float32:
+			case TypeCode::Float64: {
+				break;
+			}
+			default:
+			{
+				throw TypeException(node->position,
+					Format(U"unary plus operand type '{}' not suported", node->operand->type->ToString()));
+			}
+			}
+			break;
+		}
+		case ExpressionType::UnaryMinus: {
+			switch (node->operand->type->typeCode)
+			{
+			case TypeCode::Int32: {
+				byteCode.AppendOp(OpCode::MINUS_I32);
+				break;
+			}
+			case TypeCode::Int64: {
+				byteCode.AppendOp(OpCode::MINUS_I64);
+				break;
+			}
+			case TypeCode::Float32: {
+				byteCode.AppendOp(OpCode::MINUS_F32);
+				break;
+			}
+			case TypeCode::Float64: {
+				byteCode.AppendOp(OpCode::MINUS_F64);
+				break;
+			}
+			default:
+			{
+				throw TypeException(node->position,
+					Format(U"unary minus operand type '{}' not suported", node->operand->type->ToString()));
+			}
+			}
+			break;
+		}
+		case ExpressionType::Convert: {
+			auto from = node->operand->type->typeCode;
+			auto to = node->type->typeCode;
+			if (from == TypeCode::Int32 && to == TypeCode::Int64)
+			{
+				byteCode.AppendOp(OpCode::CAST_I32_TO_I64);
+			}
+			else if (from == TypeCode::Int64 && to == TypeCode::Int32)
+			{
+				byteCode.AppendOp(OpCode::CAST_I64_TO_I32);
+			}
+			else if (from == TypeCode::Int32 && to == TypeCode::Float32)
+			{
+				byteCode.AppendOp(OpCode::CAST_I32_TO_F32);
+			}
+			else if (from == TypeCode::Float32 && to == TypeCode::Int32)
+			{
+				byteCode.AppendOp(OpCode::CAST_F32_TO_I32);
+			}
+			else if (from == TypeCode::Int32 && to == TypeCode::Float64)
+			{
+				byteCode.AppendOp(OpCode::CAST_I32_TO_F64);
+			}
+			else if (from == TypeCode::Float64 && to == TypeCode::Int32)
+			{
+				byteCode.AppendOp(OpCode::CAST_F64_TO_I32);
+			}
+			else if (from == TypeCode::Int64 && to == TypeCode::Float32)
+			{
+				byteCode.AppendOp(OpCode::CAST_I64_TO_F32);
+			}
+			else if (from == TypeCode::Float32 && to == TypeCode::Int64)
+			{
+				byteCode.AppendOp(OpCode::CAST_F32_TO_I64);
+			}
+			else if (from == TypeCode::Int64 && to == TypeCode::Float64)
+			{
+				byteCode.AppendOp(OpCode::CAST_I64_TO_F64);
+			}
+			else if (from == TypeCode::Float64 && to == TypeCode::Int64)
+			{
+				byteCode.AppendOp(OpCode::CAST_F64_TO_I64);
+			}
+			else if (from == TypeCode::Float32 && to == TypeCode::Float64)
+			{
+				byteCode.AppendOp(OpCode::CAST_F32_TO_F64);
+			}
+			else if (from == TypeCode::Float64 && to == TypeCode::Float32)
+			{
+				byteCode.AppendOp(OpCode::CAST_F64_TO_F32);
 			}
 			else
 			{
-				throw CompilerException(SourcePosition(), U"module count exceed 65535");
+				if (node->upCasting)
+				{
+					byteCode.AppendOp(OpCode::UP_CAST);
+				}
+				else
+				{
+					byteCode.AppendOp(OpCode::DOWN_CAST);
+				}
+				if (to == TypeCode::Class)
+				{
+					byteCode.Append(0);
+					auto classType = std::static_pointer_cast<ClassType>(node->type);
+					if (auto classInfo = project.GetClass(classType))
+					{
+						if ((*classInfo)->index)
+						{
+							byteCode.AppendU16Checked(*((*classInfo)->index), [classInfo]()->CompilerException
+							{
+								return CompilerException((*classInfo)->position, U"the index of class cannot exceed 65535");
+							});
+						}
+						else
+						{
+							throw CompilerException(node->position,
+								Format(U"type '{}' index not assigned", classType->ToString()));
+						}
+					}
+					else
+					{
+						throw CompilerException(node->position,
+							Format(U"type '{}' not found", classType->ToString()));
+					}
+				}
+				else if (to == TypeCode::Interface)
+				{
+					byteCode.Append(1);
+					auto interfaceType = std::static_pointer_cast<InterfaceType>(node->type);
+					if (auto interfaceInfo = project.GetInterface(interfaceType))
+					{
+						if ((*interfaceInfo)->index)
+						{
+							byteCode.AppendU16Checked(*((*interfaceInfo)->index), [interfaceInfo]()->CompilerException
+							{
+								return CompilerException((*interfaceInfo)->position, U"the index of interface cannot exceed 65535");
+							});
+						}
+						else
+						{
+							throw CompilerException(node->position,
+								Format(U"type '{}' index not assigned", interfaceType->ToString()));
+						}
+					}
+					else
+					{
+						throw CompilerException(node->position,
+							Format(U"type '{}' not found", interfaceType->ToString()));
+					}
+				}
+				else
+				{
+					throw CompilerException(node->position,
+						Format(U"cannot convert the object from '{}' to '{}'", node->operand->type->ToString(), node->type->ToString()));
+				}
 			}
+			break;
+		}
 		}
 	}
 	void Compiler::CompileBinary(std::shared_ptr<BinaryExpression> node,
@@ -497,6 +658,10 @@ namespace cygni
 		case ExpressionType::Equal:
 		case ExpressionType::NotEqual:
 			return CompileBinary(std::static_pointer_cast<BinaryExpression>(node), constantMap, byteCode);
+		case ExpressionType::UnaryPlus:
+		case ExpressionType::UnaryMinus:
+		case ExpressionType::Convert:
+			return CompileUnary(std::static_pointer_cast<UnaryExpression>(node), constantMap, byteCode);
 		case ExpressionType::Assign:
 			return CompileAssign(std::static_pointer_cast<BinaryExpression>(node), constantMap, byteCode);
 		case ExpressionType::Constant:
@@ -558,7 +723,7 @@ namespace cygni
 			if (constantMap.find(key) != constantMap.end())
 			{
 				int index = constantMap.at(key);
-				if (auto moduleInfo = project.GetModule(PackageRoute{ U"Predef" }, U"String"))
+				if (auto moduleInfo = project.GetModule(std::make_shared<ModuleType>(PackageRoute{ U"Predef" }, U"String")))
 				{
 					if ((*moduleInfo)->methods.ContainsKey(U"New"))
 					{
@@ -566,11 +731,20 @@ namespace cygni
 						// TO DO: call 'New' function
 
 						byteCode.AppendOp(OpCode::PUSH_STRING);
-						byteCode.AppendUShort(index);
+						byteCode.AppendU16Checked(index, [moduleInfo]()->CompilerException
+						{
+							return CompilerException((*moduleInfo)->position, U"the index of module constant cannot exceed 65535");
+						});
 
 						byteCode.AppendOp(OpCode::INVOKE_FUNCTION);
-						byteCode.AppendUShort(*(*moduleInfo)->index);
-						byteCode.AppendUShort(*methodInfo.index);
+						byteCode.AppendU16Checked(*(*moduleInfo)->index, [moduleInfo]()->CompilerException
+						{
+							return CompilerException((*moduleInfo)->position, U"the index of module cannot exceed 65535");
+						});
+						byteCode.AppendU16Checked(*methodInfo.index, [&methodInfo]()->CompilerException
+						{
+							return CompilerException(methodInfo.position, U"the index of method cannot exceed 65535");
+						});
 					}
 					else
 					{
@@ -599,22 +773,34 @@ namespace cygni
 				{
 				case TypeCode::Int32: {
 					byteCode.AppendOp(OpCode::PUSH_I32);
-					byteCode.AppendUShort(index);
+					byteCode.AppendU16Checked(index, [&node]()->CompilerException
+					{
+						return CompilerException(node->position, U"the index of constant cannot exceed 65535");
+					});
 					break;
 				}
 				case TypeCode::Int64: {
 					byteCode.AppendOp(OpCode::PUSH_I64);
-					byteCode.AppendUShort(index);
+					byteCode.AppendU16Checked(index, [&node]()->CompilerException
+					{
+						return CompilerException(node->position, U"the index of constant cannot exceed 65535");
+					});
 					break;
 				}
 				case TypeCode::Float32: {
 					byteCode.AppendOp(OpCode::PUSH_F32);
-					byteCode.AppendUShort(index);
+					byteCode.AppendU16Checked(index, [&node]()->CompilerException
+					{
+						return CompilerException(node->position, U"the index of constant cannot exceed 65535");
+					});
 					break;
 				}
 				case TypeCode::Float64: {
 					byteCode.AppendOp(OpCode::PUSH_F64);
-					byteCode.AppendUShort(index);
+					byteCode.AppendU16Checked(index, [&node]()->CompilerException
+					{
+						return CompilerException(node->position, U"the index of constant cannot exceed 65535");
+					});
 					break;
 				}
 				default: {
@@ -633,28 +819,82 @@ namespace cygni
 	void Compiler::CompileClassInfo(std::shared_ptr<ClassInfo> info, ByteCode & byteCode)
 	{
 		byteCode.AppendString(info->name);
-		byteCode.AppendUShort(info->fields.Size());
+		byteCode.AppendU16Checked(info->fields.Size(), [info]()->CompilerException
+		{
+			return CompilerException(info->position, U"too many fields in the class");
+		});
 		for (const auto& field : info->fields.values)
 		{
 			byteCode.AppendString(field.name);
 		}
 
 		// constant pool
-		CompileConstantPool(info->constantMap, byteCode);
+		CompileConstantPool(info->position, info->constantMap, byteCode);
 
-		//for (auto pair : info->virtualMethodTable)
-		//{
-		//	auto interfaceName = 
-		//}
-		//for (auto superClass : info->superClasses)
-		//{
-		//	if (superClass->typeCode == TypeCode::Interface)
-		//	{
-		//		auto interfaceType = std::static_pointer_cast<InterfaceType>(superClass);
-		//		auto interfaceInfo = project.GetInterface(interfaceType)
-		//	}
-		//}
-		byteCode.AppendUShort(info->methodDefs.Size());
+		byteCode.AppendU16Unchecked(info->inheritanceChain.size());
+		for (const auto& superClassType : info->inheritanceChain)
+		{
+			if (auto superClassInfo = project.GetClass(superClassType))
+			{
+				byteCode.AppendU16Unchecked(*(*superClassInfo)->index);
+			}
+			else
+			{
+				throw CompilerException(info->position,
+					Format(U"missing super class '{}' for inheritance", superClassType->ToString()));
+			}
+		}
+		byteCode.AppendU16Unchecked(info->interfaceList.size());
+		for (const auto& superInterfaceType : info->interfaceList)
+		{
+			if (auto superInterfaceInfo = project.GetInterface(superInterfaceType))
+			{
+				byteCode.AppendU16Unchecked(*(*superInterfaceInfo)->index);
+				byteCode.AppendU16Unchecked((*superInterfaceInfo)->allMethods.size());
+				for (const auto& method : (*superInterfaceInfo)->allMethods)
+				{
+					if (info->methods.ContainsKey(method.name))
+					{
+						auto classMethod = info->methods.GetValueByKey(method.name);
+						if (classMethod.selfType->typeCode == TypeCode::Class)
+						{
+							auto selfType = std::static_pointer_cast<ClassType>(classMethod.selfType);
+							if (auto selfClassInfo = project.GetClass(selfType))
+							{
+								byteCode.AppendU16Unchecked(*(*selfClassInfo)->index);
+								byteCode.AppendU16Unchecked(*classMethod.index);
+							}
+							else
+							{
+								throw CompilerException(classMethod.position,
+									Format(U"cannot find the class '{}' of the method '{}", classMethod.selfType->ToString(),
+										method.name));
+							}
+						}
+						else
+						{
+							throw CompilerException(classMethod.position,
+								Format(U"cannot find the class type '{}' of the method '{}", classMethod.selfType->ToString(),
+									method.name));
+						}
+					}
+					else
+					{
+						throw CompilerException(info->position,
+							Format(U"function '{}' is not implemented", method.name));
+					}
+				}
+			}
+			else
+			{
+				throw CompilerException(info->position,
+					Format(U"missing super interface '{}'", superInterfaceType->ToString()));
+			}
+		}
+		byteCode.AppendU16Checked(info->methodDefs.Size(), [info]()->CompilerException
+		{
+			return  CompilerException(info->position, U"too many methods in the class");
+		});
 		for (const auto& method : info->methodDefs.values)
 		{
 			CompileMethodDef(method, info->constantMap, byteCode);
@@ -663,7 +903,10 @@ namespace cygni
 	void Compiler::CompileModuleInfo(std::shared_ptr<ModuleInfo> info, ByteCode& byteCode)
 	{
 		byteCode.AppendString(info->name);
-		byteCode.AppendUShort(info->fields.Size());
+		byteCode.AppendU16Checked(info->fields.Size(), [info]()->CompilerException
+		{
+			return CompilerException(info->position, U"too many variables in the module");
+		});
 		// fields
 		for (const auto& field : info->fields.values)
 		{
@@ -671,9 +914,12 @@ namespace cygni
 		}
 
 		// constant pool
-		CompileConstantPool(info->constantMap, byteCode);
+		CompileConstantPool(info->position, info->constantMap, byteCode);
 
-		byteCode.AppendUShort(info->methods.Size());
+		byteCode.AppendU16Checked(info->methods.Size(), [info]()->CompilerException
+		{
+			return CompilerException(info->position, U"too many functions in the module");
+		});
 		for (const auto& method : info->methods.values)
 		{
 			CompileMethodDef(method, info->constantMap, byteCode);
@@ -687,7 +933,10 @@ namespace cygni
 			byteCode.Append(1); // native function
 			auto annotation = method.annotations.GetValueByKey(U"LibraryImport");
 			byteCode.AppendString(method.name);
-			byteCode.AppendUShort(method.parameters.size());
+			byteCode.AppendU16Checked(method.parameters.size(), [&]()->CompilerException
+			{
+				return CompilerException(method.position, U"too many parameters");
+			});
 			auto libName = std::static_pointer_cast<ConstantExpression>(annotation.arguments.at(0).value)->constant;
 			auto funcName = std::static_pointer_cast<ConstantExpression>(annotation.arguments.at(1).value)->constant;
 			byteCode.AppendString(libName);
@@ -699,16 +948,28 @@ namespace cygni
 			byteCode.AppendString(method.name);
 			if (method.selfType->typeCode == TypeCode::Class)
 			{
-				byteCode.AppendUShort(method.parameters.size() + 1); // add 'this'
+				byteCode.AppendU16Checked(method.parameters.size() + 1, [&]()->CompilerException
+				{
+					return CompilerException(method.position, U"too many parameters");
+				}); // add 'this'
 			}
 			else
 			{
-				byteCode.AppendUShort(method.parameters.size());
+				byteCode.AppendU16Checked(method.parameters.size(), [&]()->CompilerException
+				{
+					return CompilerException(method.position, U"too many parameters");
+				});
 			}
-			byteCode.AppendUShort(method.localVariables.size());
+			byteCode.AppendU16Checked(method.localVariables.size(), [&]()->CompilerException
+			{
+				return CompilerException(method.position, U"too many variables");
+			});
 			ByteCode funcCode;
 			CompileExpression(method.body, constantMap, funcCode);
-			byteCode.AppendUShort(funcCode.Size());
+			byteCode.AppendU16Checked(funcCode.Size(), [&]()->CompilerException
+			{
+				return CompilerException(method.position, U"the function is too complicated. Consider split it into smaller functions");
+			});
 			byteCode.AppendByteCode(funcCode);
 		}
 	}
@@ -753,12 +1014,12 @@ namespace cygni
 					Format(U"not supported local variable type '{}'", parameter->type->ToString()));
 			}
 			}
-			byteCode.AppendUShort(std::static_pointer_cast<ParameterLocation>(location)->offset);
+			byteCode.AppendU16Unchecked(std::static_pointer_cast<ParameterLocation>(location)->offset);
 			break;
 		}
 		case LocationType::ClassField: {
 			byteCode.AppendOp(OpCode::PUSH_LOCAL_OBJECT);
-			byteCode.AppendUShort(0); /* this */
+			byteCode.AppendU16Unchecked(0); /* this */
 			switch (parameter->type->typeCode)
 			{
 			case TypeCode::Int32: {
@@ -790,7 +1051,7 @@ namespace cygni
 				throw CompilerException(parameter->position, Format(U"not supported class field access type '{}'", parameter->type->ToString()));
 			}
 			}
-			byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->offset);
+			byteCode.AppendU16Unchecked(std::static_pointer_cast<MemberLocation>(location)->offset);
 			break;
 		}
 		case LocationType::ModuleMethod: {
@@ -862,19 +1123,26 @@ namespace cygni
 		CompileExpression(node->condition, constantMap, byteCode);
 		byteCode.AppendOp(OpCode::JUMP_IF_FALSE);
 		int index1 = byteCode.Size();
-		byteCode.AppendUShort(0);
+		byteCode.AppendU16Unchecked(0);
 
 		CompileExpression(node->ifTrue, constantMap, byteCode);
 		byteCode.AppendOp(OpCode::JUMP);
 		int index2 = byteCode.Size();
-		byteCode.AppendUShort(0);
+		byteCode.AppendU16Unchecked(0);
 
 		int target1 = byteCode.Size();
 		CompileExpression(node->ifFalse, constantMap, byteCode);
 		int target2 = byteCode.Size();
 
-		byteCode.WriteUShort(index1, target1);
-		byteCode.WriteUShort(index2, target2);
+		if (target2 > std::numeric_limits<uint16_t>::max())
+		{
+			throw CompilerException(node->position, U"the function is too complicated. Consider split it into smaller functions");
+		}
+		else
+		{
+			byteCode.WriteUShort(index1, target1);
+			byteCode.WriteUShort(index2, target2);
+		}
 	}
 	void Compiler::CompileDefault(std::shared_ptr<DefaultExpression> node,
 		ByteCode& byteCode)
@@ -911,14 +1179,14 @@ namespace cygni
 				}
 				//CompileExpression(node->expression, constantMap, byteCode);
 				auto moduleType = std::static_pointer_cast<ModuleType>(function->selfType);
-				if (auto moduleInfo = project.GetModule(moduleType->route, moduleType->name))
+				if (auto moduleInfo = project.GetModule(moduleType))
 				{
 					byteCode.AppendOp(OpCode::INVOKE_FUNCTION);
 					if ((*moduleInfo)->methods.ContainsKey(function->name))
 					{
 						auto& method = (*moduleInfo)->methods.GetValueByKey(function->name);
-						byteCode.AppendUShort(*(*moduleInfo)->index);
-						byteCode.AppendUShort(*method.index);
+						byteCode.AppendU16Unchecked(*(*moduleInfo)->index);
+						byteCode.AppendU16Unchecked(*method.index);
 					}
 					else
 					{
@@ -942,7 +1210,7 @@ namespace cygni
 				else if (node->expression->nodeType == ExpressionType::Parameter)
 				{
 					byteCode.AppendOp(OpCode::PUSH_LOCAL_OBJECT);
-					byteCode.AppendUShort(0); /* this */
+					byteCode.AppendU16Unchecked(0); /* this */
 				}
 				else
 				{
@@ -953,14 +1221,14 @@ namespace cygni
 					CompileExpression(arg.value, constantMap, byteCode);
 				}
 				auto classType = std::static_pointer_cast<ClassType>(function->selfType);
-				if (auto classInfo = project.GetClass(classType->route, classType->name))
+				if (auto classInfo = project.GetClass(classType))
 				{
 					byteCode.AppendOp(OpCode::INVOKE_METHOD);
 					if ((*classInfo)->methods.ContainsKey(function->name))
 					{
 						auto& method = (*classInfo)->methods.GetValueByKey(function->name);
-						byteCode.AppendUShort(*(*classInfo)->index);
-						byteCode.AppendUShort(*method.index);
+						byteCode.AppendU16Unchecked(*(*classInfo)->index);
+						byteCode.AppendU16Unchecked(*method.index);
 					}
 					else
 					{
@@ -1068,8 +1336,8 @@ namespace cygni
 				throw CompilerException(node->position, U"not supported member access type");
 			}
 			}
-			byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->index);
-			byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->offset);
+			byteCode.AppendU16Unchecked(std::static_pointer_cast<MemberLocation>(location)->index);
+			byteCode.AppendU16Unchecked(std::static_pointer_cast<MemberLocation>(location)->offset);
 		}
 		else if (location->type == LocationType::ModuleMethod)
 		{
@@ -1112,7 +1380,7 @@ namespace cygni
 					node->field, node->type->ToString()));
 			}
 			}
-			byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->offset);
+			byteCode.AppendU16Unchecked(std::static_pointer_cast<MemberLocation>(location)->offset);
 		}
 		else if (location->type == LocationType::ClassMethod)
 		{
@@ -1132,7 +1400,7 @@ namespace cygni
 		const ConstantMap& constantMap, ByteCode& byteCode)
 	{
 		byteCode.AppendOp(OpCode::NEW);
-		byteCode.AppendUShort(std::static_pointer_cast<TypeLocation>(node->location)->index);
+		byteCode.AppendU16Unchecked(std::static_pointer_cast<TypeLocation>(node->location)->index);
 		std::unordered_set<std::u32string> initializedFields;
 		for (auto arg : node->arguments)
 		{
@@ -1142,7 +1410,7 @@ namespace cygni
 			}
 		}
 		auto classType = std::static_pointer_cast<ClassType>(node->type);
-		if (auto res = project.GetClass(classType->route, classType->name))
+		if (auto res = project.GetClass(classType))
 		{
 			auto classInfo = *res;
 			for (auto& field : classInfo->fields)
@@ -1188,7 +1456,7 @@ namespace cygni
 					}
 					if (field.index)
 					{
-						byteCode.AppendUShort(*field.index);
+						byteCode.AppendU16Unchecked(*field.index);
 					}
 					else
 					{
@@ -1238,7 +1506,7 @@ namespace cygni
 				}
 				if (arg.index)
 				{
-					byteCode.AppendUShort(*arg.index);
+					byteCode.AppendU16Unchecked(*arg.index);
 				}
 				else
 				{
@@ -1274,7 +1542,8 @@ namespace cygni
 			byteCode.AppendOp(OpCode::POP_LOCAL_OBJECT);
 			break;
 		}
-		case TypeCode::Class: {
+		case TypeCode::Class:
+		case TypeCode::Interface: {
 			byteCode.AppendOp(OpCode::POP_LOCAL_OBJECT);
 			break;
 		}
@@ -1284,7 +1553,7 @@ namespace cygni
 		}
 		if (node->variable->location->type == LocationType::LocalVariable)
 		{
-			byteCode.AppendUShort(std::static_pointer_cast<ParameterLocation>(node->variable->location)->offset);
+			byteCode.AppendU16Unchecked(std::static_pointer_cast<ParameterLocation>(node->variable->location)->offset);
 		}
 		else
 		{
@@ -1330,7 +1599,7 @@ namespace cygni
 					throw CompilerException(node->position, U"not supported assignment type");
 				}
 				}
-				byteCode.AppendUShort(std::static_pointer_cast<ParameterLocation>(parameter->location)->offset);
+				byteCode.AppendU16Unchecked(std::static_pointer_cast<ParameterLocation>(parameter->location)->offset);
 			}
 			else
 			{
@@ -1374,8 +1643,8 @@ namespace cygni
 					throw CompilerException(node->position, U"not supported module field type");
 				}
 				}
-				byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->index);
-				byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->offset);
+				byteCode.AppendU16Unchecked(std::static_pointer_cast<MemberLocation>(location)->index);
+				byteCode.AppendU16Unchecked(std::static_pointer_cast<MemberLocation>(location)->offset);
 			}
 			else if (location->type == LocationType::ClassField)
 			{
@@ -1409,7 +1678,7 @@ namespace cygni
 					throw CompilerException(node->position, U"not supported class field type");
 				}
 				}
-				byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->offset);
+				byteCode.AppendU16Unchecked(std::static_pointer_cast<MemberLocation>(location)->offset);
 			}
 			else
 			{
@@ -1427,11 +1696,14 @@ namespace cygni
 		CompileExpression(node->condition, constantMap, byteCode);
 		byteCode.AppendOp(OpCode::JUMP_IF_FALSE);
 		int index2 = byteCode.Size();
-		byteCode.AppendUShort(0);
+		byteCode.AppendU16Unchecked(0);
 
 		CompileExpression(node->body, constantMap, byteCode);
 		byteCode.AppendOp(OpCode::JUMP);
-		byteCode.AppendUShort(index1);
+		byteCode.AppendU16Checked(index1, [&]()->CompilerException
+		{
+			return CompilerException(node->position, U"the function is too complicated. Consider split it into smaller functions");
+		});
 		int target2 = byteCode.Size();
 		byteCode.WriteUShort(index2, target2);
 	}
@@ -1450,8 +1722,8 @@ namespace cygni
 				}
 				else
 				{
-					byteCode.AppendUShort(*moduleInfo->index);
-					byteCode.AppendUShort(index);
+					byteCode.AppendU16Unchecked(*moduleInfo->index);
+					byteCode.AppendU16Unchecked(index);
 					found = true;
 				}
 			}
@@ -1461,9 +1733,12 @@ namespace cygni
 			throw CompilerException(SourcePosition(), U"cannot find Main function");
 		}
 	}
-	void Compiler::CompileConstantPool(const ConstantMap & constantMap, ByteCode& byteCode)
+	void Compiler::CompileConstantPool(SourcePosition position, const ConstantMap & constantMap, ByteCode& byteCode)
 	{
-		byteCode.AppendUShort(static_cast<uint32_t>(constantMap.size()));
+		byteCode.AppendU16Checked(static_cast<uint32_t>(constantMap.size()), [=]()->CompilerException
+		{
+			return CompilerException(position, U"too many constants");
+		});
 		std::vector<ConstantKey> constants(constantMap.size());
 		for (auto pair : constantMap)
 		{
