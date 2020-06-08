@@ -103,6 +103,7 @@ Executable* parse_file(State* state, const char* path)
 void parse_class(State* state, ClassInfo* class_info)
 {
 	int i;
+	int j;
 
 	class_info->name = parse_string(state);
 	printf("class name: %s\n", class_info->name);
@@ -116,17 +117,47 @@ void parse_class(State* state, ClassInfo* class_info)
 	}
 	parse_constant_pool(state, &(class_info->constant_pool));
 
-	class_info->n_methods = parse_ushort(state);
-	class_info->methods = vm_alloc(state, sizeof(Function*) * class_info->n_methods);
-	for (i = 0; i < class_info->n_methods; i++)
+	/* inheritance chain */
+
+	class_info->n_super_class = parse_ushort(state);
+	class_info->super_classes = vm_alloc(state, sizeof(uint16_t) * class_info->n_super_class);
+	for (i = 0; i < class_info->n_super_class; i++)
 	{
-		class_info->methods[i] = parse_function(state);
-		if (!(class_info->methods[i]->is_native_function))
+		class_info->super_classes[i] = parse_ushort(state);
+	}
+
+	class_info->n_interface = parse_ushort(state);
+	class_info->interface_index_list = vm_alloc(state, sizeof(uint16_t) * class_info->n_interface);
+	class_info->interface_tables = vm_alloc(state, sizeof(VirtualTable) * class_info->n_interface);
+	for (i = 0; i < class_info->n_interface; i++)
+	{
+		class_info->interface_index_list[i] = parse_ushort(state);
+		class_info->interface_tables[i].n_methods = parse_ushort(state);
+		class_info->interface_tables[i].methods = vm_alloc(state,
+			sizeof(Function*) * class_info->interface_tables[i].n_methods);		
+		class_info->interface_tables[i].class_index_list = vm_alloc(state,
+				sizeof(uint16_t) * class_info->interface_tables[i].n_methods);
+		class_info->interface_tables[i].method_index_list = vm_alloc(state,
+			sizeof(uint16_t) * class_info->interface_tables[i].n_methods);
+		for (j = 0; j < class_info->interface_tables[i].n_methods; j++)
 		{
-			class_info->methods[i]->u.func->n_constants = class_info->constant_pool.n_constants;
-			class_info->methods[i]->u.func->constant_pool = class_info->constant_pool.constants;
+			class_info->interface_tables[i].class_index_list[j] = parse_ushort(state);
+			class_info->interface_tables[i].method_index_list[j] = parse_ushort(state);
 		}
-		printf("method: %s\n", class_info->methods[i]->name);
+	}
+
+
+	class_info->v_table.n_methods = parse_ushort(state);
+	class_info->v_table.methods = vm_alloc(state, sizeof(Function*) * class_info->v_table.n_methods);
+	for (i = 0; i < class_info->v_table.n_methods; i++)
+	{
+		class_info->v_table.methods[i] = parse_function(state);
+		if (!(class_info->v_table.methods[i]->is_native_function))
+		{
+			class_info->v_table.methods[i]->u.func->n_constants = class_info->constant_pool.n_constants;
+			class_info->v_table.methods[i]->u.func->constant_pool = class_info->constant_pool.constants;
+		}
+		printf("method: %s\n", class_info->v_table.methods[i]->name);
 	}
 }
 
@@ -284,9 +315,9 @@ void view_exe(Executable* exe)
 			printf("\tfield: %s\n", exe->classes[i].field_names[j]);
 		}
 		printf("\n");
-		for (j = 0; j < exe->classes[i].n_methods; j++)
+		for (j = 0; j < exe->classes[i].v_table.n_methods; j++)
 		{
-			function = exe->classes[i].methods[j];
+			function = exe->classes[i].v_table.methods[j];
 			view_function(function, exe);
 		}
 		printf("\n");

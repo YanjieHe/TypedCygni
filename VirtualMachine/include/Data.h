@@ -45,7 +45,9 @@ typedef struct {
 
 typedef struct {
   uint16_t n_methods;
-  Function **methods;
+  struct Function **methods;
+  uint16_t* class_index_list;
+  uint16_t* method_index_list;
 } VirtualTable;
 
 typedef struct Object {
@@ -117,9 +119,14 @@ typedef struct {
   char **field_names;
   ConstantPool constant_pool;
   VirtualTable v_table;
-  uint16_t interface_count;
+  
+  uint16_t n_super_class;
+  uint16_t* super_classes;
+
+  uint16_t n_interface;
   uint16_t* interface_index_list;
   VirtualTable *interface_tables;
+
 } ClassInfo;
 
 typedef struct {

@@ -10,14 +10,14 @@ int main()
 	State state;
 	const char* path;
 	int error_code;
+	Executable* exe;
+	Machine* machine;
 
 	state.source = NULL;
 	state.blocks = NULL;
 	state.alloc_ptr = NULL;
 	state.mem_size = 0;
 
-	Executable* exe;
-	Machine* machine;
 
 	path = "c:\\users\\heyan\\cmakebuilds\\dc11c05f-03b5-4f3a-963f-0c8941d4a6da\\build\\x64-debug (default)\\sample_code\\app";
 	printf("parse exe file:\n");

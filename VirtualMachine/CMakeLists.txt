@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
 project(VirtualMachine LANGUAGES C)
-
 set(CMAKE_C_STANDARD 89)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 

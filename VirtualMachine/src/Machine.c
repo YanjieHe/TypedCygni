@@ -59,7 +59,6 @@ void run(Machine *machine) {
   // Object* str_obj;
   int32_t cur_fp;
   int i;
-  Byte b;
 
   machine->function = machine->exe->entry;
   cur_func = machine->function;
@@ -817,7 +816,7 @@ void run(Machine *machine) {
       READ_USHORT(index);
       READ_USHORT(offset);
 
-      next_func = machine->exe->classes[index].methods[offset];
+      next_func = machine->exe->classes[index].v_table.methods[offset];
       sp++;
       stack[sp].u.function = next_func;
 
@@ -1058,7 +1057,7 @@ int find_virtual_table(ClassInfo *classInfo, int interface_index) {
 
   i = 0;
   low = 0;
-  high = classInfo->interface_count - 1;
+  high = classInfo->n_interface - 1;
 
   while (low <= high) {
     mid = (low + high) / 2;
