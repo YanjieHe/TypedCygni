@@ -1,1 +1,0 @@
-/usr/bin/cc -std=c99   CMakeFiles/Disassembler.dir/main.c.o CMakeFiles/Disassembler.dir/src/sources/Parser.c.o CMakeFiles/Disassembler.dir/src/sources/View.c.o  -o Disassembler 

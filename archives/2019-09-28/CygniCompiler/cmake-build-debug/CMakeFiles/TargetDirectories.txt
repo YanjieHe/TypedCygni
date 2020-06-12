@@ -1,3 +1,0 @@
-/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/CygniCompiler.dir
-/home/yanjie/Documents/GitHub/TypedCygni/CygniCompiler/cmake-build-debug/CMakeFiles/edit_cache.dir

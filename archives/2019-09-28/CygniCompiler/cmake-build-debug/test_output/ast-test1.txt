@@ -1,1 +1,0 @@
-{"id":"5","right":{"id":"4","right":{"id":"3","constant":"2","kind":"Constant"},"kind":"Multiply","left":{"name":"b","kind":"Name","id":"2"}},"kind":"Add","left":{"name":"a","kind":"Name","id":"1"}}

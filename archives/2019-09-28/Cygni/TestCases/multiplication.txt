@@ -1,7 +1,0 @@
-var value = multiply(11, 21)
-
-def multiply(x: Int, y: Int): Int
-{
-	var result = x * y
-	return result
-}

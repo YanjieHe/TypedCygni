@@ -1,7 +1,0 @@
-{
-    "files.associations": {
-        "malloc.h": "c",
-        "parser.h": "c",
-        "view.h": "c"
-    }
-}
