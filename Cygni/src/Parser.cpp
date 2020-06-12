@@ -528,7 +528,7 @@ namespace cygni
 		}
 		else
 		{
-			return std::make_shared<ClassType>(route, name);
+			return std::make_shared<UnresolvedType>(route, name);
 		}
 	}
 
@@ -777,7 +777,7 @@ namespace cygni
 			}
 			Match(Tag::RightBrace);
 			return std::make_shared<NewExpression>(Pos(start),
-				std::make_shared<ClassType>(route, name),
+				std::make_shared<UnresolvedType>(route, name),
 				arguments);
 		}
 	}

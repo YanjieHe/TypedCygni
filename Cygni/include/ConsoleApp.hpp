@@ -13,10 +13,9 @@ namespace cygni
 
 		void SemanticAnalysis(Project& project);
 
-		void DumpAbstractSyntaxTree(std::vector<std::string> fileList, std::string outputJsonPath);
+		void DumpAbstractSyntaxTree(Project& project, std::string outputJsonPath);
 
 		void Compile(std::vector<std::string> fileList, std::string outputExePath);
-		int Run(int argc, char **argv);
 	};
 }
 

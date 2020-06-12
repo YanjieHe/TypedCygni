@@ -147,8 +147,8 @@ namespace cygni
 		Array,
 		Union,
 		Function,
-		Interface
-
+		Interface,
+		Unresolved
 	};
 
 	enum class LocationType
@@ -635,6 +635,8 @@ namespace cygni
 				return U"Function";
 			case TypeCode::Interface:
 				return U"Interface";
+			case TypeCode::Unresolved:
+				return U"Unresolved";
 
 			default:
 				std::cerr << __FUNCTION__ << std::endl;

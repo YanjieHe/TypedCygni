@@ -127,8 +127,7 @@ namespace cygni
 	{
 		if (typeCode == other->typeCode)
 		{
-			std::shared_ptr<ArrayType> arrayType =
-				std::static_pointer_cast<ArrayType>(other);
+			auto arrayType = std::static_pointer_cast<ArrayType>(other);
 			return elementType->Equals(arrayType->elementType);
 		}
 		else
@@ -198,7 +197,7 @@ namespace cygni
 		if (typeCode == other->typeCode)
 		{
 			auto classType = std::static_pointer_cast<ClassType>(other);
-			return name == classType->name;
+			return route == classType->route && name == classType->name;
 		}
 		else
 		{
@@ -231,7 +230,7 @@ namespace cygni
 		if (typeCode == other->typeCode)
 		{
 			auto moduleType = std::static_pointer_cast<ModuleType>(other);
-			return name == moduleType->name;
+			return route == moduleType->route && name == moduleType->name;
 		}
 		else
 		{
@@ -253,7 +252,7 @@ namespace cygni
 		if (typeCode == other->typeCode)
 		{
 			auto interfaceType = std::static_pointer_cast<InterfaceType>(other);
-			return name == interfaceType->name;
+			return route == interfaceType->route && name == interfaceType->name;
 		}
 		else
 		{
@@ -463,6 +462,28 @@ namespace cygni
 		else
 		{
 			return {};
+		}
+	}
+
+	UnresolvedType::UnresolvedType(PackageRoute route, std::u32string name) :Type(TypeCode::Unresolved), route{ route }, name{ name }
+	{
+	}
+
+	std::u32string UnresolvedType::ToString() const
+	{
+		return PackageRouteToString(route) + U"." + name;
+	}
+
+	bool UnresolvedType::Equals(TypePtr other) const
+	{
+		if (typeCode == other->typeCode)
+		{
+			auto otherType = std::static_pointer_cast<UnresolvedType>(other);
+			return route == otherType->route && name == otherType->name;
+		}
+		else
+		{
+			return false;
 		}
 	}
 

@@ -83,7 +83,7 @@ namespace cygni
 	FieldDef::FieldDef(SourcePosition position, AccessModifier modifier,
 		bool isStatic, Table<std::u32string, AnnotationInfo> annotations,
 		std::u32string name, TypePtr type, ExpPtr value)
-		: position{position}, modifier{ modifier }, isStatic{ isStatic },
+		: position{ position }, modifier{ modifier }, isStatic{ isStatic },
 		annotations{ annotations }, name{ name }, type{ type }, value{ value } {}
 
 	MethodDef::MethodDef(
@@ -91,7 +91,7 @@ namespace cygni
 		Table<std::u32string, AnnotationInfo> annotations, std::u32string name,
 		std::vector<std::shared_ptr<ParameterExpression>> parameters,
 		TypePtr returnType, ExpPtr body)
-		: position{position}, modifier{ modifier }, isStatic{ isStatic },
+		: position{ position }, modifier{ modifier }, isStatic{ isStatic },
 		selfType{ selfType }, annotations{ annotations }, name{ name }, parameters{ parameters },
 		returnType{ returnType }, body{ body }
 	{
@@ -105,10 +105,10 @@ namespace cygni
 	}
 
 	ClassInfo::ClassInfo(SourcePosition position, PackageRoute route, std::u32string name)
-		: position{position}, route{ route }, name{ name } {}
+		: position{ position }, route{ route }, name{ name } {}
 
 	ModuleInfo::ModuleInfo(SourcePosition position, PackageRoute route, std::u32string name)
-		: position{position}, route{ route }, name{ name } {}
+		: position{ position }, route{ route }, name{ name } {}
 
 	ReturnExpression::ReturnExpression(SourcePosition position, ExpPtr value)
 		: Expression(position, ExpressionType::Return), value{ value } {}
@@ -125,7 +125,7 @@ namespace cygni
 
 	AnnotationInfo::AnnotationInfo(SourcePosition position, std::u32string name,
 		std::vector<Argument> arguments)
-		: position{position}, name{ name }, arguments{ arguments } {}
+		: position{ position }, name{ name }, arguments{ arguments } {}
 
 	MemberAccessExpression::MemberAccessExpression(SourcePosition position,
 		ExpPtr object,
@@ -149,13 +149,13 @@ namespace cygni
 	}
 
 	TypeAlias::TypeAlias(SourcePosition position, PackageRoute route, std::u32string typeName, std::u32string alias)
-		: position{position}, route{ route }, typeName{ typeName }, alias{ alias }
+		: position{ position }, route{ route }, typeName{ typeName }, alias{ alias }
 	{
 	}
 
 
 	PackageRouteStatement::PackageRouteStatement(SourcePosition position, PackageRoute route)
-		: position{position}, route{ route }
+		: position{ position }, route{ route }
 	{
 	}
 
@@ -259,6 +259,34 @@ namespace cygni
 		}
 	}
 
+	std::optional<TypePtr> Project::ResolveType(std::shared_ptr<UnresolvedType> unresolvedType)
+	{
+		auto route = unresolvedType->route;
+		auto name = unresolvedType->name;
+		if (packages.ContainsKey(route))
+		{
+			auto pkg = packages.GetValueByKey(route);
+			if (pkg->classes.ContainsKey(name))
+			{
+				auto classInfo = pkg->classes.GetValueByKey(name);
+				return { std::make_shared<ClassType>(classInfo->route, classInfo->name) };
+			}
+			else if (pkg->interfaces.ContainsKey(name))
+			{
+				auto interfaceInfo = pkg->interfaces.GetValueByKey(name);
+				return { std::make_shared<InterfaceType>(interfaceInfo->route, interfaceInfo->name) };
+			}
+			else
+			{
+				return {};
+			}
+		}
+		else
+		{
+			return {};
+		}
+	}
+
 	InterfaceInfo::InterfaceInfo(SourcePosition position, PackageRoute route, std::u32string name)
 		: position{ position }, route{ route }, name{ name }
 	{
@@ -268,7 +296,7 @@ namespace cygni
 	{
 	}
 
-	ImportStatement::ImportStatement(SourcePosition position, PackageRoute route) : position{position}, route{ route }
+	ImportStatement::ImportStatement(SourcePosition position, PackageRoute route) : position{ position }, route{ route }
 	{
 	}
 

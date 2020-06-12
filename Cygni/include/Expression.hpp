@@ -270,8 +270,8 @@ namespace cygni
 		/* virtual function table */
 		std::unordered_map<int, std::vector<MethodDef>> virtualMethodTable;
 
-		std::unordered_map<ConstantKey, int> constantMap;
 		std::vector<TypePtr> superTypes;
+		std::unordered_map<ConstantKey, int> constantMap;
 		std::optional<int> index;
 
 		std::vector<std::shared_ptr<ClassType>> inheritanceChain;
@@ -387,6 +387,7 @@ namespace cygni
 		std::optional<std::shared_ptr<ModuleInfo>> GetModule(std::shared_ptr<ModuleType> moduleType);
 		std::optional<std::shared_ptr<ClassInfo>> GetClass(std::shared_ptr<ClassType> classType);
 		std::optional<std::shared_ptr<InterfaceInfo>> GetInterface(std::shared_ptr<InterfaceType> interfaceType);
+		std::optional<TypePtr> ResolveType(std::shared_ptr<UnresolvedType> unresolvedType);
 	};
 
 } // namespace cygni

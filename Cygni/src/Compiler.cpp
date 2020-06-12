@@ -24,14 +24,14 @@ namespace cygni
 		}
 		else
 		{
-			bytes.push_back(value / 256);
-			bytes.push_back(value % 256);
+			bytes.push_back(static_cast<Byte>(value / 256));
+			bytes.push_back(static_cast<Byte>(value % 256));
 		}
 	}
 	void ByteCode::AppendU16Unchecked(size_t value)
 	{
-		bytes.push_back(value / 256);
-		bytes.push_back(value % 256);
+		bytes.push_back(static_cast<Byte>(value / 256));
+		bytes.push_back(static_cast<Byte>(value % 256));
 	}
 	void ByteCode::WriteUShort(int index, int value)
 	{

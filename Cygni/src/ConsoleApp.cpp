@@ -2,7 +2,9 @@
 #include "Lexer.hpp"
 #include "Parser.hpp"
 #include "Visitor.hpp"
+#include "TypeChecker.hpp"
 #include "Compiler.hpp"
+#include "Nanopass.hpp"
 #include <iostream>
 using std::cout;
 using std::endl;
@@ -48,11 +50,17 @@ namespace cygni
 		TypeRenamer typeRenamer;
 		typeRenamer.RenameAll(project);
 
-		/* pass 5: process inheritance */
+		/* pass 5: resolve the super types */
+		InheritanceTypeResolver inheritanceTypeResolver;
+		inheritanceTypeResolver.VisitProject(project);
+
+		/* pass 6: process inheritance */
 		InheritanceProcessor inheritanceProcesser;
 		inheritanceProcesser.VisitProject(project);
 
-		/* pass 6: check and infer types of each node */
+		DumpAbstractSyntaxTree(project, "passes/pass6.json");
+
+		/* pass 7: check and infer types of each node */
 		TypeChecker typeChecker(project);
 		auto scopeFactory = ScopeFactory<TypePtr>::Create();
 		typeChecker.scopeFactory = scopeFactory;
@@ -60,28 +68,24 @@ namespace cygni
 		typeChecker.CheckProject(globalScope);
 		cout << "Complete Type Checking!" << endl;
 
-		/* pass 7: collect local variables */
+		/* pass 8: collect local variables */
 		LocalVariableCollector localVariableCollector;
 		localVariableCollector.VisitProject(project);
 		cout << "Complete Local Variable Collection!" << endl;
 
-		/* pass 8: locate variables */
+		/* pass 9: locate variables */
 		VariableLocator variableLocator(project);
 		variableLocator.VisitProject();
 		cout << "Complete Local Variable Locatoring!" << endl;
 
-		/* pass 9: collect constants */
+		/* pass 10: collect constants */
 		ConstantCollector constantCollector;
 		constantCollector.VisitProject(project);
 		cout << "Complete Constant Collection!" << endl;
 	}
 
-	void ConsoleApp::DumpAbstractSyntaxTree(std::vector<std::string> fileList, std::string outputJsonPath)
+	void ConsoleApp::DumpAbstractSyntaxTree(Project& project, std::string outputJsonPath)
 	{
-		auto project = ParseProject(fileList);
-		SemanticAnalysis(project);
-
-		/* pass 10: convert the abstract syntax tree to json format */
 		cygni::AstToJsonSerialization astToJson;
 		auto jsonObj = astToJson.VisitProject(project);
 		auto jsonText = jsonObj.dump();
@@ -98,14 +102,5 @@ namespace cygni
 		ByteCode byteCode = compiler.Compile();
 		WriteBytes(outputExePath, byteCode.bytes);
 		cout << "Total bytes in the compiled executable file: " << byteCode.Size() << endl;
-	}
-
-	int ConsoleApp::Run(int argc, char ** argv)
-	{
-		std::vector<std::string> fileList = {
-			"sample_code/factorial.cyg"
-		};
-		DumpAbstractSyntaxTree(fileList, "sample_code/factorial.json");
-		return 0;
 	}
 }

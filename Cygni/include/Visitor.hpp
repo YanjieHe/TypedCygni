@@ -3,24 +3,90 @@
 #include "Expression.hpp"
 #include <nlohmann/json.hpp>
 #include <functional>
+#include "Utility.hpp"
+#include "Exception.hpp"
+#include "Enum.hpp"
 
 namespace cygni
 {
-	using json = nlohmann::json;
-
-	class AstToJsonSerialization
+	template <typename ReturnType, typename ... ArgTypes>
+	class Visitor
 	{
 	public:
-		json VisitSourceLocation(SourcePosition location);
+		virtual ReturnType VisitExpression(ExpPtr node, ArgTypes... args)
+		{
+			switch (node->nodeType)
+			{
+			case ExpressionType::Add:
+			case ExpressionType::Subtract:
+			case ExpressionType::Multiply:
+			case ExpressionType::Divide:
+			case ExpressionType::GreaterThan:
+			case ExpressionType::LessThan:
+			case ExpressionType::GreaterThanOrEqual:
+			case ExpressionType::LessThanOrEqual:
+			case ExpressionType::Equal:
+			case ExpressionType::NotEqual:
+				return VisitBinary(std::static_pointer_cast<BinaryExpression>(node), args...);
+			case ExpressionType::UnaryPlus:
+			case ExpressionType::UnaryMinus:
+			case ExpressionType::Convert:
+				return VisitUnary(std::static_pointer_cast<UnaryExpression>(node), args...);
+			case ExpressionType::Assign:
+				return VisitAssign(std::static_pointer_cast<BinaryExpression>(node), args...);
+			case ExpressionType::Block:
+				return VisitBlock(std::static_pointer_cast<BlockExpression>(node), args...);
+			case ExpressionType::Constant:
+				return VisitConstant(std::static_pointer_cast<ConstantExpression>(node), args...);
+			case ExpressionType::Parameter:
+				return VisitParameter(std::static_pointer_cast<ParameterExpression>(node), args...);
+			case ExpressionType::Conditional:
+				return VisitConditional(std::static_pointer_cast<ConditionalExpression>(node), args...);
+			case ExpressionType::Default:
+				return VisitDefault(std::static_pointer_cast<DefaultExpression>(node), args...);
+			case ExpressionType::Invoke:
+				return VisitInvocation(std::static_pointer_cast<InvocationExpression>(node), args...);
+			case ExpressionType::Return:
+				return VisitReturn(std::static_pointer_cast<ReturnExpression>(node), args...);
+			case ExpressionType::MemberAccess:
+				return VisitMemberAccess(std::static_pointer_cast<MemberAccessExpression>(node), args...);
+			case ExpressionType::New:
+				return VisitNewExpression(std::static_pointer_cast<NewExpression>(node), args...);
+			case ExpressionType::VariableDefinition:
+				return VisitVarDefExpression(std::static_pointer_cast<VarDefExpression>(node), args...);
+			case ExpressionType::While:
+				return VisitWhile(std::static_pointer_cast<WhileExpression>(node), args...);
+			default:
+				throw NotImplementedException(
+					Format(U"not supported node type '{}' for visitor", Enum<ExpressionType>::ToString(node->nodeType)));
+			}
+		}
+		virtual ReturnType VisitUnary(std::shared_ptr<UnaryExpression> node, ArgTypes... args) = 0;
+		virtual ReturnType VisitBinary(std::shared_ptr<BinaryExpression> node, ArgTypes... args) = 0;
+		virtual ReturnType VisitBlock(std::shared_ptr<BlockExpression> node, ArgTypes... args) = 0;
+		virtual ReturnType VisitConstant(std::shared_ptr<ConstantExpression> node, ArgTypes... args) = 0;
+		virtual ReturnType VisitParameter(std::shared_ptr<ParameterExpression> parameter, ArgTypes... args) = 0;
+		virtual ReturnType VisitReturn(std::shared_ptr<ReturnExpression> node, ArgTypes... args) = 0;
+		virtual ReturnType VisitConditional(std::shared_ptr<ConditionalExpression> node, ArgTypes... args) = 0;
+		virtual ReturnType VisitDefault(std::shared_ptr<DefaultExpression> node, ArgTypes... args) = 0;
+		virtual ReturnType VisitInvocation(std::shared_ptr<InvocationExpression> node, ArgTypes... args) = 0;
+		virtual ReturnType VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node, ArgTypes... args) = 0;
+		virtual ReturnType VisitNewExpression(std::shared_ptr<NewExpression> node, ArgTypes... args) = 0;
+		virtual ReturnType VisitVarDefExpression(std::shared_ptr<VarDefExpression> node, ArgTypes... args) = 0;
+		virtual ReturnType VisitAssign(std::shared_ptr<BinaryExpression> node, ArgTypes... args) = 0;
+		virtual ReturnType VisitWhile(std::shared_ptr<WhileExpression> node, ArgTypes... args) = 0;
+	};
+
+
+	using json = nlohmann::json;
+
+	class AstToJsonSerialization: public Visitor<json>
+	{
+	public:
 		json VisitUnary(std::shared_ptr<UnaryExpression> node);
 		json VisitBinary(std::shared_ptr<BinaryExpression> node);
 		json VisitBlock(std::shared_ptr<BlockExpression> node);
-		json VisitExpression(ExpPtr node);
 		json VisitConstant(std::shared_ptr<ConstantExpression> node);
-		json VisitClassInfo(std::shared_ptr<ClassInfo> info);
-		json VisitModuleInfo(std::shared_ptr<ModuleInfo> info);
-		json VisitFieldDef(const FieldDef &field);
-		json VisitMethodDef(const MethodDef &method);
 		json VisitParameter(std::shared_ptr<ParameterExpression> parameter);
 		json VisitReturn(std::shared_ptr<ReturnExpression> node);
 		json VisitConditional(std::shared_ptr<ConditionalExpression> node);
@@ -29,7 +95,15 @@ namespace cygni
 		json VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node);
 		json VisitNewExpression(std::shared_ptr<NewExpression> node);
 		json VisitVarDefExpression(std::shared_ptr<VarDefExpression> node);
-		json VisitWhileLoop(std::shared_ptr<WhileExpression> node);
+		json VisitWhile(std::shared_ptr<WhileExpression> node);
+		json VisitAssign(std::shared_ptr<BinaryExpression> node);
+
+
+		json VisitClassInfo(std::shared_ptr<ClassInfo> info);
+		json VisitModuleInfo(std::shared_ptr<ModuleInfo> info);
+		json VisitSourceLocation(SourcePosition location);
+		json VisitFieldDef(const FieldDef &field);
+		json VisitMethodDef(const MethodDef &method);
 		void AttachNodeInformation(json &obj, ExpPtr node);
 		json VisitPackage(std::shared_ptr<Package> package);
 		json VisitProject(Project &project);
@@ -39,75 +113,17 @@ namespace cygni
 		json VisitLocation(LocationPtr location);
 	};
 
-	class TypeChecker
-	{
-	public:
-		class Rule
-		{
-		public:
-			std::u32string functionName;
-			std::vector<TypePtr> parameters;
-			TypePtr returnType;
-
-			Rule(std::u32string functionName, std::vector<TypePtr> parameters,
-				TypePtr returnType);
-		};
-
-		class RuleSet
-		{
-		public:
-			std::unordered_map<std::u32string, std::vector<Rule>> rules;
-
-			RuleSet() = default;
-
-			void Add(std::u32string functionName, std::vector<TypePtr> parameters,
-				TypePtr returnType);
-
-			std::optional<TypePtr> Match(std::u32string functionName,
-				std::vector<TypePtr> parameters);
-		};
-
-		RuleSet ruleSet;
-		Project &project;
-		std::shared_ptr<ScopeFactory<TypePtr>> scopeFactory;
-		std::shared_ptr<Package> package;
-		TypeGraph typeGraph;
-
-		explicit TypeChecker(Project &project);
-
-		TypePtr CheckUnary(std::shared_ptr<UnaryExpression> node, Scope<TypePtr>* scope);
-		TypePtr CheckBinary(std::shared_ptr<BinaryExpression> node, Scope<TypePtr>* scope);
-		TypePtr CheckBlock(std::shared_ptr<BlockExpression> node, Scope<TypePtr>* outerScope);
-		TypePtr CheckExpression(ExpPtr node, Scope<TypePtr>* scope);
-		TypePtr CheckConstant(std::shared_ptr<ConstantExpression> node);
-		TypePtr CheckClassInfo(std::shared_ptr<ClassInfo> info, Scope<TypePtr>* outerScope);
-		TypePtr CheckModuleInfo(std::shared_ptr<ModuleInfo> info, Scope<TypePtr>* outerScope);
-		TypePtr CheckFieldDef(FieldDef &field, Scope<TypePtr>* scope);
-		TypePtr CheckMethodDef(MethodDef &method, Scope<TypePtr>* outerScope);
-		TypePtr CheckParameter(std::shared_ptr<ParameterExpression> parameter, Scope<TypePtr>* scope);
-		TypePtr CheckReturn(std::shared_ptr<ReturnExpression> node, Scope<TypePtr>* scope);
-		TypePtr CheckConditional(std::shared_ptr<ConditionalExpression> node, Scope<TypePtr>* scope);
-		TypePtr CheckDefault(std::shared_ptr<DefaultExpression> node);
-		TypePtr CheckInvocation(std::shared_ptr<InvocationExpression> node, Scope<TypePtr>* scope);
-		TypePtr CheckMemberAccess(std::shared_ptr<MemberAccessExpression> node, Scope<TypePtr>* scope);
-		TypePtr CheckNewExpression(std::shared_ptr<NewExpression> node, Scope<TypePtr>* scope);
-		TypePtr CheckVarDefExpression(std::shared_ptr<VarDefExpression> node, Scope<TypePtr>* scope);
-		TypePtr CheckAssign(std::shared_ptr<BinaryExpression> node, Scope<TypePtr>* scope);
-		TypePtr CheckWhile(std::shared_ptr<WhileExpression> node, Scope<TypePtr>* scope);
-		TypePtr CheckType(SourcePosition position, TypePtr type);
-		void CheckPackage(Scope<TypePtr>* globalScope);
-		void CheckProject(Scope<TypePtr>* globalScope);
-		TypePtr Attach(ExpPtr node, TypePtr type);
-		void CheckInterfaceConstraint(std::shared_ptr<ClassInfo> classInfo, std::shared_ptr<InterfaceInfo> interfaceInfo);
-	};
-
-	class TreeTraverser
+	class TreeTraverser: public Visitor<void, std::vector<ExpPtr>&>
 	{
 	public:
 		std::function<bool(ExpPtr)> filter;
 		explicit TreeTraverser(std::function<bool(ExpPtr)> filter);
-		void VisitExpression(ExpPtr node, std::vector<ExpPtr>& nodeList);
 
+		void VisitConstant(std::shared_ptr<ConstantExpression> node, std::vector<ExpPtr>& nodeList);
+		void VisitParameter(std::shared_ptr<ParameterExpression> node, std::vector<ExpPtr>& nodeList);
+		void VisitAssign(std::shared_ptr<BinaryExpression> node, std::vector<ExpPtr>& nodeList);
+		void VisitDefault(std::shared_ptr<DefaultExpression> node, std::vector<ExpPtr>& nodeList);
+		void VisitWhile(std::shared_ptr<WhileExpression> node, std::vector<ExpPtr>& nodeList);
 		void VisitUnary(std::shared_ptr<UnaryExpression> node, std::vector<ExpPtr>& nodeList);
 		void VisitBinary(std::shared_ptr<BinaryExpression> node, std::vector<ExpPtr>& nodeList);
 		void VisitBlock(std::shared_ptr<BlockExpression>node, std::vector<ExpPtr>&nodeList);
@@ -118,6 +134,8 @@ namespace cygni
 		void VisitNewExpression(std::shared_ptr<NewExpression>node, std::vector<ExpPtr>& nodeList);
 		void VisitVarDefExpression(std::shared_ptr<VarDefExpression>node, std::vector<ExpPtr>&nodeList);
 		void VisitWhileExpression(std::shared_ptr<WhileExpression>node, std::vector<ExpPtr>&nodeList);
+
+		void AddIfNeeded(ExpPtr node, std::vector<ExpPtr>& nodeList);
 	};
 
 	class LocalVariableCollector
@@ -128,7 +146,7 @@ namespace cygni
 		void VisitProject(Project& project);
 	};
 
-	class VariableLocator
+	class VariableLocator: public Visitor<void, Scope<LocationPtr>*>
 	{
 	public:
 		Project& project;
@@ -137,13 +155,13 @@ namespace cygni
 		explicit VariableLocator(Project& project);
 
 
-		void VisitExpression(ExpPtr node, Scope<LocationPtr>* scope);
+		void VisitConstant(std::shared_ptr<ConstantExpression> node, Scope<LocationPtr>* scope);
+		void VisitDefault(std::shared_ptr<DefaultExpression> node, Scope<LocationPtr>* scope);
+		void VisitAssign(std::shared_ptr<BinaryExpression> node, Scope<LocationPtr>* scope);
+		void VisitWhile(std::shared_ptr<WhileExpression> node, Scope<LocationPtr>* scope);
 		void VisitBlock(std::shared_ptr<BlockExpression> node, Scope<LocationPtr>* outerScope);
 		void VisitUnary(std::shared_ptr<UnaryExpression> node, Scope<LocationPtr>* scope);
 		void VisitBinary(std::shared_ptr<BinaryExpression> node, Scope<LocationPtr>* scope);
-		void VisitClassInfo(std::shared_ptr<ClassInfo> info, Scope<LocationPtr>* outerScope);
-		void VisitModuleInfo(std::shared_ptr<ModuleInfo> info, Scope<LocationPtr>* outerScope);
-		void VisitMethodDef(const MethodDef &method, Scope<LocationPtr>* outerScope);
 		void VisitParameter(std::shared_ptr<ParameterExpression> parameter, Scope<LocationPtr>* scope);
 		void VisitReturn(std::shared_ptr<ReturnExpression> node, Scope<LocationPtr>* scope);
 		void VisitConditional(std::shared_ptr<ConditionalExpression> node, Scope<LocationPtr>* scope);
@@ -153,6 +171,11 @@ namespace cygni
 		void VisitVarDefExpression(std::shared_ptr<VarDefExpression> node, Scope<LocationPtr>* scope);
 		void VisitWhileExpression(std::shared_ptr<WhileExpression> node, Scope<LocationPtr>* scope);
 		void VisitPackage(std::shared_ptr<Package> package, Scope<LocationPtr>* globalScope);
+
+
+		void VisitClassInfo(std::shared_ptr<ClassInfo> info, Scope<LocationPtr>* outerScope);
+		void VisitModuleInfo(std::shared_ptr<ModuleInfo> info, Scope<LocationPtr>* outerScope);
+		void VisitMethodDef(const MethodDef &method, Scope<LocationPtr>* outerScope);
 		void VisitProject();
 	};
 
@@ -164,29 +187,14 @@ namespace cygni
 		void VisitProject(Project& project);
 	};
 
-	class TypeRenamer
-	{
-	public:
-		void RenameAll(Project& project);
-		void RenameMethod(MethodDef& method, Table<std::u32string, TypeAlias>& typeAliases);
-		void RenameField(FieldDef& field, Table<std::u32string, TypeAlias>& typeAliases);
-		TypePtr RenameType(TypePtr type, Table<std::u32string, TypeAlias>& typeAliases);
-	};
-
 	void AssignIndex(Project& project);
 
-	class InheritanceProcessor
-	{
-	public:
-		void VisitProject(Project& project);
-		void VisitClass(Project& project, std::shared_ptr<ClassInfo> classInfo);
-	};
-
+	
 	class PackageImporter
 	{
 	public:
 		void ImportPackages(Project& project);
-		void CollectInfo(Project& project, 
+		void CollectInfo(Project& project,
 			std::unordered_map<PackageRoute, std::vector<std::shared_ptr<ClassInfo>>>& classMap,
 			std::unordered_map<PackageRoute, std::vector<std::shared_ptr<ModuleInfo>>>& moduleMap,
 			std::unordered_map<PackageRoute, std::vector<std::shared_ptr<InterfaceInfo>>>& interfaceMap,

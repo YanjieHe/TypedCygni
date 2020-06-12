@@ -1,7 +1,6 @@
 #ifndef CYGNI_SCOPE_HPP
 #define CYGNI_SCOPE_HPP
 #include "Utility.hpp"
-#include <any>
 #include <memory>
 #include <list>
 #include <optional>

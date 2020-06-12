@@ -82,7 +82,6 @@ int main(int argc, char **argv)
 				"sample_code/App.cyg"
 		};
 		ConsoleApp app;
-		app.DumpAbstractSyntaxTree(fileList, "sample_code/program.json");
 		app.Compile(fileList, "sample_code/app");
 	}
 	catch (ArgumentException &ex)

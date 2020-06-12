@@ -186,6 +186,12 @@ namespace cygni
 		return FormatInternal(fmt, stream, i, args...);
 	}
 
+	template <typename TKey, typename TValue>
+	inline bool HasKey(const std::unordered_map<TKey, TValue>& map, const TKey& key)
+	{
+		return map.find(key) != map.end();
+	}
+
 } // namespace cygni
 
 std::ostream &operator<<(std::ostream &stream, const std::u32string &utf32);

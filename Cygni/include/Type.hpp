@@ -162,6 +162,17 @@ namespace cygni
 		bool Equals(TypePtr other) const override;
 	};
 
+	class UnresolvedType : public Type
+	{
+	public:
+		PackageRoute route;
+		std::u32string name;
+
+		UnresolvedType(PackageRoute route, std::u32string name);
+		std::u32string ToString() const override;
+		bool Equals(TypePtr other) const override;
+	};
+
 	class ArrayType : public Type
 	{
 	public:
@@ -211,6 +222,11 @@ public:
 		{
 			auto interfaceType = std::static_pointer_cast<cygni::InterfaceType>(type);
 			return h1(interfaceType->route) ^ h2(interfaceType->name);
+		}
+		else if (type->typeCode == cygni::TypeCode::Unresolved)
+		{
+			auto unresolvedType = std::static_pointer_cast<cygni::UnresolvedType>(type);
+			return h1(unresolvedType->route) ^ h2(unresolvedType->name);
 		}
 		else if (type->typeCode == cygni::TypeCode::Array)
 		{
