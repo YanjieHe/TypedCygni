@@ -90,7 +90,7 @@ namespace cygni
 		auto jsonObj = astToJson.VisitProject(project);
 		auto jsonText = jsonObj.dump();
 		cygni::WriteText(outputJsonPath, jsonText);
-		cout << "Output AST in JSON format!" << endl;
+		cout << "Output AST to JSON format file '" << outputJsonPath << "' !" << endl;
 	}
 
 	void ConsoleApp::Compile(std::vector<std::string> fileList, std::string outputExePath)

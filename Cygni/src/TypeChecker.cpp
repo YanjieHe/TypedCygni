@@ -171,12 +171,12 @@ namespace cygni
 			TypePtr to = node->type;
 			if (typeGraph.IsSubTypeof(from, to))
 			{
-				node->upCasting = true;
+				node->nodeType = ExpressionType::UpCast;
 				return to;
 			}
 			else if (typeGraph.IsSuperTypeof(from, to))
 			{
-				node->upCasting = false;
+				node->nodeType = ExpressionType::DownCast;
 				return to;
 			}
 			else
@@ -741,8 +741,7 @@ namespace cygni
 		else if (typeGraph.IsSubTypeof(value, node->variable->type))
 		{
 			// add type conversion
-			auto convertExp = std::make_shared<UnaryExpression>(node->position, ExpressionType::Convert, node->value);
-			convertExp->upCasting = true;
+			auto convertExp = std::make_shared<UnaryExpression>(node->position, ExpressionType::UpCast, node->value);
 			node->value = convertExp;
 			node->value->type = node->variable->type;
 			scope->Put(node->variable->name, node->value->type);

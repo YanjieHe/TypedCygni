@@ -294,4 +294,29 @@ namespace cygni
 			methodStack.pop();
 		}
 	}
+	ExpPtr ArrayLengthPass::VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node)
+	{
+		auto object = VisitExpression(node->object);
+		if (object->type->typeCode == TypeCode::Array)
+		{
+			if (node->field == U"Size" || node->field == U"Length")
+			{
+				auto newNode = std::make_shared<UnaryExpression>(node->position, ExpressionType::ArrayLength, object);
+				newNode->type = Type::Int32();
+				return newNode;
+			}
+			else
+			{
+				throw TypeException(node->position,
+					Format(U"not supported array field '{}'", node->field));
+			}
+		}
+		else
+		{
+			auto newNode = std::make_shared<MemberAccessExpression>(node->position,
+				object, node->field);
+			newNode->type = node->type;
+			return newNode;
+		}
+	}
 } // namespace cygni

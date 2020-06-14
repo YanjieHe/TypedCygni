@@ -79,7 +79,6 @@ namespace cygni
 	{
 	public:
 		ExpPtr operand;
-		bool upCasting = true;
 
 		UnaryExpression(SourcePosition position, ExpressionType nodeType,
 			ExpPtr operand);
@@ -118,7 +117,7 @@ namespace cygni
 
 		Argument() = default;
 		explicit Argument(ExpPtr value);
-		Argument(std::optional<std::u32string> name, ExpPtr value);
+		Argument(std::u32string name, ExpPtr value);
 	};
 
 	class InvocationExpression : public Expression

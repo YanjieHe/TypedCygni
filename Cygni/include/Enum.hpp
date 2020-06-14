@@ -118,7 +118,10 @@ namespace cygni
 		VariableDefinition,
 		While,
 		Break,
-		Convert
+		Convert,
+		ArrayLength,
+		UpCast,
+		DownCast
 	};
 
 	enum class AccessModifier { Public, Private, Protected };
@@ -297,9 +300,9 @@ namespace cygni
 		JUMP = 127,
 		JUMP_IF_TRUE = 128,
 		JUMP_IF_FALSE = 129,
-		INVOKE_FUNCTION = 130,
-		INVOKE_METHOD = 131,
-		INVOKE_INTERFACE = 132,
+		PUSH_FUNCTION = 130,
+		PUSH_METHOD = 131,
+		INVOKE = 132,
 		RETURN_I32 = 133,
 		RETURN_I64 = 134,
 		RETURN_F32 = 135,
@@ -555,6 +558,12 @@ namespace cygni
 				return U"Break";
 			case ExpressionType::Convert:
 				return U"Convert";
+			case ExpressionType::ArrayLength:
+				return U"ArrayLength";
+			case ExpressionType::UpCast:
+				return U"UpCast";
+			case ExpressionType::DownCast:
+				return U"DownCast";
 
 			default:
 				std::cerr << __FUNCTION__ << std::endl;
@@ -946,12 +955,12 @@ namespace cygni
 				return U"JUMP_IF_TRUE";
 			case OpCode::JUMP_IF_FALSE:
 				return U"JUMP_IF_FALSE";
-			case OpCode::INVOKE_FUNCTION:
-				return U"INVOKE_FUNCTION";
-			case OpCode::INVOKE_METHOD:
-				return U"INVOKE_METHOD";
-			case OpCode::INVOKE_INTERFACE:
-				return U"INVOKE_INTERFACE";
+			case OpCode::PUSH_FUNCTION:
+				return U"PUSH_FUNCTION";
+			case OpCode::PUSH_METHOD:
+				return U"PUSH_METHOD";
+			case OpCode::INVOKE:
+				return U"INVOKE";
 			case OpCode::RETURN_I32:
 				return U"RETURN_I32";
 			case OpCode::RETURN_I64:

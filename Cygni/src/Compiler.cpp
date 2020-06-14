@@ -136,48 +136,11 @@ namespace cygni
 	}
 	ByteCode Compiler::Compile()
 	{
-		int classCount = 0;
-		int moduleCount = 0;
-		for (auto pkg : project.packages)
-		{
-			for (auto classInfo : pkg->classes.values)
-			{
-				classCount = std::max(classCount, *classInfo->index);
-			}
-			for (auto moduleInfo : pkg->modules)
-			{
-				moduleCount = std::max(moduleCount, *moduleInfo->index);
-			}
-		}
-		classCount = classCount + 1;
-		moduleCount = moduleCount + 1;
-
-		std::vector<std::shared_ptr<ClassInfo>> classes(classCount);
-		std::vector<std::shared_ptr<ModuleInfo>> modules(moduleCount);
-
-		for (auto pkg : project.packages)
-		{
-			for (auto classInfo : pkg->classes.values)
-			{
-				classes.at(*classInfo->index) = classInfo;
-			}
-			for (auto moduleInfo : pkg->modules)
-			{
-				modules.at(*moduleInfo->index) = moduleInfo;
-			}
-		}
-
 		ByteCode byteCode;
-		CompileMainFunction(modules, byteCode);
+		std::vector<std::shared_ptr<ClassInfo>> classes;
+		std::vector<std::shared_ptr<ModuleInfo>> modules;
 
-		byteCode.AppendU16Checked(classes.size(), []() -> CompilerException
-		{
-			return CompilerException(SourcePosition(), U"number of class cannot exceed 65535");
-		});
-		byteCode.AppendU16Checked(modules.size(), []() -> CompilerException
-		{
-			return CompilerException(SourcePosition(), U"number of module cannot exceed 65535");
-		});
+		std::tie(classes, modules) = CompileGlobalInformation(project, byteCode);
 
 		for (auto classInfo : classes)
 		{
@@ -191,9 +154,9 @@ namespace cygni
 
 		return byteCode;
 	}
-	void Compiler::CompileUnary(std::shared_ptr<UnaryExpression> node, const ConstantMap & constantMap, ByteCode & byteCode)
+	void Compiler::VisitUnary(std::shared_ptr<UnaryExpression> node, const ConstantMap & constantMap, ByteCode & byteCode)
 	{
-		CompileExpression(node->operand, constantMap, byteCode);
+		VisitExpression(node->operand, constantMap, byteCode);
 		switch (node->nodeType)
 		{
 		case ExpressionType::UnaryPlus:
@@ -294,80 +257,145 @@ namespace cygni
 			}
 			else
 			{
-				if (node->upCasting)
+				throw CompilerException(node->position,
+					Format(U"not supported conversion from '{}' to '{}", node->operand->type->ToString(), node->type->ToString()));
+			}
+			break;
+		}
+		case ExpressionType::UpCast: {
+			auto from = node->operand->type->typeCode;
+			auto to = node->type->typeCode;
+			byteCode.AppendOp(OpCode::UP_CAST);
+			if (to == TypeCode::Class)
+			{
+				byteCode.Append(0);
+				auto classType = std::static_pointer_cast<ClassType>(node->type);
+				if (auto classInfo = project.GetClass(classType))
 				{
-					byteCode.AppendOp(OpCode::UP_CAST);
-				}
-				else
-				{
-					byteCode.AppendOp(OpCode::DOWN_CAST);
-				}
-				if (to == TypeCode::Class)
-				{
-					byteCode.Append(0);
-					auto classType = std::static_pointer_cast<ClassType>(node->type);
-					if (auto classInfo = project.GetClass(classType))
+					if ((*classInfo)->index)
 					{
-						if ((*classInfo)->index)
+						byteCode.AppendU16Checked(*((*classInfo)->index), [classInfo]()->CompilerException
 						{
-							byteCode.AppendU16Checked(*((*classInfo)->index), [classInfo]()->CompilerException
-							{
-								return CompilerException((*classInfo)->position, U"the index of class cannot exceed 65535");
-							});
-						}
-						else
-						{
-							throw CompilerException(node->position,
-								Format(U"type '{}' index not assigned", classType->ToString()));
-						}
+							return CompilerException((*classInfo)->position, U"the index of class cannot exceed 65535");
+						});
 					}
 					else
 					{
 						throw CompilerException(node->position,
-							Format(U"type '{}' not found", classType->ToString()));
-					}
-				}
-				else if (to == TypeCode::Interface)
-				{
-					byteCode.Append(1);
-					auto interfaceType = std::static_pointer_cast<InterfaceType>(node->type);
-					if (auto interfaceInfo = project.GetInterface(interfaceType))
-					{
-						if ((*interfaceInfo)->index)
-						{
-							byteCode.AppendU16Checked(*((*interfaceInfo)->index), [interfaceInfo]()->CompilerException
-							{
-								return CompilerException((*interfaceInfo)->position, U"the index of interface cannot exceed 65535");
-							});
-						}
-						else
-						{
-							throw CompilerException(node->position,
-								Format(U"type '{}' index not assigned", interfaceType->ToString()));
-						}
-					}
-					else
-					{
-						throw CompilerException(node->position,
-							Format(U"type '{}' not found", interfaceType->ToString()));
+							Format(U"type '{}' index not assigned", classType->ToString()));
 					}
 				}
 				else
 				{
 					throw CompilerException(node->position,
-						Format(U"cannot convert the object from '{}' to '{}'", node->operand->type->ToString(), node->type->ToString()));
+						Format(U"type '{}' not found", classType->ToString()));
 				}
 			}
+			else if (to == TypeCode::Interface)
+			{
+				byteCode.Append(1);
+				auto interfaceType = std::static_pointer_cast<InterfaceType>(node->type);
+				if (auto interfaceInfo = project.GetInterface(interfaceType))
+				{
+					if ((*interfaceInfo)->index)
+					{
+						byteCode.AppendU16Checked(*((*interfaceInfo)->index), [interfaceInfo]()->CompilerException
+						{
+							return CompilerException((*interfaceInfo)->position, U"the index of interface cannot exceed 65535");
+						});
+					}
+					else
+					{
+						throw CompilerException(node->position,
+							Format(U"type '{}' index not assigned", interfaceType->ToString()));
+					}
+				}
+				else
+				{
+					throw CompilerException(node->position,
+						Format(U"type '{}' not found", interfaceType->ToString()));
+				}
+			}
+			else
+			{
+				throw CompilerException(node->position,
+					Format(U"cannot convert the object from '{}' to '{}'", node->operand->type->ToString(), node->type->ToString()));
+			}
+			break;
+		}
+		case ExpressionType::DownCast: {
+			auto from = node->operand->type->typeCode;
+			auto to = node->type->typeCode;
+			byteCode.AppendOp(OpCode::DOWN_CAST);
+			if (to == TypeCode::Class)
+			{
+				byteCode.Append(0);
+				auto classType = std::static_pointer_cast<ClassType>(node->type);
+				if (auto classInfo = project.GetClass(classType))
+				{
+					if ((*classInfo)->index)
+					{
+						byteCode.AppendU16Checked(*((*classInfo)->index), [classInfo]()->CompilerException
+						{
+							return CompilerException((*classInfo)->position, U"the index of class cannot exceed 65535");
+						});
+					}
+					else
+					{
+						throw CompilerException(node->position,
+							Format(U"type '{}' index not assigned", classType->ToString()));
+					}
+				}
+				else
+				{
+					throw CompilerException(node->position,
+						Format(U"type '{}' not found", classType->ToString()));
+				}
+			}
+			else if (to == TypeCode::Interface)
+			{
+				byteCode.Append(1);
+				auto interfaceType = std::static_pointer_cast<InterfaceType>(node->type);
+				if (auto interfaceInfo = project.GetInterface(interfaceType))
+				{
+					if ((*interfaceInfo)->index)
+					{
+						byteCode.AppendU16Checked(*((*interfaceInfo)->index), [interfaceInfo]()->CompilerException
+						{
+							return CompilerException((*interfaceInfo)->position, U"the index of interface cannot exceed 65535");
+						});
+					}
+					else
+					{
+						throw CompilerException(node->position,
+							Format(U"type '{}' index not assigned", interfaceType->ToString()));
+					}
+				}
+				else
+				{
+					throw CompilerException(node->position,
+						Format(U"type '{}' not found", interfaceType->ToString()));
+				}
+			}
+			else
+			{
+				throw CompilerException(node->position,
+					Format(U"cannot convert the object from '{}' to '{}'", node->operand->type->ToString(), node->type->ToString()));
+			}
+			break;
+		}
+		case ExpressionType::ArrayLength: {
+			byteCode.AppendOp(OpCode::ARRAY_LENGTH);
 			break;
 		}
 		}
 	}
-	void Compiler::CompileBinary(std::shared_ptr<BinaryExpression> node,
+	void Compiler::VisitBinary(std::shared_ptr<BinaryExpression> node,
 		const ConstantMap& constantMap,
 		ByteCode& byteCode)
 	{
-		CompileExpression(node->left, constantMap, byteCode);
-		CompileExpression(node->right, constantMap, byteCode);
+		VisitExpression(node->left, constantMap, byteCode);
+		VisitExpression(node->right, constantMap, byteCode);
 		TypeCode lt = node->left->type->typeCode;
 		TypeCode rt = node->right->type->typeCode;
 		switch (node->nodeType)
@@ -634,69 +662,16 @@ namespace cygni
 		}
 		}
 	}
-	void Compiler::CompileBlock(std::shared_ptr<BlockExpression> node,
+	void Compiler::VisitBlock(std::shared_ptr<BlockExpression> node,
 		const ConstantMap& constantMap,
 		ByteCode& byteCode)
 	{
 		for (auto exp : node->expressions)
 		{
-			CompileExpression(exp, constantMap, byteCode);
+			VisitExpression(exp, constantMap, byteCode);
 		}
 	}
-	void Compiler::CompileExpression(ExpPtr node, const ConstantMap& constantMap, ByteCode& byteCode)
-	{
-		switch (node->nodeType)
-		{
-		case ExpressionType::Add:
-		case ExpressionType::Subtract:
-		case ExpressionType::Multiply:
-		case ExpressionType::Divide:
-		case ExpressionType::GreaterThan:
-		case ExpressionType::LessThan:
-		case ExpressionType::GreaterThanOrEqual:
-		case ExpressionType::LessThanOrEqual:
-		case ExpressionType::Equal:
-		case ExpressionType::NotEqual:
-			return CompileBinary(std::static_pointer_cast<BinaryExpression>(node), constantMap, byteCode);
-		case ExpressionType::UnaryPlus:
-		case ExpressionType::UnaryMinus:
-		case ExpressionType::Convert:
-			return CompileUnary(std::static_pointer_cast<UnaryExpression>(node), constantMap, byteCode);
-		case ExpressionType::Assign:
-			return CompileAssign(std::static_pointer_cast<BinaryExpression>(node), constantMap, byteCode);
-		case ExpressionType::Constant:
-			return CompileConstant(std::static_pointer_cast<ConstantExpression>(node), constantMap, byteCode);
-		case ExpressionType::Block:
-			return CompileBlock(std::static_pointer_cast<BlockExpression>(node), constantMap, byteCode);
-		case ExpressionType::Return:
-			return CompileReturn(std::static_pointer_cast<ReturnExpression>(node), constantMap, byteCode);
-		case ExpressionType::Parameter:
-			return CompileParameter(std::static_pointer_cast<ParameterExpression>(node), byteCode);
-		case ExpressionType::Conditional:
-			return CompileConditional(
-				std::static_pointer_cast<ConditionalExpression>(node), constantMap, byteCode);
-		case ExpressionType::Default:
-			return CompileDefault(std::static_pointer_cast<DefaultExpression>(node), byteCode);
-		case ExpressionType::Invoke:
-			return CompileInvocation(
-				std::static_pointer_cast<InvocationExpression>(node), constantMap, byteCode);
-		case ExpressionType::MemberAccess:
-			return CompileMemberAccess(
-				std::static_pointer_cast<MemberAccessExpression>(node), constantMap, byteCode);
-		case ExpressionType::New:
-			return CompileNewExpression(std::static_pointer_cast<NewExpression>(node),
-				constantMap, byteCode);
-		case ExpressionType::VariableDefinition:
-			return CompileVarDefExpression(std::static_pointer_cast<VarDefExpression>(node),
-				constantMap, byteCode);
-		case ExpressionType::While:
-			return CompileWhileLoop(std::static_pointer_cast<WhileExpression>(node), constantMap, byteCode);
-		default:
-			throw NotImplementedException(
-				Format(U"not supported node type: {}", Enum<ExpressionType>::ToString(node->nodeType)));
-		}
-	}
-	void Compiler::CompileConstant(
+	void Compiler::VisitConstant(
 		std::shared_ptr<ConstantExpression> node,
 		const ConstantMap& constantMap,
 		ByteCode& byteCode)
@@ -736,7 +711,7 @@ namespace cygni
 							return CompilerException((*moduleInfo)->position, U"the index of module constant cannot exceed 65535");
 						});
 
-						byteCode.AppendOp(OpCode::INVOKE_FUNCTION);
+						byteCode.AppendOp(OpCode::PUSH_FUNCTION);
 						byteCode.AppendU16Checked(*(*moduleInfo)->index, [moduleInfo]()->CompilerException
 						{
 							return CompilerException((*moduleInfo)->position, U"the index of module cannot exceed 65535");
@@ -745,6 +720,7 @@ namespace cygni
 						{
 							return CompilerException(methodInfo.position, U"the index of method cannot exceed 65535");
 						});
+						byteCode.AppendOp(OpCode::INVOKE);
 					}
 					else
 					{
@@ -903,23 +879,23 @@ namespace cygni
 	void Compiler::CompileModuleInfo(std::shared_ptr<ModuleInfo> info, ByteCode& byteCode)
 	{
 		byteCode.AppendString(info->name);
-		byteCode.AppendU16Checked(info->fields.Size(), [info]()->CompilerException
+		if (info->fields.Size() > std::numeric_limits<uint16_t>::max())
 		{
-			return CompilerException(info->position, U"too many variables in the module");
-		});
-		// fields
+			throw CompilerException(info->position, U"too many member variables in the module");
+		}
+		if (info->methods.Size() > std::numeric_limits<uint16_t>::max())
+		{
+			throw CompilerException(info->position, U"too many member functions in the module");
+		}
+		CompileConstantPool(info->position, info->constantMap, byteCode);
+
+		byteCode.AppendU16Unchecked(info->fields.Size());
 		for (const auto& field : info->fields.values)
 		{
 			byteCode.AppendString(field.name);
 		}
 
-		// constant pool
-		CompileConstantPool(info->position, info->constantMap, byteCode);
-
-		byteCode.AppendU16Checked(info->methods.Size(), [info]()->CompilerException
-		{
-			return CompilerException(info->position, U"too many functions in the module");
-		});
+		byteCode.AppendU16Unchecked(info->methods.Size());
 		for (const auto& method : info->methods.values)
 		{
 			CompileMethodDef(method, info->constantMap, byteCode);
@@ -927,16 +903,16 @@ namespace cygni
 	}
 	void Compiler::CompileMethodDef(const MethodDef & method, const ConstantMap& constantMap, ByteCode& byteCode)
 	{
-		std::cout << "method name: " << method.name << std::endl;
 		if (method.annotations.ContainsKey(U"LibraryImport"))
 		{
+			if (method.parameters.size() > std::numeric_limits<uint16_t>::max())
+			{
+				throw CompilerException(method.position, U"too many parameters");
+			}
 			byteCode.Append(1); // native function
 			auto annotation = method.annotations.GetValueByKey(U"LibraryImport");
 			byteCode.AppendString(method.name);
-			byteCode.AppendU16Checked(method.parameters.size(), [&]()->CompilerException
-			{
-				return CompilerException(method.position, U"too many parameters");
-			});
+			byteCode.AppendU16Unchecked(method.parameters.size());
 			auto libName = std::static_pointer_cast<ConstantExpression>(annotation.arguments.at(0).value)->constant;
 			auto funcName = std::static_pointer_cast<ConstantExpression>(annotation.arguments.at(1).value)->constant;
 			byteCode.AppendString(libName);
@@ -948,32 +924,36 @@ namespace cygni
 			byteCode.AppendString(method.name);
 			if (method.selfType->typeCode == TypeCode::Class)
 			{
-				byteCode.AppendU16Checked(method.parameters.size() + 1, [&]()->CompilerException
+				if (method.parameters.size() + 1 > std::numeric_limits<uint16_t>::max())
 				{
-					return CompilerException(method.position, U"too many parameters");
-				}); // add 'this'
+					throw CompilerException(method.position, U"too many parameters");
+				}
+				byteCode.AppendU16Unchecked(method.parameters.size() + 1); // add 'this'
 			}
 			else
 			{
-				byteCode.AppendU16Checked(method.parameters.size(), [&]()->CompilerException
+				if (method.parameters.size() > std::numeric_limits<uint16_t>::max())
 				{
-					return CompilerException(method.position, U"too many parameters");
-				});
+					throw CompilerException(method.position, U"too many parameters");
+				}
+				byteCode.AppendU16Unchecked(method.parameters.size());
 			}
-			byteCode.AppendU16Checked(method.localVariables.size(), [&]()->CompilerException
+			if (method.localVariables.size() > std::numeric_limits<uint16_t>::max())
 			{
-				return CompilerException(method.position, U"too many variables");
-			});
+				throw CompilerException(method.position, U"too many variables");
+			}
+			byteCode.AppendU16Unchecked(method.localVariables.size());
 			ByteCode funcCode;
-			CompileExpression(method.body, constantMap, funcCode);
-			byteCode.AppendU16Checked(funcCode.Size(), [&]()->CompilerException
+			VisitExpression(method.body, constantMap, funcCode);
+			if (funcCode.Size() > std::numeric_limits<uint16_t>::max())
 			{
-				return CompilerException(method.position, U"the function is too complicated. Consider split it into smaller functions");
-			});
+				throw CompilerException(method.position,
+					U"the function is too complicated. Consider split it into smaller functions");
+			}
 			byteCode.AppendByteCode(funcCode);
 		}
 	}
-	void Compiler::CompileParameter(std::shared_ptr<ParameterExpression> parameter,
+	void Compiler::VisitParameter(std::shared_ptr<ParameterExpression> parameter, const ConstantMap& constantMap,
 		ByteCode& byteCode)
 	{
 		auto location = parameter->location;
@@ -1056,9 +1036,9 @@ namespace cygni
 		}
 		case LocationType::ModuleMethod: {
 			std::cout << "push module method: " << parameter->name << std::endl;
-			//byteCode.AppendOp(OpCode::PUSH_FUNCTION);
-			//byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->index);
-			//byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->offset);
+			byteCode.AppendOp(OpCode::PUSH_FUNCTION);
+			byteCode.AppendU16Unchecked(std::static_pointer_cast<MemberLocation>(location)->index);
+			byteCode.AppendU16Unchecked(std::static_pointer_cast<MemberLocation>(location)->offset);
 			break;
 		}
 		case LocationType::ClassMethod: {
@@ -1079,10 +1059,10 @@ namespace cygni
 				Format(U"not implemented parameter type: {}", Enum<LocationType>::ToString(location->type)));
 		}
 	}
-	void Compiler::CompileReturn(std::shared_ptr<ReturnExpression> node,
+	void Compiler::VisitReturn(std::shared_ptr<ReturnExpression> node,
 		const ConstantMap& constantMap, ByteCode& byteCode)
 	{
-		CompileExpression(node->value, constantMap, byteCode);
+		VisitExpression(node->value, constantMap, byteCode);
 		switch (node->type->typeCode)
 		{
 		case TypeCode::Boolean:
@@ -1117,21 +1097,21 @@ namespace cygni
 		}
 		}
 	}
-	void Compiler::CompileConditional(std::shared_ptr<ConditionalExpression> node,
+	void Compiler::VisitConditional(std::shared_ptr<ConditionalExpression> node,
 		const ConstantMap& constantMap, ByteCode& byteCode)
 	{
-		CompileExpression(node->condition, constantMap, byteCode);
+		VisitExpression(node->condition, constantMap, byteCode);
 		byteCode.AppendOp(OpCode::JUMP_IF_FALSE);
 		int index1 = byteCode.Size();
 		byteCode.AppendU16Unchecked(0);
 
-		CompileExpression(node->ifTrue, constantMap, byteCode);
+		VisitExpression(node->ifTrue, constantMap, byteCode);
 		byteCode.AppendOp(OpCode::JUMP);
 		int index2 = byteCode.Size();
 		byteCode.AppendU16Unchecked(0);
 
 		int target1 = byteCode.Size();
-		CompileExpression(node->ifFalse, constantMap, byteCode);
+		VisitExpression(node->ifFalse, constantMap, byteCode);
 		int target2 = byteCode.Size();
 
 		if (target2 > std::numeric_limits<uint16_t>::max())
@@ -1144,7 +1124,7 @@ namespace cygni
 			byteCode.WriteUShort(index2, target2);
 		}
 	}
-	void Compiler::CompileDefault(std::shared_ptr<DefaultExpression> node,
+	void Compiler::VisitDefault(std::shared_ptr<DefaultExpression> node, const ConstantMap& constantMap,
 		ByteCode& byteCode)
 	{
 		switch (node->type->typeCode)
@@ -1159,7 +1139,7 @@ namespace cygni
 		}
 		}
 	}
-	void Compiler::CompileInvocation(std::shared_ptr<InvocationExpression> node,
+	void Compiler::VisitInvocation(std::shared_ptr<InvocationExpression> node,
 		const ConstantMap& constantMap,
 		ByteCode& byteCode)
 	{
@@ -1171,88 +1151,106 @@ namespace cygni
 				// omit
 				// Size
 			}
-			else if (function->selfType->typeCode == TypeCode::Module)
+			else
 			{
 				for (auto arg : node->arguments)
 				{
-					CompileExpression(arg.value, constantMap, byteCode);
+					VisitExpression(arg.value, constantMap, byteCode);
 				}
-				//CompileExpression(node->expression, constantMap, byteCode);
-				auto moduleType = std::static_pointer_cast<ModuleType>(function->selfType);
-				if (auto moduleInfo = project.GetModule(moduleType))
-				{
-					byteCode.AppendOp(OpCode::INVOKE_FUNCTION);
-					if ((*moduleInfo)->methods.ContainsKey(function->name))
-					{
-						auto& method = (*moduleInfo)->methods.GetValueByKey(function->name);
-						byteCode.AppendU16Unchecked(*(*moduleInfo)->index);
-						byteCode.AppendU16Unchecked(*method.index);
-					}
-					else
-					{
-						throw CompilerException(node->position,
-							Format(U"missing module function '{}'", function->name));
-					}
-				}
-				else
-				{
-					throw CompilerException(node->position,
-						Format(U"missing module '{}'", moduleType->ToString()));
-				}
+				VisitExpression(node->expression, constantMap, byteCode);
+				byteCode.AppendOp(OpCode::INVOKE);
 			}
-			else if (function->selfType->typeCode == TypeCode::Class)
-			{
-				if (node->expression->nodeType == ExpressionType::MemberAccess)
-				{
-					auto memberAccessExp = std::static_pointer_cast<MemberAccessExpression>(node->expression);
-					CompileExpression(memberAccessExp->object, constantMap, byteCode);
-				}
-				else if (node->expression->nodeType == ExpressionType::Parameter)
-				{
-					byteCode.AppendOp(OpCode::PUSH_LOCAL_OBJECT);
-					byteCode.AppendU16Unchecked(0); /* this */
-				}
-				else
-				{
-					throw CompilerException(node->position, U"not supported method call");
-				}
-				for (auto arg : node->arguments)
-				{
-					CompileExpression(arg.value, constantMap, byteCode);
-				}
-				auto classType = std::static_pointer_cast<ClassType>(function->selfType);
-				if (auto classInfo = project.GetClass(classType))
-				{
-					byteCode.AppendOp(OpCode::INVOKE_METHOD);
-					if ((*classInfo)->methods.ContainsKey(function->name))
-					{
-						auto& method = (*classInfo)->methods.GetValueByKey(function->name);
-						byteCode.AppendU16Unchecked(*(*classInfo)->index);
-						byteCode.AppendU16Unchecked(*method.index);
-					}
-					else
-					{
-						throw CompilerException(node->position,
-							Format(U"missing class method '{}'", function->name));
-					}
-				}
-				else
-				{
-					throw CompilerException(node->position,
-						Format(U"missing class '{}'", classType->ToString()));
-				}
+			//else if (function->selfType->typeCode == TypeCode::Module)
+			//{
+			//	for (auto arg : node->arguments)
+			//	{
+			//		VisitExpression(arg.value, constantMap, byteCode);
+			//	}
+			//	VisitExpression(node->expression, constantMap, byteCode);
+			//	auto moduleType = std::static_pointer_cast<ModuleType>(function->selfType);
+			//	if (auto moduleInfo = project.GetModule(moduleType))
+			//	{
+			//		byteCode.AppendOp(OpCode::INVOKE_FUNCTION);
+			//		if ((*moduleInfo)->methods.ContainsKey(function->name))
+			//		{
+			//			auto& method = (*moduleInfo)->methods.GetValueByKey(function->name);
+			//			byteCode.AppendU16Unchecked(*(*moduleInfo)->index);
+			//			byteCode.AppendU16Unchecked(*method.index);
+			//		}
+			//		else
+			//		{
+			//			throw CompilerException(node->position,
+			//				Format(U"missing module function '{}'", function->name));
+			//		}
+			//	}
+			//	else
+			//	{
+			//		throw CompilerException(node->position,
+			//			Format(U"missing module '{}'", moduleType->ToString()));
+			//	}
+			//}
+			//else if (function->selfType->typeCode == TypeCode::Class)
+			//{
+			//	if (node->expression->nodeType == ExpressionType::MemberAccess)
+			//	{
+			//		auto memberAccessExp = std::static_pointer_cast<MemberAccessExpression>(node->expression);
+			//		VisitExpression(memberAccessExp->object, constantMap, byteCode);
+			//	}
+			//	else if (node->expression->nodeType == ExpressionType::Parameter)
+			//	{
+			//		byteCode.AppendOp(OpCode::PUSH_LOCAL_OBJECT);
+			//		byteCode.AppendU16Unchecked(0); /* this */
+			//	}
+			//	else
+			//	{
+			//		throw CompilerException(node->position, U"not supported method call");
+			//	}
+			//	for (auto arg : node->arguments)
+			//	{
+			//		VisitExpression(arg.value, constantMap, byteCode);
+			//	}
+			//	auto classType = std::static_pointer_cast<ClassType>(function->selfType);
+			//	if (auto classInfo = project.GetClass(classType))
+			//	{
+			//		byteCode.AppendOp(OpCode::PUSH_METHOD);
+			//		if ((*classInfo)->methods.ContainsKey(function->name))
+			//		{
+			//			auto& method = (*classInfo)->methods.GetValueByKey(function->name);
+			//			byteCode.AppendU16Unchecked(method.parameters.size());
+			//			byteCode.AppendU16Unchecked(*method.index);
+			//		}
+			//		else
+			//		{
+			//			throw CompilerException(node->position,
+			//				Format(U"missing class method '{}'", function->name));
+			//		}
+			//	}
+			//	else
+			//	{
+			//		throw CompilerException(node->position,
+			//			Format(U"missing class '{}'", classType->ToString()));
+			//	}
 
-			}
+			//}
+			//else if (function->selfType->typeCode == TypeCode::Interface)
+			//{
+
+			//}
+			//else
+			//{
+			//	throw CompilerException(node->position,
+			//		Format(U"not callable object type '{}'", function->selfType->ToString()));
+			//}
 		}
 		else if (node->expression->type->typeCode == TypeCode::Array)
 		{
 			auto arrayType = std::static_pointer_cast<ArrayType>(node->expression->type);
 			if (node->arguments.size() == 1)
 			{
-				CompileExpression(node->expression, constantMap, byteCode);
+				VisitExpression(node->expression, constantMap, byteCode);
 				for (auto arg : node->arguments)
 				{
-					CompileExpression(arg.value, constantMap, byteCode);
+					VisitExpression(arg.value, constantMap, byteCode);
 				}
 				switch (arrayType->elementType->typeCode)
 				{
@@ -1295,10 +1293,10 @@ namespace cygni
 			throw CompilerException(node->position, U"object is not callable");
 		}
 	}
-	void Compiler::CompileMemberAccess(std::shared_ptr<MemberAccessExpression> node,
+	void Compiler::VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node,
 		const ConstantMap& constantMap, ByteCode& byteCode)
 	{
-		CompileExpression(node->object, constantMap, byteCode);
+		VisitExpression(node->object, constantMap, byteCode);
 		auto location = node->location;
 		if (node->object->type->typeCode == TypeCode::Array && node->field == U"Size")
 		{
@@ -1341,10 +1339,9 @@ namespace cygni
 		}
 		else if (location->type == LocationType::ModuleMethod)
 		{
-			std::cout << "push module method: " << node->field << std::endl;
-			/*byteCode.AppendOp(OpCode::PUSH_FUNCTION);
-			byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->index);
-			byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->offset);*/
+			byteCode.AppendOp(OpCode::PUSH_FUNCTION);
+			byteCode.AppendU16Unchecked(std::static_pointer_cast<MemberLocation>(location)->index);
+			byteCode.AppendU16Unchecked(std::static_pointer_cast<MemberLocation>(location)->offset);
 		}
 		else if (location->type == LocationType::ClassField)
 		{
@@ -1385,9 +1382,9 @@ namespace cygni
 		else if (location->type == LocationType::ClassMethod)
 		{
 			std::cout << "push class method: " << node->field << std::endl;
-			//byteCode.AppendOp(OpCode::PUSH_METHOD);
-			//byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->index);
-			//byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->offset);
+			byteCode.AppendOp(OpCode::PUSH_METHOD);
+			byteCode.AppendU16Unchecked(std::static_pointer_cast<MemberLocation>(location)->index);
+			byteCode.AppendU16Unchecked(std::static_pointer_cast<MemberLocation>(location)->offset);
 		}
 		else
 		{
@@ -1396,7 +1393,7 @@ namespace cygni
 					node->field, Enum<LocationType>::ToString(location->type)));
 		}
 	}
-	void Compiler::CompileNewExpression(std::shared_ptr<NewExpression> node,
+	void Compiler::VisitNewExpression(std::shared_ptr<NewExpression> node,
 		const ConstantMap& constantMap, ByteCode& byteCode)
 	{
 		byteCode.AppendOp(OpCode::NEW);
@@ -1410,16 +1407,15 @@ namespace cygni
 			}
 		}
 		auto classType = std::static_pointer_cast<ClassType>(node->type);
-		if (auto res = project.GetClass(classType))
+		if (auto classInfo = project.GetClass(classType))
 		{
-			auto classInfo = *res;
-			for (auto& field : classInfo->fields)
+			for (auto& field : (*classInfo)->fields)
 			{
 				// not found
 				if (initializedFields.find(field.name) == initializedFields.end())
 				{
 					byteCode.AppendOp(OpCode::DUPLICATE);
-					CompileExpression(field.value, constantMap, byteCode);
+					VisitExpression(field.value, constantMap, byteCode);
 					switch (field.value->type->typeCode)
 					{
 					case TypeCode::Char:
@@ -1469,7 +1465,7 @@ namespace cygni
 			{
 				byteCode.AppendOp(OpCode::DUPLICATE);
 				//byteCode.AppendUShort(1); // get the initialized class object
-				CompileExpression(arg.value, constantMap, byteCode);
+				VisitExpression(arg.value, constantMap, byteCode);
 				switch (arg.value->type->typeCode)
 				{
 				case TypeCode::Char:
@@ -1516,10 +1512,10 @@ namespace cygni
 			}
 		}
 	}
-	void Compiler::CompileVarDefExpression(std::shared_ptr<VarDefExpression> node,
+	void Compiler::VisitVarDefExpression(std::shared_ptr<VarDefExpression> node,
 		const ConstantMap & constantMap, ByteCode & byteCode)
 	{
-		CompileExpression(node->value, constantMap, byteCode);
+		VisitExpression(node->value, constantMap, byteCode);
 		switch (node->variable->type->typeCode)
 		{
 		case TypeCode::Int32: {
@@ -1560,9 +1556,9 @@ namespace cygni
 			throw CompilerException(node->position, U"cannot compile non-local variable definition");
 		}
 	}
-	void Compiler::CompileAssign(std::shared_ptr<BinaryExpression> node, const ConstantMap & constantMap, ByteCode & byteCode)
+	void Compiler::VisitAssign(std::shared_ptr<BinaryExpression> node, const ConstantMap & constantMap, ByteCode & byteCode)
 	{
-		CompileExpression(node->right, constantMap, byteCode);
+		VisitExpression(node->right, constantMap, byteCode);
 
 		if (node->left->nodeType == ExpressionType::Parameter)
 		{
@@ -1610,7 +1606,7 @@ namespace cygni
 		{
 			auto memberAccess = std::static_pointer_cast<MemberAccessExpression>(node->left);
 			auto location = memberAccess->location;
-			CompileExpression(memberAccess->object, constantMap, byteCode);
+			VisitExpression(memberAccess->object, constantMap, byteCode);
 			if (location->type == LocationType::ModuleField)
 			{
 				switch (memberAccess->type->typeCode)
@@ -1690,21 +1686,26 @@ namespace cygni
 			throw CompilerException(node->position, U"wrong assignment");
 		}
 	}
-	void Compiler::CompileWhileLoop(std::shared_ptr<WhileExpression> node, const ConstantMap & constantMap, ByteCode & byteCode)
+	void Compiler::VisitWhile(std::shared_ptr<WhileExpression> node, const ConstantMap & constantMap, ByteCode & byteCode)
 	{
 		int index1 = byteCode.Size();
-		CompileExpression(node->condition, constantMap, byteCode);
+		VisitExpression(node->condition, constantMap, byteCode);
 		byteCode.AppendOp(OpCode::JUMP_IF_FALSE);
 		int index2 = byteCode.Size();
+		if (index2 > std::numeric_limits<uint16_t>::max())
+		{
+			throw CompilerException(node->position, U"the function is too complicated. Consider split it into smaller functions");
+		}
 		byteCode.AppendU16Unchecked(0);
 
-		CompileExpression(node->body, constantMap, byteCode);
+		VisitExpression(node->body, constantMap, byteCode);
 		byteCode.AppendOp(OpCode::JUMP);
-		byteCode.AppendU16Checked(index1, [&]()->CompilerException
-		{
-			return CompilerException(node->position, U"the function is too complicated. Consider split it into smaller functions");
-		});
+		byteCode.AppendU16Unchecked(index1);
 		int target2 = byteCode.Size();
+		if (target2 > std::numeric_limits<uint16_t>::max())
+		{
+			throw CompilerException(node->position, U"the function is too complicated. Consider split it into smaller functions");
+		}
 		byteCode.WriteUShort(index2, target2);
 	}
 	void Compiler::CompileMainFunction(const std::vector<std::shared_ptr<ModuleInfo>>& modules, ByteCode & byteCode)
@@ -1715,15 +1716,14 @@ namespace cygni
 			if (moduleInfo->methods.ContainsKey(U"Main"))
 			{
 				auto& method = moduleInfo->methods.GetValueByKey(U"Main");
-				int index = moduleInfo->methods.GetIndexByKey(U"Main");
 				if (found)
 				{
 					throw CompilerException(method.position, U"multiple definitions of the Main function");
 				}
 				else
 				{
-					byteCode.AppendU16Unchecked(*moduleInfo->index);
-					byteCode.AppendU16Unchecked(index);
+					byteCode.AppendU16Unchecked(*(moduleInfo->index));
+					byteCode.AppendU16Unchecked(*(method.index));
 					found = true;
 				}
 			}
@@ -1751,5 +1751,60 @@ namespace cygni
 			byteCode.AppendTypeCode(constant.typeCode);
 			byteCode.AppendString(constant.constant);
 		}
+	}
+	std::tuple<std::vector<std::shared_ptr<ClassInfo>>, std::vector<std::shared_ptr<ModuleInfo>>>
+		Compiler::CompileGlobalInformation(Project & project, ByteCode& byteCode)
+	{
+		int classCount = 0;
+		int moduleCount = 0;
+		for (auto pkg : project.packages)
+		{
+			classCount = classCount + pkg->classDefs.Size();
+			moduleCount = moduleCount + pkg->moduleDefs.Size();
+		}
+
+		if (classCount > std::numeric_limits<uint16_t>::max())
+		{
+			throw CompilerException(SourcePosition(), U"number of class cannot exceed 65535");
+		}
+		if (moduleCount > std::numeric_limits<uint16_t>::max())
+		{
+			throw CompilerException(SourcePosition(), U"number of module cannot exceed 65535");
+		}
+
+		std::vector<std::shared_ptr<ClassInfo>> classes(classCount);
+		std::vector<std::shared_ptr<ModuleInfo>> modules(moduleCount);
+
+		for (auto pkg : project.packages)
+		{
+			for (auto classInfo : pkg->classDefs)
+			{
+				classes.at(*classInfo->index) = classInfo;
+			}
+			for (auto moduleInfo : pkg->moduleDefs)
+			{
+				modules.at(*moduleInfo->index) = moduleInfo;
+			}
+		}
+
+		CompileMainFunction(modules, byteCode);
+
+		byteCode.AppendU16Unchecked(classes.size());
+		byteCode.AppendU16Unchecked(modules.size());
+		for (auto classInfo : classes)
+		{
+			if (classInfo->fields.Size() > std::numeric_limits<uint16_t>::max())
+			{
+				throw CompilerException(classInfo->position, U"too many methods");
+			}
+			if (classInfo->methods.Size() > std::numeric_limits<uint16_t>::max())
+			{
+				throw CompilerException(classInfo->position, U"too many methods");
+			}
+			byteCode.AppendU16Unchecked(classInfo->fields.Size());
+			byteCode.AppendU16Unchecked(classInfo->methods.Size());
+		}
+
+		return std::make_tuple(classes, modules);
 	}
 } // namespace cygni

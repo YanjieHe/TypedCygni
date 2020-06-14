@@ -428,6 +428,42 @@ namespace cygni
 		VisitExpression(node->body, nodeList);
 	}
 
+	void TreeTraverser::VisitField(const FieldDef & field, std::vector<ExpPtr>& nodeList)
+	{
+		AddIfNeeded(field.value, nodeList);
+		VisitExpression(field.value, nodeList);
+	}
+
+	void TreeTraverser::VisitMethod(const MethodDef & method, std::vector<ExpPtr>& nodeList)
+	{
+		AddIfNeeded(method.body, nodeList);
+		VisitExpression(method.body, nodeList);
+	}
+
+	void TreeTraverser::VisitClass(std::shared_ptr<ClassInfo> classInfo, std::vector<ExpPtr>& nodeList)
+	{
+		for (const auto& field : classInfo->fieldDefs)
+		{
+			VisitField(field, nodeList);
+		}
+		for (const auto& method : classInfo->methodDefs)
+		{
+			VisitMethod(method, nodeList);
+		}
+	}
+
+	void TreeTraverser::VisitModule(std::shared_ptr<ModuleInfo> moduleInfo, std::vector<ExpPtr>& nodeList)
+	{
+		for (const auto& field : moduleInfo->fields)
+		{
+			VisitField(field, nodeList);
+		}
+		for (const auto& method : moduleInfo->methods)
+		{
+			VisitMethod(method, nodeList);
+		}
+	}
+
 	void TreeTraverser::AddIfNeeded(ExpPtr node, std::vector<ExpPtr>& nodeList)
 	{
 		if (filter(node))

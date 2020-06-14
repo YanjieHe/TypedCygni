@@ -31,6 +31,9 @@ namespace cygni
 			case ExpressionType::UnaryPlus:
 			case ExpressionType::UnaryMinus:
 			case ExpressionType::Convert:
+			case ExpressionType::UpCast:
+			case ExpressionType::DownCast:
+			case ExpressionType::ArrayLength:
 				return VisitUnary(std::static_pointer_cast<UnaryExpression>(node), args...);
 			case ExpressionType::Assign:
 				return VisitAssign(std::static_pointer_cast<BinaryExpression>(node), args...);
@@ -135,6 +138,11 @@ namespace cygni
 		void VisitVarDefExpression(std::shared_ptr<VarDefExpression>node, std::vector<ExpPtr>&nodeList);
 		void VisitWhileExpression(std::shared_ptr<WhileExpression>node, std::vector<ExpPtr>&nodeList);
 
+		void VisitField(const FieldDef& field, std::vector<ExpPtr>& nodeList);
+		void VisitMethod(const MethodDef& method, std::vector<ExpPtr>& nodeList);
+		void VisitClass(std::shared_ptr<ClassInfo> classInfo, std::vector<ExpPtr>& nodeList);
+		void VisitModule(std::shared_ptr<ModuleInfo> moduleInfo, std::vector<ExpPtr>& nodeList);
+
 		void AddIfNeeded(ExpPtr node, std::vector<ExpPtr>& nodeList);
 	};
 
@@ -189,7 +197,6 @@ namespace cygni
 
 	void AssignIndex(Project& project);
 
-	
 	class PackageImporter
 	{
 	public:
