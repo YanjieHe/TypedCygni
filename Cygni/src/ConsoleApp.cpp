@@ -68,6 +68,14 @@ namespace cygni
 		typeChecker.CheckProject(globalScope);
 		cout << "Complete Type Checking!" << endl;
 
+		ArrayLengthPass arrayLengthPass;
+		arrayLengthPass.VisitProject(project);
+
+		VirtualTableGenerator virtualTableGenerator(project);
+		virtualTableGenerator.VisitProject(project);
+
+		DumpAbstractSyntaxTree(project, "passes/pass-virtual-table.json");
+
 		/* pass 8: collect local variables */
 		LocalVariableCollector localVariableCollector;
 		localVariableCollector.VisitProject(project);
@@ -82,6 +90,10 @@ namespace cygni
 		ConstantCollector constantCollector;
 		constantCollector.VisitProject(project);
 		cout << "Complete Constant Collection!" << endl;
+
+		HandleThisPointerPass handleThisPointerPass(project);
+		handleThisPointerPass.VisitProject(project);
+		DumpAbstractSyntaxTree(project, "passes/pass-this-pointer.json");
 	}
 
 	void ConsoleApp::DumpAbstractSyntaxTree(Project& project, std::string outputJsonPath)

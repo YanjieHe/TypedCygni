@@ -83,27 +83,28 @@ namespace cygni
 
 	using json = nlohmann::json;
 
-	class AstToJsonSerialization: public Visitor<json>
+	class AstToJsonSerialization : public Visitor<json>
 	{
 	public:
-		json VisitUnary(std::shared_ptr<UnaryExpression> node);
-		json VisitBinary(std::shared_ptr<BinaryExpression> node);
-		json VisitBlock(std::shared_ptr<BlockExpression> node);
-		json VisitConstant(std::shared_ptr<ConstantExpression> node);
-		json VisitParameter(std::shared_ptr<ParameterExpression> parameter);
-		json VisitReturn(std::shared_ptr<ReturnExpression> node);
-		json VisitConditional(std::shared_ptr<ConditionalExpression> node);
-		json VisitDefault(std::shared_ptr<DefaultExpression> node);
-		json VisitInvocation(std::shared_ptr<InvocationExpression> node);
-		json VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node);
-		json VisitNewExpression(std::shared_ptr<NewExpression> node);
-		json VisitVarDefExpression(std::shared_ptr<VarDefExpression> node);
-		json VisitWhile(std::shared_ptr<WhileExpression> node);
-		json VisitAssign(std::shared_ptr<BinaryExpression> node);
+		json VisitUnary(std::shared_ptr<UnaryExpression> node) override;
+		json VisitBinary(std::shared_ptr<BinaryExpression> node)override;
+		json VisitBlock(std::shared_ptr<BlockExpression> node)override;
+		json VisitConstant(std::shared_ptr<ConstantExpression> node)override;
+		json VisitParameter(std::shared_ptr<ParameterExpression> parameter)override;
+		json VisitReturn(std::shared_ptr<ReturnExpression> node)override;
+		json VisitConditional(std::shared_ptr<ConditionalExpression> node)override;
+		json VisitDefault(std::shared_ptr<DefaultExpression> node)override;
+		json VisitInvocation(std::shared_ptr<InvocationExpression> node)override;
+		json VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node)override;
+		json VisitNewExpression(std::shared_ptr<NewExpression> node)override;
+		json VisitVarDefExpression(std::shared_ptr<VarDefExpression> node)override;
+		json VisitWhile(std::shared_ptr<WhileExpression> node)override;
+		json VisitAssign(std::shared_ptr<BinaryExpression> node)override;
 
 
 		json VisitClassInfo(std::shared_ptr<ClassInfo> info);
 		json VisitModuleInfo(std::shared_ptr<ModuleInfo> info);
+		json VisitInterfaceInfo(std::shared_ptr<InterfaceInfo> info);
 		json VisitSourceLocation(SourcePosition location);
 		json VisitFieldDef(const FieldDef &field);
 		json VisitMethodDef(const MethodDef &method);
@@ -114,9 +115,10 @@ namespace cygni
 		json VisitAnnotationList(const Table<std::u32string, AnnotationInfo> &annotations);
 		std::vector<json> VisitExpressionList(const std::vector<ExpPtr> &expressions);
 		json VisitLocation(LocationPtr location);
+		json VisitVirtualTable(const VirtualTable& virtualTable);
 	};
 
-	class TreeTraverser: public Visitor<void, std::vector<ExpPtr>&>
+	class TreeTraverser : public Visitor<void, std::vector<ExpPtr>&>
 	{
 	public:
 		std::function<bool(ExpPtr)> filter;
@@ -154,7 +156,7 @@ namespace cygni
 		void VisitProject(Project& project);
 	};
 
-	class VariableLocator: public Visitor<void, Scope<LocationPtr>*>
+	class VariableLocator : public Visitor<void, Scope<LocationPtr>*>
 	{
 	public:
 		Project& project;

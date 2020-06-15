@@ -319,4 +319,123 @@ namespace cygni
 			return newNode;
 		}
 	}
+	VirtualTableGenerator::VirtualTableGenerator(Project & project) : project{ project }
+	{
+	}
+	void VirtualTableGenerator::VisitClass(std::shared_ptr<ClassInfo> classInfo)
+	{
+		VirtualTable& virtualTable = classInfo->virtualTable;
+		for (auto superType : classInfo->superTypes)
+		{
+			if (superType->typeCode == TypeCode::Class)
+			{
+				if (auto superClassInfo = project.GetClass(std::static_pointer_cast<ClassType>(superType)))
+				{
+					int typeId = superClassInfo.value()->index.value();
+					VirtualMethods methodList;
+					methodList.typeId = typeId;
+					for (auto& method : superClassInfo.value()->methods)
+					{
+						if (classInfo->methods.ContainsKey(method.name))
+						{
+							auto& overridedMethod = classInfo->methods.GetValueByKey(method.name);
+							int classId = classInfo->index.value();
+							methodList.locations.push_back(MethodLocation(classId, overridedMethod.index.value()));
+						}
+						else
+						{
+							int classId = GetClassId(method.position, method.selfType);
+							methodList.locations.push_back(MethodLocation(classId, method.index.value()));
+						}
+					}
+					virtualTable.push_back(methodList);
+				}
+				else
+				{
+					throw TypeException(classInfo->position,
+						Format(U"missing class type '{}' for inheritance", superType->ToString()));
+				}
+			}
+			else if (superType->typeCode == TypeCode::Interface)
+			{
+				if (auto superInterfaceInfo = project.GetInterface(std::static_pointer_cast<InterfaceType>(superType)))
+				{
+					int typeId = superInterfaceInfo.value()->index.value();
+					VirtualMethods methodList;
+					methodList.typeId = typeId;
+					for (auto& method : superInterfaceInfo.value()->allMethods)
+					{
+						if (classInfo->methods.ContainsKey(method.name))
+						{
+							auto& overridedMethod = classInfo->methods.GetValueByKey(method.name);
+							int classId = classInfo->index.value();
+							methodList.locations.push_back(MethodLocation(classId, overridedMethod.index.value()));
+						}
+						else
+						{
+
+							throw TypeException(classInfo->position,
+								Format(U"not implemented method '{}' for interface '{}'", method.name, superType->ToString()));
+						}
+					}
+					virtualTable.push_back(methodList);
+				}
+				else
+				{
+					throw TypeException(classInfo->position,
+						Format(U"missing interface type '{}' for inheritance", superType->ToString()));
+				}
+			}
+			else
+			{
+				throw TypeException(classInfo->position,
+					Format(U"error type '{}' for inheritance", superType->ToString()));
+			}
+		}
+	}
+	int VirtualTableGenerator::GetClassId(SourcePosition position, TypePtr classType)
+	{
+		if (classType->typeCode == TypeCode::Class)
+		{
+			if (auto classInfo = project.GetClass(std::static_pointer_cast<ClassType>(classType)))
+			{
+				return classInfo.value()->index.value();
+			}
+			else
+			{
+				throw TypeException(position,
+					Format(U"wrong self type for method, got type '{}', expect a class type", classType->ToString()));
+			}
+		}
+		else
+		{
+			throw TypeException(position,
+				Format(U"wrong self type for method, got type '{}', expect a class type", classType->ToString()));
+		}
+	}
+	HandleThisPointerPass::HandleThisPointerPass(Project & project) : project{ project }
+	{
+	}
+	void HandleThisPointerPass::VisitMethod(MethodDef & method)
+	{
+		currentMethod = &method;
+		method.body = VisitExpression(method.body);
+	}
+	ExpPtr HandleThisPointerPass::VisitParameter(std::shared_ptr<ParameterExpression> parameter)
+	{
+		if (parameter->location->type == LocationType::ClassField || parameter->location->type == LocationType::ClassMethod)
+		{
+			auto thisVar = std::make_shared<ParameterExpression>(parameter->position, U"this", currentMethod->selfType);
+			auto newNode = std::make_shared<MemberAccessExpression>(parameter->position, thisVar, parameter->name);
+			newNode->type = parameter->type;
+			newNode->location = parameter->location;
+			std::cout << Enum<LocationType>::ToString(newNode->location->type) << std::endl;
+			thisVar->location = std::make_shared<ParameterLocation>(currentMethod->parameters.size());
+			return newNode;
+		}
+		else
+		{
+			return parameter;
+		}
+	}
 } // namespace cygni

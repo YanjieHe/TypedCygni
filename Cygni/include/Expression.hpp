@@ -251,6 +251,25 @@ namespace cygni
 			std::vector<Argument> arguments);
 	};
 
+	class MethodLocation
+	{
+	public:
+		int classIndex;
+		int methodIndex;
+
+		MethodLocation() = default;
+		MethodLocation(int classIndex, int methodIndex);
+	};
+
+	class VirtualMethods
+	{
+	public:
+		int typeId;
+		std::vector<MethodLocation> locations;
+	};
+
+	using VirtualTable = std::vector<VirtualMethods>;
+
 	class ClassInfo
 	{
 	public:
@@ -275,6 +294,8 @@ namespace cygni
 
 		std::vector<std::shared_ptr<ClassType>> inheritanceChain;
 		std::vector<std::shared_ptr<InterfaceType>> interfaceList;
+
+		VirtualTable virtualTable;
 
 		ClassInfo() = default;
 		ClassInfo(SourcePosition position, PackageRoute route, std::u32string name);
@@ -305,6 +326,8 @@ namespace cygni
 
 		std::vector<std::shared_ptr<InterfaceType>> allSuperInterfaces;
 		std::vector<MethodDef> allMethods;
+
+		VirtualTable virtualTable;
 
 		std::optional<int> index;
 		InterfaceInfo() = default;
@@ -381,6 +404,7 @@ namespace cygni
 	public:
 		Table<std::string, SourceDocument> programs;
 		Table<PackageRoute, std::shared_ptr<Package>> packages;
+		TypeGraph typeGraph;
 
 		void MergeAllPrograms();
 		std::optional<std::shared_ptr<ModuleInfo>> GetModule(std::shared_ptr<ModuleType> moduleType);

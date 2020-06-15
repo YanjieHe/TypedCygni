@@ -42,7 +42,7 @@ namespace cygni
 		};
 
 		RuleSet ruleSet;
-		TypeGraph typeGraph;
+		TypeGraph& typeGraph;
 		std::shared_ptr<ScopeFactory<TypePtr>> scopeFactory;
 		std::shared_ptr<Package> package;
 

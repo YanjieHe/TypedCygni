@@ -23,6 +23,7 @@ namespace cygni
 			auto right = VisitExpression(node->right, args...);
 			auto newNode = std::make_shared<BinaryExpression>(node->position, node->nodeType, left, right);
 			newNode->type = node->type;
+			return newNode;
 		}
 		virtual ExpPtr VisitBlock(std::shared_ptr<BlockExpression> node, ArgTypes... args) override
 		{
@@ -31,9 +32,10 @@ namespace cygni
 				node->expressions.begin(),
 				node->expressions.end(),
 				std::back_inserter(expressions),
-				[this, &args...](ExpPtr exp) -> ExpPtr { return VisitExpression(exp, args...); });
+				[this, &args...](ExpPtr exp)->ExpPtr { return VisitExpression(exp, args...); });
 			auto newNode = std::make_shared<BlockExpression>(node->position, expressions);
 			newNode->type = node->type;
+			return newNode;
 		}
 		virtual ExpPtr VisitConstant(std::shared_ptr<ConstantExpression> node, ArgTypes... args) override
 		{
@@ -71,7 +73,7 @@ namespace cygni
 				node->arguments.begin(),
 				node->arguments.end(),
 				std::back_inserter(arguments),
-				[this, &args...](Argument arg) -> Argument
+				[this, &args...](Argument arg)->Argument
 			{
 				Argument newArg(VisitExpression(arg.value, args...));
 				newArg.index = arg.index;
@@ -99,7 +101,7 @@ namespace cygni
 				node->arguments.begin(),
 				node->arguments.end(),
 				std::back_inserter(arguments),
-				[this, &args...](Argument arg) -> Argument
+				[this, &args...](Argument arg)->Argument
 			{
 				Argument newArg(VisitExpression(arg.value, args...));
 				newArg.index = arg.index;
@@ -109,6 +111,7 @@ namespace cygni
 			);
 			auto newNode = std::make_shared<NewExpression>(node->position,
 				node->type, arguments);
+			newNode->location = node->location;
 			return newNode;
 		}
 		virtual ExpPtr VisitVarDefExpression(std::shared_ptr<VarDefExpression> node, ArgTypes... args) override
@@ -130,6 +133,55 @@ namespace cygni
 				condition, body);
 			newNode->type = node->type;
 			return newNode;
+		}
+		virtual void VisitMethod(MethodDef& method, ArgTypes... args)
+		{
+			method.body = VisitExpression(method.body, args...);
+		}
+
+		virtual void VisitField(FieldDef& field, ArgTypes... args)
+		{
+			field.value = VisitExpression(field.value, args...);
+		}
+
+		virtual void VisitClass(std::shared_ptr<ClassInfo> classInfo, ArgTypes...args)
+		{
+			for (auto& method : classInfo->methodDefs)
+			{
+				VisitMethod(method, args...);
+			}
+		}
+		virtual void VisitModule(std::shared_ptr<ModuleInfo> moduleInfo, ArgTypes...args)
+		{
+			for (auto& method : moduleInfo->methods)
+			{
+				VisitMethod(method, args...);
+			}
+		}
+		virtual void VisitInterface(std::shared_ptr<InterfaceInfo> moduleInfo, ArgTypes...args)
+		{
+		}
+		virtual void VisitPackage(std::shared_ptr<Package>& package, ArgTypes...args)
+		{
+			for (auto classInfo : package->classDefs)
+			{
+				VisitClass(classInfo, args...);
+			}
+			for (auto moduleInfo : package->moduleDefs)
+			{
+				VisitModule(moduleInfo, args...);
+			}
+			for (auto interfaceInfo : package->interfaceDefs)
+			{
+				VisitInterface(interfaceInfo, args...);
+			}
+		}
+		virtual void VisitProject(Project& project, ArgTypes...args)
+		{
+			for (auto pkg : project.packages)
+			{
+				VisitPackage(pkg, args...);
+			}
 		}
 	};
 
@@ -160,8 +212,27 @@ namespace cygni
 	class ArrayLengthPass : public Nanopass<>
 	{
 	public:
-		virtual ExpPtr VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node) override;
+		ExpPtr VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node) override;
 	};
 
+
+	class VirtualTableGenerator : public Nanopass<>
+	{
+	public:
+		Project& project;
+		VirtualTableGenerator(Project& project);
+		void VisitClass(std::shared_ptr<ClassInfo> classInfo) override;
+		int GetClassId(SourcePosition position, TypePtr classType);
+	};
+
+	class HandleThisPointerPass : public Nanopass<>
+	{
+	public:
+		Project& project;
+		MethodDef* currentMethod = nullptr;
+		HandleThisPointerPass(Project& project);
+		void VisitMethod(MethodDef& method) override;
+		ExpPtr VisitParameter(std::shared_ptr<ParameterExpression> parameter) override;
+	};
 } // namespace cygni
 #endif // CYGNI_NANOPASS

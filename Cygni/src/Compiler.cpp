@@ -50,6 +50,7 @@ namespace cygni
 	{
 		switch (typeCode)
 		{
+		case TypeCode::Char:
 		case TypeCode::Boolean:
 		case TypeCode::Int32: {
 			AppendTypeTag(TypeTag::TYPE_I32);
@@ -80,40 +81,6 @@ namespace cygni
 				Format(U"not supported type code: {}", Enum<TypeCode>::ToString(typeCode)));
 		}
 	}
-	void ByteCode::AppendType(TypePtr type)
-	{
-		switch (type->typeCode)
-		{
-		case TypeCode::Boolean:
-		case TypeCode::Int32: {
-			AppendTypeTag(TypeTag::TYPE_I32);
-			break;
-		}
-		case TypeCode::Int64: {
-			AppendTypeTag(TypeTag::TYPE_I64);
-			break;
-		}
-		case TypeCode::Float32: {
-			AppendTypeTag(TypeTag::TYPE_F32);
-			break;
-		}
-		case TypeCode::Float64: {
-			AppendTypeTag(TypeTag::TYPE_F64);
-			break;
-		}
-		case TypeCode::String: {
-			AppendTypeTag(TypeTag::TYPE_STRING);
-			break;
-		}
-		case TypeCode::Class: {
-			AppendTypeTag(TypeTag::TYPE_OBJECT);
-			break;
-		}
-		default:
-			throw NotImplementedException(
-				Format(U"not supported type code: {}", Enum<TypeCode>::ToString(type->typeCode)));
-		}
-	}
 	void ByteCode::AppendString(const std::u32string & u32str)
 	{
 		std::string u8str = UTF32ToUTF8(u32str);
@@ -133,6 +100,12 @@ namespace cygni
 	}
 	Compiler::Compiler(Project & project) : project{ project }
 	{
+		rules.AddRule(ExpressionType::UnaryMinus, { TypeCode::Int32 }, OpCode::MINUS_I32);
+		rules.AddRule(ExpressionType::UnaryMinus, { TypeCode::Float32 }, OpCode::MINUS_F32);
+		rules.AddRule(ExpressionType::UnaryMinus, { TypeCode::Int64 }, OpCode::MINUS_I64);
+		rules.AddRule(ExpressionType::UnaryMinus, { TypeCode::Float64 }, OpCode::MINUS_F64);
+
+		//rules.AddRule(ExpressionType::Add, TypeCode::Int32, OpCode::ADD_I32);
 	}
 	ByteCode Compiler::Compile()
 	{
@@ -178,29 +151,14 @@ namespace cygni
 			break;
 		}
 		case ExpressionType::UnaryMinus: {
-			switch (node->operand->type->typeCode)
+			if (auto op = rules.Match(ExpressionType::UnaryMinus, { node->operand->type->typeCode }))
 			{
-			case TypeCode::Int32: {
-				byteCode.AppendOp(OpCode::MINUS_I32);
-				break;
+				byteCode.AppendOp(op.value());
 			}
-			case TypeCode::Int64: {
-				byteCode.AppendOp(OpCode::MINUS_I64);
-				break;
-			}
-			case TypeCode::Float32: {
-				byteCode.AppendOp(OpCode::MINUS_F32);
-				break;
-			}
-			case TypeCode::Float64: {
-				byteCode.AppendOp(OpCode::MINUS_F64);
-				break;
-			}
-			default:
+			else
 			{
 				throw TypeException(node->position,
 					Format(U"unary minus operand type '{}' not suported", node->operand->type->ToString()));
-			}
 			}
 			break;
 		}
@@ -272,12 +230,13 @@ namespace cygni
 				auto classType = std::static_pointer_cast<ClassType>(node->type);
 				if (auto classInfo = project.GetClass(classType))
 				{
-					if ((*classInfo)->index)
+					if (classInfo.value()->index.has_value())
 					{
-						byteCode.AppendU16Checked(*((*classInfo)->index), [classInfo]()->CompilerException
+						if (classInfo.value()->index.value() > std::numeric_limits<uint16_t>::max())
 						{
-							return CompilerException((*classInfo)->position, U"the index of class cannot exceed 65535");
-						});
+							throw CompilerException((*classInfo)->position, U"the index of class cannot exceed 65535");
+						}
+						byteCode.AppendU16Unchecked(classInfo.value()->index.value());
 					}
 					else
 					{
@@ -297,12 +256,13 @@ namespace cygni
 				auto interfaceType = std::static_pointer_cast<InterfaceType>(node->type);
 				if (auto interfaceInfo = project.GetInterface(interfaceType))
 				{
-					if ((*interfaceInfo)->index)
+					if (interfaceInfo.value()->index)
 					{
-						byteCode.AppendU16Checked(*((*interfaceInfo)->index), [interfaceInfo]()->CompilerException
+						if (interfaceInfo.value()->index.value() > std::numeric_limits<uint16_t>::max())
 						{
-							return CompilerException((*interfaceInfo)->position, U"the index of interface cannot exceed 65535");
-						});
+							throw CompilerException(interfaceInfo.value()->position, U"the index of interface cannot exceed 65535");
+						}
+						byteCode.AppendU16Unchecked(interfaceInfo.value()->index.value());
 					}
 					else
 					{
@@ -820,57 +780,22 @@ namespace cygni
 					Format(U"missing super class '{}' for inheritance", superClassType->ToString()));
 			}
 		}
-		byteCode.AppendU16Unchecked(info->interfaceList.size());
-		for (const auto& superInterfaceType : info->interfaceList)
+		byteCode.AppendU16Unchecked(info->virtualTable.size());
+		for (auto methodList : info->virtualTable)
 		{
-			if (auto superInterfaceInfo = project.GetInterface(superInterfaceType))
+			byteCode.AppendU16Unchecked(methodList.typeId);
+			byteCode.AppendU16Unchecked(methodList.locations.size());
+			for (auto location : methodList.locations)
 			{
-				byteCode.AppendU16Unchecked(*(*superInterfaceInfo)->index);
-				byteCode.AppendU16Unchecked((*superInterfaceInfo)->allMethods.size());
-				for (const auto& method : (*superInterfaceInfo)->allMethods)
-				{
-					if (info->methods.ContainsKey(method.name))
-					{
-						auto classMethod = info->methods.GetValueByKey(method.name);
-						if (classMethod.selfType->typeCode == TypeCode::Class)
-						{
-							auto selfType = std::static_pointer_cast<ClassType>(classMethod.selfType);
-							if (auto selfClassInfo = project.GetClass(selfType))
-							{
-								byteCode.AppendU16Unchecked(*(*selfClassInfo)->index);
-								byteCode.AppendU16Unchecked(*classMethod.index);
-							}
-							else
-							{
-								throw CompilerException(classMethod.position,
-									Format(U"cannot find the class '{}' of the method '{}", classMethod.selfType->ToString(),
-										method.name));
-							}
-						}
-						else
-						{
-							throw CompilerException(classMethod.position,
-								Format(U"cannot find the class type '{}' of the method '{}", classMethod.selfType->ToString(),
-									method.name));
-						}
-					}
-					else
-					{
-						throw CompilerException(info->position,
-							Format(U"function '{}' is not implemented", method.name));
-					}
-				}
-			}
-			else
-			{
-				throw CompilerException(info->position,
-					Format(U"missing super interface '{}'", superInterfaceType->ToString()));
+				byteCode.AppendU16Unchecked(location.classIndex);
+				byteCode.AppendU16Unchecked(location.methodIndex);
 			}
 		}
-		byteCode.AppendU16Checked(info->methodDefs.Size(), [info]()->CompilerException
+		if (info->methodDefs.Size() > std::numeric_limits<uint16_t>::max())
 		{
-			return  CompilerException(info->position, U"too many methods in the class");
-		});
+			throw  CompilerException(info->position, U"too many methods in the class");
+		}
+		byteCode.AppendU16Unchecked(info->methodDefs.Size());
 		for (const auto& method : info->methodDefs.values)
 		{
 			CompileMethodDef(method, info->constantMap, byteCode);
@@ -985,7 +910,8 @@ namespace cygni
 				break;
 			}
 			case TypeCode::Array:
-			case TypeCode::Class: {
+			case TypeCode::Class: 
+			case TypeCode::Interface:{
 				byteCode.AppendOp(OpCode::PUSH_LOCAL_OBJECT);
 				break;
 			}
@@ -1298,11 +1224,8 @@ namespace cygni
 	{
 		VisitExpression(node->object, constantMap, byteCode);
 		auto location = node->location;
-		if (node->object->type->typeCode == TypeCode::Array && node->field == U"Size")
-		{
-			byteCode.AppendOp(OpCode::ARRAY_LENGTH);
-		}
-		else if (location->type == LocationType::ModuleField)
+		std::cout << node->id << std::endl;
+		if (location->type == LocationType::ModuleField)
 		{
 			switch (node->type->typeCode)
 			{
@@ -1379,11 +1302,10 @@ namespace cygni
 			}
 			byteCode.AppendU16Unchecked(std::static_pointer_cast<MemberLocation>(location)->offset);
 		}
-		else if (location->type == LocationType::ClassMethod)
+		else if (location->type == LocationType::ClassMethod || location->type == LocationType::InterfaceMethod)
 		{
 			std::cout << "push class method: " << node->field << std::endl;
 			byteCode.AppendOp(OpCode::PUSH_METHOD);
-			byteCode.AppendU16Unchecked(std::static_pointer_cast<MemberLocation>(location)->index);
 			byteCode.AppendU16Unchecked(std::static_pointer_cast<MemberLocation>(location)->offset);
 		}
 		else
@@ -1779,11 +1701,11 @@ namespace cygni
 		{
 			for (auto classInfo : pkg->classDefs)
 			{
-				classes.at(*classInfo->index) = classInfo;
+				classes.at(classInfo->index.value()) = classInfo;
 			}
 			for (auto moduleInfo : pkg->moduleDefs)
 			{
-				modules.at(*moduleInfo->index) = moduleInfo;
+				modules.at(moduleInfo->index.value()) = moduleInfo;
 			}
 		}
 
@@ -1806,5 +1728,34 @@ namespace cygni
 		}
 
 		return std::make_tuple(classes, modules);
+	}
+	void CompilerRuleSet::AddRule(ExpressionType nodeType, std::vector<TypeCode> typeCodeList, OpCode op)
+	{
+		if (table.find(nodeType) != table.end())
+		{
+			table[nodeType].push_back(CompilerRule{ typeCodeList, op });
+		}
+		else
+		{
+			table.insert({ nodeType, {CompilerRule{typeCodeList, op}} });
+		}
+	}
+	std::optional<OpCode> CompilerRuleSet::Match(ExpressionType nodeType, std::vector<TypeCode> typeCodeList)
+	{
+		if (table.find(nodeType) != table.end())
+		{
+			for (const auto& rule : table[nodeType])
+			{
+				if (rule.typeCodeList == typeCodeList)
+				{
+					return rule.op;
+				}
+			}
+			return {};
+		}
+		else
+		{
+			return {};
+		}
 	}
 } // namespace cygni

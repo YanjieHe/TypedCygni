@@ -25,7 +25,6 @@ namespace cygni
 		void WriteUShort(int index, int value);
 		void AppendUInt(uint32_t value);
 		void AppendTypeCode(TypeCode typeCode);
-		void AppendType(TypePtr type);
 		void AppendString(const std::u32string& u32str);
 		void AppendByteCode(const ByteCode& other);
 		int Size() const;
@@ -33,16 +32,27 @@ namespace cygni
 
 	using ConstantMap = std::unordered_map<ConstantKey, int>;
 
-	class CompileRule
+	class CompilerRule
 	{
 	public:
-
+		std::vector<TypeCode> typeCodeList;
+		OpCode op;
 	};
+	
+	class CompilerRuleSet
+	{
+	public:
+		std::unordered_map<ExpressionType, std::vector<CompilerRule>> table;
 
+		void AddRule(ExpressionType nodeType, std::vector<TypeCode> typeCodeList, OpCode op);
+
+		std::optional<OpCode> Match(ExpressionType nodeType, std::vector<TypeCode> typeCodeList);
+	};
 	class Compiler: public Visitor<void, const ConstantMap&, ByteCode&>
 	{
 	public:
 		Project& project;
+		CompilerRuleSet rules;
 		Compiler(Project& project);
 		ByteCode Compile();
 

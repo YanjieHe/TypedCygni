@@ -65,6 +65,12 @@ namespace cygni
 			methodsJson[name] = VisitMethodDef(method);
 		}
 		obj["methods"] = methodsJson;
+
+		obj["virtualTable"] = VisitVirtualTable(info->virtualTable);
+		if (info->index.has_value())
+		{
+			obj["typeId"] = info->index.value();
+		}
 		return obj;
 	}
 
@@ -89,6 +95,26 @@ namespace cygni
 			methodsJson[name] = VisitMethodDef(method);
 		}
 		obj["methods"] = methodsJson;
+		return obj;
+	}
+
+	json AstToJsonSerialization::VisitInterfaceInfo(std::shared_ptr<InterfaceInfo> info)
+	{
+		json obj;
+		obj["nodeType"] = "module";
+		obj["name"] = UTF32ToUTF8(info->name);
+
+		json methodsJson(std::unordered_map<std::string, json>{});
+		for (const auto &method : info->methodDefs.values)
+		{
+			std::string name = UTF32ToUTF8(method.name);
+			methodsJson[name] = VisitMethodDef(method);
+		}
+		obj["methods"] = methodsJson;
+		if (info->index.has_value())
+		{
+			obj["typeId"] = info->index.value();
+		}
 		return obj;
 	}
 
@@ -332,6 +358,27 @@ namespace cygni
 		return obj;
 	}
 
+	json AstToJsonSerialization::VisitVirtualTable(const VirtualTable & virtualTable)
+	{
+		std::vector<json> objList;
+		for (const auto& item : virtualTable)
+		{
+			json obj;
+			obj["typeId"] = item.typeId;
+			std::vector<json> locations;
+			for (auto location : item.locations)
+			{
+				json locationObj;
+				locationObj["classIndex"] = location.classIndex;
+				locationObj["methodIndex"] = location.methodIndex;
+				locations.push_back(locationObj);
+			}
+			obj["locations"] = locations;
+			objList.push_back(obj);
+		}
+		return objList;
+	}
+
 	TreeTraverser::TreeTraverser(std::function<bool(ExpPtr)> filter) :filter{ filter }
 	{
 	}
@@ -482,13 +529,13 @@ namespace cygni
 		std::vector<ExpPtr> nodeList;
 		traverser.VisitExpression(method.body, nodeList);
 		int offset = 0;
-		if (method.selfType->typeCode == TypeCode::Class)
-		{
-			offset++;
-		}
 		for (auto parameter : method.parameters)
 		{
 			parameter->location = std::make_shared<ParameterLocation>(offset);
+			offset++;
+		}
+		if (method.selfType->typeCode == TypeCode::Class)
+		{
 			offset++;
 		}
 		for (auto node : nodeList)
@@ -565,13 +612,13 @@ namespace cygni
 		int offset = 0;
 		for (auto& field : info->fields)
 		{
-			scope->Put(field.name, std::make_shared<MemberLocation>(LocationType::ClassField, *info->index, offset));
+			scope->Put(field.name, std::make_shared<MemberLocation>(LocationType::ClassField, info->route, info->name, field.name, *info->index, offset));
 			field.index = offset;
 			offset++;
 		}
 		for (auto& method : info->methods)
 		{
-			scope->Put(method.name, std::make_shared<MemberLocation>(LocationType::ClassMethod, *info->index, offset));
+			scope->Put(method.name, std::make_shared<MemberLocation>(LocationType::ClassMethod, info->route, info->name, method.name, *info->index, offset));
 		}
 		for (auto& method : info->methodDefs)
 		{
@@ -584,12 +631,12 @@ namespace cygni
 		int offset = 0;
 		for (auto& field : info->fields.values)
 		{
-			scope->Put(field.name, std::make_shared<MemberLocation>(LocationType::ModuleField, *info->index, *field.index));
+			scope->Put(field.name, std::make_shared<MemberLocation>(LocationType::ModuleField, info->route, info->name, field.name, *info->index, *field.index));
 			offset++;
 		}
 		for (auto& method : info->methods.values)
 		{
-			scope->Put(method.name, std::make_shared<MemberLocation>(LocationType::ModuleMethod, *info->index, *method.index));
+			scope->Put(method.name, std::make_shared<MemberLocation>(LocationType::ModuleMethod, info->route, info->name, method.name, *info->index, *method.index));
 		}
 		for (const auto& method : info->methods.values)
 		{
@@ -601,7 +648,8 @@ namespace cygni
 		auto scope = scopeFactory->New(outerScope);
 		if (method.selfType->typeCode == TypeCode::Class)
 		{
-			scope->Put(U"this", std::make_shared<ParameterLocation>(0));
+			// put 'this' at the last position of parameters
+			scope->Put(U"this", std::make_shared<ParameterLocation>(static_cast<int>(method.parameters.size())));
 		}
 		for (auto parameter : method.parameters)
 		{
@@ -654,12 +702,12 @@ namespace cygni
 				if (moduleInfo->fields.ContainsKey(node->field))
 				{
 					auto& field = moduleInfo->fields.GetValueByKey(node->field);
-					node->location = std::make_shared<MemberLocation>(LocationType::ModuleField, *moduleInfo->index, *field.index);
+					node->location = std::make_shared<MemberLocation>(LocationType::ModuleField, moduleInfo->route, moduleInfo->name, field.name, *moduleInfo->index, *field.index);
 				}
 				else if (moduleInfo->methods.ContainsKey(node->field))
 				{
 					auto& method = moduleInfo->methods.GetValueByKey(node->field);
-					node->location = std::make_shared<MemberLocation>(LocationType::ModuleMethod, *moduleInfo->index, *method.index);
+					node->location = std::make_shared<MemberLocation>(LocationType::ModuleMethod, moduleInfo->route, moduleInfo->name, method.name, *moduleInfo->index, *method.index);
 				}
 				else
 				{
@@ -681,12 +729,12 @@ namespace cygni
 				if (classInfo->fields.ContainsKey(node->field))
 				{
 					auto& field = classInfo->fields.GetValueByKey(node->field);
-					node->location = std::make_shared<MemberLocation>(LocationType::ClassField, *classInfo->index, *field.index);
+					node->location = std::make_shared<MemberLocation>(LocationType::ClassField, classInfo->route, classInfo->name, field.name, *classInfo->index, *field.index);
 				}
 				else if (classInfo->methods.ContainsKey(node->field))
 				{
 					auto& method = classInfo->methods.GetValueByKey(node->field);
-					node->location = std::make_shared<MemberLocation>(LocationType::ClassMethod, *classInfo->index, *method.index);
+					node->location = std::make_shared<MemberLocation>(LocationType::ClassMethod, classInfo->route, classInfo->name, method.name, *classInfo->index, *method.index);
 				}
 				else
 				{
@@ -709,7 +757,7 @@ namespace cygni
 				if (interfaceInfo->methodDefs.ContainsKey(node->field))
 				{
 					auto& method = interfaceInfo->methodDefs.GetValueByKey(node->field);
-					node->location = std::make_shared<MemberLocation>(LocationType::InterfaceMethod, *interfaceInfo->index, *method.index);
+					node->location = std::make_shared<MemberLocation>(LocationType::InterfaceMethod, interfaceInfo->route, interfaceInfo->name, method.name, *interfaceInfo->index, *method.index);
 				}
 				else
 				{
@@ -722,10 +770,6 @@ namespace cygni
 				throw TypeException(node->position,
 					Format(U"undefined interface '{}'", interfaceType->name));
 			}
-		}
-		else if (object->typeCode == TypeCode::Array)
-		{
-			// pass
 		}
 		else
 		{
@@ -875,7 +919,7 @@ namespace cygni
 	}
 
 
-	
+
 	void PackageImporter::ImportPackages(Project & project)
 	{
 		std::unordered_map<PackageRoute, std::vector<std::shared_ptr<ClassInfo>>> classMap;
@@ -956,15 +1000,14 @@ namespace cygni
 	}
 	void AssignIndex(Project & project)
 	{
-		int classIndex = 0;
+		int typeId = 0;
 		int moduleIndex = 0;
-		int interfaceIndex = 0;
 		for (auto pkg : project.packages)
 		{
 			for (auto classInfo : pkg->classDefs)
 			{
-				classInfo->index = classIndex;
-				classIndex++;
+				classInfo->index = typeId;
+				typeId++;
 				int methodIndex = 0;
 				for (auto& method : classInfo->methodDefs)
 				{
@@ -985,8 +1028,8 @@ namespace cygni
 			}
 			for (auto interfaceInfo : pkg->interfaceDefs)
 			{
-				interfaceInfo->index = interfaceIndex;
-				interfaceIndex++;
+				interfaceInfo->index = typeId;
+				typeId++;
 				int methodIndex = 0;
 				for (auto& method : interfaceInfo->methodDefs)
 				{

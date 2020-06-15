@@ -53,7 +53,7 @@ namespace cygni
 		}
 	}
 
-	TypeChecker::TypeChecker(Project &project) : project{ project }
+	TypeChecker::TypeChecker(Project &project) : project{ project }, typeGraph{project.typeGraph}
 	{
 
 		ruleSet.Add(U"+", { Type::Int32(), Type::Int32() }, Type::Int32());
@@ -652,10 +652,9 @@ namespace cygni
 		else if (object->typeCode == TypeCode::Array)
 		{
 			auto arrayType = std::static_pointer_cast<ArrayType>(object);
-			if (node->field == U"Size")
+			if (node->field == U"Size" || node->field == U"Length")
 			{
-				auto ft = std::make_shared<FunctionType>(arrayType, U"Size", std::vector<TypePtr>{}, Type::Int32());
-				return Attach(node, ft);
+				return Attach(node, Type::Int32());
 			}
 			else
 			{
