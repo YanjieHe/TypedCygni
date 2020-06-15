@@ -106,8 +106,8 @@ namespace cygni
 		json VisitModuleInfo(std::shared_ptr<ModuleInfo> info);
 		json VisitInterfaceInfo(std::shared_ptr<InterfaceInfo> info);
 		json VisitSourceLocation(SourcePosition location);
-		json VisitFieldDef(const FieldDef &field);
-		json VisitMethodDef(const MethodDef &method);
+		json VisitFieldDef(const FieldInfo &field);
+		json VisitMethodDef(const MethodInfo &method);
 		void AttachNodeInformation(json &obj, ExpPtr node);
 		json VisitPackage(std::shared_ptr<Package> package);
 		json VisitProject(Project &project);
@@ -140,8 +140,8 @@ namespace cygni
 		void VisitVarDefExpression(std::shared_ptr<VarDefExpression>node, std::vector<ExpPtr>&nodeList);
 		void VisitWhileExpression(std::shared_ptr<WhileExpression>node, std::vector<ExpPtr>&nodeList);
 
-		void VisitField(const FieldDef& field, std::vector<ExpPtr>& nodeList);
-		void VisitMethod(const MethodDef& method, std::vector<ExpPtr>& nodeList);
+		void VisitField(const FieldInfo& field, std::vector<ExpPtr>& nodeList);
+		void VisitMethod(const MethodInfo& method, std::vector<ExpPtr>& nodeList);
 		void VisitClass(std::shared_ptr<ClassInfo> classInfo, std::vector<ExpPtr>& nodeList);
 		void VisitModule(std::shared_ptr<ModuleInfo> moduleInfo, std::vector<ExpPtr>& nodeList);
 
@@ -151,7 +151,7 @@ namespace cygni
 	class LocalVariableCollector
 	{
 	public:
-		void VisitMethodDef(MethodDef &method);
+		void VisitMethodDef(MethodInfo &method);
 		void VisitPackage(std::shared_ptr<Package> package);
 		void VisitProject(Project& project);
 	};
@@ -185,14 +185,14 @@ namespace cygni
 
 		void VisitClassInfo(std::shared_ptr<ClassInfo> info, Scope<LocationPtr>* outerScope);
 		void VisitModuleInfo(std::shared_ptr<ModuleInfo> info, Scope<LocationPtr>* outerScope);
-		void VisitMethodDef(const MethodDef &method, Scope<LocationPtr>* outerScope);
+		void VisitMethodDef(const MethodInfo &method, Scope<LocationPtr>* outerScope);
 		void VisitProject();
 	};
 
 	class ConstantCollector
 	{
 	public:
-		void VisitMethodDef(MethodDef &method, std::unordered_set<ConstantKey>& constantSet);
+		void VisitMethodDef(MethodInfo &method, std::unordered_set<ConstantKey>& constantSet);
 		void VisitPackage(std::shared_ptr<Package> package);
 		void VisitProject(Project& project);
 	};

@@ -92,6 +92,7 @@ namespace cygni
 			auto newNode = std::make_shared<MemberAccessExpression>(node->position,
 				object, node->field);
 			newNode->type = node->type;
+			newNode->location = node->location;
 			return newNode;
 		}
 		virtual ExpPtr VisitNewExpression(std::shared_ptr<NewExpression> node, ArgTypes... args) override
@@ -134,12 +135,12 @@ namespace cygni
 			newNode->type = node->type;
 			return newNode;
 		}
-		virtual void VisitMethod(MethodDef& method, ArgTypes... args)
+		virtual void VisitMethod(MethodInfo& method, ArgTypes... args)
 		{
 			method.body = VisitExpression(method.body, args...);
 		}
 
-		virtual void VisitField(FieldDef& field, ArgTypes... args)
+		virtual void VisitField(FieldInfo& field, ArgTypes... args)
 		{
 			field.value = VisitExpression(field.value, args...);
 		}
@@ -189,8 +190,8 @@ namespace cygni
 	{
 	public:
 		void RenameAll(Project& project);
-		void RenameMethod(MethodDef& method, Table<std::u32string, TypeAlias>& typeAliases);
-		void RenameField(FieldDef& field, Table<std::u32string, TypeAlias>& typeAliases);
+		void RenameMethod(MethodInfo& method, Table<std::u32string, TypeAlias>& typeAliases);
+		void RenameField(FieldInfo& field, Table<std::u32string, TypeAlias>& typeAliases);
 		TypePtr RenameType(TypePtr type, Table<std::u32string, TypeAlias>& typeAliases);
 	};
 
@@ -229,9 +230,9 @@ namespace cygni
 	{
 	public:
 		Project& project;
-		MethodDef* currentMethod = nullptr;
+		MethodInfo* currentMethod = nullptr;
 		HandleThisPointerPass(Project& project);
-		void VisitMethod(MethodDef& method) override;
+		void VisitMethod(MethodInfo& method) override;
 		ExpPtr VisitParameter(std::shared_ptr<ParameterExpression> parameter) override;
 	};
 } // namespace cygni

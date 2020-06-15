@@ -68,8 +68,8 @@ namespace cygni
 
 		TypePtr CheckClassInfo(std::shared_ptr<ClassInfo> info, Scope<TypePtr>* outerScope);
 		TypePtr CheckModuleInfo(std::shared_ptr<ModuleInfo> info, Scope<TypePtr>* outerScope);
-		TypePtr CheckFieldDef(FieldDef &field, Scope<TypePtr>* scope);
-		TypePtr CheckMethodDef(MethodDef &method, Scope<TypePtr>* outerScope);
+		TypePtr CheckFieldDef(FieldInfo &field, Scope<TypePtr>* scope);
+		TypePtr CheckMethodDef(MethodInfo &method, Scope<TypePtr>* outerScope);
 		TypePtr CheckType(SourcePosition position, TypePtr type);
 		void CheckPackage(Scope<TypePtr>* globalScope);
 		void CheckProject(Scope<TypePtr>* globalScope);

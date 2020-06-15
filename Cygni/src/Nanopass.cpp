@@ -41,7 +41,7 @@ namespace cygni
 			}
 		}
 	}
-	void TypeRenamer::RenameMethod(MethodDef& method, Table<std::u32string, TypeAlias>& typeAliases)
+	void TypeRenamer::RenameMethod(MethodInfo& method, Table<std::u32string, TypeAlias>& typeAliases)
 	{
 		std::function<bool(ExpPtr)> filter = [](ExpPtr node) -> bool
 		{
@@ -75,7 +75,7 @@ namespace cygni
 			parameter->type = RenameType(parameter->type, typeAliases);
 		}
 	}
-	void TypeRenamer::RenameField(FieldDef & field, Table<std::u32string, TypeAlias>& typeAliases)
+	void TypeRenamer::RenameField(FieldInfo & field, Table<std::u32string, TypeAlias>& typeAliases)
 	{
 		field.type = RenameType(field.type, typeAliases);
 	}
@@ -201,8 +201,8 @@ namespace cygni
 	}
 	void InheritanceProcessor::VisitClass(Project& project, std::shared_ptr<ClassInfo> classInfo)
 	{
-		std::stack<FieldDef> fieldStack;
-		std::stack<MethodDef> methodStack;
+		std::stack<FieldInfo> fieldStack;
+		std::stack<MethodInfo> methodStack;
 		std::unordered_set<TypePtr> typeSet;
 		std::unordered_set<std::u32string> fieldNames;
 		std::unordered_set<std::u32string> methodNames;
@@ -416,7 +416,7 @@ namespace cygni
 	HandleThisPointerPass::HandleThisPointerPass(Project & project) : project{ project }
 	{
 	}
-	void HandleThisPointerPass::VisitMethod(MethodDef & method)
+	void HandleThisPointerPass::VisitMethod(MethodInfo & method)
 	{
 		currentMethod = &method;
 		method.body = VisitExpression(method.body);
@@ -429,7 +429,6 @@ namespace cygni
 			auto newNode = std::make_shared<MemberAccessExpression>(parameter->position, thisVar, parameter->name);
 			newNode->type = parameter->type;
 			newNode->location = parameter->location;
-			std::cout << Enum<LocationType>::ToString(newNode->location->type) << std::endl;
 			thisVar->location = std::make_shared<ParameterLocation>(currentMethod->parameters.size());
 			return newNode;
 		}

@@ -80,13 +80,13 @@ namespace cygni
 		this->type = type;
 	}
 
-	FieldDef::FieldDef(SourcePosition position, AccessModifier modifier,
+	FieldInfo::FieldInfo(SourcePosition position, AccessModifier modifier,
 		bool isStatic, Table<std::u32string, AnnotationInfo> annotations,
 		std::u32string name, TypePtr type, ExpPtr value)
 		: position{ position }, modifier{ modifier }, isStatic{ isStatic },
 		annotations{ annotations }, name{ name }, type{ type }, value{ value } {}
 
-	MethodDef::MethodDef(
+	MethodInfo::MethodInfo(
 		SourcePosition position, AccessModifier modifier, bool isStatic, TypePtr selfType,
 		Table<std::u32string, AnnotationInfo> annotations, std::u32string name,
 		std::vector<std::shared_ptr<ParameterExpression>> parameters,

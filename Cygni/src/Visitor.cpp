@@ -118,7 +118,7 @@ namespace cygni
 		return obj;
 	}
 
-	json AstToJsonSerialization::VisitFieldDef(const FieldDef &field)
+	json AstToJsonSerialization::VisitFieldDef(const FieldInfo &field)
 	{
 		json obj;
 		obj["isStatic"] = field.isStatic;
@@ -132,7 +132,7 @@ namespace cygni
 		return obj;
 	}
 
-	json AstToJsonSerialization::VisitMethodDef(const MethodDef &method)
+	json AstToJsonSerialization::VisitMethodDef(const MethodInfo &method)
 	{
 		json obj;
 
@@ -475,13 +475,13 @@ namespace cygni
 		VisitExpression(node->body, nodeList);
 	}
 
-	void TreeTraverser::VisitField(const FieldDef & field, std::vector<ExpPtr>& nodeList)
+	void TreeTraverser::VisitField(const FieldInfo & field, std::vector<ExpPtr>& nodeList)
 	{
 		AddIfNeeded(field.value, nodeList);
 		VisitExpression(field.value, nodeList);
 	}
 
-	void TreeTraverser::VisitMethod(const MethodDef & method, std::vector<ExpPtr>& nodeList)
+	void TreeTraverser::VisitMethod(const MethodInfo & method, std::vector<ExpPtr>& nodeList)
 	{
 		AddIfNeeded(method.body, nodeList);
 		VisitExpression(method.body, nodeList);
@@ -519,7 +519,7 @@ namespace cygni
 		}
 	}
 
-	void LocalVariableCollector::VisitMethodDef(MethodDef & method)
+	void LocalVariableCollector::VisitMethodDef(MethodInfo & method)
 	{
 		std::function<bool(ExpPtr)> filter = [](ExpPtr node)
 		{
@@ -643,7 +643,7 @@ namespace cygni
 			VisitMethodDef(method, scope);
 		}
 	}
-	void VariableLocator::VisitMethodDef(const MethodDef & method, Scope<LocationPtr>* outerScope)
+	void VariableLocator::VisitMethodDef(const MethodInfo & method, Scope<LocationPtr>* outerScope)
 	{
 		auto scope = scopeFactory->New(outerScope);
 		if (method.selfType->typeCode == TypeCode::Class)
@@ -855,7 +855,7 @@ namespace cygni
 			VisitPackage(package, scope);
 		}
 	}
-	void ConstantCollector::VisitMethodDef(MethodDef & method, std::unordered_set<ConstantKey>& constantSet)
+	void ConstantCollector::VisitMethodDef(MethodInfo & method, std::unordered_set<ConstantKey>& constantSet)
 	{
 		std::function<bool(ExpPtr)> filter = [](ExpPtr node)
 		{

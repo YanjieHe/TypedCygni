@@ -160,7 +160,7 @@ namespace cygni
 			std::vector<Argument> arguments);
 	};
 
-	class FieldDef
+	class FieldInfo
 	{
 	public:
 		SourcePosition position;
@@ -171,13 +171,13 @@ namespace cygni
 		TypePtr type;
 		ExpPtr value;
 		std::optional<int> index;
-		FieldDef() = default;
-		FieldDef(SourcePosition position, AccessModifier modifier, bool isStatic,
+		FieldInfo() = default;
+		FieldInfo(SourcePosition position, AccessModifier modifier, bool isStatic,
 			Table<std::u32string, AnnotationInfo> annotations, std::u32string name,
 			TypePtr type, ExpPtr value);
 	};
 
-	class MethodDef
+	class MethodInfo
 	{
 	public:
 		SourcePosition position;
@@ -193,8 +193,8 @@ namespace cygni
 		std::vector<std::shared_ptr<VarDefExpression>> localVariables;
 		std::optional<int> index;
 
-		MethodDef() = default;
-		MethodDef(SourcePosition position, AccessModifier modifier, bool isStatic, TypePtr selfType,
+		MethodInfo() = default;
+		MethodInfo(SourcePosition position, AccessModifier modifier, bool isStatic, TypePtr selfType,
 			Table<std::u32string, AnnotationInfo> annotations, std::u32string name,
 			std::vector<std::shared_ptr<ParameterExpression>> parameters,
 			TypePtr returnType, ExpPtr body);
@@ -278,15 +278,15 @@ namespace cygni
 		std::u32string name;
 
 		/* definitions */
-		Table<std::u32string, FieldDef> fieldDefs;
-		Table<std::u32string, MethodDef> methodDefs;
+		Table<std::u32string, FieldInfo> fieldDefs;
+		Table<std::u32string, MethodInfo> methodDefs;
 
 		/* all information */
-		Table<std::u32string, FieldDef> fields;
-		Table<std::u32string, MethodDef> methods;
+		Table<std::u32string, FieldInfo> fields;
+		Table<std::u32string, MethodInfo> methods;
 
 		/* virtual function table */
-		std::unordered_map<int, std::vector<MethodDef>> virtualMethodTable;
+		std::unordered_map<int, std::vector<MethodInfo>> virtualMethodTable;
 
 		std::vector<TypePtr> superTypes;
 		std::unordered_map<ConstantKey, int> constantMap;
@@ -307,8 +307,8 @@ namespace cygni
 		SourcePosition position;
 		PackageRoute route;
 		std::u32string name;
-		Table<std::u32string, FieldDef> fields;
-		Table<std::u32string, MethodDef> methods;
+		Table<std::u32string, FieldInfo> fields;
+		Table<std::u32string, MethodInfo> methods;
 		std::optional<int> index;
 		std::unordered_map<ConstantKey, int> constantMap;
 		ModuleInfo() = default;
@@ -321,11 +321,11 @@ namespace cygni
 		SourcePosition position;
 		PackageRoute route;
 		std::u32string name;
-		Table<std::u32string, MethodDef> methodDefs;
+		Table<std::u32string, MethodInfo> methodDefs;
 		std::vector<TypePtr> superInterfaces;
 
 		std::vector<std::shared_ptr<InterfaceType>> allSuperInterfaces;
-		std::vector<MethodDef> allMethods;
+		std::vector<MethodInfo> allMethods;
 
 		VirtualTable virtualTable;
 

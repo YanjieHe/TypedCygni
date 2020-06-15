@@ -101,11 +101,99 @@ namespace cygni
 	Compiler::Compiler(Project & project) : project{ project }
 	{
 		rules.AddRule(ExpressionType::UnaryMinus, { TypeCode::Int32 }, OpCode::MINUS_I32);
-		rules.AddRule(ExpressionType::UnaryMinus, { TypeCode::Float32 }, OpCode::MINUS_F32);
 		rules.AddRule(ExpressionType::UnaryMinus, { TypeCode::Int64 }, OpCode::MINUS_I64);
+		rules.AddRule(ExpressionType::UnaryMinus, { TypeCode::Float32 }, OpCode::MINUS_F32);
 		rules.AddRule(ExpressionType::UnaryMinus, { TypeCode::Float64 }, OpCode::MINUS_F64);
 
-		//rules.AddRule(ExpressionType::Add, TypeCode::Int32, OpCode::ADD_I32);
+		rules.AddRule(ExpressionType::Add, { TypeCode::Int32, TypeCode::Int32 }, OpCode::ADD_I32);
+		rules.AddRule(ExpressionType::Add, { TypeCode::Int64, TypeCode::Int64 }, OpCode::ADD_I64);
+		rules.AddRule(ExpressionType::Add, { TypeCode::Float32, TypeCode::Float32 }, OpCode::ADD_F32);
+		rules.AddRule(ExpressionType::Add, { TypeCode::Float64, TypeCode::Float64 }, OpCode::ADD_F64);
+
+		rules.AddRule(ExpressionType::Subtract, { TypeCode::Int32, TypeCode::Int32 }, OpCode::SUB_I32);
+		rules.AddRule(ExpressionType::Subtract, { TypeCode::Int64, TypeCode::Int64 }, OpCode::SUB_I64);
+		rules.AddRule(ExpressionType::Subtract, { TypeCode::Float32, TypeCode::Float32 }, OpCode::SUB_F32);
+		rules.AddRule(ExpressionType::Subtract, { TypeCode::Float64, TypeCode::Float64 }, OpCode::SUB_F64);
+
+		rules.AddRule(ExpressionType::Multiply, { TypeCode::Int32, TypeCode::Int32 }, OpCode::MUL_I32);
+		rules.AddRule(ExpressionType::Multiply, { TypeCode::Int64, TypeCode::Int64 }, OpCode::MUL_I64);
+		rules.AddRule(ExpressionType::Multiply, { TypeCode::Float32, TypeCode::Float32 }, OpCode::MUL_F32);
+		rules.AddRule(ExpressionType::Multiply, { TypeCode::Float64, TypeCode::Float64 }, OpCode::MUL_F64);
+
+		rules.AddRule(ExpressionType::Divide, { TypeCode::Int32, TypeCode::Int32 }, OpCode::DIV_I32);
+		rules.AddRule(ExpressionType::Divide, { TypeCode::Int64, TypeCode::Int64 }, OpCode::DIV_I64);
+		rules.AddRule(ExpressionType::Divide, { TypeCode::Float32, TypeCode::Float32 }, OpCode::DIV_F32);
+		rules.AddRule(ExpressionType::Divide, { TypeCode::Float64, TypeCode::Float64 }, OpCode::DIV_F64);
+
+		rules.AddRule(ExpressionType::GreaterThan, { TypeCode::Int32, TypeCode::Int32 }, OpCode::GT_I32);
+		rules.AddRule(ExpressionType::GreaterThan, { TypeCode::Char, TypeCode::Char }, OpCode::GT_I32);
+		rules.AddRule(ExpressionType::GreaterThan, { TypeCode::Int64, TypeCode::Int64 }, OpCode::GT_I64);
+		rules.AddRule(ExpressionType::GreaterThan, { TypeCode::Float32, TypeCode::Float32 }, OpCode::GT_F32);
+		rules.AddRule(ExpressionType::GreaterThan, { TypeCode::Float64, TypeCode::Float64 }, OpCode::GT_F64);
+
+		rules.AddRule(ExpressionType::LessThan, { TypeCode::Int32, TypeCode::Int32 }, OpCode::LT_I32);
+		rules.AddRule(ExpressionType::LessThan, { TypeCode::Char, TypeCode::Char }, OpCode::LT_I32);
+		rules.AddRule(ExpressionType::LessThan, { TypeCode::Int64, TypeCode::Int64 }, OpCode::LT_I64);
+		rules.AddRule(ExpressionType::LessThan, { TypeCode::Float32, TypeCode::Float32 }, OpCode::LT_F32);
+		rules.AddRule(ExpressionType::LessThan, { TypeCode::Float64, TypeCode::Float64 }, OpCode::LT_F64);
+
+		rules.AddRule(ExpressionType::GreaterThanOrEqual, { TypeCode::Int32, TypeCode::Int32 }, OpCode::GE_I32);
+		rules.AddRule(ExpressionType::GreaterThanOrEqual, { TypeCode::Char, TypeCode::Char }, OpCode::GE_I32);
+		rules.AddRule(ExpressionType::GreaterThanOrEqual, { TypeCode::Int64, TypeCode::Int64 }, OpCode::GE_I64);
+		rules.AddRule(ExpressionType::GreaterThanOrEqual, { TypeCode::Float32, TypeCode::Float32 }, OpCode::GE_F32);
+		rules.AddRule(ExpressionType::GreaterThanOrEqual, { TypeCode::Float64, TypeCode::Float64 }, OpCode::GE_F64);
+
+		rules.AddRule(ExpressionType::LessThanOrEqual, { TypeCode::Int32, TypeCode::Int32 }, OpCode::LE_I32);
+		rules.AddRule(ExpressionType::LessThanOrEqual, { TypeCode::Char, TypeCode::Char }, OpCode::LE_I32);
+		rules.AddRule(ExpressionType::LessThanOrEqual, { TypeCode::Int64, TypeCode::Int64 }, OpCode::LE_I64);
+		rules.AddRule(ExpressionType::LessThanOrEqual, { TypeCode::Float32, TypeCode::Float32 }, OpCode::LE_F32);
+		rules.AddRule(ExpressionType::LessThanOrEqual, { TypeCode::Float64, TypeCode::Float64 }, OpCode::LE_F64);
+
+		rules.AddRule(ExpressionType::Equal, { TypeCode::Int32, TypeCode::Int32 }, OpCode::EQ_I32);
+		rules.AddRule(ExpressionType::Equal, { TypeCode::Char, TypeCode::Char }, OpCode::EQ_I32);
+		rules.AddRule(ExpressionType::Equal, { TypeCode::Boolean, TypeCode::Boolean }, OpCode::EQ_I32);
+		rules.AddRule(ExpressionType::Equal, { TypeCode::Int64, TypeCode::Int64 }, OpCode::EQ_I64);
+		rules.AddRule(ExpressionType::Equal, { TypeCode::Float32, TypeCode::Float32 }, OpCode::EQ_F32);
+		rules.AddRule(ExpressionType::Equal, { TypeCode::Float64, TypeCode::Float64 }, OpCode::EQ_F64);
+
+		rules.AddRule(ExpressionType::NotEqual, { TypeCode::Int32, TypeCode::Int32 }, OpCode::NE_I32);
+		rules.AddRule(ExpressionType::NotEqual, { TypeCode::Char, TypeCode::Char }, OpCode::NE_I32);
+		rules.AddRule(ExpressionType::NotEqual, { TypeCode::Boolean, TypeCode::Boolean }, OpCode::NE_I32);
+		rules.AddRule(ExpressionType::NotEqual, { TypeCode::Int64, TypeCode::Int64 }, OpCode::NE_I64);
+		rules.AddRule(ExpressionType::NotEqual, { TypeCode::Float32, TypeCode::Float32 }, OpCode::NE_F32);
+		rules.AddRule(ExpressionType::NotEqual, { TypeCode::Float64, TypeCode::Float64 }, OpCode::NE_F64);
+
+		rules.AddRule(ExpressionType::Convert, { TypeCode::Int32, TypeCode::Int64 }, OpCode::CAST_I32_TO_I64);
+		rules.AddRule(ExpressionType::Convert, { TypeCode::Int32, TypeCode::Float32 }, OpCode::CAST_I32_TO_F32);
+		rules.AddRule(ExpressionType::Convert, { TypeCode::Int32, TypeCode::Float64 }, OpCode::CAST_I32_TO_F64);
+
+		rules.AddRule(ExpressionType::Convert, { TypeCode::Int64, TypeCode::Int32 }, OpCode::CAST_I64_TO_I32);
+		rules.AddRule(ExpressionType::Convert, { TypeCode::Int64, TypeCode::Float32 }, OpCode::CAST_I64_TO_F32);
+		rules.AddRule(ExpressionType::Convert, { TypeCode::Int64, TypeCode::Float64 }, OpCode::CAST_I64_TO_F64);
+
+		rules.AddRule(ExpressionType::Convert, { TypeCode::Float32, TypeCode::Int32 }, OpCode::CAST_F32_TO_I32);
+		rules.AddRule(ExpressionType::Convert, { TypeCode::Float32, TypeCode::Int64 }, OpCode::CAST_F32_TO_I64);
+		rules.AddRule(ExpressionType::Convert, { TypeCode::Float32, TypeCode::Float64 }, OpCode::CAST_F32_TO_F64);
+
+		rules.AddRule(ExpressionType::Convert, { TypeCode::Float64, TypeCode::Int32 }, OpCode::CAST_F64_TO_I32);
+		rules.AddRule(ExpressionType::Convert, { TypeCode::Float64, TypeCode::Int64 }, OpCode::CAST_F64_TO_I64);
+		rules.AddRule(ExpressionType::Convert, { TypeCode::Float64, TypeCode::Float32 }, OpCode::CAST_F64_TO_F32);
+
+		rules.AddRule(ExpressionType::Return, { TypeCode::Int32 }, OpCode::RETURN_I32);
+		rules.AddRule(ExpressionType::Return, { TypeCode::Char }, OpCode::RETURN_I32);
+		rules.AddRule(ExpressionType::Return, { TypeCode::Boolean }, OpCode::RETURN_I32);
+		rules.AddRule(ExpressionType::Return, { TypeCode::Int64 }, OpCode::RETURN_I64);
+		rules.AddRule(ExpressionType::Return, { TypeCode::Float32 }, OpCode::RETURN_F32);
+		rules.AddRule(ExpressionType::Return, { TypeCode::Float64 }, OpCode::RETURN_F64);
+		rules.AddRule(ExpressionType::Return, { TypeCode::String }, OpCode::RETURN_OBJECT);
+		rules.AddRule(ExpressionType::Return, { TypeCode::Class }, OpCode::RETURN_OBJECT);
+		rules.AddRule(ExpressionType::Return, { TypeCode::Array }, OpCode::RETURN_OBJECT);
+
+		rules.AddRule(ExpressionType::Constant, { TypeCode::Int32 }, OpCode::PUSH_I32);
+		rules.AddRule(ExpressionType::Constant, { TypeCode::Int64 }, OpCode::PUSH_I64);
+		rules.AddRule(ExpressionType::Constant, { TypeCode::Float32 }, OpCode::PUSH_F32);
+		rules.AddRule(ExpressionType::Constant, { TypeCode::Float64 }, OpCode::PUSH_F64);
+
 	}
 	ByteCode Compiler::Compile()
 	{
@@ -165,53 +253,10 @@ namespace cygni
 		case ExpressionType::Convert: {
 			auto from = node->operand->type->typeCode;
 			auto to = node->type->typeCode;
-			if (from == TypeCode::Int32 && to == TypeCode::Int64)
+
+			if (auto op = rules.Match(ExpressionType::Convert, { from, to }))
 			{
-				byteCode.AppendOp(OpCode::CAST_I32_TO_I64);
-			}
-			else if (from == TypeCode::Int64 && to == TypeCode::Int32)
-			{
-				byteCode.AppendOp(OpCode::CAST_I64_TO_I32);
-			}
-			else if (from == TypeCode::Int32 && to == TypeCode::Float32)
-			{
-				byteCode.AppendOp(OpCode::CAST_I32_TO_F32);
-			}
-			else if (from == TypeCode::Float32 && to == TypeCode::Int32)
-			{
-				byteCode.AppendOp(OpCode::CAST_F32_TO_I32);
-			}
-			else if (from == TypeCode::Int32 && to == TypeCode::Float64)
-			{
-				byteCode.AppendOp(OpCode::CAST_I32_TO_F64);
-			}
-			else if (from == TypeCode::Float64 && to == TypeCode::Int32)
-			{
-				byteCode.AppendOp(OpCode::CAST_F64_TO_I32);
-			}
-			else if (from == TypeCode::Int64 && to == TypeCode::Float32)
-			{
-				byteCode.AppendOp(OpCode::CAST_I64_TO_F32);
-			}
-			else if (from == TypeCode::Float32 && to == TypeCode::Int64)
-			{
-				byteCode.AppendOp(OpCode::CAST_F32_TO_I64);
-			}
-			else if (from == TypeCode::Int64 && to == TypeCode::Float64)
-			{
-				byteCode.AppendOp(OpCode::CAST_I64_TO_F64);
-			}
-			else if (from == TypeCode::Float64 && to == TypeCode::Int64)
-			{
-				byteCode.AppendOp(OpCode::CAST_F64_TO_I64);
-			}
-			else if (from == TypeCode::Float32 && to == TypeCode::Float64)
-			{
-				byteCode.AppendOp(OpCode::CAST_F32_TO_F64);
-			}
-			else if (from == TypeCode::Float64 && to == TypeCode::Float32)
-			{
-				byteCode.AppendOp(OpCode::CAST_F64_TO_F32);
+				byteCode.AppendOp(op.value());
 			}
 			else
 			{
@@ -221,127 +266,13 @@ namespace cygni
 			break;
 		}
 		case ExpressionType::UpCast: {
-			auto from = node->operand->type->typeCode;
-			auto to = node->type->typeCode;
 			byteCode.AppendOp(OpCode::UP_CAST);
-			if (to == TypeCode::Class)
-			{
-				byteCode.Append(0);
-				auto classType = std::static_pointer_cast<ClassType>(node->type);
-				if (auto classInfo = project.GetClass(classType))
-				{
-					if (classInfo.value()->index.has_value())
-					{
-						if (classInfo.value()->index.value() > std::numeric_limits<uint16_t>::max())
-						{
-							throw CompilerException((*classInfo)->position, U"the index of class cannot exceed 65535");
-						}
-						byteCode.AppendU16Unchecked(classInfo.value()->index.value());
-					}
-					else
-					{
-						throw CompilerException(node->position,
-							Format(U"type '{}' index not assigned", classType->ToString()));
-					}
-				}
-				else
-				{
-					throw CompilerException(node->position,
-						Format(U"type '{}' not found", classType->ToString()));
-				}
-			}
-			else if (to == TypeCode::Interface)
-			{
-				byteCode.Append(1);
-				auto interfaceType = std::static_pointer_cast<InterfaceType>(node->type);
-				if (auto interfaceInfo = project.GetInterface(interfaceType))
-				{
-					if (interfaceInfo.value()->index)
-					{
-						if (interfaceInfo.value()->index.value() > std::numeric_limits<uint16_t>::max())
-						{
-							throw CompilerException(interfaceInfo.value()->position, U"the index of interface cannot exceed 65535");
-						}
-						byteCode.AppendU16Unchecked(interfaceInfo.value()->index.value());
-					}
-					else
-					{
-						throw CompilerException(node->position,
-							Format(U"type '{}' index not assigned", interfaceType->ToString()));
-					}
-				}
-				else
-				{
-					throw CompilerException(node->position,
-						Format(U"type '{}' not found", interfaceType->ToString()));
-				}
-			}
-			else
-			{
-				throw CompilerException(node->position,
-					Format(U"cannot convert the object from '{}' to '{}'", node->operand->type->ToString(), node->type->ToString()));
-			}
+			ConvertExp(node, byteCode);
 			break;
 		}
 		case ExpressionType::DownCast: {
-			auto from = node->operand->type->typeCode;
-			auto to = node->type->typeCode;
 			byteCode.AppendOp(OpCode::DOWN_CAST);
-			if (to == TypeCode::Class)
-			{
-				byteCode.Append(0);
-				auto classType = std::static_pointer_cast<ClassType>(node->type);
-				if (auto classInfo = project.GetClass(classType))
-				{
-					if ((*classInfo)->index)
-					{
-						byteCode.AppendU16Checked(*((*classInfo)->index), [classInfo]()->CompilerException
-						{
-							return CompilerException((*classInfo)->position, U"the index of class cannot exceed 65535");
-						});
-					}
-					else
-					{
-						throw CompilerException(node->position,
-							Format(U"type '{}' index not assigned", classType->ToString()));
-					}
-				}
-				else
-				{
-					throw CompilerException(node->position,
-						Format(U"type '{}' not found", classType->ToString()));
-				}
-			}
-			else if (to == TypeCode::Interface)
-			{
-				byteCode.Append(1);
-				auto interfaceType = std::static_pointer_cast<InterfaceType>(node->type);
-				if (auto interfaceInfo = project.GetInterface(interfaceType))
-				{
-					if ((*interfaceInfo)->index)
-					{
-						byteCode.AppendU16Checked(*((*interfaceInfo)->index), [interfaceInfo]()->CompilerException
-						{
-							return CompilerException((*interfaceInfo)->position, U"the index of interface cannot exceed 65535");
-						});
-					}
-					else
-					{
-						throw CompilerException(node->position,
-							Format(U"type '{}' index not assigned", interfaceType->ToString()));
-					}
-				}
-				else
-				{
-					throw CompilerException(node->position,
-						Format(U"type '{}' not found", interfaceType->ToString()));
-				}
-			}
-			else
-			{
-				throw CompilerException(node->position,
-					Format(U"cannot convert the object from '{}' to '{}'", node->operand->type->ToString(), node->type->ToString()));
-			}
+			ConvertExp(node, byteCode);
 			break;
 		}
 		case ExpressionType::ArrayLength: {
@@ -358,268 +289,15 @@ namespace cygni
 		VisitExpression(node->right, constantMap, byteCode);
 		TypeCode lt = node->left->type->typeCode;
 		TypeCode rt = node->right->type->typeCode;
-		switch (node->nodeType)
+		if (auto op = rules.Match(node->nodeType, { lt, rt }))
 		{
-		case ExpressionType::Add: {
-			switch (node->type->typeCode)
-			{
-			case TypeCode::Int32: {
-				byteCode.AppendOp(OpCode::ADD_I32);
-				break;
-			}
-			case TypeCode::Int64: {
-				byteCode.AppendOp(OpCode::ADD_I64);
-				break;
-			}
-			case TypeCode::Float32: {
-				byteCode.AppendOp(OpCode::ADD_F32);
-				break;
-			}
-			case TypeCode::Float64: {
-				byteCode.AppendOp(OpCode::ADD_F64);
-				break;
-			}
-			default: {
-				throw CompilerException(node->position, U"not supported type for addition");
-			}
-			}
-			break;
+			byteCode.AppendOp(op.value());
 		}
-		case ExpressionType::Subtract: {
-			switch (node->type->typeCode)
-			{
-			case TypeCode::Int32: {
-				byteCode.AppendOp(OpCode::SUB_I32);
-				break;
-			}
-			case TypeCode::Int64: {
-				byteCode.AppendOp(OpCode::SUB_I64);
-				break;
-			}
-			case TypeCode::Float32: {
-				byteCode.AppendOp(OpCode::SUB_F32);
-				break;
-			}
-			case TypeCode::Float64: {
-				byteCode.AppendOp(OpCode::SUB_F64);
-				break;
-			}
-			default: {
-				throw CompilerException(node->position, U"not supported type for subtraction");
-			}
-			}
-			break;
-		}
-		case ExpressionType::Multiply: {
-			switch (node->type->typeCode)
-			{
-			case TypeCode::Int32: {
-				byteCode.AppendOp(OpCode::MUL_I32);
-				break;
-			}
-			case TypeCode::Int64: {
-				byteCode.AppendOp(OpCode::MUL_I64);
-				break;
-			}
-			case TypeCode::Float32: {
-				byteCode.AppendOp(OpCode::MUL_F32);
-				break;
-			}
-			case TypeCode::Float64: {
-				byteCode.AppendOp(OpCode::MUL_F64);
-				break;
-			}
-			default: {
-				throw CompilerException(node->position, U"not supported type for multiplication");
-			}
-			}
-			break;
-		}
-		case ExpressionType::Divide: {
-			switch (node->type->typeCode)
-			{
-			case TypeCode::Int32: {
-				byteCode.AppendOp(OpCode::DIV_I32);
-				break;
-			}
-			case TypeCode::Int64: {
-				byteCode.AppendOp(OpCode::DIV_I64);
-				break;
-			}
-			case TypeCode::Float32: {
-				byteCode.AppendOp(OpCode::DIV_F32);
-				break;
-			}
-			case TypeCode::Float64: {
-				byteCode.AppendOp(OpCode::DIV_F64);
-				break;
-			}
-			default: {
-				throw CompilerException(node->position, U"not supported type for division");
-			}
-			}
-			break;
-		}
-		case ExpressionType::GreaterThan: {
-			if (lt == TypeCode::Int32 && rt == TypeCode::Int32)
-			{
-				byteCode.AppendOp(OpCode::GT_I32);
-			}
-			else if (lt == TypeCode::Int64 && rt == TypeCode::Int64)
-			{
-				byteCode.AppendOp(OpCode::GT_I64);
-			}
-			else if (lt == TypeCode::Float32 && rt == TypeCode::Float32)
-			{
-				byteCode.AppendOp(OpCode::GT_F32);
-			}
-			else if (lt == TypeCode::Float64 && rt == TypeCode::Float64)
-			{
-				byteCode.AppendOp(OpCode::GT_F64);
-			}
-			else
-			{
-				throw CompilerException(node->position,
-					Format(U"not supported type for '>', left: '{}', right: '{}'", node->left->type->ToString(), node->right->type->ToString()));
-			}
-			break;
-		}
-		case ExpressionType::LessThan: {
-			if (lt == TypeCode::Int32 && rt == TypeCode::Int32)
-			{
-				byteCode.AppendOp(OpCode::LT_I32);
-			}
-			else if (lt == TypeCode::Int64 && rt == TypeCode::Int64)
-			{
-				byteCode.AppendOp(OpCode::LT_I64);
-			}
-			else if (lt == TypeCode::Float32 && rt == TypeCode::Float32)
-			{
-				byteCode.AppendOp(OpCode::LT_F32);
-			}
-			else if (lt == TypeCode::Float64 && rt == TypeCode::Float64)
-			{
-				byteCode.AppendOp(OpCode::LT_F64);
-			}
-			else
-			{
-				throw CompilerException(node->position,
-					Format(U"not supported type for '<', left: '{}', right: '{}'", node->left->type->ToString(), node->right->type->ToString()));
-			}
-			break;
-		}
-		case ExpressionType::GreaterThanOrEqual: {
-			if (lt == TypeCode::Int32 && rt == TypeCode::Int32)
-			{
-				byteCode.AppendOp(OpCode::GE_I32);
-			}
-			else if (lt == TypeCode::Int64 && rt == TypeCode::Int64)
-			{
-				byteCode.AppendOp(OpCode::GE_I64);
-			}
-			else if (lt == TypeCode::Float32 && rt == TypeCode::Float32)
-			{
-				byteCode.AppendOp(OpCode::GE_F32);
-			}
-			else if (lt == TypeCode::Float64 && rt == TypeCode::Float64)
-			{
-				byteCode.AppendOp(OpCode::GE_F64);
-			}
-			else
-			{
-				throw CompilerException(node->position, U"not supported type for '>='");
-			}
-			break;
-		}
-		case ExpressionType::LessThanOrEqual: {
-			if (lt == TypeCode::Int32 && rt == TypeCode::Int32)
-			{
-				byteCode.AppendOp(OpCode::LE_I32);
-			}
-			else if (lt == TypeCode::Int64 && rt == TypeCode::Int64)
-			{
-				byteCode.AppendOp(OpCode::LE_I64);
-			}
-			else if (lt == TypeCode::Float32 && rt == TypeCode::Float32)
-			{
-				byteCode.AppendOp(OpCode::LE_F32);
-			}
-			else if (lt == TypeCode::Float64 && rt == TypeCode::Float64)
-			{
-				byteCode.AppendOp(OpCode::LE_F64);
-			}
-			else
-			{
-				throw CompilerException(node->position, U"not supported type for '<='");
-			}
-			break;
-		}
-		case ExpressionType::Equal: {
-			if (lt == TypeCode::Char && rt == TypeCode::Char)
-			{
-				byteCode.AppendOp(OpCode::EQ_I32);
-			}
-			else if (lt == TypeCode::Boolean && rt == TypeCode::Boolean)
-			{
-				byteCode.AppendOp(OpCode::EQ_I32);
-			}
-			else if (lt == TypeCode::Int32 && rt == TypeCode::Int32)
-			{
-				byteCode.AppendOp(OpCode::EQ_I32);
-			}
-			else if (lt == TypeCode::Int64 && rt == TypeCode::Int64)
-			{
-				byteCode.AppendOp(OpCode::EQ_I64);
-			}
-			else if (lt == TypeCode::Float32 && rt == TypeCode::Float32)
-			{
-				byteCode.AppendOp(OpCode::EQ_F32);
-			}
-			else if (lt == TypeCode::Float64 && rt == TypeCode::Float64)
-			{
-				byteCode.AppendOp(OpCode::EQ_F64);
-			}
-			else
-			{
-				throw CompilerException(node->position, U"not supported type for '=='");
-			}
-			break;
-		}
-		case ExpressionType::NotEqual: {
-			if (lt == TypeCode::Char && rt == TypeCode::Char)
-			{
-				byteCode.AppendOp(OpCode::NE_I32);
-			}
-			else if (lt == TypeCode::Boolean && rt == TypeCode::Boolean)
-			{
-				byteCode.AppendOp(OpCode::NE_I32);
-			}
-			else if (lt == TypeCode::Int32 && rt == TypeCode::Int32)
-			{
-				byteCode.AppendOp(OpCode::NE_I32);
-			}
-			else if (lt == TypeCode::Int64 && rt == TypeCode::Int64)
-			{
-				byteCode.AppendOp(OpCode::NE_I64);
-			}
-			else if (lt == TypeCode::Float32 && rt == TypeCode::Float32)
-			{
-				byteCode.AppendOp(OpCode::NE_F32);
-			}
-			else if (lt == TypeCode::Float64 && rt == TypeCode::Float64)
-			{
-				byteCode.AppendOp(OpCode::NE_F64);
-			}
-			else
-			{
-				throw CompilerException(node->position, U"not supported type for '!='");
-			}
-			break;
-		}
-		default: {
-			throw NotImplementedException(
-				Format(U"not supported binary operation: {}", Enum<ExpressionType>::ToString(node->nodeType)));
-		}
+		else
+		{
+			throw CompilerException(node->position,
+				Format(U"not supported type for '{}' operation. left: '{}', right: '{}",
+					Enum<ExpressionType>::ToString(node->nodeType), node->left->type->ToString(), node->right->type->ToString()));
 		}
 	}
 	void Compiler::VisitBlock(std::shared_ptr<BlockExpression> node,
@@ -666,20 +344,25 @@ namespace cygni
 						// TO DO: call 'New' function
 
 						byteCode.AppendOp(OpCode::PUSH_STRING);
-						byteCode.AppendU16Checked(index, [moduleInfo]()->CompilerException
+						if (index > std::numeric_limits<uint16_t>::max())
 						{
-							return CompilerException((*moduleInfo)->position, U"the index of module constant cannot exceed 65535");
-						});
+							throw CompilerException((*moduleInfo)->position, U"the index of module constant cannot exceed 65535");
+						}
+						byteCode.AppendU16Unchecked(index);
 
 						byteCode.AppendOp(OpCode::PUSH_FUNCTION);
-						byteCode.AppendU16Checked(*(*moduleInfo)->index, [moduleInfo]()->CompilerException
+
+						if (*(*moduleInfo)->index > std::numeric_limits<uint16_t>::max())
 						{
-							return CompilerException((*moduleInfo)->position, U"the index of module cannot exceed 65535");
-						});
-						byteCode.AppendU16Checked(*methodInfo.index, [&methodInfo]()->CompilerException
+							throw CompilerException((*moduleInfo)->position, U"the index of module cannot exceed 65535");
+						}
+						byteCode.AppendU16Unchecked(*(*moduleInfo)->index);
+
+						if (*methodInfo.index > std::numeric_limits<uint16_t>::max())
 						{
-							return CompilerException(methodInfo.position, U"the index of method cannot exceed 65535");
-						});
+							throw CompilerException(methodInfo.position, U"the index of method cannot exceed 65535");
+						}
+						byteCode.AppendU16Unchecked(*methodInfo.index);
 						byteCode.AppendOp(OpCode::INVOKE);
 					}
 					else
@@ -705,45 +388,20 @@ namespace cygni
 			{
 				int index = constantMap.at(key);
 
-				switch (node->type->typeCode)
+				if (auto op = rules.Match(ExpressionType::Constant, { node->type->typeCode }))
 				{
-				case TypeCode::Int32: {
-					byteCode.AppendOp(OpCode::PUSH_I32);
-					byteCode.AppendU16Checked(index, [&node]()->CompilerException
-					{
-						return CompilerException(node->position, U"the index of constant cannot exceed 65535");
-					});
-					break;
+					byteCode.AppendOp(op.value());
 				}
-				case TypeCode::Int64: {
-					byteCode.AppendOp(OpCode::PUSH_I64);
-					byteCode.AppendU16Checked(index, [&node]()->CompilerException
-					{
-						return CompilerException(node->position, U"the index of constant cannot exceed 65535");
-					});
-					break;
-				}
-				case TypeCode::Float32: {
-					byteCode.AppendOp(OpCode::PUSH_F32);
-					byteCode.AppendU16Checked(index, [&node]()->CompilerException
-					{
-						return CompilerException(node->position, U"the index of constant cannot exceed 65535");
-					});
-					break;
-				}
-				case TypeCode::Float64: {
-					byteCode.AppendOp(OpCode::PUSH_F64);
-					byteCode.AppendU16Checked(index, [&node]()->CompilerException
-					{
-						return CompilerException(node->position, U"the index of constant cannot exceed 65535");
-					});
-					break;
-				}
-				default: {
+				else
+				{
 					throw CompilerException(node->position,
 						Format(U"constant type '{}' not supported", node->type->ToString()));
 				}
+				if (index > std::numeric_limits<uint16_t>::max())
+				{
+					throw CompilerException(node->position, U"the index of constant cannot exceed 65535");
 				}
+				byteCode.AppendU16Unchecked(index);
 			}
 			else
 			{
@@ -826,7 +484,7 @@ namespace cygni
 			CompileMethodDef(method, info->constantMap, byteCode);
 		}
 	}
-	void Compiler::CompileMethodDef(const MethodDef & method, const ConstantMap& constantMap, ByteCode& byteCode)
+	void Compiler::CompileMethodDef(const MethodInfo & method, const ConstantMap& constantMap, ByteCode& byteCode)
 	{
 		if (method.annotations.ContainsKey(U"LibraryImport"))
 		{
@@ -910,8 +568,8 @@ namespace cygni
 				break;
 			}
 			case TypeCode::Array:
-			case TypeCode::Class: 
-			case TypeCode::Interface:{
+			case TypeCode::Class:
+			case TypeCode::Interface: {
 				byteCode.AppendOp(OpCode::PUSH_LOCAL_OBJECT);
 				break;
 			}
@@ -923,43 +581,43 @@ namespace cygni
 			byteCode.AppendU16Unchecked(std::static_pointer_cast<ParameterLocation>(location)->offset);
 			break;
 		}
-		case LocationType::ClassField: {
-			byteCode.AppendOp(OpCode::PUSH_LOCAL_OBJECT);
-			byteCode.AppendU16Unchecked(0); /* this */
-			switch (parameter->type->typeCode)
-			{
-			case TypeCode::Int32: {
-				byteCode.AppendOp(OpCode::PUSH_FIELD_I32);
-				break;
-			}
-			case TypeCode::Int64: {
-				byteCode.AppendOp(OpCode::PUSH_FIELD_I64);
-				break;
-			}
-			case TypeCode::Float32: {
-				byteCode.AppendOp(OpCode::PUSH_FIELD_F32);
-				break;
-			}
-			case TypeCode::Float64: {
-				byteCode.AppendOp(OpCode::PUSH_FIELD_F64);
-				break;
-			}
-			case TypeCode::String: {
-				byteCode.AppendOp(OpCode::PUSH_FIELD_OBJECT);
-				break;
-			}
-			case TypeCode::Array:
-			case TypeCode::Class: {
-				byteCode.AppendOp(OpCode::PUSH_FIELD_OBJECT);
-				break;
-			}
-			default: {
-				throw CompilerException(parameter->position, Format(U"not supported class field access type '{}'", parameter->type->ToString()));
-			}
-			}
-			byteCode.AppendU16Unchecked(std::static_pointer_cast<MemberLocation>(location)->offset);
-			break;
-		}
+										  //case LocationType::ClassField: {
+										  //	byteCode.AppendOp(OpCode::PUSH_LOCAL_OBJECT);
+										  //	byteCode.AppendU16Unchecked(0); /* this */
+										  //	switch (parameter->type->typeCode)
+										  //	{
+										  //	case TypeCode::Int32: {
+										  //		byteCode.AppendOp(OpCode::PUSH_FIELD_I32);
+										  //		break;
+										  //	}
+										  //	case TypeCode::Int64: {
+										  //		byteCode.AppendOp(OpCode::PUSH_FIELD_I64);
+										  //		break;
+										  //	}
+										  //	case TypeCode::Float32: {
+										  //		byteCode.AppendOp(OpCode::PUSH_FIELD_F32);
+										  //		break;
+										  //	}
+										  //	case TypeCode::Float64: {
+										  //		byteCode.AppendOp(OpCode::PUSH_FIELD_F64);
+										  //		break;
+										  //	}
+										  //	case TypeCode::String: {
+										  //		byteCode.AppendOp(OpCode::PUSH_FIELD_OBJECT);
+										  //		break;
+										  //	}
+										  //	case TypeCode::Array:
+										  //	case TypeCode::Class: {
+										  //		byteCode.AppendOp(OpCode::PUSH_FIELD_OBJECT);
+										  //		break;
+										  //	}
+										  //	default: {
+										  //		throw CompilerException(parameter->position, Format(U"not supported class field access type '{}'", parameter->type->ToString()));
+										  //	}
+										  //	}
+										  //	byteCode.AppendU16Unchecked(std::static_pointer_cast<MemberLocation>(location)->offset);
+										  //	break;
+										  //}
 		case LocationType::ModuleMethod: {
 			std::cout << "push module method: " << parameter->name << std::endl;
 			byteCode.AppendOp(OpCode::PUSH_FUNCTION);
@@ -967,15 +625,15 @@ namespace cygni
 			byteCode.AppendU16Unchecked(std::static_pointer_cast<MemberLocation>(location)->offset);
 			break;
 		}
-		case LocationType::ClassMethod: {
-			std::cout << "push class method: " << parameter->name << std::endl;
-			//byteCode.AppendOp(OpCode::PUSH_LOCAL_OBJECT);
-			//byteCode.AppendUShort(0); /* this */
-			//byteCode.AppendOp(OpCode::PUSH_METHOD);
-			//byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->index);
-			//byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->offset);
-			break;
-		}
+										 //case LocationType::ClassMethod: {
+										 //	std::cout << "push class method: " << parameter->name << std::endl;
+										 //	//byteCode.AppendOp(OpCode::PUSH_LOCAL_OBJECT);
+										 //	//byteCode.AppendUShort(0); /* this */
+										 //	//byteCode.AppendOp(OpCode::PUSH_METHOD);
+										 //	//byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->index);
+										 //	//byteCode.AppendUShort(std::static_pointer_cast<MemberLocation>(location)->offset);
+										 //	break;
+										 //}
 		case LocationType::ModuleName: {
 			std::cout << "module name: " << parameter->name << std::endl;
 			break;
@@ -989,38 +647,14 @@ namespace cygni
 		const ConstantMap& constantMap, ByteCode& byteCode)
 	{
 		VisitExpression(node->value, constantMap, byteCode);
-		switch (node->type->typeCode)
+		if (auto op = rules.Match(ExpressionType::Return, { node->type->typeCode }))
 		{
-		case TypeCode::Boolean:
-		case TypeCode::Char:
-		case TypeCode::Int32: {
-			byteCode.AppendOp(OpCode::RETURN_I32);
-			break;
+			byteCode.AppendOp(op.value());
 		}
-		case TypeCode::Int64: {
-			byteCode.AppendOp(OpCode::RETURN_I64);
-			break;
-		}
-		case TypeCode::Float32: {
-			byteCode.AppendOp(OpCode::RETURN_F32);
-			break;
-		}
-		case TypeCode::Float64: {
-			byteCode.AppendOp(OpCode::RETURN_F64);
-			break;
-		}
-		case TypeCode::String: {
-			byteCode.AppendOp(OpCode::RETURN_OBJECT);
-			break;
-		}
-		case TypeCode::Class: {
-			byteCode.AppendOp(OpCode::RETURN_OBJECT);
-			break;
-		}
-		default: {
+		else
+		{
 			throw CompilerException(node->position,
 				Format(U"not supported return type '{}'", node->type->ToString()));
-		}
 		}
 	}
 	void Compiler::VisitConditional(std::shared_ptr<ConditionalExpression> node,
@@ -1072,101 +706,12 @@ namespace cygni
 		if (node->expression->type->typeCode == TypeCode::Function)
 		{
 			auto function = std::static_pointer_cast<FunctionType>(node->expression->type);
-			if (function->selfType->typeCode == TypeCode::Array)
+			for (auto arg : node->arguments)
 			{
-				// omit
-				// Size
+				VisitExpression(arg.value, constantMap, byteCode);
 			}
-			else
-			{
-				for (auto arg : node->arguments)
-				{
-					VisitExpression(arg.value, constantMap, byteCode);
-				}
-				VisitExpression(node->expression, constantMap, byteCode);
-				byteCode.AppendOp(OpCode::INVOKE);
-			}
-			//else if (function->selfType->typeCode == TypeCode::Module)
-			//{
-			//	for (auto arg : node->arguments)
-			//	{
-			//		VisitExpression(arg.value, constantMap, byteCode);
-			//	}
-			//	VisitExpression(node->expression, constantMap, byteCode);
-			//	auto moduleType = std::static_pointer_cast<ModuleType>(function->selfType);
-			//	if (auto moduleInfo = project.GetModule(moduleType))
-			//	{
-			//		byteCode.AppendOp(OpCode::INVOKE_FUNCTION);
-			//		if ((*moduleInfo)->methods.ContainsKey(function->name))
-			//		{
-			//			auto& method = (*moduleInfo)->methods.GetValueByKey(function->name);
-			//			byteCode.AppendU16Unchecked(*(*moduleInfo)->index);
-			//			byteCode.AppendU16Unchecked(*method.index);
-			//		}
-			//		else
-			//		{
-			//			throw CompilerException(node->position,
-			//				Format(U"missing module function '{}'", function->name));
-			//		}
-			//	}
-			//	else
-			//	{
-			//		throw CompilerException(node->position,
-			//			Format(U"missing module '{}'", moduleType->ToString()));
-			//	}
-			//}
-			//else if (function->selfType->typeCode == TypeCode::Class)
-			//{
-			//	if (node->expression->nodeType == ExpressionType::MemberAccess)
-			//	{
-			//		auto memberAccessExp = std::static_pointer_cast<MemberAccessExpression>(node->expression);
-			//		VisitExpression(memberAccessExp->object, constantMap, byteCode);
-			//	}
-			//	else if (node->expression->nodeType == ExpressionType::Parameter)
-			//	{
-			//		byteCode.AppendOp(OpCode::PUSH_LOCAL_OBJECT);
-			//		byteCode.AppendU16Unchecked(0); /* this */
-			//	}
-			//	else
-			//	{
-			//		throw CompilerException(node->position, U"not supported method call");
-			//	}
-			//	for (auto arg : node->arguments)
-			//	{
-			//		VisitExpression(arg.value, constantMap, byteCode);
-			//	}
-			//	auto classType = std::static_pointer_cast<ClassType>(function->selfType);
-			//	if (auto classInfo = project.GetClass(classType))
-			//	{
-			//		byteCode.AppendOp(OpCode::PUSH_METHOD);
-			//		if ((*classInfo)->methods.ContainsKey(function->name))
-			//		{
-			//			auto& method = (*classInfo)->methods.GetValueByKey(function->name);
-			//			byteCode.AppendU16Unchecked(method.parameters.size());
-			//			byteCode.AppendU16Unchecked(*method.index);
-			//		}
-			//		else
-			//		{
-			//			throw CompilerException(node->position,
-			//				Format(U"missing class method '{}'", function->name));
-			//		}
-			//	}
-			//	else
-			//	{
-			//		throw CompilerException(node->position,
-			//			Format(U"missing class '{}'", classType->ToString()));
-			//	}
-
-			//}
-			//else if (function->selfType->typeCode == TypeCode::Interface)
-			//{
-
-			//}
-			//else
-			//{
-			//	throw CompilerException(node->position,
-			//		Format(U"not callable object type '{}'", function->selfType->ToString()));
-			//}
+			VisitExpression(node->expression, constantMap, byteCode);
+			byteCode.AppendOp(OpCode::INVOKE);
 		}
 		else if (node->expression->type->typeCode == TypeCode::Array)
 		{
@@ -1224,7 +769,6 @@ namespace cygni
 	{
 		VisitExpression(node->object, constantMap, byteCode);
 		auto location = node->location;
-		std::cout << node->id << std::endl;
 		if (location->type == LocationType::ModuleField)
 		{
 			switch (node->type->typeCode)
@@ -1728,6 +1272,66 @@ namespace cygni
 		}
 
 		return std::make_tuple(classes, modules);
+	}
+	void Compiler::ConvertExp(std::shared_ptr<UnaryExpression> node, ByteCode & byteCode)
+	{
+		auto from = node->operand->type->typeCode;
+		auto to = node->type->typeCode;
+		if (to == TypeCode::Class)
+		{
+			auto classType = std::static_pointer_cast<ClassType>(node->type);
+			if (auto classInfo = project.GetClass(classType))
+			{
+				if (classInfo.value()->index.has_value())
+				{
+					if (classInfo.value()->index.value() > std::numeric_limits<uint16_t>::max())
+					{
+						throw CompilerException((*classInfo)->position, U"the index of class cannot exceed 65535");
+					}
+					byteCode.AppendU16Unchecked(classInfo.value()->index.value());
+				}
+				else
+				{
+					throw CompilerException(node->position,
+						Format(U"type '{}' index not assigned", classType->ToString()));
+				}
+			}
+			else
+			{
+				throw CompilerException(node->position,
+					Format(U"type '{}' not found", classType->ToString()));
+			}
+		}
+		else if (to == TypeCode::Interface)
+		{
+			auto interfaceType = std::static_pointer_cast<InterfaceType>(node->type);
+			if (auto interfaceInfo = project.GetInterface(interfaceType))
+			{
+				if (interfaceInfo.value()->index)
+				{
+					if (interfaceInfo.value()->index.value() > std::numeric_limits<uint16_t>::max())
+					{
+						throw CompilerException(interfaceInfo.value()->position, U"the index of interface cannot exceed 65535");
+					}
+					byteCode.AppendU16Unchecked(interfaceInfo.value()->index.value());
+				}
+				else
+				{
+					throw CompilerException(node->position,
+						Format(U"type '{}' index not assigned", interfaceType->ToString()));
+				}
+			}
+			else
+			{
+				throw CompilerException(node->position,
+					Format(U"type '{}' not found", interfaceType->ToString()));
+			}
+		}
+		else
+		{
+			throw CompilerException(node->position,
+				Format(U"cannot convert the object from '{}' to '{}'", node->operand->type->ToString(), node->type->ToString()));
+		}
 	}
 	void CompilerRuleSet::AddRule(ExpressionType nodeType, std::vector<TypeCode> typeCodeList, OpCode op)
 	{

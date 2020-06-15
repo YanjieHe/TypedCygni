@@ -435,7 +435,7 @@ namespace cygni
 		}
 	}
 
-	FieldDef Parser::ParseFieldDefinition(AccessModifier modifier,
+	FieldInfo Parser::ParseFieldDefinition(AccessModifier modifier,
 		Table<std::u32string, AnnotationInfo> annotations, bool isStatic)
 	{
 		const Token &start = Look();
@@ -447,18 +447,18 @@ namespace cygni
 		{
 			Match(Tag::Assign);
 			auto value = ParseOr();
-			return FieldDef(Pos(start),
+			return FieldInfo(Pos(start),
 				modifier, isStatic, annotations, name, type, value);
 		}
 		else
 		{
 			auto value = std::make_shared<DefaultExpression>(Pos(Look()), type);
-			return FieldDef(Pos(start),
+			return FieldInfo(Pos(start),
 				modifier, isStatic, annotations, name, type, value);
 		}
 	}
 
-	MethodDef Parser::ParseMethodDefinition(AccessModifier modifier,
+	MethodInfo Parser::ParseMethodDefinition(AccessModifier modifier,
 		Table<std::u32string, AnnotationInfo> annotations, bool isStatic, TypePtr selfType)
 	{
 		const Token &start = Look();
@@ -482,14 +482,14 @@ namespace cygni
 		if (Look().tag == Tag::LeftBrace)
 		{
 			auto body = ParseBlock();
-			return MethodDef(Pos(start), modifier, isStatic, selfType,
+			return MethodInfo(Pos(start), modifier, isStatic, selfType,
 				annotations, name, parameters, returnType, body);
 		}
 		else
 		{
 			auto empty =
 				std::make_shared<DefaultExpression>(Pos(Look()), returnType);
-			return MethodDef(Pos(start), modifier, isStatic, selfType,
+			return MethodInfo(Pos(start), modifier, isStatic, selfType,
 				annotations, name, parameters, returnType, empty);
 		}
 	}

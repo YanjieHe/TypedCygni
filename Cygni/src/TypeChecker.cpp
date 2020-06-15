@@ -448,7 +448,7 @@ namespace cygni
 		return Type::Void();
 	}
 
-	TypePtr TypeChecker::CheckFieldDef(FieldDef &field, Scope<TypePtr>* scope)
+	TypePtr TypeChecker::CheckFieldDef(FieldInfo &field, Scope<TypePtr>* scope)
 	{
 		field.type = CheckType(field.position, field.type);
 		if (field.value->nodeType == ExpressionType::Default)
@@ -471,7 +471,7 @@ namespace cygni
 		}
 	}
 
-	TypePtr TypeChecker::CheckMethodDef(MethodDef &method, Scope<TypePtr>* outerScope)
+	TypePtr TypeChecker::CheckMethodDef(MethodInfo &method, Scope<TypePtr>* outerScope)
 	{
 		method.selfType = CheckType(method.position, method.selfType);
 		auto scope = scopeFactory->New(outerScope);

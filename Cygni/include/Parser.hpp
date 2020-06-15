@@ -81,10 +81,10 @@ namespace cygni
 
 		ExpPtr ParseVar();
 
-		FieldDef ParseFieldDefinition(AccessModifier modifier,
+		FieldInfo ParseFieldDefinition(AccessModifier modifier,
 			Table<std::u32string, AnnotationInfo> annotations, bool isStatic);
 
-		MethodDef ParseMethodDefinition(AccessModifier modifier,
+		MethodInfo ParseMethodDefinition(AccessModifier modifier,
 			Table<std::u32string, AnnotationInfo> annotations, bool isStatic, TypePtr selfType);
 
 		std::shared_ptr<ParameterExpression> ParseParameter();
