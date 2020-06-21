@@ -1,7 +1,7 @@
-#include "OpCode.h"
+#include "opcode.h"
 
 const char* opcode_info[][2] = {
-	{ "PUSH_I32_0", "" },
+		{ "PUSH_I32_0", "" },
 	{ "PUSH_I32_1", "" },
 	{ "PUSH_I32_1BYTE", "b" },
 	{ "PUSH_I32_2BYTE", "u" },
@@ -99,8 +99,8 @@ const char* opcode_info[][2] = {
 	{ "CAST_F64_TO_I32", "" },
 	{ "CAST_F64_TO_I64", "" },
 	{ "CAST_F64_TO_F32", "" },
-	{ "UP_CAST", "bu" },
-	{ "DOWN_CAST", "bu" },
+	{ "UP_CAST", "u" },
+	{ "DOWN_CAST", "u" },
 	{ "EQ_I32", "" },
 	{ "EQ_I64", "" },
 	{ "EQ_F32", "" },
@@ -131,9 +131,9 @@ const char* opcode_info[][2] = {
 	{ "JUMP", "u" },
 	{ "JUMP_IF_TRUE", "u" },
 	{ "JUMP_IF_FALSE", "u" },
-	{ "INVOKE_FUNCTION", "uu" },
-	{ "INVOKE_METHOD", "uu" },
-	{ "INVOKE_INTERFACE", "uu" },
+	{ "PUSH_FUNCTION", "uu" },
+	{ "PUSH_METHOD", "uu" },
+	{ "INVOKE", "" },
 	{ "RETURN_I32", "" },
 	{ "RETURN_I64", "" },
 	{ "RETURN_F32", "" },

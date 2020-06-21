@@ -64,10 +64,7 @@ namespace cygni
 			const ConstantMap& constantMap, ByteCode& byteCode);
 		void VisitConstant(std::shared_ptr<ConstantExpression> node,
 			const ConstantMap& constantMap, ByteCode& byteCode);
-		void CompileClassInfo(std::shared_ptr<ClassInfo> info, ByteCode& byteCode);
-		void CompileModuleInfo(std::shared_ptr<ModuleInfo> info, ByteCode& byteCode);
 		//void CompileFieldDef(const FieldDef &field, ByteCode& byteCode);
-		void CompileMethodDef(const MethodInfo &method, const ConstantMap& constantMap, ByteCode& byteCode);
 		void VisitParameter(std::shared_ptr<ParameterExpression> parameter, const ConstantMap& constantMap, ByteCode& byteCode);
 		void VisitReturn(std::shared_ptr<ReturnExpression> node,
 			const ConstantMap& constantMap, ByteCode& byteCode);
@@ -86,6 +83,10 @@ namespace cygni
 			const ConstantMap& constantMap, ByteCode& byteCode);
 		void VisitWhile(std::shared_ptr<WhileExpression> node,
 			const ConstantMap& constantMap, ByteCode& byteCode);
+
+		void CompileClassInfo(std::shared_ptr<ClassInfo> info, ByteCode& byteCode);
+		void CompileModuleInfo(std::shared_ptr<ModuleInfo> info, ByteCode& byteCode);
+		void CompileMethodDef(const MethodInfo &method, const ConstantMap& constantMap, ByteCode& byteCode);
 		void CompileMainFunction(const std::vector<std::shared_ptr<ModuleInfo>>& modules, ByteCode& byteCode);
 		void CompileConstantPool(SourcePosition position, const ConstantMap& constantMap, ByteCode& byteCode);
 		std::tuple<std::vector<std::shared_ptr<ClassInfo>>, std::vector<std::shared_ptr<ModuleInfo>>>

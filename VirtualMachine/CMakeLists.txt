@@ -12,3 +12,4 @@ file(GLOB SOURCES "src/*.c")
 add_executable(VirtualMachine main.c ${SOURCES})
 
 set_target_properties(VirtualMachine PROPERTIES LINKER_LANGUAGE C)
+set_property(TARGET VirtualMachine PROPERTY C_STANDARD 89)

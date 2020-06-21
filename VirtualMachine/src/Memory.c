@@ -1,7 +1,19 @@
-#include "Memory.h"
+#include "memory.h"
 #include <malloc.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+State* state_new()
+{
+	State* state = malloc(sizeof(State));
+	state->blocks = NULL;
+	state->alloc_ptr = NULL;
+	state->mem_size = 0;
+	state->byte_code.offset = 0;
+	state->byte_code.size = 0;
+	state->byte_code.code = NULL;
+	return state;
+}
 
 void * vm_alloc(State * state, size_t new_size)
 {

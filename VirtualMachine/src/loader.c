@@ -1,10 +1,48 @@
-#include "Parser.h"
+#include "loader.h"
 #include <malloc.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "Unicode.h"
-#include "OpCode.h"
+#include "unicode.h"
+#include "opcode.h"
+
+#define FILE_READ(BUFFER, TYPE, SIZE, SOURCE) (fread((BUFFER), sizeof(TYPE), (SIZE), (SOURCE)) == (SIZE))
+#define CURRENT_BYTE(STATE) ((STATE)->byte_code.code[(STATE)->byte_code.offset])
+#define FORWARD(STATE, STEP) ((STATE)->byte_code.offset += (STEP))
+
+char* read_byte_code_from_file(char* path, int* file_length)
+{
+	char *byte_code;
+	FILE *file;
+
+	*file_length = -1;
+	file = fopen(path, "rb");
+
+	if (file == NULL)
+	{
+		return NULL;
+	}
+	else
+	{
+		fseek(file, 0L, SEEK_END);
+		*file_length = ftell(fd);
+		fseek(file, 0L, SEEK_SET);
+
+		byte_code = malloc(sizeof(Byte) * (*file_length));
+
+		if (fread(byte_code, sizeof(char), *file_length, file) == *file_length)
+		{
+			fclose(file);
+			return byte_code;
+		}
+		else
+		{
+			free(byte_code);
+			fclose(file);
+			return NULL;
+		}
+	}
+}
 
 char* parse_string(State* state)
 {
@@ -13,9 +51,11 @@ char* parse_string(State* state)
 
 	len = parse_ushort(state);
 	str = vm_alloc(state, sizeof(char) * (len + 1));
-	if (fread(str, sizeof(char), len, state->source) == len)
+	if (expect_length(state, len))
 	{
+		memcpy(str, &(CURRENT_BYTE(state)), len);
 		str[len] = '\0';
+		FORWARD(state, len);
 		return str;
 	}
 	else
@@ -26,22 +66,38 @@ char* parse_string(State* state)
 	}
 }
 
+Byte parse_byte(State * state)
+{
+	if (expect_length(state, 1))
+	{
+		Byte b;
+
+		b = CURRENT_BYTE(state);
+		FORWARD(state, 1);
+		return b;
+	}
+	else
+	{
+		fprintf(stderr, "cannot read byte\n");
+		vm_throw(state, VM_ERROR_READ_U8);
+		return 0;
+	}
+}
+
 // Big Endian
 uint16_t parse_ushort(State* state)
 {
-	uint16_t value;
-	Byte b1;
-	Byte b2;
-	size_t res1;
-	size_t res2;
-
-	res1 = fread(&b1, sizeof(Byte), 1, state->source);
-	res2 = fread(&b2, sizeof(Byte), 1, state->source);
-
-	if (res1 == 1 && res2 == 1)
+	if (expect_length(2 * sizeof(Byte)))
 	{
-		value = ((uint16_t)b1) * 256 + ((uint16_t)b2);
-		return value;
+		Byte b1;
+		Byte b2;
+
+		b1 = CURRENT_BYTE(state);
+		FORWARD(state, 1);
+		b2 = CURRENT_BYTE(state);
+		FORWARD(state, 1);
+
+		return ((uint16_t)b1) * 256 + ((uint16_t)b2);
 	}
 	else
 	{
@@ -126,32 +182,32 @@ void parse_class(State* state, ClassInfo* class_info)
 		class_info->super_classes[i] = parse_ushort(state);
 	}
 
-	class_info->n_interface = parse_ushort(state);
-	class_info->interface_index_list = vm_alloc(state, sizeof(uint16_t) * class_info->n_interface);
-	class_info->interface_tables = vm_alloc(state, sizeof(VirtualTable) * class_info->n_interface);
-	for (i = 0; i < class_info->n_interface; i++)
-	{
-		class_info->interface_index_list[i] = parse_ushort(state);
-		class_info->interface_tables[i].n_methods = parse_ushort(state);
-		class_info->interface_tables[i].methods = vm_alloc(state,
-			sizeof(Function*) * class_info->interface_tables[i].n_methods);		
-		class_info->interface_tables[i].class_index_list = vm_alloc(state,
-				sizeof(uint16_t) * class_info->interface_tables[i].n_methods);
-		class_info->interface_tables[i].method_index_list = vm_alloc(state,
-			sizeof(uint16_t) * class_info->interface_tables[i].n_methods);
-		for (j = 0; j < class_info->interface_tables[i].n_methods; j++)
-		{
-			class_info->interface_tables[i].class_index_list[j] = parse_ushort(state);
-			class_info->interface_tables[i].method_index_list[j] = parse_ushort(state);
-		}
-	}
+	//class_info->n_interface = parse_ushort(state);
+	//class_info->interface_index_list = vm_alloc(state, sizeof(uint16_t) * class_info->n_interface);
+	//class_info->interface_tables = vm_alloc(state, sizeof(VirtualTable) * class_info->n_interface);
+	//for (i = 0; i < class_info->n_interface; i++)
+	//{
+	//	class_info->interface_index_list[i] = parse_ushort(state);
+	//	class_info->interface_tables[i].n_methods = parse_ushort(state);
+	//	class_info->interface_tables[i].methods = vm_alloc(state,
+	//		sizeof(Function*) * class_info->interface_tables[i].n_methods);		
+	//	class_info->interface_tables[i].class_index_list = vm_alloc(state,
+	//			sizeof(uint16_t) * class_info->interface_tables[i].n_methods);
+	//	class_info->interface_tables[i].method_index_list = vm_alloc(state,
+	//		sizeof(uint16_t) * class_info->interface_tables[i].n_methods);
+	//	for (j = 0; j < class_info->interface_tables[i].n_methods; j++)
+	//	{
+	//		class_info->interface_tables[i].class_index_list[j] = parse_ushort(state);
+	//		class_info->interface_tables[i].method_index_list[j] = parse_ushort(state);
+	//	}
+	//}
 
 
 	class_info->v_table.n_methods = parse_ushort(state);
-	class_info->v_table.methods = vm_alloc(state, sizeof(Function*) * class_info->v_table.n_methods);
+	class_info->v_table.methods = vm_alloc(state, sizeof(MethodInfo*) * class_info->v_table.n_methods);
 	for (i = 0; i < class_info->v_table.n_methods; i++)
 	{
-		class_info->v_table.methods[i] = parse_function(state);
+		class_info->v_table.methods[i] = parse_method(state);
 		if (!(class_info->v_table.methods[i]->is_native_function))
 		{
 			class_info->v_table.methods[i]->u.func->n_constants = class_info->constant_pool.n_constants;
@@ -161,105 +217,93 @@ void parse_class(State* state, ClassInfo* class_info)
 	}
 }
 
-void parse_module(State* state, ModuleInfo* module_info)
+//void parse_module(State* state, ModuleInfo* module_info)
+//{
+//	int i;
+//
+//	module_info->name = parse_string(state);
+//	printf("module name: %s\n", module_info->name);
+//	module_info->n_fields = parse_ushort(state);
+//	module_info->field_names = vm_alloc(state, sizeof(char*) * module_info->n_fields);
+//
+//	for (i = 0; i < module_info->n_fields; i++)
+//	{
+//		module_info->field_names[i] = parse_string(state);
+//		printf("field: %s\n", module_info->field_names[i]);
+//	}
+//
+//	parse_constant_pool(state, &(module_info->constant_pool));
+//	module_info->n_functions = parse_ushort(state);
+//	module_info->functions = (MethodInfo**)vm_alloc(state, sizeof(MethodInfo*) * module_info->n_functions);
+//	for (i = 0; i < module_info->n_functions; i++)
+//	{
+//		module_info->functions[i] = parse_function(state);
+//		if (!IS_NATIVE_FUNCTION(module_info->functions[i]))
+//		{
+//			module_info->functions[i]->func.n_constants = module_info->constant_pool.n_constants;
+//			module_info->functions[i]->func.constant_pool = module_info->constant_pool.constants;
+//		}
+//		printf("function: %s\n", FUNCTION_NAME(module_info->functions[i]));
+//	}
+//}
+
+MethodInfo * parse_method(State* state)
 {
-	int i;
+	MethodInfo* function;
 
-	module_info->name = parse_string(state);
-	printf("module name: %s\n", module_info->name);
-	module_info->n_fields = parse_ushort(state);
-	module_info->field_names = vm_alloc(state, sizeof(char*) * module_info->n_fields);
+	function = vm_alloc(state, sizeof(MethodInfo));
 
-	for (i = 0; i < module_info->n_fields; i++)
+	function->flag = parse_byte(state);
+	function->name = parse_string(state);
+	if (function->flag = METHOD_FLAG_NATIVE_FUNCTION)
 	{
-		module_info->field_names[i] = parse_string(state);
-		printf("field: %s\n", module_info->field_names[i]);
+		function->native_method.is_loaded = false;
+		function->native_method.function_pointer = NULL;
+		function->args_size = parse_ushort(state);
+		function->native_method.lib_path = parse_string(state);
+		function->native_method.entry_point = parse_string(state);
+		return function;
 	}
-
-	parse_constant_pool(state, &(module_info->constant_pool));
-	module_info->n_functions = parse_ushort(state);
-	module_info->functions = (Function**)vm_alloc(state, sizeof(Function*) * module_info->n_functions);
-	for (i = 0; i < module_info->n_functions; i++)
+	else
 	{
-		module_info->functions[i] = parse_function(state);
-		if (!(module_info->functions[i]->is_native_function))
-		{
-			module_info->functions[i]->u.func->n_constants = module_info->constant_pool.n_constants;
-			module_info->functions[i]->u.func->constant_pool = module_info->constant_pool.constants;
-		}
-		printf("function: %s\n", module_info->functions[i]->name);
-	}
-}
+		uint16_t code_length;
 
-Function * parse_function(State* state)
-{
-	Function* function;
-	Byte is_native_function;
-	uint16_t code_len;
-	NativeFunction* native_function;
-
-	function = (Function*)vm_alloc(state, sizeof(Function));
-	if (fread(&is_native_function, sizeof(Byte), 1, state->source) == 1)
-	{
-		if (is_native_function)
+		function->args_size = parse_ushort(state);
+		function->locals = parse_ushort(state);
+		//printf("args_size = %d, locals = %d\n", function->u.func->args_size, function->u.func->locals);
+		code_length = parse_ushort(state);
+		function->code_length = code_length;
+		//printf("function code len=%d\n", code_len);
+		function->code = vm_alloc(state, sizeof(Byte) * code_length);
+		if (expect(state, code_length))
 		{
-			function->is_native_function = true;
-			function->name = parse_string(state);
-			native_function = (NativeFunction*)vm_alloc(state, sizeof(NativeFunction));
-			native_function->is_loaded = false;
-			native_function->function_pointer = NULL;
-			native_function->args_size = parse_ushort(state);
-			native_function->lib_path = parse_string(state);
-			native_function->func_name = parse_string(state);
-			function->u.nv = native_function;
+			memcpy(function->code, &(CURRENT_BYTE(state)), code_length);
 			return function;
 		}
 		else
 		{
-			function->name = parse_string(state);
-			function->is_native_function = false;
-			function->u.func = (FunctionInfo*)vm_alloc(state, sizeof(FunctionInfo));
-			function->u.func->args_size = parse_ushort(state);
-			function->u.func->locals = parse_ushort(state);
-			//printf("args_size = %d, locals = %d\n", function->u.func->args_size, function->u.func->locals);
-			code_len = parse_ushort(state);
-			function->u.func->code_len = code_len;
-			//printf("function code len=%d\n", code_len);
-			function->u.func->code = (Byte*)vm_alloc(state, sizeof(Byte) * code_len);
-			if (fread(function->u.func->code, sizeof(Byte), code_len, state->source) == code_len)
-			{
-				return function;
-			}
-			else
-			{
-				fprintf(stderr, "fail to read byte code\n");
-				vm_throw(state, VM_ERROR_READ_FUNCTION_BYTE_CODE);
-				return NULL; // make the compiler happy
-			}
+			fprintf(stderr, "fail to read byte code\n");
+			vm_throw(state, VM_ERROR_READ_FUNCTION_BYTE_CODE);
+			return NULL; // make the compiler happy
 		}
-	}
-	else
-	{
-		fprintf(stderr, "fail to load function");
-		vm_throw(state, -1);
-		return NULL; // make the compiler happy
 	}
 }
 
 void parse_constant_pool(State* state, ConstantPool* constant_pool)
 {
-	Byte type_tag;
 	int i;
-	char* str;
-	String* u32_str;
 
 	constant_pool->n_constants = parse_ushort(state);
 	printf("# of constants: %d\n", constant_pool->n_constants);
 	constant_pool->constants = (Constant*)vm_alloc(state, sizeof(Constant) * constant_pool->n_constants);
 	for (i = 0; i < constant_pool->n_constants; i++)
 	{
+		Byte type_tag;
+
 		if (fread(&type_tag, sizeof(Byte), 1, state->source) == 1)
 		{
+			char* str;
+
 			str = parse_string(state);
 			printf("constant: '%s'\n", str);
 			constant_pool->constants[i].tag = type_tag;
@@ -281,6 +325,8 @@ void parse_constant_pool(State* state, ConstantPool* constant_pool)
 			}
 			else if (type_tag == TYPE_STRING)
 			{
+				String* u32_str;
+
 				u32_str = vm_alloc(state, sizeof(String));
 				u32_str->length = utf8_to_utf32_len(str);
 				u32_str->characters = utf8_to_utf32(str, u32_str->length);
@@ -304,7 +350,7 @@ void view_exe(Executable* exe)
 {
 	int i;
 	int j;
-	Function* function;
+	MethodInfo* function;
 
 	printf("class count: %d, module count: %d\n\n", exe->class_count, exe->module_count);
 	for (i = 0; i < exe->class_count; i++)
@@ -339,7 +385,7 @@ void view_exe(Executable* exe)
 	}
 }
 
-void view_function(Function * function, Executable* exe)
+void view_function(MethodInfo * function, Executable* exe)
 {
 	int i;
 	Byte op_code;
@@ -348,43 +394,44 @@ void view_function(Function * function, Executable* exe)
 	uint32_t u32_v;
 	uint32_t module_index;
 
-	if (function->is_native_function)
+	printf("\tmethod: %s\n", FUNCTION_NAME(function));
+	if (IS_NATIVE_FUNCTION(function))
 	{
-		printf("\tmethod: %s\n", function->name);
-		printf("\targs_size=%d\n", function->u.nv->args_size);
-		printf("\tlibrary name: %s\n\tfunction name: %s\n\n", function->u.nv->lib_path, function->u.nv->func_name);
+		printf("\targs_size=%d\n", function->nf.args_size);
+		printf("\tlibrary name: %s\n\tfunction name: %s\n\n", function->nf.lib_path, function->nf.func_name);
 	}
 	else
 	{
-		printf("\tmethod: %s\n", function->name);
-		printf("\targs_size=%d, locals=%d\n", function->u.func->args_size, function->u.func->locals);
+		FunctionInfo* func = &(function->func);
+
+		printf("\targs_size=%d, locals=%d\n", func->args_size, func->locals);
 
 		printf("\tcode:\n");
 		i = 0;
-		while (i < function->u.func->code_len)
+		while (i < func->code_len)
 		{
-			op_code = function->u.func->code[i];
+			op_code = func->code[i];
 			op_name = opcode_info[op_code][0];
 			if (strcmp(op_name, "INVOKE_FUNCTION") == 0)
 			{
 				printf("\t\t%d: %s", i, op_name);
 				i++;
-				module_index = function->u.func->code[i];
-				module_index = module_index * 256 + ((uint16_t)function->u.func->code[i + 1]);
+				module_index = func->code[i];
+				module_index = module_index * 256 + ((uint16_t)func->code[i + 1]);
 				printf(" %s", exe->modules[module_index].name);
 				i = i + 2;
 
-				u32_v = function->u.func->code[i];
-				u32_v = u32_v * 256 + ((uint16_t)function->u.func->code[i + 1]);
-				printf(".%s", exe->modules[module_index].functions[u32_v]->name);
+				u32_v = func->code[i];
+				u32_v = u32_v * 256 + ((uint16_t)func->code[i + 1]);
+				printf(".%s", FUNCTION_NAME(exe->modules[module_index].functions[u32_v]));
 				i = i + 2;
 			}
 			else if (strcmp(op_name, "NEW") == 0)
 			{
 				printf("\t\t%d: %s", i, op_name);
 				i++;
-				u32_v = function->u.func->code[i];
-				u32_v = u32_v * 256 + ((uint16_t)function->u.func->code[i + 1]);
+				u32_v = func->code[i];
+				u32_v = u32_v * 256 + ((uint16_t)func->code[i + 1]);
 				printf(" %s", exe->classes[u32_v].name);
 				i = i + 2;
 			}
@@ -395,25 +442,25 @@ void view_function(Function * function, Executable* exe)
 				op_type = opcode_info[op_code][1];
 				if (strcmp(op_type, "b") == 0)
 				{
-					printf(" %d", (int)function->u.func->code[i]);
+					printf(" %d", (int)func->code[i]);
 					i++;
 				}
 				else if (strcmp(op_type, "u") == 0 || strcmp(op_type, "p") == 0)
 				{
-					u32_v = function->u.func->code[i];
-					u32_v = u32_v * 256 + ((uint16_t)function->u.func->code[i + 1]);
+					u32_v = func->code[i];
+					u32_v = u32_v * 256 + ((uint16_t)func->code[i + 1]);
 					printf(" %d", u32_v);
 					i = i + 2;
 				}
 				else if (strcmp(op_type, "uu") == 0)
 				{
-					u32_v = function->u.func->code[i];
-					u32_v = u32_v * 256 + ((uint16_t)function->u.func->code[i + 1]);
+					u32_v = func->code[i];
+					u32_v = u32_v * 256 + ((uint16_t)func->code[i + 1]);
 					printf(" %d", u32_v);
 					i = i + 2;
 
-					u32_v = function->u.func->code[i];
-					u32_v = u32_v * 256 + ((uint16_t)function->u.func->code[i + 1]);
+					u32_v = func->code[i];
+					u32_v = u32_v * 256 + ((uint16_t)func->code[i + 1]);
 					printf(" %d", u32_v);
 					i = i + 2;
 				}

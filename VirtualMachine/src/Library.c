@@ -1,5 +1,5 @@
-#include "Library.h"
-#include "Machine.h"
+#include "library.h"
+#include "machine.h"
 
 FunctionPointer load_library_function(State* state, const char * library_path, const char * function_name)
 {

@@ -1,7 +1,7 @@
 #ifndef VM_LIBRARY_H
 #define VM_LIBRARY_H
-#include "Data.h"
-#include "Memory.h"
+#include "cygni.h"
+#include "memory.h"
 
 #ifdef _WIN32
 #include <windows.h>
