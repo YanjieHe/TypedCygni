@@ -1,4 +1,4 @@
-#include "memory.h"
+#include "state.h"
 #include <malloc.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -65,15 +65,11 @@ void vm_free(State * state)
 
 void vm_throw(State * state, int error_code)
 {
-	long pos;
-
 	vm_free(state);
-	if (state->source)
+	if (state->byte_code.code)
 	{
-		pos = ftell(state->source);
-		fprintf(stderr, "current byte code file position: %ld\n", pos);
-		fclose(state->source);
-		state->source = NULL;
+		fprintf(stderr, "current byte code position: %ld\n", state->byte_code.offset);
+		state->byte_code.code = NULL;
 	}
 	longjmp(state->target, error_code);
 }

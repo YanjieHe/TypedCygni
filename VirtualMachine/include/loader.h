@@ -1,9 +1,9 @@
 #ifndef VM_PARSER_H
 #define VM_PARSER_H
 #include "cygni.h"
-#include "memory.h"
+#include "state.h"
 #include <stdio.h>
-
+#include "executable.h"
 char* read_byte_code_from_file(char* path, int* file_length);
 
 char* parse_string(State* state);
@@ -18,7 +18,7 @@ void parse_class(State* state, ClassInfo* class_info);
 
 //void parse_module(State* state, ModuleInfo* module_info);
 
-MethodInfo* parse_method(State* state);
+void parse_method(State* state, MethodInfo* function, ClassInfo* class_info);
 
 void parse_constant_pool(State* state, ConstantPool* constant_pool);
 

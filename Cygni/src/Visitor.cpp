@@ -67,10 +67,6 @@ namespace cygni
 		obj["methods"] = methodsJson;
 
 		obj["virtualTable"] = VisitVirtualTable(info->virtualTable);
-		if (info->index.has_value())
-		{
-			obj["typeId"] = info->index.value();
-		}
 		return obj;
 	}
 
@@ -111,10 +107,6 @@ namespace cygni
 			methodsJson[name] = VisitMethodDef(method);
 		}
 		obj["methods"] = methodsJson;
-		if (info->index.has_value())
-		{
-			obj["typeId"] = info->index.value();
-		}
 		return obj;
 	}
 
@@ -364,16 +356,14 @@ namespace cygni
 		for (const auto& item : virtualTable)
 		{
 			json obj;
-			obj["typeId"] = item.typeId;
-			std::vector<json> locations;
-			for (auto location : item.locations)
+			std::vector<json> methods;
+			for (auto methodName : item.methodNames)
 			{
-				json locationObj;
-				locationObj["classIndex"] = location.classIndex;
-				locationObj["methodIndex"] = location.methodIndex;
-				locations.push_back(locationObj);
+				json methodNameObj;
+				methodNameObj["methodName"] = UTF32ToUTF8(methodName.ToString());
+				methods.push_back(methodNameObj);
 			}
-			obj["locations"] = locations;
+			obj["methods"] = methods;
 			objList.push_back(obj);
 		}
 		return objList;
@@ -612,13 +602,16 @@ namespace cygni
 		int offset = 0;
 		for (auto& field : info->fields)
 		{
-			scope->Put(field.name, std::make_shared<MemberLocation>(LocationType::ClassField, info->route, info->name, field.name, *info->index, offset));
+			auto name = FullQualifiedName(info->route).Concat(info->name).Concat(field.name);
+			scope->Put(field.name, std::make_shared<MemberLocation>(LocationType::ClassField, name, offset));
 			field.index = offset;
 			offset++;
 		}
+		offset = 0;
 		for (auto& method : info->methods)
 		{
-			scope->Put(method.name, std::make_shared<MemberLocation>(LocationType::ClassMethod, info->route, info->name, method.name, *info->index, offset));
+			auto name = FullQualifiedName(info->route).Concat(info->name).Concat(method.name);
+			scope->Put(method.name, std::make_shared<MemberLocation>(LocationType::ClassMethod, name, offset));
 		}
 		for (auto& method : info->methodDefs)
 		{
@@ -629,14 +622,18 @@ namespace cygni
 	{
 		auto scope = scopeFactory->New(outerScope);
 		int offset = 0;
-		for (auto& field : info->fields.values)
+		for (auto& field : info->fields)
 		{
-			scope->Put(field.name, std::make_shared<MemberLocation>(LocationType::ModuleField, info->route, info->name, field.name, *info->index, *field.index));
+			auto name = FullQualifiedName(info->route).Concat(info->name).Concat(field.name);
+			scope->Put(field.name, std::make_shared<MemberLocation>(LocationType::ModuleField, name, offset));
+			field.index = offset;
 			offset++;
 		}
-		for (auto& method : info->methods.values)
+		offset = 0;
+		for (auto& method : info->methods)
 		{
-			scope->Put(method.name, std::make_shared<MemberLocation>(LocationType::ModuleMethod, info->route, info->name, method.name, *info->index, *method.index));
+			auto name = FullQualifiedName(info->route).Concat(info->name).Concat(method.name);
+			scope->Put(method.name, std::make_shared<MemberLocation>(LocationType::ModuleMethod, name, offset));
 		}
 		for (const auto& method : info->methods.values)
 		{
@@ -702,12 +699,14 @@ namespace cygni
 				if (moduleInfo->fields.ContainsKey(node->field))
 				{
 					auto& field = moduleInfo->fields.GetValueByKey(node->field);
-					node->location = std::make_shared<MemberLocation>(LocationType::ModuleField, moduleInfo->route, moduleInfo->name, field.name, *moduleInfo->index, *field.index);
+					auto name = FullQualifiedName(moduleInfo->route).Concat(moduleInfo->name).Concat(field.name);
+					node->location = std::make_shared<MemberLocation>(LocationType::ModuleField, name, *field.index);
 				}
 				else if (moduleInfo->methods.ContainsKey(node->field))
 				{
 					auto& method = moduleInfo->methods.GetValueByKey(node->field);
-					node->location = std::make_shared<MemberLocation>(LocationType::ModuleMethod, moduleInfo->route, moduleInfo->name, method.name, *moduleInfo->index, *method.index);
+					auto name = FullQualifiedName(moduleInfo->route).Concat(moduleInfo->name).Concat(method.name);
+					node->location = std::make_shared<MemberLocation>(LocationType::ModuleMethod, name, *method.index);
 				}
 				else
 				{
@@ -729,12 +728,14 @@ namespace cygni
 				if (classInfo->fields.ContainsKey(node->field))
 				{
 					auto& field = classInfo->fields.GetValueByKey(node->field);
-					node->location = std::make_shared<MemberLocation>(LocationType::ClassField, classInfo->route, classInfo->name, field.name, *classInfo->index, *field.index);
+					auto name = FullQualifiedName(classInfo->route).Concat(classInfo->name).Concat(field.name);
+					node->location = std::make_shared<MemberLocation>(LocationType::ClassField, name, *field.index);
 				}
 				else if (classInfo->methods.ContainsKey(node->field))
 				{
 					auto& method = classInfo->methods.GetValueByKey(node->field);
-					node->location = std::make_shared<MemberLocation>(LocationType::ClassMethod, classInfo->route, classInfo->name, method.name, *classInfo->index, *method.index);
+					auto name = FullQualifiedName(classInfo->route).Concat(classInfo->name).Concat(method.name);
+					node->location = std::make_shared<MemberLocation>(LocationType::ClassMethod, name, *method.index);
 				}
 				else
 				{
@@ -757,7 +758,8 @@ namespace cygni
 				if (interfaceInfo->methodDefs.ContainsKey(node->field))
 				{
 					auto& method = interfaceInfo->methodDefs.GetValueByKey(node->field);
-					node->location = std::make_shared<MemberLocation>(LocationType::InterfaceMethod, interfaceInfo->route, interfaceInfo->name, method.name, *interfaceInfo->index, *method.index);
+					auto name = FullQualifiedName(interfaceInfo->route).Concat(interfaceInfo->name).Concat(method.name);
+					node->location = std::make_shared<MemberLocation>(LocationType::InterfaceMethod, name, *method.index);
 				}
 				else
 				{
@@ -835,7 +837,8 @@ namespace cygni
 		auto scope = scopeFactory->New(globalScope);
 		for (auto moduleInfo : package->modules)
 		{
-			scope->Put(moduleInfo->name, std::make_shared<TypeLocation>(LocationType::ModuleName, *moduleInfo->index));
+			auto name = FullQualifiedName(moduleInfo->route).Concat(moduleInfo->name);
+			scope->Put(moduleInfo->name, std::make_shared<TypeLocation>(LocationType::ModuleName, name));
 		}
 		for (auto classInfo : package->classes.values)
 		{
@@ -855,27 +858,115 @@ namespace cygni
 			VisitPackage(package, scope);
 		}
 	}
-	void ConstantCollector::VisitMethodDef(MethodInfo & method, std::unordered_set<ConstantKey>& constantSet)
+	void ConstantCollector::VisitMethodDef(MethodInfo & method, ConstantSet& constantSet)
 	{
 		std::function<bool(ExpPtr)> filter = [](ExpPtr node)
 		{
-			return node->nodeType == ExpressionType::Constant;
+			return node->nodeType == ExpressionType::Constant
+				|| node->nodeType == ExpressionType::MemberAccess
+				|| node->nodeType == ExpressionType::UpCast
+				|| node->nodeType == ExpressionType::DownCast
+				|| node->nodeType == ExpressionType::New
+				|| node->nodeType == ExpressionType::Parameter;
 		};
 		TreeTraverser traverser(filter);
 		std::vector<ExpPtr> nodeList;
 		traverser.VisitExpression(method.body, nodeList);
 		for (auto exp : nodeList)
 		{
-			auto node = std::static_pointer_cast<ConstantExpression>(exp);
-			if (node->type->typeCode == TypeCode::Boolean)
+			if (exp->nodeType == ExpressionType::Constant)
 			{
-				// pass
+				auto node = std::static_pointer_cast<ConstantExpression>(exp);
+				if (node->type->typeCode == TypeCode::Boolean)
+				{
+					// pass
+				}
+				else
+				{
+					// TO DO: small integers, 0.0 and 1.0
+					switch (node->type->typeCode)
+					{
+					case TypeCode::Int32:
+					{
+						constantSet[ConstantKind::CONSTANT_FLAG_I32].insert(node->constant);
+						break;
+					}
+					case TypeCode::Int64:
+					{
+						constantSet[ConstantKind::CONSTANT_FLAG_I64].insert(node->constant);
+						break;
+					}
+					case TypeCode::Float32:
+					{
+						constantSet[ConstantKind::CONSTANT_FLAG_F32].insert(node->constant);
+						break;
+					}
+					case TypeCode::Float64:
+					{
+						constantSet[ConstantKind::CONSTANT_FLAG_F64].insert(node->constant);
+						break;
+					}
+					case TypeCode::Boolean:
+					{
+						constantSet[ConstantKind::CONSTANT_FLAG_BOOLEAN].insert(node->constant);
+						break;
+					}
+					case TypeCode::Char:
+					{
+						constantSet[ConstantKind::CONSTANT_FLAG_CHAR].insert(node->constant);
+						break;
+					}
+					case TypeCode::String:
+					{
+						constantSet[ConstantKind::CONSTANT_FLAG_STRING].insert(node->constant);
+						constantSet[ConstantKind::CONSTANT_FLAG_METHOD].insert(U"Predef.String.New");
+						break;
+					}
+					default: {
+						throw TypeException(node->position,
+							Format(U"not supported type '{}' for constant expression", node->type->ToString()));
+					}
+					}
+				}
 			}
-			else
+			else if (exp->nodeType == ExpressionType::MemberAccess)
 			{
-				// TO DO: small integers, 0.0 and 1.0
-				ConstantKey key{ node->type->typeCode, node->constant };
-				constantSet.insert(key);
+				auto node = std::static_pointer_cast<MemberAccessExpression>(exp);
+				if (node->location->type == LocationType::ModuleField)
+				{
+					auto loc = std::static_pointer_cast<MemberLocation>(node->location);
+					constantSet[ConstantKind::CONSTANT_FLAG_STATIC_VAR].insert(loc->name.ToString());
+				}
+				else if (node->location->type == LocationType::ModuleMethod)
+				{
+					auto loc = std::static_pointer_cast<MemberLocation>(node->location);
+					constantSet[ConstantKind::CONSTANT_FLAG_STATIC_FUNCTION].insert(loc->name.ToString());
+				}
+			}
+			else if (exp->nodeType == ExpressionType::UpCast || exp->nodeType == ExpressionType::DownCast)
+			{
+				auto node = std::static_pointer_cast<UnaryExpression>(exp);
+				constantSet[ConstantKind::CONSTANT_FLAG_CLASS].insert(node->operand->type->ToString());
+				constantSet[ConstantKind::CONSTANT_FLAG_CLASS].insert(node->type->ToString());
+			}
+			else if (exp->nodeType == ExpressionType::New)
+			{
+				auto node = std::static_pointer_cast<NewExpression>(exp);
+				constantSet[ConstantKind::CONSTANT_FLAG_CLASS].insert(node->type->ToString());
+			}
+			else if (exp->nodeType == ExpressionType::Parameter)
+			{
+				auto node = std::static_pointer_cast<ParameterExpression>(exp);
+				if (node->location->type == LocationType::ModuleField)
+				{
+					auto loc = std::static_pointer_cast<MemberLocation>(node->location);
+					constantSet[ConstantKind::CONSTANT_FLAG_STATIC_VAR].insert(loc->name.ToString());
+				}
+				else if (node->location->type == LocationType::ModuleMethod)
+				{
+					auto loc = std::static_pointer_cast<MemberLocation>(node->location);
+					constantSet[ConstantKind::CONSTANT_FLAG_STATIC_FUNCTION].insert(loc->name.ToString());
+				}
 			}
 		}
 	}
@@ -883,30 +974,38 @@ namespace cygni
 	{
 		for (auto& classInfo : package->classes)
 		{
-			std::unordered_set<ConstantKey> constantSet;
+			ConstantSet constantSet;
 			for (auto& method : classInfo->methodDefs.values)
 			{
 				VisitMethodDef(method, constantSet);
 			}
 			int index = 0;
-			for (auto key : constantSet)
+			for (auto pair : constantSet)
 			{
-				classInfo->constantMap.insert({ key, index });
-				index++;
+				ConstantKind kind = pair.first;
+				for (std::u32string constVal : pair.second)
+				{
+					classInfo->constantMap[kind].insert({ constVal, index });
+					index++;
+				}
 			}
 		}
 		for (auto& moduleInfo : package->modules)
 		{
-			std::unordered_set<ConstantKey> constantSet;
+			ConstantSet constantSet;
 			for (auto& method : moduleInfo->methods.values)
 			{
 				VisitMethodDef(method, constantSet);
 			}
 			int index = 0;
-			for (auto key : constantSet)
+			for (auto pair : constantSet)
 			{
-				moduleInfo->constantMap.insert({ key, index });
-				index++;
+				ConstantKind kind = pair.first;
+				for (std::u32string constVal : pair.second)
+				{
+					moduleInfo->constantMap[kind].insert({ constVal, index });
+					index++;
+				}
 			}
 		}
 	}
@@ -917,9 +1016,6 @@ namespace cygni
 			VisitPackage(package);
 		}
 	}
-
-
-
 	void PackageImporter::ImportPackages(Project & project)
 	{
 		std::unordered_map<PackageRoute, std::vector<std::shared_ptr<ClassInfo>>> classMap;
@@ -998,7 +1094,7 @@ namespace cygni
 			}
 		}
 	}
-	void AssignIndex(Project & project)
+	/*void AssignIndex(Project & project)
 	{
 		int typeId = 0;
 		int moduleIndex = 0;
@@ -1038,5 +1134,5 @@ namespace cygni
 				}
 			}
 		}
-	}
+	}*/
 } // namespace cygni

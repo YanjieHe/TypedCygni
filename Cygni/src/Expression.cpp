@@ -300,8 +300,4 @@ namespace cygni
 	{
 	}
 
-	MethodLocation::MethodLocation(int classIndex, int methodIndex) : classIndex{ classIndex }, methodIndex{methodIndex}
-	{
-	}
-
 } // namespace cygni

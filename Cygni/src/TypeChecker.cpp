@@ -706,7 +706,9 @@ namespace cygni
 						throw TypeException(node->position, U"field initialization name not specified");
 					}
 				}
-				node->location = std::make_shared<TypeLocation>(LocationType::ClassName, *classInfo->index);
+				auto name = FullQualifiedName(classInfo->route)
+					.Concat(classInfo->name);
+				node->location = std::make_shared<TypeLocation>(LocationType::ClassName, name);
 				return node->type;
 			}
 			else
@@ -730,7 +732,7 @@ namespace cygni
 		{
 			node->variable->type = value;
 			scope->Put(node->variable->name, node->variable->type);
-			return  Attach(node, value);
+			return Attach(node, value);
 		}
 		else if (node->variable->type->Equals(value))
 		{
@@ -775,7 +777,7 @@ namespace cygni
 			auto classType = std::make_shared<ClassType>(classInfo->route, classInfo->name);
 			classInfo->inheritanceChain = typeGraph.InheritanceChain(classType);
 			classInfo->interfaceList = typeGraph.GetAllInterfaces(classType);
-			auto getIndex = [this, classInfo](std::shared_ptr<InterfaceType> interfaceType) -> int
+			/*auto getIndex = [this, classInfo](std::shared_ptr<InterfaceType> interfaceType) -> int
 			{
 				if (auto interfaceInfo = project.GetInterface(interfaceType))
 				{
@@ -795,7 +797,7 @@ namespace cygni
 				int ix = getIndex(x);
 				int iy = getIndex(y);
 				return ix < iy;
-			});
+			});*/
 		}
 		for (auto& interfaceInfo : package->interfaceDefs)
 		{

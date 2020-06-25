@@ -9,38 +9,6 @@
 
 namespace cygni
 {
-	class ConstantKey
-	{
-	public:
-		TypeCode typeCode;
-		std::u32string constant;
-	};
-}
-
-namespace std
-{
-	template <>
-	struct hash<cygni::ConstantKey>
-	{
-		std::hash<int> h1;
-		std::hash<std::u32string> h2;
-		std::size_t operator()(const cygni::ConstantKey& key) const
-		{
-			return h1(static_cast<int>(key.typeCode)) ^ (h2(key.constant) << 1);
-		}
-	};
-
-	template <>
-	struct equal_to<cygni::ConstantKey>
-	{
-		bool operator()(const cygni::ConstantKey& lhs, const cygni::ConstantKey& rhs) const
-		{
-			return lhs.typeCode == rhs.typeCode && lhs.constant == rhs.constant;
-		}
-	};
-}
-namespace cygni
-{
 
 	class Expression;
 	using ExpPtr = std::shared_ptr<Expression>;
@@ -251,24 +219,16 @@ namespace cygni
 			std::vector<Argument> arguments);
 	};
 
-	class MethodLocation
-	{
-	public:
-		int classIndex;
-		int methodIndex;
-
-		MethodLocation() = default;
-		MethodLocation(int classIndex, int methodIndex);
-	};
-
 	class VirtualMethods
 	{
 	public:
-		int typeId;
-		std::vector<MethodLocation> locations;
+		FullQualifiedName className;
+		std::vector<FullQualifiedName> methodNames;
 	};
 
 	using VirtualTable = std::vector<VirtualMethods>;
+
+	using ConstantMap = std::unordered_map<ConstantKind, std::unordered_map<std::u32string, int>>;
 
 	class ClassInfo
 	{
@@ -289,8 +249,8 @@ namespace cygni
 		std::unordered_map<int, std::vector<MethodInfo>> virtualMethodTable;
 
 		std::vector<TypePtr> superTypes;
-		std::unordered_map<ConstantKey, int> constantMap;
-		std::optional<int> index;
+		ConstantMap constantMap;
+		//std::optional<int> index;
 
 		std::vector<std::shared_ptr<ClassType>> inheritanceChain;
 		std::vector<std::shared_ptr<InterfaceType>> interfaceList;
@@ -309,8 +269,8 @@ namespace cygni
 		std::u32string name;
 		Table<std::u32string, FieldInfo> fields;
 		Table<std::u32string, MethodInfo> methods;
-		std::optional<int> index;
-		std::unordered_map<ConstantKey, int> constantMap;
+		//std::optional<int> index;
+		ConstantMap constantMap;
 		ModuleInfo() = default;
 		ModuleInfo(SourcePosition position, PackageRoute route, std::u32string name);
 	};
@@ -329,7 +289,7 @@ namespace cygni
 
 		VirtualTable virtualTable;
 
-		std::optional<int> index;
+		//std::optional<int> index;
 		InterfaceInfo() = default;
 		InterfaceInfo(SourcePosition position, PackageRoute route, std::u32string name);
 	};

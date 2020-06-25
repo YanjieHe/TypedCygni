@@ -223,7 +223,7 @@ namespace cygni
 		Project& project;
 		VirtualTableGenerator(Project& project);
 		void VisitClass(std::shared_ptr<ClassInfo> classInfo) override;
-		int GetClassId(SourcePosition position, TypePtr classType);
+		//int GetClassId(SourcePosition position, TypePtr classType);
 	};
 
 	class HandleThisPointerPass : public Nanopass<>

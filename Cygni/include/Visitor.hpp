@@ -189,15 +189,17 @@ namespace cygni
 		void VisitProject();
 	};
 
+	using ConstantSet = std::unordered_map<ConstantKind, std::unordered_set<std::u32string>>;
+
 	class ConstantCollector
 	{
 	public:
-		void VisitMethodDef(MethodInfo &method, std::unordered_set<ConstantKey>& constantSet);
+		void VisitMethodDef(MethodInfo &method, ConstantSet& constantSet);
 		void VisitPackage(std::shared_ptr<Package> package);
 		void VisitProject(Project& project);
 	};
 
-	void AssignIndex(Project& project);
+	//void AssignIndex(Project& project);
 
 	class PackageImporter
 	{

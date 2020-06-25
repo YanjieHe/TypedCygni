@@ -334,6 +334,28 @@ namespace cygni
 		TYPE_OBJECT
 	};
 
+	enum class ConstantKind
+	{
+		CONSTANT_FLAG_I32,
+		CONSTANT_FLAG_I64,
+		CONSTANT_FLAG_F32,
+		CONSTANT_FLAG_F64,
+		CONSTANT_FLAG_BOOLEAN,
+		CONSTANT_FLAG_CHAR,
+		CONSTANT_FLAG_STRING,
+		CONSTANT_FLAG_METHOD,
+		CONSTANT_FLAG_CLASS,
+		CONSTANT_FLAG_STATIC_VAR,
+		CONSTANT_FLAG_STATIC_FUNCTION,
+	};
+
+	enum class MethodFlag
+	{
+		NativeFunction = 0,
+		InstanceMethod,
+		ModuleFunction,
+	};
+
 	template <typename TEnum>
 	class Enum
 	{
@@ -1027,6 +1049,67 @@ namespace cygni
 				return U"TYPE_STRING";
 			case TypeTag::TYPE_OBJECT:
 				return U"TYPE_OBJECT";
+			default:
+				std::cerr << __FUNCTION__ << std::endl;
+				exit(1);
+			}
+		}
+	};
+
+
+	template <> class Enum<ConstantKind>
+	{
+	public:
+		static std::u32string ToString(ConstantKind kind)
+		{
+			switch (kind)
+			{
+			case ConstantKind::CONSTANT_FLAG_I32:
+				return U"Int32";
+			case ConstantKind::CONSTANT_FLAG_I64:
+				return U"CONSTANT_FLAG_I64";
+			case ConstantKind::CONSTANT_FLAG_F32:
+				return U"CONSTANT_FLAG_F32";
+			case ConstantKind::CONSTANT_FLAG_F64:
+				return U"CONSTANT_FLAG_F64";
+			case ConstantKind::CONSTANT_FLAG_CHAR:
+				return U"CONSTANT_FLAG_CHAR";
+			case ConstantKind::CONSTANT_FLAG_BOOLEAN:
+				return U"CONSTANT_FLAG_BOOLEAN";
+			case ConstantKind::CONSTANT_FLAG_STRING:
+				return U"CONSTANT_FLAG_STRING";
+			case ConstantKind::CONSTANT_FLAG_METHOD:
+				return U"CONSTANT_FLAG_METHOD";
+			case ConstantKind::CONSTANT_FLAG_CLASS:
+				return U"CONSTANT_FLAG_CLASS";
+			case ConstantKind::CONSTANT_FLAG_STATIC_VAR:
+				return U"CONSTANT_FLAG_STATIC_VAR";
+			case ConstantKind::CONSTANT_FLAG_STATIC_FUNCTION:
+				return U"CONSTANT_FLAG_STATIC_FUNCTION";
+			default:
+				std::cerr << __FUNCTION__ << std::endl;
+				exit(1);
+			}
+		}
+	};
+
+	template <>
+	class Enum <MethodFlag>
+	{
+	public:
+		static std::u32string ToString(MethodFlag flag)
+		{
+			switch (flag)
+			{
+			case MethodFlag::NativeFunction: {
+				return U"NativeFunction";
+			}
+			case MethodFlag::InstanceMethod: {
+				return U"InstanceMethod";
+			}
+			case MethodFlag::ModuleFunction: {
+				return U"ModuleFunction";
+			}
 			default:
 				std::cerr << __FUNCTION__ << std::endl;
 				exit(1);

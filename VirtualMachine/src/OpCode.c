@@ -1,4 +1,5 @@
 #include "opcode.h"
+#include "stdlib.h"
 
 const char* opcode_info[][2] = {
 		{ "PUSH_I32_0", "" },
@@ -131,7 +132,7 @@ const char* opcode_info[][2] = {
 	{ "JUMP", "u" },
 	{ "JUMP_IF_TRUE", "u" },
 	{ "JUMP_IF_FALSE", "u" },
-	{ "PUSH_FUNCTION", "uu" },
+	{ "PUSH_FUNCTION", "u" },
 	{ "PUSH_METHOD", "uu" },
 	{ "INVOKE", "" },
 	{ "RETURN_I32", "" },

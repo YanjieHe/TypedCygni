@@ -25,19 +25,16 @@ namespace cygni
 	class MemberLocation : public Location
 	{
 	public:
-		PackageRoute route;
-		std::u32string typeName; // module or class name
-		std::u32string memberName;
-		int index; // module or class
+		FullQualifiedName name;
 		int offset;
-		MemberLocation(LocationType type, PackageRoute route, std::u32string typeName, std::u32string memberName, int index, int offset);
+		MemberLocation(LocationType type, FullQualifiedName name, int offset);
 	};
 
 	class TypeLocation : public Location
 	{
 	public:
-		int index; // module or class
-		TypeLocation(LocationType type, int index);
+		FullQualifiedName name;
+		TypeLocation(LocationType type, FullQualifiedName name);
 	};
 }
 

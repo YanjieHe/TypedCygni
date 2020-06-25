@@ -329,23 +329,26 @@ namespace cygni
 		{
 			if (superType->typeCode == TypeCode::Class)
 			{
-				if (auto superClassInfo = project.GetClass(std::static_pointer_cast<ClassType>(superType)))
+				auto superClassType = std::static_pointer_cast<ClassType>(superType);
+				auto className = FullQualifiedName(superClassType->route).Concat(superClassType->name);
+				if (auto superClassInfo = project.GetClass(superClassType))
 				{
-					int typeId = superClassInfo.value()->index.value();
 					VirtualMethods methodList;
-					methodList.typeId = typeId;
+					methodList.className = className;
 					for (auto& method : superClassInfo.value()->methods)
 					{
-						if (classInfo->methods.ContainsKey(method.name))
+						if (classInfo->methodDefs.ContainsKey(method.name))
 						{
-							auto& overridedMethod = classInfo->methods.GetValueByKey(method.name);
-							int classId = classInfo->index.value();
-							methodList.locations.push_back(MethodLocation(classId, overridedMethod.index.value()));
+							auto methodName = classInfo->route;
+							methodName.push_back(method.name);
+							methodList.methodNames.push_back(methodName);
 						}
 						else
 						{
-							int classId = GetClassId(method.position, method.selfType);
-							methodList.locations.push_back(MethodLocation(classId, method.index.value()));
+							auto methodName = superClassType->route;
+							methodName.push_back(method.name);
+							methodList.methodNames.push_back(methodName);
+							methodList.methodNames.push_back(methodName);
 						}
 					}
 					virtualTable.push_back(methodList);
@@ -358,22 +361,21 @@ namespace cygni
 			}
 			else if (superType->typeCode == TypeCode::Interface)
 			{
-				if (auto superInterfaceInfo = project.GetInterface(std::static_pointer_cast<InterfaceType>(superType)))
+				auto superInterfaceType = std::static_pointer_cast<InterfaceType>(superType);
+				if (auto superInterfaceInfo = project.GetInterface(superInterfaceType))
 				{
-					int typeId = superInterfaceInfo.value()->index.value();
 					VirtualMethods methodList;
-					methodList.typeId = typeId;
+					methodList.className =FullQualifiedName(superInterfaceType->route).Concat(superInterfaceType->name);
 					for (auto& method : superInterfaceInfo.value()->allMethods)
 					{
 						if (classInfo->methods.ContainsKey(method.name))
 						{
-							auto& overridedMethod = classInfo->methods.GetValueByKey(method.name);
-							int classId = classInfo->index.value();
-							methodList.locations.push_back(MethodLocation(classId, overridedMethod.index.value()));
+							auto methodName = classInfo->route;
+							methodName.push_back(method.name);
+							methodList.methodNames.push_back(methodName);
 						}
 						else
 						{
-
 							throw TypeException(classInfo->position,
 								Format(U"not implemented method '{}' for interface '{}'", method.name, superType->ToString()));
 						}
@@ -393,26 +395,6 @@ namespace cygni
 			}
 		}
 	}
-	int VirtualTableGenerator::GetClassId(SourcePosition position, TypePtr classType)
-	{
-		if (classType->typeCode == TypeCode::Class)
-		{
-			if (auto classInfo = project.GetClass(std::static_pointer_cast<ClassType>(classType)))
-			{
-				return classInfo.value()->index.value();
-			}
-			else
-			{
-				throw TypeException(position,
-					Format(U"wrong self type for method, got type '{}', expect a class type", classType->ToString()));
-			}
-		}
-		else
-		{
-			throw TypeException(position,
-				Format(U"wrong self type for method, got type '{}', expect a class type", classType->ToString()));
-		}
-	}
 	HandleThisPointerPass::HandleThisPointerPass(Project & project) : project{ project }
 	{
 	}
@@ -429,7 +411,7 @@ namespace cygni
 			auto newNode = std::make_shared<MemberAccessExpression>(parameter->position, thisVar, parameter->name);
 			newNode->type = parameter->type;
 			newNode->location = parameter->location;
-			thisVar->location = std::make_shared<ParameterLocation>(currentMethod->parameters.size());
+			thisVar->location = std::make_shared<ParameterLocation>(static_cast<int>(currentMethod->parameters.size()));
 			return newNode;
 		}
 		else

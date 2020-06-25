@@ -50,4 +50,52 @@ namespace cygni
 		}
 	}
 
+	FullQualifiedName::FullQualifiedName() :name()
+	{
+	}
+
+	FullQualifiedName::FullQualifiedName(PackageRoute route) : name{ route }
+	{
+	}
+
+	std::u32string FullQualifiedName::ToString()
+	{
+		if (name.empty())
+		{
+			return U"";
+		}
+		else
+		{
+			std::u32string text;
+			size_t size = 0;
+			for (size_t i = 0; i < name.size(); i++)
+			{
+				size = size + name[i].size();
+			}
+			size = size + name.size() - 1;
+			text.reserve(size);
+
+			for (auto c : name.front())
+			{
+				text.push_back(c);
+			}
+			for (size_t i = 1; i < name.size(); i++)
+			{
+				text.push_back(U'.');
+				for (auto c : name.at(i))
+				{
+					text.push_back(c);
+				}
+			}
+			return text;
+		}
+	}
+
+	FullQualifiedName FullQualifiedName::Concat(std::u32string s) const
+	{
+		FullQualifiedName newName = *this;
+		newName.name.push_back(s);
+		return newName;
+	}
+
 } // namespace cygni

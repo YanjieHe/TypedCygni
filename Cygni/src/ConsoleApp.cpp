@@ -37,7 +37,7 @@ namespace cygni
 			project.programs.Add(path, program);
 		}
 		project.MergeAllPrograms();
-		AssignIndex(project);
+		//AssignIndex(project);
 		return project;
 	}
 
@@ -86,14 +86,14 @@ namespace cygni
 		variableLocator.VisitProject();
 		cout << "Complete Local Variable Locatoring!" << endl;
 
+		HandleThisPointerPass handleThisPointerPass(project);
+		handleThisPointerPass.VisitProject(project);
+		DumpAbstractSyntaxTree(project, "passes/pass-this-pointer.json");
+
 		/* pass 10: collect constants */
 		ConstantCollector constantCollector;
 		constantCollector.VisitProject(project);
 		cout << "Complete Constant Collection!" << endl;
-
-		HandleThisPointerPass handleThisPointerPass(project);
-		handleThisPointerPass.VisitProject(project);
-		DumpAbstractSyntaxTree(project, "passes/pass-this-pointer.json");
 	}
 
 	void ConsoleApp::DumpAbstractSyntaxTree(Project& project, std::string outputJsonPath)
@@ -111,7 +111,9 @@ namespace cygni
 		SemanticAnalysis(project);
 
 		Compiler compiler(project);
-		ByteCode byteCode = compiler.Compile();
+		Executable exe = compiler.Compile();
+		ViewExe(exe);
+		ByteCode byteCode = CompileExe(exe);
 		WriteBytes(outputExePath, byteCode.bytes);
 		cout << "Total bytes in the compiled executable file: " << byteCode.Size() << endl;
 	}
