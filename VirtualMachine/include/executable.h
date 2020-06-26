@@ -23,7 +23,6 @@ typedef struct ConstantPool {
 } ConstantPool;
 
 typedef struct NativeMethod {
-  bool is_loaded;
   char *lib_path;
   char *entry_point;
   FunctionPointer function_pointer;

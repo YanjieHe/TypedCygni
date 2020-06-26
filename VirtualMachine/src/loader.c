@@ -211,6 +211,7 @@ void parse_class(State *state, ClassInfo *class_info) {
     class_info->fields[i].name = parse_string(state);
     printf("field: %s\n", class_info->fields[i].name);
   }
+
   // parse methods
   fprintf(stdout, "\n\nmethods:\n");
   for (i = 0; i < class_info->methods_count; i++) {
@@ -244,8 +245,8 @@ void parse_class(State *state, ClassInfo *class_info) {
     vt->method_count = parse_ushort(state);
     vt->methods = vm_alloc(state, sizeof(MethodInfo) * vt->method_count);
     for (j = 0; j < vt->method_count; j++) {
-      vt->methods[i].method_info = NULL;
-      vt->methods[i].name = parse_string(state);
+      vt->methods[j].method_info = NULL;
+      vt->methods[j].name = parse_string(state);
     }
   }
 
@@ -288,12 +289,13 @@ void parse_class(State *state, ClassInfo *class_info) {
 //	}
 //}
 
-void parse_method(State *state, MethodInfo *function, ClassInfo* class_info) {
+void parse_method(State *state, MethodInfo *function, ClassInfo *class_info) {
 
   function->flag = parse_byte(state);
   function->name = parse_string(state);
 
   fprintf(stdout, "function name: %s\n", function->name);
+  fprintf(stdout, "function flag = %d\n", function->flag);
   fprintf(stdout, "is native function? %s\n",
           (function->flag == METHOD_FLAG_NATIVE_FUNCTION ? "true" : "false"));
   function->args_size = parse_ushort(state);
@@ -309,7 +311,6 @@ void parse_method(State *state, MethodInfo *function, ClassInfo* class_info) {
   fprintf(stdout, "code length = %d\n", function->code_length);
 
   if (function->flag == METHOD_FLAG_NATIVE_FUNCTION) {
-    function->native_method.is_loaded = false;
     function->native_method.function_pointer = NULL;
     function->native_method.lib_path = parse_string(state);
     function->native_method.entry_point = parse_string(state);
@@ -383,20 +384,65 @@ void parse_constant_pool(State *state, ConstantPool *constant_pool) {
 void view_exe(Executable *exe) {
   int i;
   int j;
-  MethodInfo *function;
 
   printf("class count: %d\n", exe->classes_count);
   for (i = 0; i < exe->classes_count; i++) {
-    printf("class: %s\n", exe->classes[i].name);
-    for (j = 0; j < exe->classes[i].fields_count; j++) {
-      printf("\tfield: %s\n", exe->classes[i].fields[j]);
+    ClassInfo *class_info;
+    class_info = &(exe->classes[i]);
+
+    printf("class: %s\n", class_info->name);
+    for (j = 0; j < class_info->fields_count; j++) {
+      printf("\tfield: %s\n", class_info->fields[j].name);
     }
     printf("\n");
-    for (j = 0; j < exe->classes[i].methods_count; j++) {
-      function = &(exe->classes[i].methods[j]);
+    printf("constant pool:\n");
+    for (j = 0; j < class_info->constant_pool.constant_pool_size; j++) {
+      Constant *constant = &(class_info->constant_pool.constants[j]);
+      if (constant->flag == CONSTANT_FLAG_I32) {
+        printf("\t#%d: %d\n", j, constant->i32_v);
+      } else if (constant->flag == CONSTANT_FLAG_I64) {
+        printf("\t#%d: %d\n", j, constant->i64_v);
+      } else if (constant->flag == CONSTANT_FLAG_F32) {
+        printf("\t#%d: %f\n", j, constant->f32_v);
+      } else if (constant->flag == CONSTANT_FLAG_F64) {
+        printf("\t#%d: %f\n", j, constant->f64_v);
+      } else if (constant->flag == CONSTANT_FLAG_CLASS) {
+        printf("\t#%d: %s\n", j, constant->class_ref->name);
+      } else if (constant->flag == CONSTANT_FLAG_STATIC_VAR) {
+        printf("\t#%d: %s\n", j, constant->static_var_ref->name);
+      } else if (constant->flag == CONSTANT_FLAG_STATIC_FUNCTION) {
+        printf("\t#%d: %s\n", j, constant->method_ref->name);
+      } else if (constant->flag == CONSTANT_FLAG_METHOD) {
+        printf("\t#%d: %s\n", j, constant->method_ref->name);
+      }
+    }
+
+    printf("\n");
+    for (j = 0; j < class_info->static_vars_size; j++) {
+      printf("\tstatic variable: %s\n", class_info->static_vars[j].name);
+    }
+    printf("\n");
+    for (j = 0; j < class_info->methods_count; j++) {
+      MethodInfo *method;
+      method = &(class_info->methods[j]);
+      view_function(method, exe);
+    }
+    printf("\n");
+    for (j = 0; j < class_info->static_funcs_size; j++) {
+      MethodInfo *function;
+      function = &(class_info->static_funcs[j]);
       view_function(function, exe);
     }
     printf("\n");
+
+    for (j = 0; j < class_info->virtual_tables_count; j++) {
+      VirtualTable *vt = &(class_info->virtual_tables[j]);
+      int k;
+      printf("\tsuper class: %s\n", vt->class_ref.name);
+      for (k = 0; k < vt->method_count; k++) {
+        printf("\t\tvirtual method: %s\n", vt->methods[k].name);
+      }
+    }
   }
 }
 

@@ -8,6 +8,6 @@
 #undef DUPLICATE
 #endif
 
-FunctionPointer load_library_function(State* state, const char* library_path, const char* function_name);
+FunctionPointer load_library_function(State* state, const char* library_path, const char* entry_point);
 
 #endif // VM_LIBRARY_H

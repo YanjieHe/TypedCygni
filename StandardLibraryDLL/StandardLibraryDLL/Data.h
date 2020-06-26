@@ -7,8 +7,51 @@
 typedef uint8_t Byte;
 typedef uint32_t Char;
 
-struct Object;
-struct Function;
+struct GCObject;
+struct MethodInfo;
+struct ClassInfo;
+struct VirtualTable;
+struct StaticVarInfo;
+
+typedef uint8_t u8;
+typedef uint16_t u16;
+typedef int32_t i32;
+typedef int64_t i64;
+typedef float_t f32;
+typedef double_t f64;
+
+typedef enum ArrayType
+{
+	ARRAY_TYPE_I32,
+	ARRAY_TYPE_I64,
+	ARRAY_TYPE_F32,
+	ARRAY_TYPE_F64,
+	ARRAY_TYPE_OBJECT
+} ArrayType;
+
+typedef enum MethodFlag
+{
+	METHOD_FLAG_NATIVE_FUNCTION = 0,
+	METHOD_FLAG_INSTANCE_METHOD,
+	METHOD_FLAG_MODULE_FUNCTION,
+} MethodFlag;
+
+typedef enum ConstantFlag
+{
+	CONSTANT_FLAG_I32,
+	CONSTANT_FLAG_I64,
+	CONSTANT_FLAG_F32,
+	CONSTANT_FLAG_F64,
+	CONSTANT_FLAG_BOOLEAN,
+	CONSTANT_FLAG_CHAR,
+	CONSTANT_FLAG_STRING,
+	CONSTANT_FLAG_METHOD,
+	CONSTANT_FLAG_CLASS,
+	CONSTANT_FLAG_STATIC_VAR,
+	CONSTANT_FLAG_STATIC_FUNCTION,
+} ConstantFlag;
+
+typedef enum ClassFlag { CLASS_FLAG_INTERFACE, CLASS_FLAG_CLASS } ClassFlag;
 
 typedef struct
 {
@@ -19,162 +62,84 @@ typedef struct
 		int64_t i64_v;
 		float_t f32_v;
 		double_t f64_v;
-		struct Object* gc_obj; /* collectable objects */
-		struct Function* function;
-		void* pointer;
-	}u;
+		struct GCObject *gc_obj; /* collectable objects */
+		struct MethodInfo *function;
+		void *pointer;
+	} u;
 } Value;
 
-typedef enum
+typedef struct Object
 {
-	ARRAY_TYPE_I32,
-	ARRAY_TYPE_I64,
-	ARRAY_TYPE_F32,
-	ARRAY_TYPE_F64,
-	ARRAY_TYPE_OBJECT
-} ArrayType;
+	struct ClassInfo *type;
+	Value *fields;
+} Object;
 
-typedef struct
+typedef struct Array
 {
 	ArrayType type;
 	int32_t length;
 	union
 	{
-		int32_t* i32_array;
-		int64_t* i64_array;
-		float_t* f32_array;
-		double_t* f64_array;
-		struct Object** obj_array;
-	}u;
+		int32_t *i32_array;
+		int64_t *i64_array;
+		float_t *f32_array;
+		double_t *f64_array;
+		struct GCObject **obj_array;
+	} u;
 } Array;
 
-typedef struct
+typedef struct GCObject
 {
-	uint16_t n_methods;
-	Function** methods;
-}VirtualTable;
+	u8 marked;
+	u8 is_array;
+	struct GCObject *next;
 
-typedef struct Object
-{
-	uint8_t marked : 1;
-	uint8_t is_array : 1;
-	uint16_t class_index;
-	VirtualTable* v_table;
 	union
 	{
-		Value* fields;
-		Array* array;
-	}u;
-	struct Object* next;
-}Object;
+		Object *obj;
+		Array *arr;
+	};
+} GCObject;
+
+typedef struct MethodRef
+{
+	char *name;
+	struct MethodInfo *method_info;
+} MethodRef;
+
+typedef struct ClassRef
+{
+	char *name;
+	struct ClassInfo *class_info;
+} ClassRef;
+
+typedef struct StaticVarRef
+{
+	char *name;
+	struct StaticVarInfo *static_var;
+} StaticVarRef;
+
+typedef struct VirtualTable
+{
+	ClassRef class_ref;
+	u16 method_count;
+	MethodRef *methods;
+} VirtualTable;
 
 // unicode (UTF-32)
 typedef struct
 {
 	int32_t length;
-	Char* characters;
+	Char *characters;
 } String;
 
-typedef struct
-{
-	uint8_t tag : 1;
-	union
-	{
-		int32_t i32_v;
-		int64_t i64_v;
-		float_t f32_v;
-		double_t f64_v;
-		String* str_v;
-	}u;
-} Constant;
-
-typedef struct
-{
-	uint16_t need_stack_size;
-	uint16_t args_size;
-	uint16_t locals;
-	uint16_t code_len;
-	uint8_t* code;
-	int n_constants;
-	Constant* constant_pool;
-} FunctionInfo;
-
-typedef int(*FunctionPointer)(Value* env);
-
-typedef struct NativeFunction
-{
-	bool is_loaded;
-	char* lib_path;
-	char* func_name;
-	int args_size;
-	FunctionPointer function_pointer;
-} NativeFunction;
-
-typedef struct Function
-{
-	bool is_native_function;
-	char* name;
-	union
-	{
-		FunctionInfo* func; // NULL if it is a native function
-		NativeFunction* nv;
-	}u;
-} Function;
-
-typedef struct ConstantPool
-{
-	int32_t n_constants;
-	Constant* constants;
-} ConstantPool;
-
-typedef struct
-{
-	char* name;
-	uint16_t n_fields;
-	char** field_names;
-	ConstantPool constant_pool;
-	VirtualTable v_table;
-} ClassInfo;
-
-typedef struct
-{
-	char* name;
-	uint16_t n_classes;
-	VirtualTable* v_tables;
-} InterfaceInfo;
-
-typedef struct
-{
-	char* name;
-	uint16_t n_fields;
-	char** field_names;
-	Value* variables;
-	uint16_t n_functions;
-	Function** functions;
-	ConstantPool constant_pool;
-} ModuleInfo;
-
-typedef struct
-{
-	int size;
-	int threshold;
-	Object* first; /* first object */
-} Heap;
-
-typedef struct
-{
-	int class_count;
-	ClassInfo* classes;
-	int module_count;
-	ModuleInfo* modules;
-	Function* entry;
-	Heap heap;
-} Executable;
+typedef int(*FunctionPointer)(Value *env);
 
 typedef enum VM_Error
 {
 	VM_ERROR_NO_ERROR = 0,
 	VM_ERROR_READ_STRING,
+	VM_ERROR_READ_U8,
 	VM_ERROR_READ_U16,
 	VM_ERROR_OPEN_FILE,
 	VM_ERROR_READ_FUNCTION_BYTE_CODE,
@@ -184,6 +149,12 @@ typedef enum VM_Error
 	VM_ERROR_ARRAY_TYPE_CODE,
 	VM_ERROR_LOAD_LIBRARY,
 	VM_ERROR_LOAD_LIBRARY_FUNCTION,
+	VM_ERROR_MISSING_MAIN_FUNCTION,
+	VM_ERROR_STATIC_VAR_NOT_FOUND,
+	VM_ERROR_STATIC_FUNCTION_NOT_FOUND,
+	VM_ERROR_CLASS_NOT_FOUND,
+	VM_ERROR_FAIL_TO_FIND_METHOD,
+	VM_ERROR_FAIL_TO_FIND_CLASS_IN_VIRTUAL_TABLE
 } VM_Error;
 
 #endif // VM_DATA_H

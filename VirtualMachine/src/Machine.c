@@ -30,7 +30,7 @@
   stack[sp].is_gc_obj = true;
 #define STACK_PUSH_FUNCTION(VALUE)                                             \
   sp++;                                                                        \
-  stack[sp].u.function = (VALUE);
+  stack[sp].u.function = (VALUE);                                              \
 
 #define STACK_POP_I32(VALUE)                                                   \
   (VALUE) = stack[sp].u.i32_v;                                                 \
@@ -92,13 +92,15 @@ void run(Machine *machine) {
   // arguments ... (fp) | local variables ... | previous function | last pc |
   // last fp
   stack_index = fp + cur_func->args_size + cur_func->locals;
+  stack[stack_index].u.function = NULL;
   stack[stack_index + 1].u.i32_v = pc;
   stack[stack_index + 2].u.i32_v = fp;
-  sp = stack_index + 3;
+  sp = stack_index + 2;
+  fp = stack_index + 2;
 
   while (pc < cur_func->code_length) {
     op = code[pc];
-    view_stack(machine, stack, sp);
+    view_stack(machine, stack, sp, fp);
     printf("function: %s, op = %s, sp = %d, fp = %d, pc = %d\n", cur_func->name,
            opcode_info[op][0], sp, fp, pc);
     pc = pc + 1;
@@ -248,7 +250,7 @@ void run(Machine *machine) {
 
       READ_U16(offset);
       STACK_POP_F64(local_f64);
-      stack[fp + offset].u.i64_v = local_f64;
+      stack[fp + offset].u.f64_v = local_f64;
       break;
     }
     case POP_LOCAL_OBJECT: {
@@ -931,6 +933,8 @@ void run(Machine *machine) {
       STACK_POP_OBJECT(result_obj);
       stack_offset = fp + cur_func->args_size + cur_func->locals;
       prev_func = stack[stack_offset].u.function;
+      printf("prev function is null? %d\n", (prev_func == NULL));
+      printf("prev function = %s\n", prev_func->name);
       sp = fp;
       pc = stack[stack_offset + 1].u.i32_v;
       fp = stack[stack_offset + 2].u.i32_v;
@@ -945,16 +949,18 @@ void run(Machine *machine) {
     }
     case INVOKE: {
       next_func = stack[sp].u.function;
+      printf("invoke function: %s\n", next_func->name);
+      printf("function flag: %d\n", next_func->flag);
       if (next_func->flag == METHOD_FLAG_NATIVE_FUNCTION) {
         NativeMethod *native_function = &(next_func->native_method);
-        if (native_function->is_loaded == false) {
+        if (native_function->function_pointer == NULL) {
           native_function->function_pointer =
               load_library_function(machine->state, native_function->lib_path,
                                     native_function->entry_point);
-          native_function->is_loaded = true;
         }
         sp = sp - next_func->args_size;
         // printf("call native function from sp = %d\n", sp);
+        printf("try to invoke natvie function...\n");
         native_function->function_pointer(&(stack[sp])); // return value omitted
       } else {
         int32_t stack_offset;
@@ -971,7 +977,7 @@ void run(Machine *machine) {
         stack[stack_offset + 2].u.i32_v = cur_fp;
         cur_func = next_func;
         pc = 0;
-        sp = stack_index + 3;
+        sp = stack_offset + 2;
         code = next_func->code;
         constant_pool = next_func->constant_pool->constants;
       }
@@ -1033,8 +1039,9 @@ void run(Machine *machine) {
       instance = stack[sp].u.gc_obj;
       READ_U16(constant_pool_offset);
       READ_U16(method_offset);
-      current_type =
-          get_class(machine, constant_pool[constant_pool_offset].class_ref);
+      method =
+          get_method(machine, constant_pool[constant_pool_offset].method_ref);
+      current_type = method->class_info;
       method = get_virtual_method(machine, instance->obj->type, current_type,
                                   method_offset);
       STACK_PUSH_FUNCTION(method);
@@ -1161,24 +1168,34 @@ void run(Machine *machine) {
       STACK_PUSH_I32(array->arr->length);
       break;
     }
+    // case UP_CAST:{
+    //   // TO DO: 移除 UP_CAST 指令。不需要该指令。
+		// u16 constant_pool_offset;
+
+		// READ_U16(constant_pool_offset);
+    //   break;
+    // }
       /*case UP_CAST: {
-                      if (code[pc] == 0)
-                      {
-                                      pc++;
-                                      READ_USHORT(index);
-                                      i = find_virtual_tables(machine,
+                                      if (code[pc] == 0)
+                                      {
+                                                                      pc++;
+                                                                      READ_USHORT(index);
+                                                                      i =
+      find_virtual_tables(machine,
       &(machine->exe->interfaces[index]), stack[sp].u.gc_obj->class_index);
-                                      stack[sp].u.gc_obj->v_table =
+                                                                      stack[sp].u.gc_obj->v_table
+      =
       &(machine->exe->interfaces[index].v_tables[i]);
-                      }
-                      else
-                      {
-                                      pc++;
-                                      READ_USHORT(index);
-                                      stack[sp].u.gc_obj->v_table =
+                                      }
+                                      else
+                                      {
+                                                                      pc++;
+                                                                      READ_USHORT(index);
+                                                                      stack[sp].u.gc_obj->v_table
+      =
       &(machine->exe->classes[index].v_table);
-                      }
-                      break;
+                                      }
+                                      break;
       }*/
     default: {
       fprintf(stderr, "unsupported operation code: ");
@@ -1189,8 +1206,12 @@ void run(Machine *machine) {
   }
 }
 
-void view_stack(Machine *machine, Value *stack, int sp) {
+void view_stack(Machine *machine, Value *stack, int sp, int fp) {
+  printf("\n");
   for (int i = 0; i <= sp; i++) {
+    if (i == fp) {
+      printf("fp >>");
+    }
     printf("%d: ", i);
     if (stack[i].is_gc_obj) {
       if (stack[i].u.gc_obj->is_array) {
@@ -1204,7 +1225,6 @@ void view_stack(Machine *machine, Value *stack, int sp) {
       printf("[VALUE]  %d\n", stack[i].u.i32_v);
     }
   }
-  printf("\n");
 }
 
 void copy_string(int32_t *char_array, String *str_v) {
@@ -1214,33 +1234,3 @@ void copy_string(int32_t *char_array, String *str_v) {
     char_array[i] = (int32_t)(str_v->characters[i]);
   }
 }
-
-// int find_virtual_table(ClassInfo *classInfo, int interface_index)
-//{
-//	int i;
-//	int low;
-//	int high;
-//	int mid;
-//
-//	i = 0;
-//	low = 0;
-//	high = classInfo->n_ - 1;
-//
-//	while (low <= high)
-//	{
-//		mid = (low + high) / 2;
-//		if (classInfo->interface_index_list[mid] < interface_index)
-//		{
-//			low = mid + 1;
-//		}
-//		else if (classInfo->interface_index_list[mid] > interface_index)
-//		{
-//			high = mid - 1;
-//		}
-//		else
-//		{
-//			return mid;
-//		}
-//	}
-//	return (-1);
-//}

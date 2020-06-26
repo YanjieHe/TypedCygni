@@ -53,7 +53,7 @@ namespace cygni
 		}
 	}
 
-	TypeChecker::TypeChecker(Project &project) : project{ project }, typeGraph{project.typeGraph}
+	TypeChecker::TypeChecker(Project &project) : project{ project }, typeGraph{ project.typeGraph }
 	{
 
 		ruleSet.Add(U"+", { Type::Int32(), Type::Int32() }, Type::Int32());
@@ -204,7 +204,7 @@ namespace cygni
 			else
 			{
 				throw TypeException(node->position,
-					Format(U"type mismatch: {}, left: {}, right: {}", opName, left->ToString(), right->ToString()));
+					Format(U"binary type mismatch: {}, left: {}, right: {}", opName, left->ToString(), right->ToString()));
 			}
 		};
 		if (node->nodeType == ExpressionType::Add)
@@ -278,12 +278,19 @@ namespace cygni
 			auto right = VisitExpression(node->right, scope);
 			if (left->Equals(right))
 			{
-				node->type = Type::Void();
-				return Type::Void();
+				return Attach(node, Type::Void());
+			}
+			else if (typeGraph.IsSuperTypeof(left, right))
+			{
+				// add type conversion
+				auto convertExp = std::make_shared<UnaryExpression>(node->position, ExpressionType::UpCast, node->right);
+				node->right = convertExp;
+				return Attach(node, Type::Void());
 			}
 			else
 			{
-				throw TypeException(node->position, U"type mismtach: =");
+				throw TypeException(node->position,
+					Format(U"assignment type mismtach: =, left '{}', right '{}'", left->ToString(), right->ToString()));
 			}
 		}
 		else if (node->left->nodeType == ExpressionType::MemberAccess)
@@ -809,7 +816,7 @@ namespace cygni
 				{
 					for (auto method : (*superInterfaceInfo)->methodDefs)
 					{
-						interfaceInfo->allMethods.push_back(method);
+						interfaceInfo->allMethods.Add(method.name, method);
 					}
 				}
 				else

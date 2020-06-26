@@ -221,6 +221,7 @@ namespace cygni
 	{
 	public:
 		Project& project;
+		TypeGraph typeGraph;
 		VirtualTableGenerator(Project& project);
 		void VisitClass(std::shared_ptr<ClassInfo> classInfo) override;
 		//int GetClassId(SourcePosition position, TypePtr classType);

@@ -226,6 +226,7 @@ namespace cygni
 				for (auto method : classInfo->methodDefs.values)
 				{
 					ExecMethod execMethod;
+					execMethod.flag = MethodFlag::InstanceMethod;
 					execMethod.className = className;
 					execMethod.methodInfo = method;
 					execClass->methods.push_back(execMethod);
@@ -264,6 +265,8 @@ namespace cygni
 					for (auto method : interfaceInfo->methodDefs.values)
 					{
 						ExecMethod execMethod;
+						execMethod.flag = MethodFlag::InstanceMethod;
+						execMethod.className = className;
 						execMethod.methodInfo = method;
 						execClass->methods.push_back(execMethod);
 					}
@@ -304,6 +307,14 @@ namespace cygni
 				for (const auto& method : moduleInfo->methods.values)
 				{
 					ExecMethod execMethod;
+					if (method.annotations.ContainsKey(U"LibraryImport"))
+					{
+						execMethod.flag = MethodFlag::NativeFunction;
+					}
+					else
+					{
+						execMethod.flag = MethodFlag::ModuleFunction;
+					}
 					execMethod.className = className;
 					execMethod.methodInfo = method;
 					execClass->staticFunctions.push_back(execMethod);
@@ -320,11 +331,11 @@ namespace cygni
 		{
 			for (auto& method : execClass->methods)
 			{
-				method = CompileMethodDef(method.methodInfo, execClass->constantMap);
+				CompileMethodDef(method, execClass->constantMap);
 			}
 			for (auto& function : execClass->staticFunctions)
 			{
-				function = CompileMethodDef(function.methodInfo, execClass->constantMap);
+				CompileMethodDef(function, execClass->constantMap);
 			}
 		}
 		exe.globalInformation = CompileGlobalInformation(project, exe);
@@ -380,11 +391,11 @@ namespace cygni
 			}
 			break;
 		}
-		case ExpressionType::UpCast: {
-			byteCode.AppendOp(OpCode::UP_CAST);
-			ConvertExp(node, constantMap, byteCode);
-			break;
-		}
+		//case ExpressionType::UpCast: {
+		//	byteCode.AppendOp(OpCode::UP_CAST);
+		//	ConvertExp(node, constantMap, byteCode);
+		//	break;
+		//}
 		case ExpressionType::DownCast: {
 			byteCode.AppendOp(OpCode::DOWN_CAST);
 			ConvertExp(node, constantMap, byteCode);
@@ -520,85 +531,85 @@ namespace cygni
 			}
 		}
 	}
-	void Compiler::CompileClassInfo(std::shared_ptr<ClassInfo> info, ByteCode & byteCode)
-	{
-		byteCode.AppendString(info->name);
-		byteCode.AppendU16Checked(info->fields.Size(), [info]()->CompilerException
-		{
-			return CompilerException(info->position, U"too many fields in the class");
-		});
-		for (const auto& field : info->fields.values)
-		{
-			byteCode.AppendString(field.name);
-		}
+	//void Compiler::CompileClassInfo(std::shared_ptr<ClassInfo> info, ByteCode & byteCode)
+	//{
+	//	byteCode.AppendString(info->name);
+	//	byteCode.AppendU16Checked(info->fields.Size(), [info]()->CompilerException
+	//	{
+	//		return CompilerException(info->position, U"too many fields in the class");
+	//	});
+	//	for (const auto& field : info->fields.values)
+	//	{
+	//		byteCode.AppendString(field.name);
+	//	}
 
-		// constant pool
-		CompileConstantPool(info->position, info->constantMap, byteCode);
-		byteCode.AppendU16Unchecked(info->inheritanceChain.size());
-		for (const auto& superClassType : info->inheritanceChain)
-		{
-			if (auto superClassInfo = project.GetClass(superClassType))
-			{
-				auto name = FullQualifiedName(superClassInfo.value()->route)
-					.Concat(superClassInfo.value()->name);
-				byteCode.AppendString(name.ToString());
-			}
-			else
-			{
-				throw CompilerException(info->position,
-					Format(U"missing super class '{}' for inheritance", superClassType->ToString()));
-			}
-		}
-		byteCode.AppendU16Unchecked(info->virtualTable.size());
-		for (auto methodList : info->virtualTable)
-		{
-			byteCode.AppendString(methodList.className.ToString());
-			byteCode.AppendU16Unchecked(methodList.methodNames.size());
-			for (auto methodName : methodList.methodNames)
-			{
-				byteCode.AppendString(methodName.ToString());
-			}
-		}
-		if (info->methodDefs.Size() > std::numeric_limits<uint16_t>::max())
-		{
-			throw  CompilerException(info->position, U"too many methods in the class");
-		}
-		byteCode.AppendU16Unchecked(info->methodDefs.Size());
-		for (const auto& method : info->methodDefs.values)
-		{
-			CompileMethodDef(method, info->constantMap);
-		}
-	}
-	void Compiler::CompileModuleInfo(std::shared_ptr<ModuleInfo> info, ByteCode& byteCode)
-	{
-		byteCode.AppendString(info->name);
-		if (info->fields.Size() > std::numeric_limits<uint16_t>::max())
-		{
-			throw CompilerException(info->position, U"too many member variables in the module");
-		}
-		if (info->methods.Size() > std::numeric_limits<uint16_t>::max())
-		{
-			throw CompilerException(info->position, U"too many member functions in the module");
-		}
-		CompileConstantPool(info->position, info->constantMap, byteCode);
+	//	// constant pool
+	//	CompileConstantPool(info->position, info->constantMap, byteCode);
+	//	byteCode.AppendU16Unchecked(info->inheritanceChain.size());
+	//	for (const auto& superClassType : info->inheritanceChain)
+	//	{
+	//		if (auto superClassInfo = project.GetClass(superClassType))
+	//		{
+	//			auto name = FullQualifiedName(superClassInfo.value()->route)
+	//				.Concat(superClassInfo.value()->name);
+	//			byteCode.AppendString(name.ToString());
+	//		}
+	//		else
+	//		{
+	//			throw CompilerException(info->position,
+	//				Format(U"missing super class '{}' for inheritance", superClassType->ToString()));
+	//		}
+	//	}
+	//	byteCode.AppendU16Unchecked(info->virtualTable.size());
+	//	for (auto methodList : info->virtualTable)
+	//	{
+	//		byteCode.AppendString(methodList.className.ToString());
+	//		byteCode.AppendU16Unchecked(methodList.methodNames.size());
+	//		for (auto methodName : methodList.methodNames)
+	//		{
+	//			byteCode.AppendString(methodName.ToString());
+	//		}
+	//	}
+	//	if (info->methodDefs.Size() > std::numeric_limits<uint16_t>::max())
+	//	{
+	//		throw  CompilerException(info->position, U"too many methods in the class");
+	//	}
+	//	byteCode.AppendU16Unchecked(info->methodDefs.Size());
+	//	for (const auto& method : info->methodDefs.values)
+	//	{
+	//		CompileMethodDef(method, info->constantMap);
+	//	}
+	//}
+	//void Compiler::CompileModuleInfo(std::shared_ptr<ModuleInfo> info, ByteCode& byteCode)
+	//{
+	//	byteCode.AppendString(info->name);
+	//	if (info->fields.Size() > std::numeric_limits<uint16_t>::max())
+	//	{
+	//		throw CompilerException(info->position, U"too many member variables in the module");
+	//	}
+	//	if (info->methods.Size() > std::numeric_limits<uint16_t>::max())
+	//	{
+	//		throw CompilerException(info->position, U"too many member functions in the module");
+	//	}
+	//	CompileConstantPool(info->position, info->constantMap, byteCode);
 
-		byteCode.AppendU16Unchecked(info->fields.Size());
-		for (const auto& field : info->fields.values)
-		{
-			byteCode.AppendString(field.name);
-		}
+	//	byteCode.AppendU16Unchecked(info->fields.Size());
+	//	for (const auto& field : info->fields.values)
+	//	{
+	//		byteCode.AppendString(field.name);
+	//	}
 
-		byteCode.AppendU16Unchecked(info->methods.Size());
-		for (const auto& method : info->methods.values)
-		{
-			CompileMethodDef(method, info->constantMap);
-		}
-	}
-	ExecMethod Compiler::CompileMethodDef(const MethodInfo & method, const ConstantMap& constantMap)
+	//	byteCode.AppendU16Unchecked(info->methods.Size());
+	//	for (const auto& method : info->methods.values)
+	//	{
+	//		CompileMethodDef(method, info->constantMap);
+	//	}
+	//}
+	void Compiler::CompileMethodDef(ExecMethod& execMethod, const ConstantMap& constantMap)
 	{
-		ExecMethod execMethod;
+		auto& method = execMethod.methodInfo;
 		execMethod.methodInfo = method;
-		if (method.selfType->typeCode == TypeCode::Class)
+		if (method.selfType->typeCode == TypeCode::Class || method.selfType->typeCode == TypeCode::Interface)
 		{
 			if (method.parameters.size() + 1 > std::numeric_limits<uint16_t>::max())
 			{
@@ -611,6 +622,7 @@ namespace cygni
 			execMethod.name = FullQualifiedName(classType->route)
 				.Concat(classType->name)
 				.Concat(method.name);
+			execMethod.flag = MethodFlag::InstanceMethod;
 		}
 		else
 		{
@@ -626,6 +638,7 @@ namespace cygni
 			execMethod.name = FullQualifiedName(moduleType->route)
 				.Concat(moduleType->name)
 				.Concat(method.name);
+			execMethod.flag = MethodFlag::ModuleFunction;
 		}
 
 		if (method.annotations.ContainsKey(U"LibraryImport"))
@@ -633,6 +646,7 @@ namespace cygni
 			auto annotation = method.annotations.GetValueByKey(U"LibraryImport");
 			auto libName = std::static_pointer_cast<ConstantExpression>(annotation.arguments.at(0).value)->constant;
 			auto entryPoint = std::static_pointer_cast<ConstantExpression>(annotation.arguments.at(1).value)->constant;
+			execMethod.flag = MethodFlag::NativeFunction;
 			execMethod.nativeMethod.libName = libName;
 			execMethod.nativeMethod.entryPoint = entryPoint;
 
@@ -643,21 +657,28 @@ namespace cygni
 		}
 		else
 		{
-			if (method.localVariables.size() > std::numeric_limits<uint16_t>::max())
+			if (method.selfType->typeCode == TypeCode::Interface)
 			{
-				throw CompilerException(method.position, U"too many variables");
+				// Do nothing
+				execMethod.localsSize = 0;
 			}
-			execMethod.localsSize = static_cast<int>(method.localVariables.size());
-			ByteCode funcCode;
-			VisitExpression(method.body, constantMap, funcCode);
-			if (funcCode.Size() > std::numeric_limits<uint16_t>::max())
+			else
 			{
-				throw CompilerException(method.position,
-					U"the function is too complicated. Consider split it into smaller functions");
+				if (method.localVariables.size() > std::numeric_limits<uint16_t>::max())
+				{
+					throw CompilerException(method.position, U"too many variables");
+				}
+				execMethod.localsSize = static_cast<int>(method.localVariables.size());
+				ByteCode funcCode;
+				VisitExpression(method.body, constantMap, funcCode);
+				if (funcCode.Size() > std::numeric_limits<uint16_t>::max())
+				{
+					throw CompilerException(method.position,
+						U"the function is too complicated. Consider split it into smaller functions");
+				}
+				execMethod.code = funcCode;
 			}
-			execMethod.code = funcCode;
 		}
-		return execMethod;
 	}
 	void Compiler::VisitParameter(
 		std::shared_ptr<ParameterExpression> parameter, const ConstantMap& constantMap, ByteCode& byteCode)
@@ -779,6 +800,7 @@ namespace cygni
 			break;
 		}
 		default: {
+			std::cout << node->type->ToString() << std::endl;
 			throw CompilerException(node->position,
 				Format(U"not supported type of default expression of type '{}'", node->type->ToString()));
 		}
@@ -951,7 +973,17 @@ namespace cygni
 		else if (location->type == LocationType::ClassMethod || location->type == LocationType::InterfaceMethod)
 		{
 			byteCode.AppendOp(OpCode::PUSH_METHOD);
-			byteCode.AppendU16Unchecked(std::static_pointer_cast<MemberLocation>(location)->offset);
+			auto loc = std::static_pointer_cast<MemberLocation>(node->location);
+			if (auto index = GetConstant(constantMap, ConstantKind::CONSTANT_FLAG_METHOD, loc->name.ToString()))
+			{
+				byteCode.AppendU16Unchecked(index.value());
+			}
+			else
+			{
+				throw CompilerException(node->position,
+					Format(U"class '{}' not found", node->object->type->ToString()));
+			}
+			byteCode.AppendU16Unchecked(loc->offset);
 		}
 		else
 		{
@@ -1163,6 +1195,7 @@ namespace cygni
 					byteCode.AppendOp(OpCode::POP_LOCAL_OBJECT);
 					break;
 				}
+				case TypeCode::Interface:
 				case TypeCode::Class: {
 					byteCode.AppendOp(OpCode::POP_LOCAL_OBJECT);
 					break;
@@ -1603,9 +1636,11 @@ namespace cygni
 			for (auto virtualMethods : execClass->virtualTable)
 			{
 				byteCode.AppendString(virtualMethods.className.ToString());
+				std::cout << "CLASS: " << virtualMethods.className.ToString() << std::endl;
 				byteCode.AppendU16Unchecked(virtualMethods.methodNames.size());
 				for (auto methodName : virtualMethods.methodNames)
 				{
+					std::cout << "METHOD: " << methodName.ToString() << std::endl;
 					byteCode.AppendString(methodName.ToString());
 				}
 			}

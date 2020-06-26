@@ -610,7 +610,8 @@ namespace cygni
 		offset = 0;
 		for (auto& method : info->methods)
 		{
-			auto name = FullQualifiedName(info->route).Concat(info->name).Concat(method.name);
+			auto selfClassType = std::static_pointer_cast<ClassType>(method.selfType);
+			auto name = FullQualifiedName(selfClassType->route).Concat(selfClassType->name).Concat(method.name);
 			scope->Put(method.name, std::make_shared<MemberLocation>(LocationType::ClassMethod, name, offset));
 		}
 		for (auto& method : info->methodDefs)
@@ -706,7 +707,8 @@ namespace cygni
 				{
 					auto& method = moduleInfo->methods.GetValueByKey(node->field);
 					auto name = FullQualifiedName(moduleInfo->route).Concat(moduleInfo->name).Concat(method.name);
-					node->location = std::make_shared<MemberLocation>(LocationType::ModuleMethod, name, *method.index);
+					int methodIndex = moduleInfo->methods.GetIndexByKey(node->field);
+					node->location = std::make_shared<MemberLocation>(LocationType::ModuleMethod, name, methodIndex);
 				}
 				else
 				{
@@ -734,8 +736,18 @@ namespace cygni
 				else if (classInfo->methods.ContainsKey(node->field))
 				{
 					auto& method = classInfo->methods.GetValueByKey(node->field);
-					auto name = FullQualifiedName(classInfo->route).Concat(classInfo->name).Concat(method.name);
-					node->location = std::make_shared<MemberLocation>(LocationType::ClassMethod, name, *method.index);
+					auto selfClassType = std::static_pointer_cast<ClassType>(method.selfType);
+					auto name = FullQualifiedName(selfClassType->route).Concat(selfClassType->name).Concat(method.name);
+					if (auto selfClassInfo = project.GetClass(selfClassType))
+					{
+						int methodIndex = selfClassInfo.value()->methodDefs.GetIndexByKey(node->field);
+						node->location = std::make_shared<MemberLocation>(LocationType::ClassMethod, name, methodIndex);
+					}
+					else
+					{
+						throw TypeException(node->position,
+							Format(U"undefined class '{}'", selfClassType->ToString()));
+					}
 				}
 				else
 				{
@@ -755,11 +767,12 @@ namespace cygni
 			if (auto res = project.GetInterface(interfaceType))
 			{
 				const auto &interfaceInfo = *res;
-				if (interfaceInfo->methodDefs.ContainsKey(node->field))
+				if (interfaceInfo->allMethods.ContainsKey(node->field))
 				{
-					auto& method = interfaceInfo->methodDefs.GetValueByKey(node->field);
+					auto& method = interfaceInfo->allMethods.GetValueByKey(node->field);
 					auto name = FullQualifiedName(interfaceInfo->route).Concat(interfaceInfo->name).Concat(method.name);
-					node->location = std::make_shared<MemberLocation>(LocationType::InterfaceMethod, name, *method.index);
+					int methodIndex = interfaceInfo->allMethods.GetIndexByKey(node->field);
+					node->location = std::make_shared<MemberLocation>(LocationType::InterfaceMethod, name, methodIndex);
 				}
 				else
 				{
@@ -908,11 +921,13 @@ namespace cygni
 					}
 					case TypeCode::Boolean:
 					{
+						// TO DO
 						constantSet[ConstantKind::CONSTANT_FLAG_BOOLEAN].insert(node->constant);
 						break;
 					}
 					case TypeCode::Char:
 					{
+						// TO DO
 						constantSet[ConstantKind::CONSTANT_FLAG_CHAR].insert(node->constant);
 						break;
 					}
@@ -941,6 +956,12 @@ namespace cygni
 				{
 					auto loc = std::static_pointer_cast<MemberLocation>(node->location);
 					constantSet[ConstantKind::CONSTANT_FLAG_STATIC_FUNCTION].insert(loc->name.ToString());
+				}
+				else if (node->location->type == LocationType::ClassMethod 
+					|| node->location->type == LocationType::InterfaceMethod)
+				{
+					auto loc = std::static_pointer_cast<MemberLocation>(node->location);
+					constantSet[ConstantKind::CONSTANT_FLAG_METHOD].insert(loc->name.ToString());
 				}
 			}
 			else if (exp->nodeType == ExpressionType::UpCast || exp->nodeType == ExpressionType::DownCast)

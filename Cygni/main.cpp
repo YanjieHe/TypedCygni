@@ -72,7 +72,7 @@ int main(int argc, char **argv)
 	cout << "Hello Cygni!" << endl;
 	try
 	{
-		std::vector<std::string> fileList = {
+		/*std::vector<std::string> fileList = {
 			"sample_code/String.cyg",
 			"sample_code/Geometry.cyg",
 				"sample_code/IO.cyg",
@@ -82,7 +82,25 @@ int main(int argc, char **argv)
 				"sample_code/App.cyg"
 		};
 		ConsoleApp app;
-		app.Compile(fileList, "sample_code/app");
+		app.Compile(fileList, "sample_code/app");*/
+
+		//std::vector<std::string> fileList = {
+		//	"sample_code/test1/Main.cyg",
+		//		"sample_code/test1/IO.cyg",
+		//		"sample_code/test1/String.cyg",
+		//};
+		//ConsoleApp app;
+		//app.Compile(fileList, "sample_code/test1/build/app");
+
+		std::vector<std::string> fileList = {
+	"sample_code/test2/Main.cyg",
+		"sample_code/test2/IO.cyg",
+		"sample_code/test2/Geometry.cyg",
+		"sample_code/test2/String.cyg",
+		"sample_code/test2/Math.cyg",
+		};
+		ConsoleApp app;
+		app.Compile(fileList, "sample_code/test2/build/app");
 	}
 	catch (ArgumentException &ex)
 	{

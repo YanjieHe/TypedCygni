@@ -321,11 +321,33 @@ namespace cygni
 	}
 	VirtualTableGenerator::VirtualTableGenerator(Project & project) : project{ project }
 	{
+		for (auto pkg : project.packages)
+		{
+			for (auto classInfo : pkg->classDefs)
+			{
+				for (auto& superClass : classInfo->superTypes)
+				{
+					auto classType = std::make_shared<ClassType>(classInfo->route, classInfo->name);
+					typeGraph.AddEdge(classType, superClass);
+				}
+			}
+			for (auto interfaceInfo : pkg->interfaceDefs)
+			{
+				for (auto& superInterface : interfaceInfo->superInterfaces)
+				{
+					auto interfaceType = std::make_shared<InterfaceType>(interfaceInfo->route, interfaceInfo->name);
+					typeGraph.AddEdge(interfaceType, superInterface);
+				}
+			}
+		}
 	}
 	void VirtualTableGenerator::VisitClass(std::shared_ptr<ClassInfo> classInfo)
 	{
+		// TO DO: traverse the type graph to get all the super classes and interfaces
 		VirtualTable& virtualTable = classInfo->virtualTable;
-		for (auto superType : classInfo->superTypes)
+		auto classType = std::make_shared<ClassType>(classInfo->route, classInfo->name);
+		auto superTypes = typeGraph.GetAllSuperTypes(classType);
+		for (auto superType : superTypes)
 		{
 			if (superType->typeCode == TypeCode::Class)
 			{
@@ -335,21 +357,26 @@ namespace cygni
 				{
 					VirtualMethods methodList;
 					methodList.className = className;
-					for (auto& method : superClassInfo.value()->methods)
+					for (auto& method : superClassInfo.value()->methodDefs)
 					{
-						if (classInfo->methodDefs.ContainsKey(method.name))
+						auto methodName = FullQualifiedName(superClassInfo.value()->route)
+							.Concat(superClassInfo.value()->name)
+							.Concat(method.name);
+						methodList.methodNames.push_back(methodName);
+						/*if (classInfo->methodDefs.ContainsKey(method.name))
 						{
-							auto methodName = classInfo->route;
-							methodName.push_back(method.name);
+							auto methodName = FullQualifiedName(classInfo->route)
+								.Concat(classInfo->name)
+								.Concat(method.name);
 							methodList.methodNames.push_back(methodName);
 						}
 						else
 						{
-							auto methodName = superClassType->route;
-							methodName.push_back(method.name);
+							auto methodName = FullQualifiedName(superClassInfo.value()->route)
+								.Concat(superClassInfo.value()->name)
+								.Concat(method.name);
 							methodList.methodNames.push_back(methodName);
-							methodList.methodNames.push_back(methodName);
-						}
+						}*/
 					}
 					virtualTable.push_back(methodList);
 				}
@@ -365,13 +392,16 @@ namespace cygni
 				if (auto superInterfaceInfo = project.GetInterface(superInterfaceType))
 				{
 					VirtualMethods methodList;
-					methodList.className =FullQualifiedName(superInterfaceType->route).Concat(superInterfaceType->name);
+					methodList.className = FullQualifiedName(superInterfaceType->route).Concat(superInterfaceType->name);
 					for (auto& method : superInterfaceInfo.value()->allMethods)
 					{
 						if (classInfo->methods.ContainsKey(method.name))
 						{
-							auto methodName = classInfo->route;
-							methodName.push_back(method.name);
+							auto classMethod = classInfo->methods.GetValueByKey(method.name);
+							auto selfClassType = std::static_pointer_cast<ClassType>(classMethod.selfType);
+							auto methodName = FullQualifiedName(selfClassType->route)
+								.Concat(selfClassType->name)
+								.Concat(classMethod.name);
 							methodList.methodNames.push_back(methodName);
 						}
 						else

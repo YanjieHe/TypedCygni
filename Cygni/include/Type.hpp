@@ -283,6 +283,7 @@ namespace cygni
 		std::vector<std::shared_ptr<ClassType>> InheritanceChain(std::shared_ptr<ClassType> originalType);
 		std::vector<std::shared_ptr<InterfaceType>> GetAllInterfaces(std::shared_ptr<ClassType> originalType);
 		std::vector<std::shared_ptr<InterfaceType>> GetAllSuperInterfaces(std::shared_ptr<InterfaceType> originalType);
+		std::vector<std::shared_ptr<Type>> GetAllSuperTypes(std::shared_ptr<Type> originalType);
 	};
 
 	class UnionType : public Type

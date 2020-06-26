@@ -65,7 +65,6 @@ void vm_free(State * state)
 
 void vm_throw(State * state, int error_code)
 {
-	vm_free(state);
 	if (state->byte_code.code)
 	{
 		fprintf(stderr, "current byte code position: %ld\n", state->byte_code.offset);

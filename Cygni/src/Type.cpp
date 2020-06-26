@@ -465,6 +465,44 @@ namespace cygni
 		}
 	}
 
+	std::vector<std::shared_ptr<Type>> TypeGraph::GetAllSuperTypes(std::shared_ptr<Type> originalType)
+	{
+		std::vector<std::shared_ptr<Type>> typeList;
+		std::stack<int> stack;
+		std::unordered_set<int> visited;
+		if (table.find(originalType) != table.end())
+		{
+			int node = table.at(originalType);
+			stack.push(node);
+
+			while (!stack.empty())
+			{
+				node = stack.top();
+				stack.pop();
+
+				if (visited.find(node) == visited.end())
+				{
+					// not visited
+					visited.insert(node);
+					typeList.push_back(types[node]);
+					for (const Edge& edge : adj.at(node))
+					{
+						if (edge.isSubtypeOf)
+						{
+							stack.push(edge.dest);
+						}
+					}
+				}
+			}
+			std::reverse(typeList.begin(), typeList.end());
+			return typeList;
+		}
+		else
+		{
+			return {};
+		}
+	}
+
 	UnresolvedType::UnresolvedType(PackageRoute route, std::u32string name) :Type(TypeCode::Unresolved), route{ route }, name{ name }
 	{
 	}

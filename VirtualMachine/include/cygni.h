@@ -68,7 +68,7 @@ typedef struct Object {
   Value *fields;
 } Object;
 
-typedef struct {
+typedef struct Array {
   ArrayType type;
   int32_t length;
   union {
@@ -106,7 +106,7 @@ typedef struct StaticVarRef {
   struct StaticVarInfo *static_var;
 } StaticVarRef;
 
-typedef struct {
+typedef struct VirtualTable {
   ClassRef class_ref;
   u16 method_count;
   MethodRef *methods;

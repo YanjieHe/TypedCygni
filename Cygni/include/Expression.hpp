@@ -159,7 +159,7 @@ namespace cygni
 		ExpPtr body;
 		TypePtr signature;
 		std::vector<std::shared_ptr<VarDefExpression>> localVariables;
-		std::optional<int> index;
+		//std::optional<int> index;
 
 		MethodInfo() = default;
 		MethodInfo(SourcePosition position, AccessModifier modifier, bool isStatic, TypePtr selfType,
@@ -285,7 +285,7 @@ namespace cygni
 		std::vector<TypePtr> superInterfaces;
 
 		std::vector<std::shared_ptr<InterfaceType>> allSuperInterfaces;
-		std::vector<MethodInfo> allMethods;
+		Table<std::u32string, MethodInfo> allMethods;
 
 		VirtualTable virtualTable;
 
