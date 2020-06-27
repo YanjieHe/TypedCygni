@@ -93,14 +93,14 @@ int main(int argc, char **argv)
 		//app.Compile(fileList, "sample_code/test1/build/app");
 
 		std::vector<std::string> fileList = {
-	"sample_code/test2/Main.cyg",
-		"sample_code/test2/IO.cyg",
-		"sample_code/test2/Geometry.cyg",
-		"sample_code/test2/String.cyg",
-		"sample_code/test2/Math.cyg",
+	"sample_code/test3/Main.cyg",
+		"sample_code/test3/Out.cyg",
+		"sample_code/test3/String.cyg",
+		"sample_code/test3/Math.cyg",
+		"sample_code/test3/Geometry.cyg",
 		};
 		ConsoleApp app;
-		app.Compile(fileList, "sample_code/test2/build/app");
+		app.Compile(fileList, "sample_code/test3/build/app");
 	}
 	catch (ArgumentException &ex)
 	{
@@ -118,10 +118,10 @@ int main(int argc, char **argv)
 	{
 		cout << ex.FormattedErrorMessage() << endl;
 	}
-	catch (TypeException &ex)
-	{
-		cout << ex.FormattedErrorMessage() << endl;
-	}
+	//catch (TypeException &ex)
+	//{
+	//	cout << ex.FormattedErrorMessage() << endl;
+	//}
 	catch (FileNotFoundException& ex)
 	{
 		cout << ex.message << endl;

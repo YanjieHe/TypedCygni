@@ -937,6 +937,9 @@ namespace cygni
 						constantSet[ConstantKind::CONSTANT_FLAG_METHOD].insert(U"Predef.String.New");
 						break;
 					}
+					case TypeCode::Void: {
+						break;
+					}
 					default: {
 						throw TypeException(node->position,
 							Format(U"not supported type '{}' for constant expression", node->type->ToString()));

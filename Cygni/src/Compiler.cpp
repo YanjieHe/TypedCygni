@@ -186,6 +186,7 @@ namespace cygni
 		rules.AddRule(ExpressionType::Convert, { TypeCode::Float64, TypeCode::Int64 }, OpCode::CAST_F64_TO_I64);
 		rules.AddRule(ExpressionType::Convert, { TypeCode::Float64, TypeCode::Float32 }, OpCode::CAST_F64_TO_F32);
 
+		rules.AddRule(ExpressionType::Return, { TypeCode::Void }, OpCode::RETURN_I32);
 		rules.AddRule(ExpressionType::Return, { TypeCode::Int32 }, OpCode::RETURN_I32);
 		rules.AddRule(ExpressionType::Return, { TypeCode::Char }, OpCode::RETURN_I32);
 		rules.AddRule(ExpressionType::Return, { TypeCode::Boolean }, OpCode::RETURN_I32);
@@ -478,6 +479,10 @@ namespace cygni
 				throw CompilerException(node->position,
 					U"the given constant is not in the constant map");
 			}
+		}
+		else if (node->type->typeCode == TypeCode::Void)
+		{
+			byteCode.AppendOp(OpCode::PUSH_I32_0);
 		}
 		else
 		{

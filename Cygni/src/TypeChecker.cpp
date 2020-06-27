@@ -550,6 +550,15 @@ namespace cygni
 			}
 			else
 			{
+				for (auto arg : functionType->parameters)
+				{
+					std::cout << arg->ToString() << std::endl;
+				}
+				std::cout << "================" << std::endl;
+				for (auto arg : args)
+				{
+					std::cout << arg->ToString() << std::endl;
+				}
 				throw TypeException(node->position, U"function call argument(s)' type(s) do not match");
 			}
 		}

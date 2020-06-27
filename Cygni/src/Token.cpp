@@ -36,6 +36,7 @@ namespace cygni
 			{U"return", Tag::Return},
 			{U"true", Tag::True},
 			{U"false", Tag::False},
+			{U"void", Tag::Void},
 			{U"while", Tag::While},
 			{U"new", Tag::New},
 			{U"class", Tag::Class},

@@ -6,7 +6,7 @@ FunctionPointer load_library_function(State* state, const char * library_path, c
 	HINSTANCE lib;
 	FunctionPointer function_pointer;
 
-	printf("try to load function '%s' from library '%s'\n", entry_point, library_path);
+	//printf("try to load function '%s' from library '%s'\n", entry_point, library_path);
 	
 	lib = LoadLibrary(library_path);
 

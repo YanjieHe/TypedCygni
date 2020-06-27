@@ -333,6 +333,13 @@ namespace cygni
 			return std::make_shared<ConstantExpression>(
 				Pos(start), std::make_shared<BooleanType>(), U"false");
 		}
+		else if (Look().tag == Tag::Void)
+		{
+			const Token &start = Look();
+			Advance();
+			return std::make_shared<ConstantExpression>(
+				Pos(start), std::make_shared<VoidType>(), U"void");
+		}
 		else if (Look().tag == Tag::Identifier)
 		{
 			std::u32string name = Look().text;

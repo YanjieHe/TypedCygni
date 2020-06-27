@@ -49,6 +49,7 @@ namespace cygni
 		/* pass 4: rename all the type that needs alias */
 		TypeRenamer typeRenamer;
 		typeRenamer.RenameAll(project);
+		DumpAbstractSyntaxTree(project, "passes/pass-type-renamer.json");
 
 		/* pass 5: resolve the super types */
 		InheritanceTypeResolver inheritanceTypeResolver;

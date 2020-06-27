@@ -11,9 +11,7 @@ namespace cygni
 		static int currentId = 0;
 		this->id = currentId;
 		currentId++;
-		static std::shared_ptr<UnknownType> unknownType =
-			std::make_shared<UnknownType>();
-		this->type = unknownType;
+		this->type = Type::Unknown();
 	}
 
 	ConstantExpression::ConstantExpression(SourcePosition position, TypePtr type,

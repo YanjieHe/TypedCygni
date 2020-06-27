@@ -51,6 +51,7 @@ namespace cygni
 
 		True,
 		False,
+		Void,
 
 		If,
 		Else,
@@ -447,6 +448,8 @@ namespace cygni
 				return U"True";
 			case Tag::False:
 				return U"False";
+			case Tag::Void:
+				return U"Void";
 			case Tag::If:
 				return U"If";
 			case Tag::Else:

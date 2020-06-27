@@ -509,7 +509,7 @@ namespace cygni
 
 	std::u32string UnresolvedType::ToString() const
 	{
-		return PackageRouteToString(route) + U"." + name;
+		return U"Unresolved(" + PackageRouteToString(route) + U"." + name + U")";
 	}
 
 	bool UnresolvedType::Equals(TypePtr other) const

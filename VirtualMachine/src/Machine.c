@@ -30,7 +30,7 @@
   stack[sp].is_gc_obj = true;
 #define STACK_PUSH_FUNCTION(VALUE)                                             \
   sp++;                                                                        \
-  stack[sp].u.function = (VALUE);                                              \
+  stack[sp].u.function = (VALUE);
 
 #define STACK_POP_I32(VALUE)                                                   \
   (VALUE) = stack[sp].u.i32_v;                                                 \
@@ -100,9 +100,9 @@ void run(Machine *machine) {
 
   while (pc < cur_func->code_length) {
     op = code[pc];
-    view_stack(machine, stack, sp, fp);
-    printf("function: %s, op = %s, sp = %d, fp = %d, pc = %d\n", cur_func->name,
-           opcode_info[op][0], sp, fp, pc);
+    //view_stack(machine, stack, sp, fp);
+    //printf("function: %s, op = %s, sp = %d, fp = %d, pc = %d\n", cur_func->name,
+    //       opcode_info[op][0], sp, fp, pc);
     pc = pc + 1;
     switch (op) {
     case PUSH_I32_0: {
@@ -933,8 +933,6 @@ void run(Machine *machine) {
       STACK_POP_OBJECT(result_obj);
       stack_offset = fp + cur_func->args_size + cur_func->locals;
       prev_func = stack[stack_offset].u.function;
-      printf("prev function is null? %d\n", (prev_func == NULL));
-      printf("prev function = %s\n", prev_func->name);
       sp = fp;
       pc = stack[stack_offset + 1].u.i32_v;
       fp = stack[stack_offset + 2].u.i32_v;
@@ -949,8 +947,8 @@ void run(Machine *machine) {
     }
     case INVOKE: {
       next_func = stack[sp].u.function;
-      printf("invoke function: %s\n", next_func->name);
-      printf("function flag: %d\n", next_func->flag);
+      //printf("invoke function: %s\n", next_func->name);
+      //printf("function flag: %d\n", next_func->flag);
       if (next_func->flag == METHOD_FLAG_NATIVE_FUNCTION) {
         NativeMethod *native_function = &(next_func->native_method);
         if (native_function->function_pointer == NULL) {
@@ -960,17 +958,17 @@ void run(Machine *machine) {
         }
         sp = sp - next_func->args_size;
         // printf("call native function from sp = %d\n", sp);
-        printf("try to invoke natvie function...\n");
+        //printf("try to invoke natvie function...\n");
         native_function->function_pointer(&(stack[sp])); // return value omitted
       } else {
         int32_t stack_offset;
         i32 cur_fp;
 
-        printf("func name = %s, sp = %d, args size = %d\n", next_func->name, sp,
-               next_func->args_size);
+        //printf("func name = %s, sp = %d, args size = %d\n", next_func->name, sp,
+        //       next_func->args_size);
         cur_fp = fp;
         fp = sp - next_func->args_size;
-        printf("fp = %d\n", fp);
+        //printf("fp = %d\n", fp);
         stack_offset = fp + next_func->args_size + next_func->locals;
         stack[stack_offset].u.function = cur_func;
         stack[stack_offset + 1].u.i32_v = pc;
@@ -1168,13 +1166,13 @@ void run(Machine *machine) {
       STACK_PUSH_I32(array->arr->length);
       break;
     }
-    // case UP_CAST:{
-    //   // TO DO: 移除 UP_CAST 指令。不需要该指令。
-		// u16 constant_pool_offset;
+      // case UP_CAST:{
+      //   // TO DO: 移除 UP_CAST 指令。不需要该指令。
+      // u16 constant_pool_offset;
 
-		// READ_U16(constant_pool_offset);
-    //   break;
-    // }
+      // READ_U16(constant_pool_offset);
+      //   break;
+      // }
       /*case UP_CAST: {
                                       if (code[pc] == 0)
                                       {
@@ -1222,7 +1220,7 @@ void view_stack(Machine *machine, Value *stack, int sp, int fp) {
       }
       printf("\n");
     } else {
-      printf("[VALUE]  %d\n", stack[i].u.i32_v);
+      printf("[VALUE]  %d    %f\n", stack[i].u.i32_v, stack[i].u.f64_v);
     }
   }
 }
