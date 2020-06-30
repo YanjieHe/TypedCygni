@@ -189,7 +189,7 @@ namespace cygni
 
 	std::u32string ClassType::ToString() const
 	{
-		return PackageRouteToString(route) + U"." + name;
+		return route.ToString() + U"." + name;
 	}
 
 	bool ClassType::Equals(TypePtr other) const
@@ -222,7 +222,7 @@ namespace cygni
 
 	std::u32string ModuleType::ToString() const
 	{
-		return PackageRouteToString(route) + U"." + name;
+		return route.ToString() + U"." + name;
 	}
 
 	bool ModuleType::Equals(TypePtr other) const
@@ -244,7 +244,7 @@ namespace cygni
 
 	std::u32string InterfaceType::ToString() const
 	{
-		return PackageRouteToString(route) + U"." + name;
+		return route.ToString() + U"." + name;
 	}
 
 	bool InterfaceType::Equals(TypePtr other) const
@@ -509,7 +509,7 @@ namespace cygni
 
 	std::u32string UnresolvedType::ToString() const
 	{
-		return U"Unresolved(" + PackageRouteToString(route) + U"." + name + U")";
+		return U"Unresolved(" + route.ToString() + U"." + name + U")";
 	}
 
 	bool UnresolvedType::Equals(TypePtr other) const

@@ -1,137 +1,89 @@
 #ifndef CYGNI_SOURCE_POSITION
 #define CYGNI_SOURCE_POSITION
 #include <memory>
-#include <vector>
 #include <string>
+#include <vector>
 
-namespace cygni
-{
-	class FileLocation
-	{
-	public:
-		std::string filePath;
-		std::string fileName;
-		FileLocation(std::string filePath, std::string fileName);
-	};
+namespace cygni {
+class FileLocation {
+public:
+  std::string filePath;
+  std::string fileName;
+  FileLocation(std::string filePath, std::string fileName);
+};
 
-	class SourcePosition
-	{
-	public:
-		std::shared_ptr<FileLocation> document;
-		int startLine;
-		int startCol;
-		int endLine;
-		int endCol;
+class SourcePosition {
+public:
+  std::shared_ptr<FileLocation> document;
+  int startLine;
+  int startCol;
+  int endLine;
+  int endCol;
 
-		SourcePosition();
-		SourcePosition(std::shared_ptr<FileLocation> document, int startLine,
-			int startCol, int endLine, int endCol);
-	};
+  SourcePosition();
+  SourcePosition(std::shared_ptr<FileLocation> document, int startLine,
+                 int startCol, int endLine, int endCol);
+};
 
-	using PackageRoute = std::vector<std::u32string>;
+class Route {
+protected:
+  virtual const std::vector<std::u32string> &GetRoute() const = 0;
+  virtual std::vector<std::u32string> &GetRoute() = 0;
 
-	std::u32string PackageRouteToString(const PackageRoute& route);
+public:
+  std::u32string ToString() const;
+  size_t GetHashCode() const;
+  void Add(const std::u32string &text);
+  const std::u32string &Back() const;
+  void PopBack();
+  virtual ~Route() {}
+};
 
-	//using FullQualifiedName = std::vector<std::u32string>;
-	//std::u32string FullQualifiedNameToString(const FullQualifiedName& name);
+class PackageRoute : public Route {
+public:
+  std::vector<std::u32string> route;
+  PackageRoute();
 
-	class FullQualifiedName
-	{
-	public:
-		std::vector<std::u32string> name;
+  PackageRoute(std::vector<std::u32string> route);
+  ~PackageRoute(){}
 
-		FullQualifiedName();
+protected:
+  const std::vector<std::u32string> &GetRoute() const override;
+  std::vector<std::u32string> &GetRoute() override;
+};
 
-		FullQualifiedName(PackageRoute route);
+class FullQualifiedName : public Route {
+public:
+  std::vector<std::u32string> name;
 
-		std::u32string ToString();
+  FullQualifiedName();
 
-		inline size_t Size() const
-		{
-			return name.size();
-		}
+  FullQualifiedName(PackageRoute route);
 
-		FullQualifiedName Concat(std::u32string s) const;
-	};
+  FullQualifiedName Concat(std::u32string s) const;
 
+  ~FullQualifiedName(){}
+
+protected:
+  const std::vector<std::u32string> &GetRoute() const override;
+  std::vector<std::u32string> &GetRoute() override;
+};
+
+bool operator==(const PackageRoute &lhs, const PackageRoute &rhs);
+bool operator==(const FullQualifiedName &lhs, const FullQualifiedName &rhs);
 } // namespace cygni
 
-namespace std
-{
-	template <>
-	struct hash<cygni::PackageRoute>
-	{
-		std::hash<std::u32string> hashFunction;
-		std::size_t operator()(const cygni::PackageRoute& key) const
-		{
-			std::size_t seed = key.size();
-			for (const auto& i : key)
-			{
-				seed = seed ^ (hashFunction(i) + 0x9e3779b9 + (seed << 6) + (seed >> 2));
-			}
-			return seed;
-		}
-	};
-
-	template <>
-	struct equal_to<cygni::PackageRoute>
-	{
-		bool operator()(const cygni::PackageRoute& lhs, const cygni::PackageRoute& rhs) const
-		{
-			if (lhs.size() == rhs.size())
-			{
-				for (int i = 0; i < static_cast<int>(lhs.size()); i++)
-				{
-					if (lhs[i] != rhs[i])
-					{
-						return false;
-					}
-				}
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-	};
-
-	template <>
-	struct hash<cygni::FullQualifiedName>
-	{
-		std::hash<std::u32string> hashFunction;
-		std::size_t operator()(const cygni::FullQualifiedName& key) const
-		{
-			std::size_t seed = key.name.size();
-			for (const auto& i : key.name)
-			{
-				seed = seed ^ (hashFunction(i) + 0x9e3779b9 + (seed << 6) + (seed >> 2));
-			}
-			return seed;
-		}
-	};
-
-	template <>
-	struct equal_to<cygni::FullQualifiedName>
-	{
-		bool operator()(const cygni::FullQualifiedName& lhs, const cygni::FullQualifiedName& rhs) const
-		{
-			if (lhs.name.size() == rhs.name.size())
-			{
-				for (size_t i = 0; i < lhs.name.size(); i++)
-				{
-					if (lhs.name[i] != rhs.name[i])
-					{
-						return false;
-					}
-				}
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-	};
+namespace std {
+template <> struct hash<cygni::PackageRoute> {
+  std::size_t operator()(const cygni::PackageRoute &key) const {
+    return key.GetHashCode();
+  }
 };
+
+template <> struct hash<cygni::FullQualifiedName> {
+  std::size_t operator()(const cygni::FullQualifiedName &key) const {
+    return key.GetHashCode();
+  }
+};
+};     // namespace std
 #endif // CYGNI_SOURCE_POSITION

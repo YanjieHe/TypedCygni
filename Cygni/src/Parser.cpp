@@ -7,29 +7,29 @@ namespace cygni
 	Parser::Parser(std::vector<Token> tokens, std::shared_ptr<FileLocation> document)
 		: tokens{ tokens }, document{ document }, offset{ 0 } {}
 
-	SourceDocument Parser::ParseProgram()
+	std::shared_ptr<SourceDocument> Parser::ParseProgram()
 	{
-		SourceDocument program(document);
-		program.packageRoute = ParsePackageRouteStatement();
-		program.importedPackages = ParseImportedPackages();
-		program.typeAliases = ParseTypeAliases();
-		route = program.packageRoute.route;
+		std::shared_ptr<SourceDocument> program = std::make_shared<SourceDocument>(document);
+		program->packageRoute = ParsePackageRouteStatement();
+		program->importedPackages = ParseImportedPackages();
+		program->typeAliases = ParseTypeAliases();
+		route = program->packageRoute.route;
 		while (!IsEof())
 		{
 			if (Look().tag == Tag::Class)
 			{
 				auto classInfo = ParseDefClass();
-				program.classDefs.Add(classInfo->name, classInfo);
+				program->classDefs.insert({classInfo->name, classInfo});
 			}
 			else if (Look().tag == Tag::Module)
 			{
 				auto moduleInfo = ParseDefModule();
-				program.moduleDefs.Add(moduleInfo->name, moduleInfo);
+				program->moduleDefs.insert({moduleInfo->name, moduleInfo});
 			}
 			else if (Look().tag == Tag::Interface)
 			{
 				auto interfaceInfo = ParseDefInterface();
-				program.interfaceDefs.Add(interfaceInfo->name, interfaceInfo);
+				program->interfaceDefs.insert({interfaceInfo->name, interfaceInfo});
 			}
 			else
 			{
@@ -50,11 +50,11 @@ namespace cygni
 	PackageRoute Parser::ParsePackageRoute()
 	{
 		PackageRoute route;
-		route.push_back(Match(Tag::Identifier).text);
+		route.Add(Match(Tag::Identifier).text);
 		while (Look().tag == Tag::Dot)
 		{
 			Match(Tag::Dot);
-			route.push_back(Match(Tag::Identifier).text);
+			route.Add(Match(Tag::Identifier).text);
 		}
 		return route;
 	}
@@ -442,7 +442,7 @@ namespace cygni
 		}
 	}
 
-	FieldInfo Parser::ParseFieldDefinition(AccessModifier modifier,
+	std::shared_ptr<FieldInfo> Parser::ParseFieldDefinition(AccessModifier modifier,
 		Table<std::u32string, AnnotationInfo> annotations, bool isStatic)
 	{
 		const Token &start = Look();
@@ -454,18 +454,18 @@ namespace cygni
 		{
 			Match(Tag::Assign);
 			auto value = ParseOr();
-			return FieldInfo(Pos(start),
+			return std::make_shared<FieldInfo>(Pos(start),
 				modifier, isStatic, annotations, name, type, value);
 		}
 		else
 		{
 			auto value = std::make_shared<DefaultExpression>(Pos(Look()), type);
-			return FieldInfo(Pos(start),
+			return std::make_shared<FieldInfo>(Pos(start),
 				modifier, isStatic, annotations, name, type, value);
 		}
 	}
 
-	MethodInfo Parser::ParseMethodDefinition(AccessModifier modifier,
+	std::shared_ptr<MethodInfo> Parser::ParseMethodDefinition(AccessModifier modifier,
 		Table<std::u32string, AnnotationInfo> annotations, bool isStatic, TypePtr selfType)
 	{
 		const Token &start = Look();
@@ -489,14 +489,14 @@ namespace cygni
 		if (Look().tag == Tag::LeftBrace)
 		{
 			auto body = ParseBlock();
-			return MethodInfo(Pos(start), modifier, isStatic, selfType,
+			return std::make_shared<MethodInfo>(Pos(start), modifier, isStatic, selfType,
 				annotations, name, parameters, returnType, body);
 		}
 		else
 		{
 			auto empty =
 				std::make_shared<DefaultExpression>(Pos(Look()), returnType);
-			return MethodInfo(Pos(start), modifier, isStatic, selfType,
+			return std::make_shared<MethodInfo>(Pos(start), modifier, isStatic, selfType,
 				annotations, name, parameters, returnType, empty);
 		}
 	}
@@ -611,14 +611,14 @@ namespace cygni
 			{
 				// ParseVar field: Type
 				auto field = ParseFieldDefinition(access, annotations, false);
-				info->fieldDefs.Add(field.name, field);
+				info->fieldDefs.Add(field->name, field);
 			}
 			else if (Look().tag == Tag::Def)
 			{
 				// def method(args..) { }
 				auto selfType = std::make_shared<ClassType>(route, name);
 				auto method = ParseMethodDefinition(access, annotations, false, selfType);
-				info->methodDefs.Add(method.name, method);
+				info->methodDefs.Add(method->name, method);
 			}
 			else
 			{
@@ -646,14 +646,14 @@ namespace cygni
 			{
 				// ParseVar field: Type
 				auto field = ParseFieldDefinition(access, annotations, true);
-				info->fields.Add(field.name, field);
+				info->fields.Add(field->name, field);
 			}
 			else if (Look().tag == Tag::Def)
 			{
 				// def method(args..) { }
 				auto selfType = std::make_shared<ModuleType>(route, name);
 				auto method = ParseMethodDefinition(access, annotations, true, selfType);
-				info->methods.Add(method.name, method);
+				info->methods.Add(method->name, method);
 			}
 			else
 			{
@@ -690,7 +690,7 @@ namespace cygni
 				// def method(args..) { }
 				auto selfType = std::make_shared<InterfaceType>(route, name);
 				auto method = ParseMethodDefinition(AccessModifier::Public, annotations, false, selfType);
-				info->methodDefs.Add(method.name, method); // only definition, no implementation
+				info->methodDefs.Add(method->name, method); // only definition, no implementation
 			}
 			else
 			{
@@ -834,8 +834,8 @@ namespace cygni
 			auto route = ParsePackageRoute();
 			Match(Tag::To);
 			auto alias = Match(Tag::Identifier).text;
-			auto originalName = route.back();
-			route.pop_back();
+			auto originalName = route.Back();
+			route.PopBack();
 			typeAliases.Add(alias, TypeAlias(Pos(token), route, originalName, alias));
 		}
 		return typeAliases;

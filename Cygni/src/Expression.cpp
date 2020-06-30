@@ -157,54 +157,54 @@ namespace cygni
 	{
 	}
 
-	void Project::MergeAllPrograms()
-	{
-		for (auto program : programs.values)
-		{
-			auto route = program.packageRoute.route;
-			std::shared_ptr<Package> package;
-			if (packages.ContainsKey(route))
-			{
-				// found package
-				package = packages.GetValueByKey(route);
-			}
-			else
-			{
-				// package not found. create a new package
-				package = std::make_shared<Package>(route);
-			}
-			for (auto classInfo : program.classDefs.values)
-			{
-				package->classDefs.Add(classInfo->name, classInfo);
-			}
-			for (auto moduleInfo : program.moduleDefs.values)
-			{
-				package->moduleDefs.Add(moduleInfo->name, moduleInfo);
-			}
-			for (auto interfaceInfo : program.interfaceDefs.values)
-			{
-				package->interfaceDefs.Add(interfaceInfo->name, interfaceInfo);
-			}
-			for (auto typeAlias : program.typeAliases)
-			{
-				package->typeAliases.Add(typeAlias.alias, typeAlias);
-			}
-			for (auto importStatement : program.importedPackages)
-			{
-				package->importedPackages.push_back(importStatement);
-			}
-			this->packages.Add(route, package);
-		}
-	}
+	// void Project::MergeAllPrograms()
+	// {
+	// 	for (auto program : programs.values)
+	// 	{
+	// 		auto route = program.packageRoute.route;
+	// 		std::shared_ptr<Package> package;
+	// 		if (packages.ContainsKey(route))
+	// 		{
+	// 			// found package
+	// 			package = packages.GetValueByKey(route);
+	// 		}
+	// 		else
+	// 		{
+	// 			// package not found. create a new package
+	// 			package = std::make_shared<Package>(route);
+	// 		}
+	// 		for (auto classInfo : program.classDefs.values)
+	// 		{
+	// 			package->classDefs.Add(classInfo->name, classInfo);
+	// 		}
+	// 		for (auto moduleInfo : program.moduleDefs.values)
+	// 		{
+	// 			package->moduleDefs.Add(moduleInfo->name, moduleInfo);
+	// 		}
+	// 		for (auto interfaceInfo : program.interfaceDefs.values)
+	// 		{
+	// 			package->interfaceDefs.Add(interfaceInfo->name, interfaceInfo);
+	// 		}
+	// 		for (auto typeAlias : program.typeAliases)
+	// 		{
+	// 			package->typeAliases.Add(typeAlias.alias, typeAlias);
+	// 		}
+	// 		for (auto importStatement : program.importedPackages)
+	// 		{
+	// 			package->importedPackages.push_back(importStatement);
+	// 		}
+	// 		this->packages.Add(route, package);
+	// 	}
+	// }
 
 	std::optional<std::shared_ptr<ModuleInfo>> Project::GetModule(std::shared_ptr<ModuleType> moduleType)
 	{
-		if (packages.ContainsKey(moduleType->route))
+		if (packages.count(moduleType->route))
 		{
-			auto pkg = packages.GetValueByKey(moduleType->route);
-			if (pkg->modules.ContainsKey(moduleType->name))
+			auto pkg = packages.at(moduleType->route);
+			if (pkg->modules.count(moduleType->name))
 			{
-				return { pkg->modules.GetValueByKey(moduleType->name) };
+				return { pkg->modules.at(moduleType->name) };
 			}
 			else
 			{
@@ -219,12 +219,12 @@ namespace cygni
 
 	std::optional<std::shared_ptr<ClassInfo>> Project::GetClass(std::shared_ptr<ClassType> classType)
 	{
-		if (packages.ContainsKey(classType->route))
+		if (packages.count(classType->route))
 		{
-			auto pkg = packages.GetValueByKey(classType->route);
-			if (pkg->classes.ContainsKey(classType->name))
+			auto pkg = packages.at(classType->route);
+			if (pkg->classes.count(classType->name))
 			{
-				return { pkg->classes.GetValueByKey(classType->name) };
+				return { pkg->classes.at(classType->name) };
 			}
 			else
 			{
@@ -239,12 +239,12 @@ namespace cygni
 
 	std::optional<std::shared_ptr<InterfaceInfo>> Project::GetInterface(std::shared_ptr<InterfaceType> interfaceType)
 	{
-		if (packages.ContainsKey(interfaceType->route))
+		if (packages.count(interfaceType->route))
 		{
-			auto pkg = packages.GetValueByKey(interfaceType->route);
-			if (pkg->interfaces.ContainsKey(interfaceType->name))
+			auto pkg = packages.at(interfaceType->route);
+			if (pkg->interfaces.count(interfaceType->name))
 			{
-				return { pkg->interfaces.GetValueByKey(interfaceType->name) };
+				return { pkg->interfaces.at(interfaceType->name) };
 			}
 			else
 			{
@@ -261,17 +261,17 @@ namespace cygni
 	{
 		auto route = unresolvedType->route;
 		auto name = unresolvedType->name;
-		if (packages.ContainsKey(route))
+		if (packages.count(route))
 		{
-			auto pkg = packages.GetValueByKey(route);
-			if (pkg->classes.ContainsKey(name))
+			auto pkg = packages.at(route);
+			if (pkg->classes.count(name))
 			{
-				auto classInfo = pkg->classes.GetValueByKey(name);
+				auto classInfo = pkg->classes.at(name);
 				return { std::make_shared<ClassType>(classInfo->route, classInfo->name) };
 			}
-			else if (pkg->interfaces.ContainsKey(name))
+			else if (pkg->interfaces.count(name))
 			{
-				auto interfaceInfo = pkg->interfaces.GetValueByKey(name);
+				auto interfaceInfo = pkg->interfaces.at(name);
 				return { std::make_shared<InterfaceType>(interfaceInfo->route, interfaceInfo->name) };
 			}
 			else

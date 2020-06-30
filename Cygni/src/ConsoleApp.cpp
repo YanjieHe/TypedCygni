@@ -11,7 +11,7 @@ using std::endl;
 
 namespace cygni
 {
-	SourceDocument ConsoleApp::ParseProgram(std::string path)
+	std::shared_ptr<SourceDocument> ConsoleApp::ParseProgram(std::string path)
 	{
 		auto document = std::make_shared<FileLocation>(path, path);
 
@@ -34,22 +34,22 @@ namespace cygni
 		for (auto path : fileList)
 		{
 			auto program = ParseProgram(path);
-			project.programs.Add(path, program);
+			project.programs.insert({path, program});
 		}
-		project.MergeAllPrograms();
+		// project.MergeAllPrograms();
 		//AssignIndex(project);
 		return project;
 	}
 
 	void ConsoleApp::SemanticAnalysis(Project & project)
 	{
-		PackageImporter packageImporter;
-		packageImporter.ImportPackages(project);
+		PackageInfoCollectPass packageInfoCollectPass;
+		packageInfoCollectPass.CollectInfo(project);
 
 		/* pass 4: rename all the type that needs alias */
-		TypeRenamer typeRenamer;
-		typeRenamer.RenameAll(project);
-		DumpAbstractSyntaxTree(project, "passes/pass-type-renamer.json");
+		// TypeRenamePass typeRenamePass;
+		// typeRenamePass.RenameAll(project);
+		// DumpAbstractSyntaxTree(project, "passes/type-rename-pass.json");
 
 		/* pass 5: resolve the super types */
 		InheritanceTypeResolver inheritanceTypeResolver;
@@ -59,7 +59,7 @@ namespace cygni
 		InheritanceProcessor inheritanceProcesser;
 		inheritanceProcesser.VisitProject(project);
 
-		DumpAbstractSyntaxTree(project, "passes/pass6.json");
+		DumpAbstractSyntaxTree(project, "passes/inheritance-process-pass.json");
 
 		/* pass 7: check and infer types of each node */
 		TypeChecker typeChecker(project);

@@ -47,7 +47,7 @@ namespace cygni
 								  Look().column };
 		}
 
-		SourceDocument ParseProgram();
+		std::shared_ptr<SourceDocument> ParseProgram();
 
 		PackageRouteStatement ParsePackageRouteStatement();
 
@@ -81,10 +81,10 @@ namespace cygni
 
 		ExpPtr ParseVar();
 
-		FieldInfo ParseFieldDefinition(AccessModifier modifier,
+		std::shared_ptr<FieldInfo> ParseFieldDefinition(AccessModifier modifier,
 			Table<std::u32string, AnnotationInfo> annotations, bool isStatic);
 
-		MethodInfo ParseMethodDefinition(AccessModifier modifier,
+		std::shared_ptr<MethodInfo> ParseMethodDefinition(AccessModifier modifier,
 			Table<std::u32string, AnnotationInfo> annotations, bool isStatic, TypePtr selfType);
 
 		std::shared_ptr<ParameterExpression> ParseParameter();

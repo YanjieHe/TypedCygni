@@ -15674,7 +15674,7 @@ class basic_json
 
     @complexity Usually linear in the size of the passed @a val, also
                 depending on the implementation of the called `to_json()`
-                method.
+                method->
 
     @exceptionsafety Depends on the called constructor. For types directly
     supported by the library (i.e., all types for which no `to_json()` function
@@ -15715,7 +15715,7 @@ class basic_json
 
     @complexity Usually linear in the size of the passed @a val, also
                 depending on the implementation of the called `to_json()`
-                method.
+                method->
 
     @exceptionsafety Depends on the called constructor. For types directly
     supported by the library (i.e., all types for which no `to_json()` function
@@ -16964,7 +16964,7 @@ class basic_json
     @return a copy of *this, converted into @tparam BasicJsonType
 
     @complexity Depending on the implementation of the called `from_json()`
-                method.
+                method->
 
     @since version 3.2.0
     */
@@ -16983,7 +16983,7 @@ class basic_json
     which is [CopyConstructible](https://en.cppreference.com/w/cpp/named_req/CopyConstructible)
     and [DefaultConstructible](https://en.cppreference.com/w/cpp/named_req/DefaultConstructible).
     The value is converted by calling the @ref json_serializer<ValueType>
-    `from_json()` method.
+    `from_json()` method->
 
     The function is equivalent to executing
     @code {.cpp}
@@ -17044,7 +17044,7 @@ class basic_json
     which is **not** [CopyConstructible](https://en.cppreference.com/w/cpp/named_req/CopyConstructible)
     and **not** [DefaultConstructible](https://en.cppreference.com/w/cpp/named_req/DefaultConstructible).
     The value is converted by calling the @ref json_serializer<ValueType>
-    `from_json()` method.
+    `from_json()` method->
 
     The function is equivalent to executing
     @code {.cpp}
@@ -17085,7 +17085,7 @@ class basic_json
 
     Explicit type conversion between the JSON value and a compatible value.
     The value is filled into the input parameter by calling the @ref json_serializer<ValueType>
-    `from_json()` method.
+    `from_json()` method->
 
     The function is equivalent to executing
     @code {.cpp}

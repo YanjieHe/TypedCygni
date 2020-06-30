@@ -159,7 +159,6 @@ namespace cygni
 		ExpPtr body;
 		TypePtr signature;
 		std::vector<std::shared_ptr<VarDefExpression>> localVariables;
-		//std::optional<int> index;
 
 		MethodInfo() = default;
 		MethodInfo(SourcePosition position, AccessModifier modifier, bool isStatic, TypePtr selfType,
@@ -238,19 +237,15 @@ namespace cygni
 		std::u32string name;
 
 		/* definitions */
-		Table<std::u32string, FieldInfo> fieldDefs;
-		Table<std::u32string, MethodInfo> methodDefs;
+		Table<std::u32string, std::shared_ptr<FieldInfo>> fieldDefs;
+		Table<std::u32string, std::shared_ptr<MethodInfo>> methodDefs;
 
 		/* all information */
-		Table<std::u32string, FieldInfo> fields;
-		Table<std::u32string, MethodInfo> methods;
-
-		/* virtual function table */
-		std::unordered_map<int, std::vector<MethodInfo>> virtualMethodTable;
+		Table<std::u32string, std::shared_ptr<FieldInfo>> fields;
+		Table<std::u32string, std::shared_ptr<MethodInfo>> methods;
 
 		std::vector<TypePtr> superTypes;
 		ConstantMap constantMap;
-		//std::optional<int> index;
 
 		std::vector<std::shared_ptr<ClassType>> inheritanceChain;
 		std::vector<std::shared_ptr<InterfaceType>> interfaceList;
@@ -267,9 +262,8 @@ namespace cygni
 		SourcePosition position;
 		PackageRoute route;
 		std::u32string name;
-		Table<std::u32string, FieldInfo> fields;
-		Table<std::u32string, MethodInfo> methods;
-		//std::optional<int> index;
+		Table<std::u32string, std::shared_ptr<FieldInfo>> fields;
+		Table<std::u32string, std::shared_ptr<MethodInfo>> methods;
 		ConstantMap constantMap;
 		ModuleInfo() = default;
 		ModuleInfo(SourcePosition position, PackageRoute route, std::u32string name);
@@ -281,15 +275,14 @@ namespace cygni
 		SourcePosition position;
 		PackageRoute route;
 		std::u32string name;
-		Table<std::u32string, MethodInfo> methodDefs;
+		Table<std::u32string, std::shared_ptr<MethodInfo>> methodDefs;
 		std::vector<TypePtr> superInterfaces;
 
 		std::vector<std::shared_ptr<InterfaceType>> allSuperInterfaces;
-		Table<std::u32string, MethodInfo> allMethods;
+		Table<std::u32string, std::shared_ptr<MethodInfo>> allMethods;
 
 		VirtualTable virtualTable;
 
-		//std::optional<int> index;
 		InterfaceInfo() = default;
 		InterfaceInfo(SourcePosition position, PackageRoute route, std::u32string name);
 	};
@@ -329,18 +322,18 @@ namespace cygni
 	{
 	public:
 		PackageRoute route;
-		std::vector<ImportStatement> importedPackages;
-		Table<std::u32string, TypeAlias> typeAliases;
+		// std::vector<ImportStatement> importedPackages;
+		// Table<std::u32string, TypeAlias> typeAliases;
 
-		/* Definitions */
-		Table<std::u32string, std::shared_ptr<ClassInfo>> classDefs;
-		Table<std::u32string, std::shared_ptr<ModuleInfo>> moduleDefs;
-		Table<std::u32string, std::shared_ptr<InterfaceInfo>> interfaceDefs;
+		// /* Definitions */
+		// Table<std::u32string, std::shared_ptr<ClassInfo>> classDefs;
+		// Table<std::u32string, std::shared_ptr<ModuleInfo>> moduleDefs;
+		// Table<std::u32string, std::shared_ptr<InterfaceInfo>> interfaceDefs;
 
 		/* All Information */
-		Table<std::u32string, std::shared_ptr<ClassInfo>> classes;
-		Table<std::u32string, std::shared_ptr<ModuleInfo>> modules;
-		Table<std::u32string, std::shared_ptr<InterfaceInfo>> interfaces;
+		std::unordered_map<std::u32string, std::shared_ptr<ClassInfo>> classes;
+		std::unordered_map<std::u32string, std::shared_ptr<ModuleInfo>> modules;
+		std::unordered_map<std::u32string, std::shared_ptr<InterfaceInfo>> interfaces;
 
 		explicit Package(PackageRoute route);
 	};
@@ -352,9 +345,9 @@ namespace cygni
 		PackageRouteStatement packageRoute;
 		std::vector<ImportStatement> importedPackages;
 		Table<std::u32string, TypeAlias> typeAliases;
-		Table<std::u32string, std::shared_ptr<ClassInfo>> classDefs;
-		Table<std::u32string, std::shared_ptr<ModuleInfo>> moduleDefs;
-		Table<std::u32string, std::shared_ptr<InterfaceInfo>> interfaceDefs;
+		std::unordered_map<std::u32string, std::shared_ptr<ClassInfo>> classDefs;
+		std::unordered_map<std::u32string, std::shared_ptr<ModuleInfo>> moduleDefs;
+		std::unordered_map<std::u32string, std::shared_ptr<InterfaceInfo>> interfaceDefs;
 
 		explicit SourceDocument(std::shared_ptr<FileLocation> document);
 	};
@@ -362,11 +355,11 @@ namespace cygni
 	class Project
 	{
 	public:
-		Table<std::string, SourceDocument> programs;
-		Table<PackageRoute, std::shared_ptr<Package>> packages;
+		std::unordered_map<std::string, std::shared_ptr<SourceDocument>> programs;
+		std::unordered_map<PackageRoute, std::shared_ptr<Package>> packages;
 		TypeGraph typeGraph;
 
-		void MergeAllPrograms();
+		// void MergeAllPrograms();
 		std::optional<std::shared_ptr<ModuleInfo>> GetModule(std::shared_ptr<ModuleType> moduleType);
 		std::optional<std::shared_ptr<ClassInfo>> GetClass(std::shared_ptr<ClassType> classType);
 		std::optional<std::shared_ptr<InterfaceInfo>> GetInterface(std::shared_ptr<InterfaceType> interfaceType);

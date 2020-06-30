@@ -12,15 +12,15 @@ namespace cygni
 	public:
 		virtual ExpPtr VisitUnary(std::shared_ptr<UnaryExpression> node, ArgTypes... args) override
 		{
-			auto operand = VisitExpression(node->operand, args...);
+			auto operand = this->VisitExpression(node->operand, args...);
 			auto newNode = std::make_shared<UnaryExpression>(node->position, node->nodeType, operand);
 			newNode->type = node->type;
 			return newNode;
 		}
 		virtual ExpPtr VisitBinary(std::shared_ptr<BinaryExpression> node, ArgTypes... args) override
 		{
-			auto left = VisitExpression(node->left, args...);
-			auto right = VisitExpression(node->right, args...);
+			auto left = this->VisitExpression(node->left, args...);
+			auto right = this->VisitExpression(node->right, args...);
 			auto newNode = std::make_shared<BinaryExpression>(node->position, node->nodeType, left, right);
 			newNode->type = node->type;
 			return newNode;
@@ -32,7 +32,7 @@ namespace cygni
 				node->expressions.begin(),
 				node->expressions.end(),
 				std::back_inserter(expressions),
-				[this, &args...](ExpPtr exp)->ExpPtr { return VisitExpression(exp, args...); });
+				[this, &args...](ExpPtr exp)->ExpPtr { return this->VisitExpression(exp, args...); });
 			auto newNode = std::make_shared<BlockExpression>(node->position, expressions);
 			newNode->type = node->type;
 			return newNode;
@@ -47,16 +47,16 @@ namespace cygni
 		}
 		virtual ExpPtr VisitReturn(std::shared_ptr<ReturnExpression> node, ArgTypes... args) override
 		{
-			auto value = VisitExpression(node->value, args...);
+			auto value = this->VisitExpression(node->value, args...);
 			auto newNode = std::make_shared<ReturnExpression>(node->position, value);
 			newNode->type = node->type;
 			return newNode;
 		}
 		virtual ExpPtr VisitConditional(std::shared_ptr<ConditionalExpression> node, ArgTypes... args) override
 		{
-			auto condition = VisitExpression(node->condition, args...);
-			auto ifTrue = VisitExpression(node->ifTrue, args...);
-			auto ifFalse = VisitExpression(node->ifFalse, args...);
+			auto condition = this->VisitExpression(node->condition, args...);
+			auto ifTrue = this->VisitExpression(node->ifTrue, args...);
+			auto ifFalse = this->VisitExpression(node->ifFalse, args...);
 			auto newNode = std::make_shared<ConditionalExpression>(node->position, condition, ifTrue, ifFalse);
 			newNode->type = node->type;
 			return newNode;
@@ -67,7 +67,7 @@ namespace cygni
 		}
 		virtual ExpPtr VisitInvocation(std::shared_ptr<InvocationExpression> node, ArgTypes... args) override
 		{
-			auto exp = VisitExpression(node->expression, args...);
+			auto exp = this->VisitExpression(node->expression, args...);
 			std::vector<Argument> arguments;
 			std::transform(
 				node->arguments.begin(),
@@ -75,7 +75,7 @@ namespace cygni
 				std::back_inserter(arguments),
 				[this, &args...](Argument arg)->Argument
 			{
-				Argument newArg(VisitExpression(arg.value, args...));
+				Argument newArg(this->VisitExpression(arg.value, args...));
 				newArg.index = arg.index;
 				newArg.name = arg.name;
 				return newArg;
@@ -88,7 +88,7 @@ namespace cygni
 		}
 		virtual ExpPtr VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node, ArgTypes... args) override
 		{
-			auto object = VisitExpression(node->object, args...);
+			auto object = this->VisitExpression(node->object, args...);
 			auto newNode = std::make_shared<MemberAccessExpression>(node->position,
 				object, node->field);
 			newNode->type = node->type;
@@ -104,7 +104,7 @@ namespace cygni
 				std::back_inserter(arguments),
 				[this, &args...](Argument arg)->Argument
 			{
-				Argument newArg(VisitExpression(arg.value, args...));
+				Argument newArg(this->VisitExpression(arg.value, args...));
 				newArg.index = arg.index;
 				newArg.name = arg.name;
 				return newArg;
@@ -117,7 +117,7 @@ namespace cygni
 		}
 		virtual ExpPtr VisitVarDefExpression(std::shared_ptr<VarDefExpression> node, ArgTypes... args) override
 		{
-			auto value = VisitExpression(node->value, args...);
+			auto value = this->VisitExpression(node->value, args...);
 			auto newNode = std::make_shared<VarDefExpression>(node->position,
 				node->variable, node->type, value);
 			return newNode;
@@ -128,21 +128,21 @@ namespace cygni
 		}
 		virtual ExpPtr VisitWhile(std::shared_ptr<WhileExpression> node, ArgTypes... args) override
 		{
-			auto condition = VisitExpression(node->condition, args...);
-			auto body = VisitExpression(node->body, args...);
+			auto condition = this->VisitExpression(node->condition, args...);
+			auto body = this->VisitExpression(node->body, args...);
 			auto newNode = std::make_shared<WhileExpression>(node->position,
 				condition, body);
 			newNode->type = node->type;
 			return newNode;
 		}
-		virtual void VisitMethod(MethodInfo& method, ArgTypes... args)
+		virtual void VisitMethod(std::shared_ptr<MethodInfo> method, ArgTypes... args)
 		{
-			method.body = VisitExpression(method.body, args...);
+			method->body = this->VisitExpression(method->body, args...);
 		}
 
-		virtual void VisitField(FieldInfo& field, ArgTypes... args)
+		virtual void VisitField(std::shared_ptr<FieldInfo> field, ArgTypes... args)
 		{
-			field.value = VisitExpression(field.value, args...);
+			field->value = this->VisitExpression(field->value, args...);
 		}
 
 		virtual void VisitClass(std::shared_ptr<ClassInfo> classInfo, ArgTypes...args)
@@ -159,40 +159,48 @@ namespace cygni
 				VisitMethod(method, args...);
 			}
 		}
-		virtual void VisitInterface(std::shared_ptr<InterfaceInfo> moduleInfo, ArgTypes...args)
+		virtual void VisitInterface(std::shared_ptr<InterfaceInfo> interfaceInfo, ArgTypes...args)
 		{
 		}
 		virtual void VisitPackage(std::shared_ptr<Package>& package, ArgTypes...args)
 		{
-			for (auto classInfo : package->classDefs)
+			for (const auto& [_, classInfo] : package->classes)
 			{
 				VisitClass(classInfo, args...);
 			}
-			for (auto moduleInfo : package->moduleDefs)
+			for (const auto& [_, moduleInfo] : package->modules)
 			{
 				VisitModule(moduleInfo, args...);
 			}
-			for (auto interfaceInfo : package->interfaceDefs)
+			for (const auto& [_, interfaceInfo] : package->interfaces)
 			{
 				VisitInterface(interfaceInfo, args...);
 			}
 		}
 		virtual void VisitProject(Project& project, ArgTypes...args)
 		{
-			for (auto pkg : project.packages)
+			for (auto& [_, pkg] : project.packages)
 			{
 				VisitPackage(pkg, args...);
 			}
 		}
 	};
 
-	class TypeRenamer
+	class PackageInfoCollectPass
 	{
 	public:
+		void CollectInfo(Project& project);
+	};
+
+	class TypeRenamePass: public Nanopass<const Table<std::u32string, TypeAlias>&>
+	{
+	public:
+		ExpPtr VisitVarDefExpression(std::shared_ptr<VarDefExpression> node, const Table<std::u32string, TypeAlias>& typeAliases) override;
+		ExpPtr VisitNewExpression(std::shared_ptr<NewExpression> node, const Table<std::u32string, TypeAlias>& typeAliases) override;
 		void RenameAll(Project& project);
-		void RenameMethod(MethodInfo& method, Table<std::u32string, TypeAlias>& typeAliases);
-		void RenameField(FieldInfo& field, Table<std::u32string, TypeAlias>& typeAliases);
-		TypePtr RenameType(TypePtr type, Table<std::u32string, TypeAlias>& typeAliases);
+		void RenameMethod(std::shared_ptr<MethodInfo> method, const Table<std::u32string, TypeAlias>& typeAliases);
+		void RenameField(std::shared_ptr<FieldInfo> field, const Table<std::u32string, TypeAlias>& typeAliases);
+		TypePtr RenameType(TypePtr type, const Table<std::u32string, TypeAlias>& typeAliases);
 	};
 
 	class InheritanceTypeResolver
@@ -221,19 +229,19 @@ namespace cygni
 	{
 	public:
 		Project& project;
-		TypeGraph typeGraph;
+		TypeGraph& typeGraph;
 		VirtualTableGenerator(Project& project);
 		void VisitClass(std::shared_ptr<ClassInfo> classInfo) override;
-		//int GetClassId(SourcePosition position, TypePtr classType);
 	};
 
 	class HandleThisPointerPass : public Nanopass<>
 	{
 	public:
 		Project& project;
-		MethodInfo* currentMethod = nullptr;
+		std::shared_ptr<MethodInfo> currentMethod;
+
 		HandleThisPointerPass(Project& project);
-		void VisitMethod(MethodInfo& method) override;
+		void VisitMethod(std::shared_ptr<MethodInfo> method) override;
 		ExpPtr VisitParameter(std::shared_ptr<ParameterExpression> parameter) override;
 	};
 } // namespace cygni

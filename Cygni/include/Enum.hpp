@@ -166,6 +166,7 @@ namespace cygni
 		ClassMethod,
 		InterfaceField,
 		InterfaceMethod,
+		InterfaceName,
 		LocalVariable
 	};
 
@@ -704,6 +705,8 @@ namespace cygni
 				return U"InterfaceField";
 			case LocationType::InterfaceMethod:
 				return U"InterfaceMethod";
+			case LocationType::InterfaceName:
+				return U"InterfaceName";
 			case LocationType::LocalVariable:
 				return U"LocalVariable";
 			default:

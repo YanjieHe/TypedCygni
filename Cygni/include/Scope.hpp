@@ -7,25 +7,6 @@
 
 namespace cygni
 {
-	/*class Scope
-	{
-	public:
-		std::shared_ptr<Scope> parent;
-		Table<std::u32string, std::any> table;
-
-		Scope() = default;
-
-		explicit Scope(std::shared_ptr<Scope> parent);
-
-		std::optional<std::any> Get(std::u32string key);
-
-		void Put(std::u32string key, std::any value);
-
-		std::optional<std::any> GetInLocal(std::u32string key);
-	};
-
-	using ScopePtr = std::shared_ptr<Scope>;*/
-
 	template <typename T>
 	class Scope
 	{
@@ -91,19 +72,19 @@ namespace cygni
 
 		}
 
-		static typename std::shared_ptr<ScopeFactory<T>> Create()
+		static std::shared_ptr<ScopeFactory<T>> Create()
 		{
 			return std::make_shared<ScopeFactory<T>>();
 		}
 
-		typename Scope<T>* New()
+		Scope<T>* New()
 		{
 			auto scope = new Scope<T>();
 			scopeList.push_back(scope);
 			return scope;
 		}
 
-		typename Scope<T>* New(Scope<T>* parent)
+		Scope<T>* New(Scope<T>* parent)
 		{
 			auto scope = new Scope<T>(parent);
 			scopeList.push_back(scope);

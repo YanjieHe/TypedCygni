@@ -106,8 +106,8 @@ namespace cygni
 		json VisitModuleInfo(std::shared_ptr<ModuleInfo> info);
 		json VisitInterfaceInfo(std::shared_ptr<InterfaceInfo> info);
 		json VisitSourceLocation(SourcePosition location);
-		json VisitFieldDef(const FieldInfo &field);
-		json VisitMethodDef(const MethodInfo &method);
+		json VisitFieldDef(const std::shared_ptr<FieldInfo>field);
+		json VisitMethodDef(const std::shared_ptr<MethodInfo>method);
 		void AttachNodeInformation(json &obj, ExpPtr node);
 		json VisitPackage(std::shared_ptr<Package> package);
 		json VisitProject(Project &project);
@@ -140,8 +140,8 @@ namespace cygni
 		void VisitVarDefExpression(std::shared_ptr<VarDefExpression>node, std::vector<ExpPtr>&nodeList);
 		void VisitWhileExpression(std::shared_ptr<WhileExpression>node, std::vector<ExpPtr>&nodeList);
 
-		void VisitField(const FieldInfo& field, std::vector<ExpPtr>& nodeList);
-		void VisitMethod(const MethodInfo& method, std::vector<ExpPtr>& nodeList);
+		void VisitField(const std::shared_ptr<FieldInfo> field, std::vector<ExpPtr>& nodeList);
+		void VisitMethod(const std::shared_ptr<MethodInfo> method, std::vector<ExpPtr>& nodeList);
 		void VisitClass(std::shared_ptr<ClassInfo> classInfo, std::vector<ExpPtr>& nodeList);
 		void VisitModule(std::shared_ptr<ModuleInfo> moduleInfo, std::vector<ExpPtr>& nodeList);
 
@@ -151,7 +151,7 @@ namespace cygni
 	class LocalVariableCollector
 	{
 	public:
-		void VisitMethodDef(MethodInfo &method);
+		void VisitMethodDef(std::shared_ptr<MethodInfo>method);
 		void VisitPackage(std::shared_ptr<Package> package);
 		void VisitProject(Project& project);
 	};
@@ -185,7 +185,8 @@ namespace cygni
 
 		void VisitClassInfo(std::shared_ptr<ClassInfo> info, Scope<LocationPtr>* outerScope);
 		void VisitModuleInfo(std::shared_ptr<ModuleInfo> info, Scope<LocationPtr>* outerScope);
-		void VisitMethodDef(const MethodInfo &method, Scope<LocationPtr>* outerScope);
+		void VisitMethodDef(const std::shared_ptr<MethodInfo>method, Scope<LocationPtr>* outerScope);
+		void VisitProgramFile(std::shared_ptr<SourceDocument> program, Scope<LocationPtr>* outerScope);
 		void VisitProject();
 	};
 
@@ -194,24 +195,22 @@ namespace cygni
 	class ConstantCollector
 	{
 	public:
-		void VisitMethodDef(MethodInfo &method, ConstantSet& constantSet);
+		void VisitMethodDef(std::shared_ptr<MethodInfo>method, ConstantSet& constantSet);
 		void VisitPackage(std::shared_ptr<Package> package);
 		void VisitProject(Project& project);
 	};
 
-	//void AssignIndex(Project& project);
-
-	class PackageImporter
-	{
-	public:
-		void ImportPackages(Project& project);
-		void CollectInfo(Project& project,
-			std::unordered_map<PackageRoute, std::vector<std::shared_ptr<ClassInfo>>>& classMap,
-			std::unordered_map<PackageRoute, std::vector<std::shared_ptr<ModuleInfo>>>& moduleMap,
-			std::unordered_map<PackageRoute, std::vector<std::shared_ptr<InterfaceInfo>>>& interfaceMap,
-			PackageRoute currentRoute,
-			std::shared_ptr<Package> pkg, std::unordered_set<PackageRoute>& visited);
-	};
+	// class PackageImporter
+	// {
+	// public:
+	// 	void ImportPackages(Project& project);
+	// 	void CollectInfo(Project& project,
+	// 		std::unordered_map<PackageRoute, std::vector<std::shared_ptr<ClassInfo>>>& classMap,
+	// 		std::unordered_map<PackageRoute, std::vector<std::shared_ptr<ModuleInfo>>>& moduleMap,
+	// 		std::unordered_map<PackageRoute, std::vector<std::shared_ptr<InterfaceInfo>>>& interfaceMap,
+	// 		PackageRoute currentRoute,
+	// 		std::shared_ptr<Package> pkg, std::unordered_set<PackageRoute>& visited);
+	// };
 
 } // namespace cygni
 
