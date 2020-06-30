@@ -49,6 +49,8 @@ public:
 
   static std::shared_ptr<Type> Unify(const std::vector<TypePtr> types);
 
+  static bool IsPrimitive(TypePtr type);
+
   virtual ~Type() {}
   // virtual ~Type() = 0;
 };

@@ -20,7 +20,7 @@ FunctionPointer load_library_function(State* state, const char * library_path, c
 		else
 		{
 			fprintf(stderr, "cannot load function '%s' in the library: %s\n", entry_point, library_path);
-			fprintf(stderr, "error code: %d", GetLastError());
+			fprintf(stderr, "error code: %lu", GetLastError());
 			vm_throw(state, VM_ERROR_LOAD_LIBRARY_FUNCTION);
 			return NULL; // make the compiler happy
 		}
@@ -28,7 +28,7 @@ FunctionPointer load_library_function(State* state, const char * library_path, c
 	else
 	{
 		fprintf(stderr, "cannot load library: %s\n", library_path);
-		fprintf(stderr, "error code: %d", GetLastError());
+		fprintf(stderr, "error code: %lu", GetLastError());
 		vm_throw(state, VM_ERROR_LOAD_LIBRARY);
 		return NULL; // make the compiler happy
 	}

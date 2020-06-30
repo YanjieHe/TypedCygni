@@ -11,8 +11,8 @@
 #define CURRENT_BYTE(STATE) ((STATE)->byte_code.code[(STATE)->byte_code.offset])
 #define FORWARD(STATE, STEP) ((STATE)->byte_code.offset += (STEP))
 
-char *read_byte_code_from_file(char *path, int *file_length) {
-  char *byte_code;
+Byte *read_byte_code_from_file(char *path, int *file_length) {
+  Byte *byte_code;
   FILE *file;
 
   *file_length = -1;
@@ -401,7 +401,7 @@ void view_exe(Executable *exe) {
       if (constant->flag == CONSTANT_FLAG_I32) {
         printf("\t#%d: %d\n", j, constant->i32_v);
       } else if (constant->flag == CONSTANT_FLAG_I64) {
-        printf("\t#%d: %d\n", j, constant->i64_v);
+        printf("\t#%d: %lld\n", j, constant->i64_v);
       } else if (constant->flag == CONSTANT_FLAG_F32) {
         printf("\t#%d: %f\n", j, constant->f32_v);
       } else if (constant->flag == CONSTANT_FLAG_F64) {
@@ -452,7 +452,6 @@ void view_function(MethodInfo *function, Executable *exe) {
   const char *op_name;
   const char *op_type;
   uint32_t u32_v;
-  uint32_t module_index;
 
   printf("\tmethod: %s\n", function->name);
   if (function->flag == METHOD_FLAG_NATIVE_FUNCTION) {

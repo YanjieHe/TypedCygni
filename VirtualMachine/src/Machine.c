@@ -57,7 +57,7 @@ Machine *create_machine(int stack_max_size, Executable *exe) {
   machine->stack_max_size = stack_max_size;
   machine->stack = malloc(sizeof(Value) * stack_max_size);
   machine->exe = exe;
-  machine->fp = -1;
+  machine->fp = 0;
   machine->sp = -1;
   machine->pc = 0;
   machine->function = NULL;
@@ -79,29 +79,23 @@ void run(Machine *machine) {
   MethodInfo *prev_func;
   MethodInfo *cur_func;
   MethodInfo *next_func;
-  int stack_index;
 
   machine->function = machine->exe->entry;
   cur_func = machine->function;
   code = machine->function->code;
   constant_pool = machine->function->constant_pool->constants;
   stack = machine->stack;
-  pc = 0;
-  fp = 0;
 
-  // arguments ... (fp) | local variables ... | previous function | last pc |
-  // last fp
-  stack_index = fp + cur_func->args_size + cur_func->locals;
-  stack[stack_index].u.function = NULL;
-  stack[stack_index + 1].u.i32_v = pc;
-  stack[stack_index + 2].u.i32_v = fp;
-  sp = stack_index + 2;
-  fp = stack_index + 2;
+  entry(machine);
+  pc = 0;
+  fp = machine->fp;
+  sp = machine->sp;
 
   while (pc < cur_func->code_length) {
     op = code[pc];
-    //view_stack(machine, stack, sp, fp);
-    //printf("function: %s, op = %s, sp = %d, fp = %d, pc = %d\n", cur_func->name,
+    // view_stack(machine, stack, sp, fp);
+    // printf("function: %s, op = %s, sp = %d, fp = %d, pc = %d\n",
+    // cur_func->name,
     //       opcode_info[op][0], sp, fp, pc);
     pc = pc + 1;
     switch (op) {
@@ -164,7 +158,7 @@ void run(Machine *machine) {
       str_obj->next = NULL;
       str_obj->arr = malloc(sizeof(Array));
       str_obj->arr->length = const_str->length;
-      str_obj->arr->type = TYPE_I32;
+      str_obj->arr->type = ARRAY_TYPE_I32;
       str_obj->arr->u.i32_array = malloc(sizeof(int32_t) * const_str->length);
       copy_string(str_obj->arr->u.i32_array, const_str);
 
@@ -947,8 +941,8 @@ void run(Machine *machine) {
     }
     case INVOKE: {
       next_func = stack[sp].u.function;
-      //printf("invoke function: %s\n", next_func->name);
-      //printf("function flag: %d\n", next_func->flag);
+      // printf("invoke function: %s\n", next_func->name);
+      // printf("function flag: %d\n", next_func->flag);
       if (next_func->flag == METHOD_FLAG_NATIVE_FUNCTION) {
         NativeMethod *native_function = &(next_func->native_method);
         if (native_function->function_pointer == NULL) {
@@ -958,17 +952,18 @@ void run(Machine *machine) {
         }
         sp = sp - next_func->args_size;
         // printf("call native function from sp = %d\n", sp);
-        //printf("try to invoke natvie function...\n");
+        // printf("try to invoke natvie function...\n");
         native_function->function_pointer(&(stack[sp])); // return value omitted
       } else {
         int32_t stack_offset;
         i32 cur_fp;
 
-        //printf("func name = %s, sp = %d, args size = %d\n", next_func->name, sp,
+        // printf("func name = %s, sp = %d, args size = %d\n", next_func->name,
+        // sp,
         //       next_func->args_size);
         cur_fp = fp;
         fp = sp - next_func->args_size;
-        //printf("fp = %d\n", fp);
+        // printf("fp = %d\n", fp);
         stack_offset = fp + next_func->args_size + next_func->locals;
         stack[stack_offset].u.function = cur_func;
         stack[stack_offset + 1].u.i32_v = pc;
@@ -1037,11 +1032,11 @@ void run(Machine *machine) {
       instance = stack[sp].u.gc_obj;
       READ_U16(constant_pool_offset);
       READ_U16(method_offset);
-      method =
-          get_method(machine, constant_pool[constant_pool_offset].method_ref);
+      GET_METHOD(method, machine,
+                 constant_pool[constant_pool_offset].method_ref);
       current_type = method->class_info;
-      method = get_virtual_method(machine, instance->obj->type, current_type,
-                                  method_offset);
+      GET_VIRTUAL_METHOD(method, machine, instance->obj->type, current_type,
+                         method_offset);
       STACK_PUSH_FUNCTION(method);
       break;
     }
@@ -1196,8 +1191,7 @@ void run(Machine *machine) {
                                       break;
       }*/
     default: {
-      fprintf(stderr, "unsupported operation code: ");
-      fprintf(stderr, "%d\n", op);
+      fprintf(stderr, "unsupported operation code: %d\n", op);
       vm_throw(machine->state, VM_ERROR_OPCODE);
     }
     }
@@ -1231,4 +1225,19 @@ void copy_string(int32_t *char_array, String *str_v) {
   for (i = 0; i < str_v->length; i++) {
     char_array[i] = (int32_t)(str_v->characters[i]);
   }
+}
+void entry(Machine *machine) {
+  i32 stack_index;
+  MethodInfo *cur_func;
+  Value *stack;
+  // arguments ... (fp) | local variables ... | previous function | last pc |
+  // last fp
+  cur_func = machine->function;
+  stack = machine->stack;
+  stack_index = machine->fp + cur_func->args_size + cur_func->locals;
+  stack[stack_index].u.function = NULL;
+  stack[stack_index + 1].u.i32_v = machine->pc;
+  stack[stack_index + 2].u.i32_v = machine->fp;
+  machine->sp = stack_index + 2;
+  machine->fp = stack_index + 2;
 }

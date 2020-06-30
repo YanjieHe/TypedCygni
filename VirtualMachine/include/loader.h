@@ -4,7 +4,7 @@
 #include "state.h"
 #include <stdio.h>
 #include "executable.h"
-char* read_byte_code_from_file(char* path, int* file_length);
+Byte* read_byte_code_from_file(char* path, int* file_length);
 
 char* parse_string(State* state);
 
@@ -27,8 +27,6 @@ void view_exe(Executable* exe);
 void view_function(MethodInfo* function, Executable* exe);
 
 void view_type_tag(State* state, Byte tag);
-
-static bool expect_length(State* state, i32 length);
 
 static bool expect_length(State* state, i32 length)
 {

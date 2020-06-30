@@ -121,7 +121,7 @@ namespace cygni
 		Break,
 		Convert,
 		ArrayLength,
-		UpCast,
+		// UpCast,
 		DownCast
 	};
 
@@ -586,8 +586,8 @@ namespace cygni
 				return U"Convert";
 			case ExpressionType::ArrayLength:
 				return U"ArrayLength";
-			case ExpressionType::UpCast:
-				return U"UpCast";
+			// case ExpressionType::UpCast:
+			// 	return U"UpCast";
 			case ExpressionType::DownCast:
 				return U"DownCast";
 

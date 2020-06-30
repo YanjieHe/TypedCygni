@@ -703,7 +703,7 @@ void VariableLocator::VisitMemberAccess(
             LocationType::InterfaceMethod, name, methodIndex);
       } else {
         throw TypeException(node->position,
-                            Format(U"undefined field '{}' in class '{}'",
+                            Format(U"undefined field '{}' in interface '{}'",
                                    node->field, interfaceInfo->name));
       }
     } else {
@@ -887,7 +887,7 @@ void ConstantCollector::VisitMethodDef(std::shared_ptr<MethodInfo> method,
   std::function<bool(ExpPtr)> filter = [](ExpPtr node) {
     return node->nodeType == ExpressionType::Constant ||
            node->nodeType == ExpressionType::MemberAccess ||
-           node->nodeType == ExpressionType::UpCast ||
+           //  node->nodeType == ExpressionType::UpCast ||
            node->nodeType == ExpressionType::DownCast ||
            node->nodeType == ExpressionType::New ||
            node->nodeType == ExpressionType::Parameter;
@@ -964,8 +964,7 @@ void ConstantCollector::VisitMethodDef(std::shared_ptr<MethodInfo> method,
         constantSet[ConstantKind::CONSTANT_FLAG_METHOD].insert(
             loc->name.ToString());
       }
-    } else if (exp->nodeType == ExpressionType::UpCast ||
-               exp->nodeType == ExpressionType::DownCast) {
+    } else if (exp->nodeType == ExpressionType::DownCast) {
       auto node = std::static_pointer_cast<UnaryExpression>(exp);
       constantSet[ConstantKind::CONSTANT_FLAG_CLASS].insert(
           node->operand->type->ToString());

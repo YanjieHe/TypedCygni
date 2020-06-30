@@ -171,9 +171,6 @@ public:
   void VisitWhile(std::shared_ptr<WhileExpression> node,
                   const ConstantMap &constantMap, ByteCode &byteCode);
 
-  // void CompileClassInfo(std::shared_ptr<ClassInfo> info, ByteCode& byteCode);
-  // void CompileModuleInfo(std::shared_ptr<ModuleInfo> info, ByteCode&
-  // byteCode);
   void CompileMethodDef(ExecMethod &execMethod, const ConstantMap &constantMap);
   FullQualifiedName CompileMainFunction(Project &project);
   void CompileConstantPool(SourcePosition position,

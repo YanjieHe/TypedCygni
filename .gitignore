@@ -3,6 +3,7 @@ StandardLibraryDLL/x64/
 StandardLibraryDLL/.vs/
 VirtualMachine/.vs/
 VirtualMachine/build/
+VirtualMachine/StandardLibraryDLL.dll
 Cygni/.vs/
 Cygni/build/
 Cygni/.vscode/

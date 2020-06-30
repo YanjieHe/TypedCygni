@@ -31,7 +31,7 @@ namespace cygni
 			case ExpressionType::UnaryPlus:
 			case ExpressionType::UnaryMinus:
 			case ExpressionType::Convert:
-			case ExpressionType::UpCast:
+			// case ExpressionType::UpCast:
 			case ExpressionType::DownCast:
 			case ExpressionType::ArrayLength:
 				return VisitUnary(std::static_pointer_cast<UnaryExpression>(node), args...);

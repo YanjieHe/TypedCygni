@@ -24,6 +24,8 @@ void view_stack(Machine *machine, Value *stack, int sp, int fp);
 
 void copy_string(int32_t *char_array, String *str_v);
 
+void entry(Machine *machine);
+
 static StaticVarInfo *get_static_var(Machine *machine,
                                      StaticVarRef *static_var_ref);
 
@@ -107,8 +109,10 @@ static MethodInfo *get_method(Machine *machine, MethodRef *method_ref) {
 
     if (method_map_pair) {
       method_ref->method_info = method_map_pair->method_info;
+      printf("METHOD FOUND\n");
       return method_map_pair->method_info;
     } else {
+      printf("METHOD NOT FOUND\n");
       vm_throw(machine->state, VM_ERROR_FAIL_TO_FIND_METHOD);
       return NULL;
     }
@@ -139,4 +143,45 @@ static MethodInfo *get_virtual_method(Machine *machine,
   }
 }
 
+#define GET_METHOD(METHOD_INFO, MACHINE, METHOD_REF)                           \
+  {                                                                            \
+    if ((METHOD_REF)->method_info) {                                           \
+      (METHOD_INFO) = (METHOD_REF)->method_info;                               \
+    } else {                                                                   \
+      MethodMap *method_map_pair;                                              \
+      HASH_FIND_STR((MACHINE)->exe->method_map, (METHOD_REF)->name,            \
+                    method_map_pair);                                          \
+      if (method_map_pair) {                                                   \
+        (METHOD_REF)->method_info = method_map_pair->method_info;              \
+        (METHOD_INFO) = method_map_pair->method_info;                          \
+      } else {                                                                 \
+        vm_throw((MACHINE)->state, VM_ERROR_FAIL_TO_FIND_METHOD);              \
+        (METHOD_INFO) = NULL;                                                  \
+      }                                                                        \
+    }                                                                          \
+  }
+
+#define GET_VIRTUAL_METHOD(METHOD_INFO, MACHINE, ORIGINAL_TYPE, CURRENT_TYPE,  \
+                           METHOD_OFFSET)                                      \
+  {                                                                            \
+    int i;                                                                     \
+    if ((ORIGINAL_TYPE) == (CURRENT_TYPE)) {                                   \
+      METHOD_INFO = &((ORIGINAL_TYPE)->methods[(METHOD_OFFSET)]);              \
+    } else {                                                                   \
+      for (i = 0; i < (ORIGINAL_TYPE)->virtual_tables_count; i++) {            \
+        ClassInfo *class_info;                                                 \
+        VirtualTable *virtual_table = &((ORIGINAL_TYPE)->virtual_tables[i]);   \
+        class_info = get_class((MACHINE), &(virtual_table->class_ref));        \
+        if (class_info == (CURRENT_TYPE)) {                                    \
+          GET_METHOD(METHOD_INFO, machine,                                     \
+                     &(virtual_table->methods[(METHOD_OFFSET)]));              \
+          goto finish_searching;                                               \
+        }                                                                      \
+      }                                                                        \
+      vm_throw((MACHINE)->state,                                               \
+               VM_ERROR_FAIL_TO_FIND_CLASS_IN_VIRTUAL_TABLE);                  \
+      (METHOD_INFO) = NULL;                                                    \
+    finish_searching:;                                                         \
+    }                                                                          \
+  }
 #endif // VM_MACHINE_H

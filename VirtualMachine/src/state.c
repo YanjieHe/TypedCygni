@@ -67,7 +67,7 @@ void vm_throw(State * state, int error_code)
 {
 	if (state->byte_code.code)
 	{
-		fprintf(stderr, "current byte code position: %ld\n", state->byte_code.offset);
+		fprintf(stderr, "current byte code position: %d\n", state->byte_code.offset);
 		state->byte_code.code = NULL;
 	}
 	longjmp(state->target, error_code);

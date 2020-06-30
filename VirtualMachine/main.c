@@ -16,9 +16,10 @@ int main() {
 
   state = state_new();
 
-  path = "c:\\users\\heyan\\cmakebuilds\\dc11c05f-03b5-4f3a-963f-"
-         "0c8941d4a6da\\build\\x64-debug "
-         "(default)\\sample_code\\test2\\build\\app";
+  // path = "c:\\users\\heyan\\cmakebuilds\\dc11c05f-03b5-4f3a-963f-"
+  //        "0c8941d4a6da\\build\\x64-debug "
+  //        "(default)\\sample_code\\test2\\build\\app";
+  path = "../Cygni/sample_code/test4/build/app";
   printf("parse exe file:\n");
 
   byte_code = read_byte_code_from_file(path, &file_length);

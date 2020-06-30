@@ -1,22 +1,20 @@
+#include "ConsoleApp.hpp"
 #include "Expression.hpp"
 #include "Lexer.hpp"
 #include "Parser.hpp"
 #include "Visitor.hpp"
-#include "ConsoleApp.hpp"
+
 
 using namespace std;
 
-
-void ViewTokens(const std::vector<cygni::Token> &tokens)
-{
-	for (const cygni::Token &token : tokens)
-	{
-		cout << cygni::Enum<cygni::Tag>::ToString(token.tag) << ": ";
-		cout << token.text << endl;
-	}
+void ViewTokens(const std::vector<cygni::Token> &tokens) {
+  for (const cygni::Token &token : tokens) {
+    cout << cygni::Enum<cygni::Tag>::ToString(token.tag) << ": ";
+    cout << token.text << endl;
+  }
 }
 
-//void CompileProgram(std::string path, std::string outputJsonPath)
+// void CompileProgram(std::string path, std::string outputJsonPath)
 //{
 //	/* pass 1: read code in text format */
 //	std::string code{ cygni::ReadText(path) };
@@ -66,71 +64,60 @@ void ViewTokens(const std::vector<cygni::Token> &tokens)
 //	cout << "Output AST in JSON format!" << endl;
 //}
 
-int main(int argc, char **argv)
-{
-	using namespace cygni;
-	cout << "Hello Cygni!" << endl;
-	try
-	{
-		/*std::vector<std::string> fileList = {
-			"sample_code/String.cyg",
-			"sample_code/Geometry.cyg",
-				"sample_code/IO.cyg",
-				"sample_code/Math.cyg",
-				"sample_code/Recursion.cyg",
-				"sample_code/Stat.cyg",
-				"sample_code/App.cyg"
-		};
-		ConsoleApp app;
-		app.Compile(fileList, "sample_code/app");*/
+int main(int argc, char **argv) {
+  using namespace cygni;
+  cout << "Hello Cygni!" << endl;
+  try {
+    /*std::vector<std::string> fileList = {
+            "sample_code/String.cyg",
+            "sample_code/Geometry.cyg",
+                    "sample_code/IO.cyg",
+                    "sample_code/Math.cyg",
+                    "sample_code/Recursion.cyg",
+                    "sample_code/Stat.cyg",
+                    "sample_code/App.cyg"
+    };
+    ConsoleApp app;
+    app.Compile(fileList, "sample_code/app");*/
 
-		//std::vector<std::string> fileList = {
-		//	"sample_code/test1/Main.cyg",
-		//		"sample_code/test1/IO.cyg",
-		//		"sample_code/test1/String.cyg",
-		//};
-		//ConsoleApp app;
-		//app.Compile(fileList, "sample_code/test1/build/app");
+    // std::vector<std::string> fileList = {
+    //	"sample_code/test1/Main.cyg",
+    //		"sample_code/test1/IO.cyg",
+    //		"sample_code/test1/String.cyg",
+    //};
+    // ConsoleApp app;
+    // app.Compile(fileList, "sample_code/test1/build/app");
 
-		std::vector<std::string> fileList = {
-	"sample_code/test3/Main.cyg",
-		"sample_code/test3/Out.cyg",
-		"sample_code/test3/String.cyg",
-		"sample_code/test3/Math.cyg",
-		"sample_code/test3/Geometry.cyg",
-		};
-		ConsoleApp app;
-		app.Compile(fileList, "sample_code/test3/build/app");
-	}
-	catch (ArgumentException &ex)
-	{
-		cout << UTF32ToUTF8(ex.message) << endl;
-	}
-	catch (NotImplementedException &ex)
-	{
-		cout << UTF32ToUTF8(ex.message) << endl;
-	}
-	catch (LexicalException &ex)
-	{
-		cout << ex.FormattedErrorMessage() << endl;
-	}
-	catch (ParserException &ex)
-	{
-		cout << ex.FormattedErrorMessage() << endl;
-	}
-	//catch (TypeException &ex)
-	//{
-	//	cout << ex.FormattedErrorMessage() << endl;
-	//}
-	catch (FileNotFoundException& ex)
-	{
-		cout << ex.message << endl;
-	}
-	//catch (CompilerException& ex)
-	//{
-	//	cout << ex.FormattedErrorMessage() << endl;
-	//}
-	cout << "Press any key to close..." << endl;
-	cin.get();
-	return 0;
+    std::vector<std::string> fileList = {
+        "sample_code/test4/Main.cyg",     "sample_code/test4/Out.cyg",
+        "sample_code/test4/String.cyg",   "sample_code/test4/Math.cyg",
+        "sample_code/test4/Geometry.cyg",
+    };
+    ConsoleApp app;
+    app.Compile(fileList, "sample_code/test4/build/app");
+  } catch (ArgumentException &ex) {
+    cout << UTF32ToUTF8(ex.message) << endl;
+  }
+//    catch (NotImplementedException &ex) {
+//     cout << UTF32ToUTF8(ex.message) << endl;
+//   }
+   catch (LexicalException &ex) {
+    cout << ex.FormattedErrorMessage() << endl;
+  } catch (ParserException &ex) {
+    cout << ex.FormattedErrorMessage() << endl;
+  }
+  // catch (TypeException &ex)
+  //{
+  //	cout << ex.FormattedErrorMessage() << endl;
+  //}
+  catch (FileNotFoundException &ex) {
+    cout << ex.message << endl;
+  }
+  // catch (CompilerException& ex)
+  //{
+  //	cout << ex.FormattedErrorMessage() << endl;
+  //}
+  cout << "Press any key to close..." << endl;
+  cin.get();
+  return 0;
 }

@@ -131,10 +131,13 @@ TypePtr TypeChecker::VisitUnary(std::shared_ptr<UnaryExpression> node,
     TypePtr from = VisitExpression(node->operand, program, scope);
     TypePtr to = node->type;
     if (typeGraph.IsSubTypeof(from, to)) {
-      node->nodeType = ExpressionType::UpCast;
       return to;
     } else if (typeGraph.IsSuperTypeof(from, to)) {
-      node->nodeType = ExpressionType::DownCast;
+      if (Type::IsPrimitive(from) && Type::IsPrimitive(to)) {
+        // pass
+      } else {
+        node->nodeType = ExpressionType::DownCast;
+      }
       return to;
     } else {
       throw TypeException(
@@ -213,9 +216,11 @@ TypePtr TypeChecker::VisitAssign(std::shared_ptr<BinaryExpression> node,
       return Attach(node, Type::Void());
     } else if (typeGraph.IsSuperTypeof(left, right)) {
       // add type conversion
-      auto convertExp = std::make_shared<UnaryExpression>(
-          node->position, ExpressionType::UpCast, node->right);
-      node->right = convertExp;
+      if (Type::IsPrimitive(left) && Type::IsPrimitive(right)) {
+        auto convertExp = std::make_shared<UnaryExpression>(
+            node->position, ExpressionType::Convert, node->right);
+        node->right = convertExp;
+      }
       return Attach(node, Type::Void());
     } else {
       throw TypeException(
@@ -620,17 +625,17 @@ TypeChecker::VisitVarDefExpression(std::shared_ptr<VarDefExpression> node,
     return Attach(node, value);
   } else if (variable->type->Equals(value)) {
     // var x: Int = 10
-    scope->Put(node->variable->name, node->variable->type);
-    return Attach(node, node->variable->type);
-  } else if (typeGraph.IsSubTypeof(value, node->variable->type)) {
-    // add type conversion
-    // TO DO: add support for primitive types conversion
-    auto convertExp = std::make_shared<UnaryExpression>(
-        node->position, ExpressionType::UpCast, node->value);
-    node->value = convertExp;
-    node->value->type = node->variable->type;
-    scope->Put(node->variable->name, node->value->type);
-    return Attach(node, node->variable->type);
+    scope->Put(variable->name, variable->type);
+    return Attach(node, variable->type);
+  } else if (typeGraph.IsSubTypeof(value, variable->type)) {
+    if (Type::IsPrimitive(value) && Type::IsPrimitive(variable->type)) {
+      auto convertExp = std::make_shared<UnaryExpression>(
+          node->position, ExpressionType::Convert, node->value);
+      convertExp->type = variable->type;
+      node->value = convertExp;
+    }
+    scope->Put(variable->name, variable->type);
+    return Attach(node, variable->type);
   } else {
     throw TypeException(node->position,
                         Format(U"variable initialization type mismatch, "
@@ -744,6 +749,9 @@ void TypeChecker::CheckProject(Scope<TypePtr> *globalScope) {
   auto scope = scopeFactory->New(globalScope);
   ResolveSignatures(globalScope);
   InitializeTypeGraph(scope);
+  for (auto &[_, pkg] : project.packages) {
+    CheckPackage(pkg, globalScope);
+  }
   for (auto &[_, program] : project.programs) {
     CheckProgramFile(program, scope);
   }
@@ -756,6 +764,8 @@ void TypeChecker::InitializeTypeGraph(Scope<TypePtr> *scope) {
             std::make_shared<ClassType>(classInfo->route, classInfo->name);
         superClass = CheckType(classInfo->position, superClass, program, scope);
         typeGraph.AddEdge(classType, superClass);
+        cout << classType->ToString() << " -> " << superClass->ToString()
+             << endl;
       }
     }
     for (auto [_, interfaceInfo] : program->interfaceDefs) {
@@ -765,6 +775,8 @@ void TypeChecker::InitializeTypeGraph(Scope<TypePtr> *scope) {
         superInterface =
             CheckType(interfaceInfo->position, superInterface, program, scope);
         typeGraph.AddEdge(interfaceType, superInterface);
+        cout << interfaceType->ToString() << " -> "
+             << superInterface->ToString() << endl;
       }
     }
   }
@@ -774,21 +786,27 @@ void TypeChecker::ResolveSignatures(Scope<TypePtr> *globalScope) {
     auto scope = scopeFactory->New(globalScope);
     // fix import statements
     for (auto importStatement : program->importedPackages) {
-      auto pkg = project.packages.at(importStatement.route);
-      for (auto [_, classInfo] : pkg->classes) {
-        auto classType =
-            std::make_shared<ClassType>(classInfo->route, classInfo->name);
-        scope->Put(classInfo->name, classType);
-      }
-      for (auto [_, moduleInfo] : pkg->modules) {
-        auto moduleType =
-            std::make_shared<ModuleType>(moduleInfo->route, moduleInfo->name);
-        scope->Put(moduleInfo->name, moduleType);
-      }
-      for (auto [_, interfaceInfo] : pkg->interfaces) {
-        auto interfaceType = std::make_shared<InterfaceType>(
-            interfaceInfo->route, interfaceInfo->name);
-        scope->Put(interfaceInfo->name, interfaceType);
+      if (project.packages.count(importStatement.route)) {
+        auto pkg = project.packages.at(importStatement.route);
+        for (auto [_, classInfo] : pkg->classes) {
+          auto classType =
+              std::make_shared<ClassType>(classInfo->route, classInfo->name);
+          scope->Put(classInfo->name, classType);
+        }
+        for (auto [_, moduleInfo] : pkg->modules) {
+          auto moduleType =
+              std::make_shared<ModuleType>(moduleInfo->route, moduleInfo->name);
+          scope->Put(moduleInfo->name, moduleType);
+        }
+        for (auto [_, interfaceInfo] : pkg->interfaces) {
+          auto interfaceType = std::make_shared<InterfaceType>(
+              interfaceInfo->route, interfaceInfo->name);
+          scope->Put(interfaceInfo->name, interfaceType);
+        }
+      } else {
+        throw TypeException(importStatement.position,
+                            Format(U"cannot find package '{}'",
+                                   importStatement.route.ToString()));
       }
     }
     // fix rename statements
