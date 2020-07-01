@@ -126,10 +126,13 @@ public:
   std::vector<std::shared_ptr<InterfaceType>> interfaces;
 };
 
-class GenericType {
+class GenericType: public Type {
 public:
-  Table<std::u32string, TypeParameter> parameters;
   TypePtr type;
+  std::vector<TypePtr> parameters;
+  GenericType(TypePtr type, std::vector<TypePtr> parameters);
+  std::u32string ToString() const override;
+  bool Equals(TypePtr other) const override;
 };
 
 class ClassType : public Type {

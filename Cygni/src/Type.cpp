@@ -101,6 +101,48 @@ VoidType::VoidType() : Type(TypeCode::Void) {}
 
 AnyType::AnyType() : Type(TypeCode::Any) {}
 
+GenericType::GenericType(TypePtr type, std::vector<TypePtr> parameters)
+    : Type(TypeCode::Generic), type{type}, parameters{parameters} {}
+
+std::u32string GenericType::ToString() const {
+  std::u32string text;
+  text += (type->ToString());
+  text += U"[";
+  if (parameters.size() == 0) {
+    text += U"]";
+  } else {
+    text += (parameters.front()->ToString());
+    for (int i = 1; i < parameters.size(); i++) {
+      text += U",";
+      text += (parameters.at(i)->ToString());
+    }
+    text += U"]";
+  }
+  return text;
+}
+
+bool GenericType::Equals(TypePtr other) const {
+  if (other->typeCode == TypeCode::Generic) {
+    auto genericType = std::static_pointer_cast<GenericType>(other);
+    if (type->Equals(genericType->type)) {
+      if (parameters.size() == genericType->parameters.size()) {
+        for (int i = 0; i < parameters.size(); i++) {
+          if (!(parameters[i]->Equals(genericType->parameters[i]))) {
+            return false;
+          }
+        }
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  } else {
+    return false;
+  }
+}
+
 ArrayType::ArrayType(TypePtr elementType)
     : Type(TypeCode::Array), elementType{elementType} {}
 

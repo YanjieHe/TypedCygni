@@ -497,16 +497,16 @@ TypeChecker::VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node,
   if (object->typeCode == TypeCode::Module) {
     auto moduleType = std::static_pointer_cast<ModuleType>(object);
     if (auto moduleInfo = project.GetModule(moduleType)) {
-      if ((*moduleInfo)->fields.ContainsKey(node->field)) {
-        auto &field = (*moduleInfo)->fields.GetValueByKey(node->field);
+      if (moduleInfo.value()->fields.ContainsKey(node->field)) {
+        auto &field = moduleInfo.value()->fields.GetValueByKey(node->field);
         return Attach(node, field->type);
-      } else if ((*moduleInfo)->methods.ContainsKey(node->field)) {
-        auto &method = (*moduleInfo)->methods.GetValueByKey(node->field);
+      } else if (moduleInfo.value()->methods.ContainsKey(node->field)) {
+        auto &method = moduleInfo.value()->methods.GetValueByKey(node->field);
         return Attach(node, method->signature);
       } else {
         throw TypeException(node->position,
                             Format(U"undefined field '{}' in module '{}'",
-                                   node->field, moduleType->name));
+                                   node->field, moduleType->ToString()));
       }
     } else {
       throw TypeException(node->position,
@@ -515,15 +515,16 @@ TypeChecker::VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node,
   } else if (object->typeCode == TypeCode::Class) {
     auto classType = std::static_pointer_cast<ClassType>(object);
     if (auto classInfo = project.GetClass(classType)) {
-      if ((*classInfo)->fields.ContainsKey(node->field)) {
-        auto &field = (*classInfo)->fields.GetValueByKey(node->field);
+      if (classInfo.value()->fields.ContainsKey(node->field)) {
+        auto &field = classInfo.value()->fields.GetValueByKey(node->field);
         return Attach(node, field->type);
-      } else if ((*classInfo)->methods.ContainsKey(node->field)) {
-        auto &method = (*classInfo)->methods.GetValueByKey(node->field);
+      } else if (classInfo.value()->methods.ContainsKey(node->field)) {
+        auto &method = classInfo.value()->methods.GetValueByKey(node->field);
         return Attach(node, method->signature);
       } else {
         throw TypeException(node->position,
-                            Format(U"undefined field '{}'", node->field));
+                            Format(U"undefined field '{}' in class '{}'",
+                                   node->field, classType->ToString()));
       }
     } else {
       throw TypeException(node->position,
@@ -532,16 +533,18 @@ TypeChecker::VisitMemberAccess(std::shared_ptr<MemberAccessExpression> node,
   } else if (object->typeCode == TypeCode::Interface) {
     auto interfaceType = std::static_pointer_cast<InterfaceType>(object);
     if (auto interfaceInfo = project.GetInterface(interfaceType)) {
-      if ((*interfaceInfo)->methodDefs.ContainsKey(node->field)) {
-        auto &method = (*interfaceInfo)->methodDefs.GetValueByKey(node->field);
+      if (interfaceInfo.value()->allMethods.ContainsKey(node->field)) {
+        auto &method =
+            interfaceInfo.value()->methodDefs.GetValueByKey(node->field);
         return Attach(node, method->signature);
       } else {
         throw TypeException(node->position,
-                            Format(U"undefined field '{}'", node->field));
+                            Format(U"undefined field '{}' in interface '{}'",
+                                   node->field, interfaceType->ToString()));
       }
     } else {
       throw TypeException(node->position, Format(U"undefined interface '{}'",
-                                                 object->ToString()));
+                                                 interfaceType->ToString()));
     }
   } else if (object->typeCode == TypeCode::Array) {
     auto arrayType = std::static_pointer_cast<ArrayType>(object);
@@ -565,12 +568,12 @@ TypePtr TypeChecker::VisitNewExpression(std::shared_ptr<NewExpression> node,
   node->type = CheckType(node->position, node->type, program, scope);
   if (node->type->typeCode == TypeCode::Class) {
     auto newExpType = std::static_pointer_cast<ClassType>(node->type);
-    if (auto res = project.GetClass(newExpType)) {
-      auto classInfo = *res;
+    if (auto classInfo = project.GetClass(newExpType)) {
       for (const auto &argument : node->arguments) {
         if (argument.name) {
-          if (classInfo->fields.ContainsKey(*argument.name)) {
-            auto &field = classInfo->fields.GetValueByKey(*(argument.name));
+          if (classInfo.value()->fields.ContainsKey(argument.name.value())) {
+            auto &field =
+                classInfo.value()->fields.GetValueByKey(argument.name.value());
             auto value = VisitExpression(argument.value, program, scope);
             if (field->type->Equals(value)) {
               // pass
@@ -591,7 +594,8 @@ TypePtr TypeChecker::VisitNewExpression(std::shared_ptr<NewExpression> node,
                               U"field initialization name not specified");
         }
       }
-      auto name = FullQualifiedName(classInfo->route).Concat(classInfo->name);
+      auto name = FullQualifiedName(classInfo.value()->route)
+                      .Concat(classInfo.value()->name);
       node->location =
           std::make_shared<TypeLocation>(LocationType::ClassName, name);
       return node->type;
@@ -612,9 +616,6 @@ TypeChecker::VisitVarDefExpression(std::shared_ptr<VarDefExpression> node,
                                    std::shared_ptr<SourceDocument> program,
                                    Scope<TypePtr> *scope) {
   TypePtr value = VisitExpression(node->value, program, scope);
-  if (value->typeCode == TypeCode::Unresolved) {
-    throw 10;
-  }
   auto &variable = node->variable;
   variable->type = CheckType(node->position, variable->type, program, scope);
   if (variable->type->typeCode == TypeCode::Unknown) {
@@ -745,15 +746,16 @@ void TypeChecker::CheckProgramFile(std::shared_ptr<SourceDocument> program,
     CheckModuleInfo(moduleInfo, program, scope);
   }
 }
-void TypeChecker::CheckProject(Scope<TypePtr> *globalScope) {
-  auto scope = scopeFactory->New(globalScope);
+void TypeChecker::CheckProject() {
+  scopeFactory = ScopeFactory<TypePtr>::Create();
+  auto globalScope = scopeFactory->New();
   ResolveSignatures(globalScope);
-  InitializeTypeGraph(scope);
+  InitializeTypeGraph(globalScope);
   for (auto &[_, pkg] : project.packages) {
     CheckPackage(pkg, globalScope);
   }
   for (auto &[_, program] : project.programs) {
-    CheckProgramFile(program, scope);
+    CheckProgramFile(program, globalScope);
   }
 }
 void TypeChecker::InitializeTypeGraph(Scope<TypePtr> *scope) {

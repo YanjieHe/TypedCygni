@@ -107,7 +107,7 @@ public:
                     Scope<TypePtr> *globalScope);
   void CheckProgramFile(std::shared_ptr<SourceDocument> program,
                         Scope<TypePtr> *globalScope);
-  void CheckProject(Scope<TypePtr> *globalScope);
+  void CheckProject();
   TypePtr Attach(ExpPtr node, TypePtr type);
   void CheckInterfaceConstraint(std::shared_ptr<ClassInfo> classInfo,
                                 std::shared_ptr<InterfaceInfo> interfaceInfo);

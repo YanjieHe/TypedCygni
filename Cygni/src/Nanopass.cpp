@@ -6,6 +6,8 @@
 #include <memory>
 #include <stack>
 
+using namespace std;
+
 namespace cygni {
 void PackageInfoCollectPass::CollectInfo(Project &project) {
   for (const auto &[_, program] : project.programs) {
@@ -25,129 +27,134 @@ void PackageInfoCollectPass::CollectInfo(Project &project) {
     }
   }
 }
-ExpPtr TypeRenamePass::VisitVarDefExpression(
-    std::shared_ptr<VarDefExpression> node,
-    const Table<std::u32string, TypeAlias> &typeAliases) {
-  auto value = VisitExpression(node->value, typeAliases);
-  auto newNode = std::make_shared<VarDefExpression>(
-      node->position, node->variable, node->type, value);
-  newNode->variable->type = RenameType(newNode->variable->type, typeAliases);
-  return newNode;
-}
-ExpPtr TypeRenamePass::VisitNewExpression(
-    std::shared_ptr<NewExpression> node,
-    const Table<std::u32string, TypeAlias> &typeAliases) {
-  std::vector<Argument> arguments;
-  std::transform(node->arguments.begin(), node->arguments.end(),
-                 std::back_inserter(arguments),
-                 [this, &typeAliases](Argument arg) -> Argument {
-                   Argument newArg(VisitExpression(arg.value, typeAliases));
-                   newArg.index = arg.index;
-                   newArg.name = arg.name;
-                   return newArg;
-                 });
-  auto newNode =
-      std::make_shared<NewExpression>(node->position, node->type, arguments);
-  newNode->location = node->location;
-  newNode->type = RenameType(newNode->type, typeAliases);
-  return newNode;
-}
-void TypeRenamePass::RenameAll(Project &project) {
-  for (const auto &[_, program] : project.programs) {
-    const auto &typeAliases = program->typeAliases;
-    for (const auto &[_, classInfo] : program->classDefs) {
-      for (auto &superType : classInfo->superTypes) {
-        superType = RenameType(superType, typeAliases);
-      }
-      for (auto &field : classInfo->fieldDefs.values) {
-        RenameField(field, typeAliases);
-      }
-      for (auto &method : classInfo->methodDefs.values) {
-        RenameMethod(method, typeAliases);
-      }
-    }
-    for (const auto &[_, moduleInfo] : program->moduleDefs) {
-      for (auto &field : moduleInfo->fields.values) {
-        RenameField(field, typeAliases);
-      }
-      for (auto &method : moduleInfo->methods.values) {
-        RenameMethod(method, typeAliases);
-      }
-    }
-  }
-}
-void TypeRenamePass::RenameMethod(
-    std::shared_ptr<MethodInfo>method, const Table<std::u32string, TypeAlias> &typeAliases) {
-  // std::function<bool(ExpPtr)> filter = [](ExpPtr node) -> bool
-  // {
-  // 	return node->nodeType == ExpressionType::VariableDefinition ||
-  // node->nodeType == ExpressionType::New;
-  // };
+// ExpPtr TypeRenamePass::VisitVarDefExpression(
+//     std::shared_ptr<VarDefExpression> node,
+//     const Table<std::u32string, TypeAlias> &typeAliases) {
+//   auto value = VisitExpression(node->value, typeAliases);
+//   auto newNode = std::make_shared<VarDefExpression>(
+//       node->position, node->variable, node->type, value);
+//   newNode->variable->type = RenameType(newNode->variable->type, typeAliases);
+//   return newNode;
+// }
+// ExpPtr TypeRenamePass::VisitNewExpression(
+//     std::shared_ptr<NewExpression> node,
+//     const Table<std::u32string, TypeAlias> &typeAliases) {
+//   std::vector<Argument> arguments;
+//   std::transform(node->arguments.begin(), node->arguments.end(),
+//                  std::back_inserter(arguments),
+//                  [this, &typeAliases](Argument arg) -> Argument {
+//                    Argument newArg(VisitExpression(arg.value, typeAliases));
+//                    newArg.index = arg.index;
+//                    newArg.name = arg.name;
+//                    return newArg;
+//                  });
+//   auto newNode =
+//       std::make_shared<NewExpression>(node->position, node->type, arguments);
+//   newNode->location = node->location;
+//   newNode->type = RenameType(newNode->type, typeAliases);
+//   return newNode;
+// }
+// void TypeRenamePass::RenameAll(Project &project) {
+//   for (const auto &[_, program] : project.programs) {
+//     const auto &typeAliases = program->typeAliases;
+//     for (const auto &[_, classInfo] : program->classDefs) {
+//       for (auto &superType : classInfo->superTypes) {
+//         superType = RenameType(superType, typeAliases);
+//       }
+//       for (auto &field : classInfo->fieldDefs.values) {
+//         RenameField(field, typeAliases);
+//       }
+//       for (auto &method : classInfo->methodDefs.values) {
+//         RenameMethod(method, typeAliases);
+//       }
+//     }
+//     for (const auto &[_, moduleInfo] : program->moduleDefs) {
+//       for (auto &field : moduleInfo->fields.values) {
+//         RenameField(field, typeAliases);
+//       }
+//       for (auto &method : moduleInfo->methods.values) {
+//         RenameMethod(method, typeAliases);
+//       }
+//     }
+//   }
+// }
+// void TypeRenamePass::RenameMethod(
+//     std::shared_ptr<MethodInfo>method, const Table<std::u32string, TypeAlias>
+//     &typeAliases) {
+//   // std::function<bool(ExpPtr)> filter = [](ExpPtr node) -> bool
+//   // {
+//   // 	return node->nodeType == ExpressionType::VariableDefinition ||
+//   // node->nodeType == ExpressionType::New;
+//   // };
 
-  // TreeTraverser traverser(filter);
-  // std::vector<ExpPtr> nodeList;
-  // traverser.VisitExpression(method->body, nodeList);
+//   // TreeTraverser traverser(filter);
+//   // std::vector<ExpPtr> nodeList;
+//   // traverser.VisitExpression(method->body, nodeList);
 
-  // for (auto node : nodeList)
-  // {
-  // 	if (node->nodeType == ExpressionType::VariableDefinition)
-  // 	{
-  // 		auto varDef = std::static_pointer_cast<VarDefExpression>(node);
-  // 		varDef->variable->type = RenameType(varDef->variable->type,
-  // typeAliases);
-  // 	}
-  // 	else
-  // 	{
-  // 		// New
-  // 		auto newExp = std::static_pointer_cast<NewExpression>(node);
-  // 		newExp->type = RenameType(newExp->type, typeAliases);
-  // 	}
-  // }
+//   // for (auto node : nodeList)
+//   // {
+//   // 	if (node->nodeType == ExpressionType::VariableDefinition)
+//   // 	{
+//   // 		auto varDef =
+//   std::static_pointer_cast<VarDefExpression>(node);
+//   // 		varDef->variable->type =
+//   RenameType(varDef->variable->type,
+//   // typeAliases);
+//   // 	}
+//   // 	else
+//   // 	{
+//   // 		// New
+//   // 		auto newExp =
+//   std::static_pointer_cast<NewExpression>(node);
+//   // 		newExp->type = RenameType(newExp->type, typeAliases);
+//   // 	}
+//   // }
 
-  method->selfType = RenameType(method->selfType, typeAliases);
-  method->returnType = RenameType(method->returnType, typeAliases);
-  method->signature = RenameType(method->signature, typeAliases);
-  for (auto parameter : method->parameters) {
-    parameter->type = RenameType(parameter->type, typeAliases);
-  }
-  method->body = VisitExpression(method->body, typeAliases);
-}
-void TypeRenamePass::RenameField(
-    std::shared_ptr<FieldInfo>field, const Table<std::u32string, TypeAlias> &typeAliases) {
-  field->type = RenameType(field->type, typeAliases);
-}
-TypePtr TypeRenamePass::RenameType(
-    TypePtr type, const Table<std::u32string, TypeAlias> &typeAliases) {
-  if (type->typeCode == TypeCode::Unresolved) {
-    auto unresolvedType = std::static_pointer_cast<UnresolvedType>(type);
-    if (typeAliases.ContainsKey(unresolvedType->name)) {
-      auto typeAlias = typeAliases.GetValueByKey(unresolvedType->name);
-      return std::make_shared<UnresolvedType>(typeAlias.route,
-                                              typeAlias.typeName);
-    } else {
-      std::cout << "cannot resolve type: " << unresolvedType->ToString()
-                << std::endl;
-      return type;
-    }
-  } else if (type->typeCode == TypeCode::Function) {
-    auto functionType = std::static_pointer_cast<FunctionType>(type);
-    std::vector<TypePtr> parameters;
-    std::transform(
-        functionType->parameters.begin(), functionType->parameters.end(),
-        std::back_inserter(parameters),
-        [&](TypePtr t) -> TypePtr { return RenameType(t, typeAliases); });
-    return std::make_shared<FunctionType>(
-        RenameType(functionType->selfType, typeAliases), functionType->name,
-        parameters, RenameType(functionType->returnType, typeAliases));
-  } else if (type->typeCode == TypeCode::Array) {
-    auto arrayType = std::static_pointer_cast<ArrayType>(type);
-    return std::make_shared<ArrayType>(
-        RenameType(arrayType->elementType, typeAliases));
-  } else {
-    // TO DO: GENERIC TYPE
-    return type;
-  }
-}
+//   method->selfType = RenameType(method->selfType, typeAliases);
+//   method->returnType = RenameType(method->returnType, typeAliases);
+//   method->signature = RenameType(method->signature, typeAliases);
+//   for (auto parameter : method->parameters) {
+//     parameter->type = RenameType(parameter->type, typeAliases);
+//   }
+//   method->body = VisitExpression(method->body, typeAliases);
+// }
+// void TypeRenamePass::RenameField(
+//     std::shared_ptr<FieldInfo>field, const Table<std::u32string, TypeAlias>
+//     &typeAliases) {
+//   field->type = RenameType(field->type, typeAliases);
+// }
+// TypePtr TypeRenamePass::RenameType(
+//     TypePtr type, const Table<std::u32string, TypeAlias> &typeAliases) {
+//   if (type->typeCode == TypeCode::Unresolved) {
+//     auto unresolvedType = std::static_pointer_cast<UnresolvedType>(type);
+//     if (typeAliases.ContainsKey(unresolvedType->name)) {
+//       auto typeAlias = typeAliases.GetValueByKey(unresolvedType->name);
+//       return std::make_shared<UnresolvedType>(typeAlias.route,
+//                                               typeAlias.typeName);
+//     } else {
+//       std::cout << "cannot resolve type: " << unresolvedType->ToString()
+//                 << std::endl;
+//       return type;
+//     }
+//   } else if (type->typeCode == TypeCode::Function) {
+//     auto functionType = std::static_pointer_cast<FunctionType>(type);
+//     std::vector<TypePtr> parameters;
+//     std::transform(
+//         functionType->parameters.begin(), functionType->parameters.end(),
+//         std::back_inserter(parameters),
+//         [&](TypePtr t) -> TypePtr { return RenameType(t, typeAliases); });
+//     return std::make_shared<FunctionType>(
+//         RenameType(functionType->selfType, typeAliases), functionType->name,
+//         parameters, RenameType(functionType->returnType, typeAliases));
+//   } else if (type->typeCode == TypeCode::Array) {
+//     auto arrayType = std::static_pointer_cast<ArrayType>(type);
+//     return std::make_shared<ArrayType>(
+//         RenameType(arrayType->elementType, typeAliases));
+//   } else {
+//     // TO DO: GENERIC TYPE
+//     return type;
+//   }
+// }
 
 void InheritanceTypeResolver::VisitProject(Project &project) {
   for (const auto &[_, pkg] : project.packages) {
@@ -180,8 +187,7 @@ void InheritanceTypeResolver::VisitClass(Project &project,
 void InheritanceProcessor::VisitProject(Project &project) {
   for (auto &[_, program] : project.programs) {
     for (auto &[_, classInfo] : program->classDefs) {
-      int n = static_cast<int>(classInfo->superTypes.size());
-      for (int i = 0; i < n; i++) {
+      for (size_t i = 0; i < classInfo->superTypes.size(); i++) {
         auto superType = classInfo->superTypes.at(i);
         if (superType->typeCode == TypeCode::Class) {
           if (i != 0) {
@@ -209,20 +215,20 @@ void InheritanceProcessor::VisitClass(Project &project,
                                       std::shared_ptr<ClassInfo> classInfo) {
   std::stack<std::shared_ptr<FieldInfo>> fieldStack;
   std::stack<std::shared_ptr<MethodInfo>> methodStack;
-  std::unordered_set<TypePtr> typeSet;
+  std::unordered_set<FullQualifiedName> typeSet;
   std::unordered_set<std::u32string> fieldNames;
   std::unordered_set<std::u32string> methodNames;
 
   auto originalClass = classInfo;
   bool done = false;
   while (!done) {
-    if (typeSet.find(std::make_shared<ClassType>(
-            classInfo->route, classInfo->name)) != typeSet.end()) {
+    if (typeSet.count(
+            FullQualifiedName(classInfo->route).Concat(classInfo->name))) {
       throw TypeException(originalClass->position,
                           U"cycle detected in the inheritance chain");
     } else {
       typeSet.insert(
-          std::make_shared<ClassType>(classInfo->route, classInfo->name));
+          FullQualifiedName(classInfo->route).Concat(classInfo->name));
     }
     int nFields = static_cast<int>(classInfo->fieldDefs.Size());
     for (int i = nFields - 1; i >= 0; i--) {
@@ -302,29 +308,8 @@ ExpPtr ArrayLengthPass::VisitMemberAccess(
   }
 }
 VirtualTableGenerator::VirtualTableGenerator(Project &project)
-    : project{project}, typeGraph{project.typeGraph} {
-  // for (auto pkg : project.packages)
-  // {
-  // 	for (auto classInfo : pkg->classDefs)
-  // 	{
-  // 		for (auto& superClass : classInfo->superTypes)
-  // 		{
-  // 			auto classType =
-  // std::make_shared<ClassType>(classInfo->route, classInfo->name);
-  // typeGraph.AddEdge(classType, superClass);
-  // 		}
-  // 	}
-  // 	for (auto interfaceInfo : pkg->interfaceDefs)
-  // 	{
-  // 		for (auto& superInterface : interfaceInfo->superInterfaces)
-  // 		{
-  // 			auto interfaceType =
-  // std::make_shared<InterfaceType>(interfaceInfo->route, interfaceInfo->name);
-  // 			typeGraph.AddEdge(interfaceType, superInterface);
-  // 		}
-  // 	}
-  // }
-}
+    : project{project}, typeGraph{project.typeGraph} {}
+
 void VirtualTableGenerator::VisitClass(std::shared_ptr<ClassInfo> classInfo) {
   // traverse the type graph to get all the super classes and interfaces
   VirtualTable &virtualTable = classInfo->virtualTable;
@@ -344,21 +329,6 @@ void VirtualTableGenerator::VisitClass(std::shared_ptr<ClassInfo> classInfo) {
                                 .Concat(superClassInfo.value()->name)
                                 .Concat(method->name);
           methodList.methodNames.push_back(methodName);
-          /*if (classInfo->methodDefs.ContainsKey(method->name))
-          {
-                  auto methodName = FullQualifiedName(classInfo->route)
-                          .Concat(classInfo->name)
-                          .Concat(method->name);
-                  methodList.methodNames.push_back(methodName);
-          }
-          else
-          {
-                  auto methodName =
-          FullQualifiedName(superClassInfo.value()->route)
-                          .Concat(superClassInfo.value()->name)
-                          .Concat(method->name);
-                  methodList.methodNames.push_back(methodName);
-          }*/
         }
         virtualTable.push_back(methodList);
       } else {
@@ -405,7 +375,7 @@ void VirtualTableGenerator::VisitClass(std::shared_ptr<ClassInfo> classInfo) {
 }
 HandleThisPointerPass::HandleThisPointerPass(Project &project)
     : project{project} {}
-void HandleThisPointerPass::VisitMethod(std::shared_ptr<MethodInfo>method) {
+void HandleThisPointerPass::VisitMethod(std::shared_ptr<MethodInfo> method) {
   currentMethod = method;
   method->body = VisitExpression(method->body);
 }
@@ -424,6 +394,83 @@ ExpPtr HandleThisPointerPass::VisitParameter(
     return newNode;
   } else {
     return parameter;
+  }
+}
+void ModuleFieldsInitializationPass::AddFieldsInitializer(
+    std::shared_ptr<ModuleInfo> moduleInfo) {
+  auto moduleType =
+      std::make_shared<ModuleType>(moduleInfo->route, moduleInfo->name);
+  auto initializerName = U"Initializer";
+  if (moduleInfo->methods.ContainsKey(initializerName)) {
+    auto initializer = moduleInfo->methods.GetValueByKey(initializerName);
+    if (initializer->body->nodeType == ExpressionType::Block) {
+      auto body = static_pointer_cast<BlockExpression>(initializer->body);
+      ExpList expressions;
+      for (auto field : moduleInfo->fields) {
+        auto initField = make_shared<BinaryExpression>(
+            field->position, ExpressionType::Assign,
+            make_shared<ParameterExpression>(field->position, field->name,
+                                             field->type),
+            field->value);
+        expressions.push_back(initField);
+      }
+      auto initFieldsBlock =
+          make_shared<BlockExpression>(initializer->position, expressions);
+      initializer->body = make_shared<BlockExpression>(
+          initializer->body->position,
+          std::vector<ExpPtr>{initFieldsBlock, initializer->body});
+    } else {
+      throw TypeException(initializer->position,
+                          U"module initializer must be a block");
+    }
+  } else {
+    ExpList expressions;
+    for (auto field : moduleInfo->fields) {
+      auto initField = make_shared<BinaryExpression>(
+          field->position, ExpressionType::Assign,
+          make_shared<ParameterExpression>(field->position, field->name,
+                                           field->type),
+          field->value);
+      expressions.push_back(initField);
+    }
+    auto body = make_shared<BlockExpression>(moduleInfo->position, expressions);
+    auto initializer = std::make_shared<MethodInfo>(
+        moduleInfo->position, AccessModifier::Public, true, moduleType,
+        Table<std::u32string, AnnotationInfo>(), initializerName,
+        std::vector<std::shared_ptr<ParameterExpression>>(), Type::Void(),
+        body);
+    moduleInfo->methods.Add(initializer->name, initializer);
+  }
+}
+void ModuleFieldsInitializationPass::VisitProject(Project &project) {
+  for (auto [_, pkg] : project.packages) {
+    for (auto [_, moduleInfo] : pkg->modules) {
+      AddFieldsInitializer(moduleInfo);
+    }
+  }
+}
+void AddVoidReturnPass::AddVoidReturn(std::shared_ptr<MethodInfo> methodInfo) {
+  if (methodInfo->returnType->typeCode == TypeCode::Void) {
+    auto body = methodInfo->body;
+    auto returnVoid = make_shared<ReturnExpression>(
+        body->position,
+        make_shared<ConstantExpression>(body->position, Type::Void(), U"void"));
+    methodInfo->body =
+        make_shared<BlockExpression>(body->position, ExpList{body, returnVoid});
+  }
+}
+void AddVoidReturnPass::VisitProject(Project &project) {
+  for (auto [_, pkg] : project.packages) {
+    for (auto [_, classInfo] : pkg->classes) {
+      for (auto methodInfo : classInfo->methodDefs) {
+        AddVoidReturn(methodInfo);
+      }
+    }
+    for (auto [_, moduleInfo] : pkg->modules) {
+      for (auto methodInfo : moduleInfo->methods) {
+        AddVoidReturn(methodInfo);
+      }
+    }
   }
 }
 } // namespace cygni

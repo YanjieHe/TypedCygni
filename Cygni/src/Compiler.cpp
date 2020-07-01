@@ -253,8 +253,8 @@ Executable Compiler::Compile() {
   Executable exe;
   std::unordered_map<FullQualifiedName, std::shared_ptr<ExecClass>> classes;
 
-  for (auto [_,pkg] : project.packages) {
-    for (auto [_,classInfo] : pkg->classes) {
+  for (auto [_, pkg] : project.packages) {
+    for (auto [_, classInfo] : pkg->classes) {
       auto className =
           FullQualifiedName(classInfo->route).Concat(classInfo->name);
       std::shared_ptr<ExecClass> execClass = std::make_shared<ExecClass>();
@@ -287,7 +287,7 @@ Executable Compiler::Compile() {
       execClass->constantMap = classInfo->constantMap;
       classes.insert({className, execClass});
     }
-    for (auto [_,interfaceInfo] : pkg->interfaces) {
+    for (auto [_, interfaceInfo] : pkg->interfaces) {
       auto className =
           FullQualifiedName(interfaceInfo->route).Concat(interfaceInfo->name);
       if (classes.find(className) != classes.end()) {
@@ -314,7 +314,7 @@ Executable Compiler::Compile() {
         }
       }
     }
-    for (auto [_,moduleInfo] : pkg->modules) {
+    for (auto [_, moduleInfo] : pkg->modules) {
       auto className =
           FullQualifiedName(moduleInfo->route).Concat(moduleInfo->name);
       std::shared_ptr<ExecClass> execClass;
@@ -423,9 +423,7 @@ void Compiler::VisitUnary(std::shared_ptr<UnaryExpression> node,
     byteCode.AppendOp(OpCode::ARRAY_LENGTH);
     break;
   }
-  default:{
-	  throw NotImplementedException();
-  }
+  default: { throw NotImplementedException(); }
   }
 }
 void Compiler::VisitBinary(std::shared_ptr<BinaryExpression> node,
@@ -526,8 +524,8 @@ void Compiler::VisitConstant(std::shared_ptr<ConstantExpression> node,
 //	byteCode.AppendU16Checked(info->fields.Size(),
 //[info]()->CompilerException
 //	{
-//		return CompilerException(info->position, U"too many fields in the
-//class");
+//		return CompilerException(info->position, U"too many fields in
+// the class");
 //	});
 //	for (const auto& field : info->fields.values)
 //	{
@@ -542,15 +540,15 @@ void Compiler::VisitConstant(std::shared_ptr<ConstantExpression> node,
 //		if (auto superClassInfo = project.GetClass(superClassType))
 //		{
 //			auto name =
-//FullQualifiedName(superClassInfo.value()->route)
+// FullQualifiedName(superClassInfo.value()->route)
 //				.Concat(superClassInfo.value()->name);
 //			byteCode.AppendString(name.ToString());
 //		}
 //		else
 //		{
 //			throw CompilerException(info->position,
-//				Format(U"missing super class '{}' for inheritance",
-//superClassType->ToString()));
+//				Format(U"missing super class '{}' for
+// inheritance", superClassType->ToString()));
 //		}
 //	}
 //	byteCode.AppendU16Unchecked(info->virtualTable.size());
@@ -565,8 +563,8 @@ void Compiler::VisitConstant(std::shared_ptr<ConstantExpression> node,
 //	}
 //	if (info->methodDefs.Size() > std::numeric_limits<uint16_t>::max())
 //	{
-//		throw  CompilerException(info->position, U"too many methods in the
-//class");
+//		throw  CompilerException(info->position, U"too many methods in
+// the class");
 //	}
 //	byteCode.AppendU16Unchecked(info->methodDefs.Size());
 //	for (const auto& method : info->methodDefs.values)
@@ -581,12 +579,12 @@ void Compiler::VisitConstant(std::shared_ptr<ConstantExpression> node,
 //	if (info->fields.Size() > std::numeric_limits<uint16_t>::max())
 //	{
 //		throw CompilerException(info->position, U"too many member
-//variables in the module");
+// variables in the module");
 //	}
 //	if (info->methods.Size() > std::numeric_limits<uint16_t>::max())
 //	{
 //		throw CompilerException(info->position, U"too many member
-//functions in the module");
+// functions in the module");
 //	}
 //	CompileConstantPool(info->position, info->constantMap, byteCode);
 
@@ -654,7 +652,8 @@ void Compiler::CompileMethodDef(ExecMethod &execMethod,
       // Do nothing
       execMethod.localsSize = 0;
     } else {
-      if (method->localVariables.size() > std::numeric_limits<uint16_t>::max()) {
+      if (method->localVariables.size() >
+          std::numeric_limits<uint16_t>::max()) {
         throw CompilerException(method->position, U"too many variables");
       }
       execMethod.localsSize = static_cast<int>(method->localVariables.size());
@@ -1169,6 +1168,38 @@ void Compiler::VisitAssign(std::shared_ptr<BinaryExpression> node,
       byteCode.AppendU16Unchecked(
           std::static_pointer_cast<ParameterLocation>(parameter->location)
               ->offset);
+    } else if (parameter->location->type == LocationType::ModuleField) {
+      switch (node->left->type->typeCode) {
+      case TypeCode::Int32: {
+        byteCode.AppendOp(OpCode::POP_STATIC_I32);
+        break;
+      }
+      case TypeCode::Int64: {
+        byteCode.AppendOp(OpCode::POP_STATIC_I64);
+        break;
+      }
+      case TypeCode::Float32: {
+        byteCode.AppendOp(OpCode::POP_STATIC_F32);
+        break;
+      }
+      case TypeCode::Float64: {
+        byteCode.AppendOp(OpCode::POP_STATIC_F64);
+        break;
+      }
+      case TypeCode::String: {
+        byteCode.AppendOp(OpCode::POP_STATIC_OBJECT);
+        break;
+      }
+      case TypeCode::Interface:
+      case TypeCode::Class: {
+        byteCode.AppendOp(OpCode::POP_STATIC_OBJECT);
+        break;
+      }
+      default: {
+        throw CompilerException(node->position,
+                                U"not supported assignment type");
+      }
+      }
     } else {
       throw CompilerException(node->position,
                               U"cannot compile non-local variable definition");
@@ -1290,8 +1321,8 @@ void Compiler::VisitWhile(std::shared_ptr<WhileExpression> node,
 FullQualifiedName Compiler::CompileMainFunction(Project &project) {
   bool found = false;
   FullQualifiedName mainFunction;
-  for (auto [_,package] : project.packages) {
-    for (auto [_,moduleInfo] : package->modules) {
+  for (auto [_, package] : project.packages) {
+    for (auto [_, moduleInfo] : package->modules) {
       if (moduleInfo->methods.ContainsKey(U"Main")) {
         auto &method = moduleInfo->methods.GetValueByKey(U"Main");
         if (found) {
@@ -1345,7 +1376,7 @@ GlobalInformation Compiler::CompileGlobalInformation(Project &project,
   // if (exe.classes.size() > std::numeric_limits<uint16_t>::max())
   //{
   //	throw CompilerException(SourcePosition(), U"number of classes and
-  //modules cannot exceed 65535");
+  // modules cannot exceed 65535");
   //}
 
   GlobalInformation globalInformation;
@@ -1567,18 +1598,18 @@ ByteCode CompileExe(Executable &exe) {
 //	FullQualifiedName name, int argsSize, int localsSize, int needStackSize)
 //	: className{ className }, flag{ flag }, name{ name },
 //	argsSize{ argsSize }, localsSize{ localsSize }, needStackSize{
-//needStackSize }
+// needStackSize }
 //{
 //}
 // ExecClass::ExecClass(FullQualifiedName name, std::vector<MethodInfo> methods,
 // std::vector<FieldInfo> fields, 	std::vector<MethodInfo> staticFunctions,
-//std::vector<FieldInfo> staticVariables, 	std::vector<std::u32string>
-//inheritanceChain, std::vector<FullQualifiedName> superClasses,
+// std::vector<FieldInfo> staticVariables, 	std::vector<std::u32string>
+// inheritanceChain, std::vector<FullQualifiedName> superClasses,
 //	std::vector<FullQualifiedName> interfaces, VirtualTable virtualTable,
-//ConstantMap constantMap) 	: name{ name }, methods{ methods }, fields{ fields },
-//staticFunctions{ staticFunctions }, 	inheritanceChain{ inheritanceChain },
-//superClasses{ superClasses }, interfaces{ interfaces }, 	virtualTable{
-//virtualTable }, constantMap{ constantMap }
+// ConstantMap constantMap) 	: name{ name }, methods{ methods }, fields{
+// fields }, staticFunctions{ staticFunctions }, 	inheritanceChain{
+// inheritanceChain }, superClasses{ superClasses }, interfaces{ interfaces },
+// virtualTable{ virtualTable }, constantMap{ constantMap }
 //{
 //}
 } // namespace cygni
