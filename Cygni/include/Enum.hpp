@@ -4,7 +4,6 @@
 #include <iostream>
 #include <string>
 
-
 namespace cygni {
 enum class Tag {
   Identifier,
@@ -150,7 +149,8 @@ enum class TypeCode {
   Function,
   Interface,
   Unresolved,
-  Generic
+  Generic,
+  Parameter
 };
 
 enum class LocationType {
@@ -650,6 +650,8 @@ public:
       return U"Unresolved";
     case TypeCode::Generic:
       return U"Generic";
+    case TypeCode::Parameter:
+      return U"Parameter";
 
     default:
       std::cerr << __FUNCTION__ << std::endl;

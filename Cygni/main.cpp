@@ -91,7 +91,7 @@ int main(int argc, char **argv) {
     std::vector<std::string> fileList = {
         "sample_code/test4/Main.cyg",     "sample_code/test4/Out.cyg",
         "sample_code/test4/String.cyg",   "sample_code/test4/Math.cyg",
-        "sample_code/test4/Geometry.cyg",
+        "sample_code/test5/Option.cyg",
     };
     ConsoleApp app;
     app.Compile(fileList, "sample_code/test4/build/app");

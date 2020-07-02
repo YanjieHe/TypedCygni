@@ -180,6 +180,8 @@ void parse_class(State *state, ClassInfo *class_info) {
   class_info->super_classes_count = parse_ushort(state);
   class_info->virtual_tables_count = parse_ushort(state);
   class_info->constant_pool.constant_pool_size = parse_ushort(state);
+  class_info->is_initialized = false;
+  class_info->initializer = NULL;
 
   fprintf(stdout, "class name: %s\n", class_info->name);
   fprintf(stdout, "fields count: %d\n", class_info->fields_count);
@@ -222,6 +224,7 @@ void parse_class(State *state, ClassInfo *class_info) {
   fprintf(stdout, "\n\nstatic variables:\n");
   for (i = 0; i < class_info->static_vars_size; i++) {
     class_info->static_vars[i].name = parse_string(state);
+    class_info->static_vars[i].class_info = class_info;
     printf("static var: %s\n", class_info->static_vars[i].name);
   }
 
@@ -229,6 +232,9 @@ void parse_class(State *state, ClassInfo *class_info) {
   fprintf(stdout, "\n\nstatic functions:\n");
   for (i = 0; i < class_info->static_funcs_size; i++) {
     parse_method(state, &(class_info->static_funcs[i]), class_info);
+    if (is_initializer(class_info->static_funcs[i].name)) {
+      class_info->initializer = &(class_info->static_funcs[i]);
+    }
   }
 
   /* inheritance chain */
@@ -534,5 +540,24 @@ void view_type_tag(State *state, Byte tag) {
   } else {
     fprintf(stderr, "error type tag\n");
     vm_throw(state, -1);
+  }
+}
+
+bool is_initializer(char *full_qualified_name) {
+  const char *initializer_name = ".Initializer";
+  size_t len;
+  size_t initializer_name_len;
+
+  initializer_name_len = strlen(initializer_name);
+  len = strlen(full_qualified_name);
+  if (len > initializer_name_len) {
+    if (strcmp(full_qualified_name + (len - initializer_name_len),
+               initializer_name) == 0) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return false;
   }
 }

@@ -101,6 +101,19 @@ VoidType::VoidType() : Type(TypeCode::Void) {}
 
 AnyType::AnyType() : Type(TypeCode::Any) {}
 
+TypeParameter::TypeParameter(
+    std::u32string name, std::vector<std::shared_ptr<InterfaceType>> interfaces)
+    : Type(TypeCode::Parameter), name{name}, interfaces{interfaces} {}
+std::u32string TypeParameter::ToString() const { return name; }
+bool TypeParameter::Equals(TypePtr other) const {
+  if (other->typeCode == TypeCode::Parameter) {
+    auto parameter = std::static_pointer_cast<TypeParameter>(other);
+    return name == parameter->name;
+  } else {
+    return false;
+  }
+}
+
 GenericType::GenericType(TypePtr type, std::vector<TypePtr> parameters)
     : Type(TypeCode::Generic), type{type}, parameters{parameters} {}
 

@@ -49,6 +49,28 @@
   stack[sp].is_gc_obj = false;                                                 \
   sp--;
 
+#define ENSURE_CLASS_INITIALIZED(CLASS_INFO, CURRENT_PC)                       \
+  if ((CLASS_INFO)->is_initialized == false) {                                 \
+    int32_t stack_offset;                                                      \
+    i32 cur_fp;                                                                \
+    MethodInfo *next_func;                                                     \
+                                                                               \
+    (CLASS_INFO)->is_initialized = true;                                       \
+    next_func = (CLASS_INFO)->initializer;                                     \
+    cur_fp = fp;                                                               \
+    fp = sp - next_func->args_size;                                            \
+    stack_offset = fp + next_func->args_size + next_func->locals;              \
+    stack[stack_offset].u.function = cur_func;                                 \
+    stack[stack_offset + 1].u.i32_v = (CURRENT_PC);                            \
+    stack[stack_offset + 2].u.i32_v = cur_fp;                                  \
+    cur_func = next_func;                                                      \
+    pc = 0;                                                                    \
+    sp = stack_offset + 2;                                                     \
+    code = next_func->code;                                                    \
+    constant_pool = next_func->constant_pool->constants;                       \
+    break;                                                                     \
+  }
+
 Machine *create_machine(int stack_max_size, Executable *exe) {
   Machine *machine;
   int i;
@@ -78,7 +100,6 @@ void run(Machine *machine) {
   Byte op;
   MethodInfo *prev_func;
   MethodInfo *cur_func;
-  MethodInfo *next_func;
 
   machine->function = machine->exe->entry;
   cur_func = machine->function;
@@ -265,6 +286,7 @@ void run(Machine *machine) {
       READ_U16(constant_pool_offset);
       static_var = get_static_var(
           machine, constant_pool[constant_pool_offset].static_var_ref);
+      ENSURE_CLASS_INITIALIZED(static_var->class_info, pc - 3);
       static_i32 = static_var->value.u.i32_v;
       STACK_PUSH_I32(static_i32);
       break;
@@ -277,6 +299,7 @@ void run(Machine *machine) {
       READ_U16(constant_pool_offset);
       static_var = get_static_var(
           machine, constant_pool[constant_pool_offset].static_var_ref);
+      ENSURE_CLASS_INITIALIZED(static_var->class_info, pc - 3);
       static_i64 = static_var->value.u.i64_v;
       STACK_PUSH_I64(static_i64);
       break;
@@ -289,6 +312,7 @@ void run(Machine *machine) {
       READ_U16(constant_pool_offset);
       static_var = get_static_var(
           machine, constant_pool[constant_pool_offset].static_var_ref);
+      ENSURE_CLASS_INITIALIZED(static_var->class_info, pc - 3);
       static_f32 = static_var->value.u.f32_v;
       STACK_PUSH_F32(static_f32);
       break;
@@ -301,6 +325,7 @@ void run(Machine *machine) {
       READ_U16(constant_pool_offset);
       static_var = get_static_var(
           machine, constant_pool[constant_pool_offset].static_var_ref);
+      ENSURE_CLASS_INITIALIZED(static_var->class_info, pc - 3);
       static_f64 = static_var->value.u.f64_v;
       STACK_PUSH_F64(static_f64);
       break;
@@ -313,6 +338,7 @@ void run(Machine *machine) {
       READ_U16(constant_pool_offset);
       static_var = get_static_var(
           machine, constant_pool[constant_pool_offset].static_var_ref);
+      ENSURE_CLASS_INITIALIZED(static_var->class_info, pc - 3);
       static_obj = static_var->value.u.gc_obj;
       STACK_PUSH_OBJECT(static_obj);
       break;
@@ -855,6 +881,11 @@ void run(Machine *machine) {
       STACK_POP_I32(result_i32);
       stack_offset = fp + cur_func->args_size + cur_func->locals;
       prev_func = stack[stack_offset].u.function;
+      if (prev_func == NULL) {
+        // exit from the main function
+        printf("EXIT FROM THE MAIN FUNCTION!\n");
+        return;
+      }
       sp = fp;
       pc = stack[stack_offset + 1].u.i32_v;
       fp = stack[stack_offset + 2].u.i32_v;
@@ -940,6 +971,8 @@ void run(Machine *machine) {
       break;
     }
     case INVOKE: {
+      MethodInfo *next_func;
+
       next_func = stack[sp].u.function;
       // printf("invoke function: %s\n", next_func->name);
       // printf("function flag: %d\n", next_func->flag);
@@ -1239,5 +1272,4 @@ void entry(Machine *machine) {
   stack[stack_index + 1].u.i32_v = machine->pc;
   stack[stack_index + 2].u.i32_v = machine->fp;
   machine->sp = stack_index + 2;
-  machine->fp = stack_index + 2;
 }

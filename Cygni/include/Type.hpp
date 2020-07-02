@@ -120,10 +120,14 @@ public:
   // ~AnyType() = default;
 };
 
-class TypeParameter {
+class TypeParameter: public Type {
 public:
   std::u32string name;
   std::vector<std::shared_ptr<InterfaceType>> interfaces;
+  TypeParameter(std::u32string name, std::vector<std::shared_ptr<InterfaceType>> interfaces);
+
+  std::u32string ToString() const override;
+  bool Equals(TypePtr other) const override;
 };
 
 class GenericType: public Type {

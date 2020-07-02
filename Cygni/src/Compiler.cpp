@@ -3,6 +3,7 @@
 
 using std::cout;
 using std::endl;
+using namespace std;
 
 namespace cygni {
 void ByteCode::Append(Byte byte) { bytes.push_back(byte); }
@@ -1200,6 +1201,15 @@ void Compiler::VisitAssign(std::shared_ptr<BinaryExpression> node,
                                 U"not supported assignment type");
       }
       }
+      auto loc = static_pointer_cast<MemberLocation>(parameter->location);
+      if (auto index =
+              GetConstant(constantMap, ConstantKind::CONSTANT_FLAG_STATIC_VAR,
+                          loc->name.ToString())) {
+        byteCode.AppendU16Unchecked(index.value());
+      } else {
+        throw CompilerException(node->position, Format(U"module '{}' not found",
+                                                       loc->name.ToString()));
+      }
     } else {
       throw CompilerException(node->position,
                               U"cannot compile non-local variable definition");
@@ -1241,17 +1251,16 @@ void Compiler::VisitAssign(std::shared_ptr<BinaryExpression> node,
       }
       }
 
+      auto loc = static_pointer_cast<MemberLocation>(memberAccess->location);
       if (auto index =
-              GetConstant(constantMap, ConstantKind::CONSTANT_FLAG_CLASS,
-                          memberAccess->object->type->ToString())) {
+              GetConstant(constantMap, ConstantKind::CONSTANT_FLAG_STATIC_VAR,
+                          loc->name.ToString())) {
         byteCode.AppendU16Unchecked(index.value());
       } else {
         throw CompilerException(node->position,
                                 Format(U"module '{}' not found",
                                        memberAccess->object->type->ToString()));
       }
-      byteCode.AppendU16Unchecked(
-          std::static_pointer_cast<MemberLocation>(location)->offset);
     } else if (location->type == LocationType::ClassField) {
       switch (memberAccess->type->typeCode) {
       case TypeCode::Int32: {

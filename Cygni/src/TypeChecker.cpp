@@ -570,7 +570,7 @@ TypePtr TypeChecker::VisitNewExpression(std::shared_ptr<NewExpression> node,
     auto newExpType = std::static_pointer_cast<ClassType>(node->type);
     if (auto classInfo = project.GetClass(newExpType)) {
       for (const auto &argument : node->arguments) {
-        if (argument.name) {
+        if (argument.name.has_value()) {
           if (classInfo.value()->fields.ContainsKey(argument.name.value())) {
             auto &field =
                 classInfo.value()->fields.GetValueByKey(argument.name.value());
@@ -721,7 +721,6 @@ void TypeChecker::CheckProgramFile(std::shared_ptr<SourceDocument> program,
         renameStatement.route, renameStatement.typeName);
     if (auto resolvedType = project.ResolveType(unresolvedType)) {
       scope->Put(renameStatement.alias, resolvedType.value());
-      // TO DO: hide original name
     } else {
       throw TypeException(
           renameStatement.position,

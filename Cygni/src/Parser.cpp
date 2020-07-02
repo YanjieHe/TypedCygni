@@ -477,10 +477,10 @@ ExpPtr Parser::ParseWhile() {
   return std::make_shared<WhileExpression>(Pos(start), condition, body);
 }
 
-std::shared_ptr<ClassInfo> Parser::ParseDefClass() {
-  const Token &start = Look();
-  Match(Tag::Class);
-  auto name = Match(Tag::Identifier).text;
+std::shared_ptr<ClassInfo> Parser::ParseDefClass(const Token& start, std::u32string name) {
+  // const Token &start = Look();
+  // Match(Tag::Class);
+  // auto name = Match(Tag::Identifier).text;
   auto info = std::make_shared<ClassInfo>(Pos(start), route, name);
 
   if (Look().tag == Tag::UpperBound) {

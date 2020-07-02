@@ -48,6 +48,7 @@ typedef struct FieldInfo {
 } FieldInfo;
 
 typedef struct StaticVarInfo {
+  struct ClassInfo* class_info;
   char *name;
   Value value;
 } StaticVarInfo;
@@ -73,6 +74,8 @@ typedef struct ClassInfo {
   ClassRef *super_classes;
   ClassRef *interfaces;
   VirtualTable *virtual_tables;
+  bool is_initialized;
+  MethodInfo* initializer;
 } ClassInfo;
 
 typedef struct {

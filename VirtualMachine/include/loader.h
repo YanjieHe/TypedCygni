@@ -33,4 +33,5 @@ static bool expect_length(State* state, i32 length)
 	return state->byte_code.offset + length <= state->byte_code.size;
 }
 
+bool is_initializer(char* full_qualified_name);
 #endif // VM_PARSER_H

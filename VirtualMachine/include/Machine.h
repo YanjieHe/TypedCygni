@@ -184,4 +184,5 @@ static MethodInfo *get_virtual_method(Machine *machine,
     finish_searching:;                                                         \
     }                                                                          \
   }
+
 #endif // VM_MACHINE_H
