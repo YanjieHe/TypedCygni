@@ -604,6 +604,8 @@ TypePtr TypeChecker::VisitNewExpression(std::shared_ptr<NewExpression> node,
                           Format(U"error new expression: undefined class '{}'",
                                  newExpType->ToString()));
     }
+  } else if (node->type->typeCode == TypeCode::Generic) {
+    // TO DO
   } else {
     throw TypeException(node->position,
                         Format(U"new expression expects a class type, not '{}'",
@@ -871,4 +873,9 @@ void TypeChecker::ResolveFieldSignature(std::shared_ptr<FieldInfo> field,
                                         Scope<TypePtr> *scope) {
   field->type = CheckType(field->position, field->type, program, scope);
 }
+void TypeChecker::SpecializeGenericType(
+    std::shared_ptr<GenericType> genericType,
+    std::shared_ptr<SourceDocument> program, Scope<TypePtr> *scope) {
+
+    }
 } // namespace cygni

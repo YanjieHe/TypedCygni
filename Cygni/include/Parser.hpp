@@ -97,7 +97,7 @@ public:
   ExpPtr ParseWhile();
 
   std::shared_ptr<ClassInfo> ParseDefClass(const Token &start,
-                                                   std::u32string name);
+                                           std::u32string name);
 
   std::shared_ptr<ModuleInfo> ParseDefModule();
 
@@ -118,6 +118,10 @@ public:
   std::vector<ImportStatement> ParseImportedPackages();
 
   Table<std::u32string, TypeAlias> ParseTypeAliases();
+
+  std::shared_ptr<TemplateClass> ParseDefTemplateClass(const Token &start,
+                                                       std::u32string name);
+  std::shared_ptr<TypeParameter> ParseTypeParameter();
 };
 } // namespace cygni
 #endif // CYGNI_PARSER_HPP

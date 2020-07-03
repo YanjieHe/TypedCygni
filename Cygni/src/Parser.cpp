@@ -16,8 +16,17 @@ std::shared_ptr<SourceDocument> Parser::ParseProgram() {
   route = program->packageRoute.route;
   while (!IsEof()) {
     if (Look().tag == Tag::Class) {
-      auto classInfo = ParseDefClass();
-      program->classDefs.insert({classInfo->name, classInfo});
+      const Token &start = Look();
+      Match(Tag::Class);
+      auto name = Match(Tag::Identifier).text;
+      if (Look().tag == Tag::LeftBracket) {
+        auto templateClass = ParseDefTemplateClass(start, name);
+        program->templateClassDefs.insert(
+            {templateClass->classInfo->name, templateClass});
+      } else {
+        auto classInfo = ParseDefClass(start, name);
+        program->classDefs.insert({classInfo->name, classInfo});
+      }
     } else if (Look().tag == Tag::Module) {
       auto moduleInfo = ParseDefModule();
       program->moduleDefs.insert({moduleInfo->name, moduleInfo});
@@ -477,7 +486,8 @@ ExpPtr Parser::ParseWhile() {
   return std::make_shared<WhileExpression>(Pos(start), condition, body);
 }
 
-std::shared_ptr<ClassInfo> Parser::ParseDefClass(const Token& start, std::u32string name) {
+std::shared_ptr<ClassInfo> Parser::ParseDefClass(const Token &start,
+                                                 std::u32string name) {
   // const Token &start = Look();
   // Match(Tag::Class);
   // auto name = Match(Tag::Identifier).text;
@@ -628,22 +638,24 @@ std::vector<Argument> Parser::ParseArguments() {
 std::shared_ptr<NewExpression> Parser::ParseNewExpression() {
   const auto &start = Look();
   Match(Tag::New);
-  auto name = Match(Tag::Identifier).text;
+  auto type = ParseType();
   if (Look().tag != Tag::LeftBrace) {
-    return std::make_shared<NewExpression>(
-        Pos(start), std::make_shared<ClassType>(route, name),
-        std::vector<Argument>{});
+    return std::make_shared<NewExpression>(Pos(start), type,
+                                           std::vector<Argument>{});
   } else {
     Match(Tag::LeftBrace);
     std::vector<Argument> arguments;
-    arguments.push_back(ParseArgument());
-    while (!IsEof() && Look().tag != Tag::RightBrace) {
-      Match(Tag::Comma);
+    if (Look().tag == Tag::RightBrace) {
+      Match(Tag::RightBrace);
+    } else {
       arguments.push_back(ParseArgument());
+      while (!IsEof() && Look().tag != Tag::RightBrace) {
+        Match(Tag::Comma);
+        arguments.push_back(ParseArgument());
+      }
+      Match(Tag::RightBrace);
     }
-    Match(Tag::RightBrace);
-    return std::make_shared<NewExpression>(
-        Pos(start), std::make_shared<UnresolvedType>(route, name), arguments);
+    return std::make_shared<NewExpression>(Pos(start), type, arguments);
   }
 }
 
@@ -686,5 +698,25 @@ Table<std::u32string, TypeAlias> Parser::ParseTypeAliases() {
     typeAliases.Add(alias, TypeAlias(Pos(token), route, originalName, alias));
   }
   return typeAliases;
+}
+
+std::shared_ptr<TemplateClass>
+Parser::ParseDefTemplateClass(const Token &start, std::u32string name) {
+  Match(Tag::LeftBracket);
+  std::vector<std::shared_ptr<TypeParameter>> parameters;
+  parameters.push_back(ParseTypeParameter());
+  while (Look().tag != Tag::RightBracket) {
+    Match(Tag::Comma);
+    parameters.push_back(ParseTypeParameter());
+  }
+  Match(Tag::RightBracket);
+  auto classInfo = ParseDefClass(start, name);
+  return std::make_shared<TemplateClass>(classInfo, parameters);
+}
+
+std::shared_ptr<TypeParameter> Parser::ParseTypeParameter() {
+  auto name = Match(Tag::Identifier).text;
+  return std::make_shared<TypeParameter>(
+      name, std::vector<std::shared_ptr<InterfaceType>>{});
 }
 } // namespace cygni

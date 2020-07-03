@@ -89,8 +89,8 @@ int main(int argc, char **argv) {
     // app.Compile(fileList, "sample_code/test1/build/app");
 
     std::vector<std::string> fileList = {
-        "sample_code/test4/Main.cyg",     "sample_code/test4/Out.cyg",
-        "sample_code/test4/String.cyg",   "sample_code/test4/Math.cyg",
+        "sample_code/test5/Main.cyg",     "sample_code/test5/Out.cyg",
+        "sample_code/test5/String.cyg",   "sample_code/test5/Math.cyg",
         "sample_code/test5/Option.cyg",
     };
     ConsoleApp app;
@@ -103,9 +103,10 @@ int main(int argc, char **argv) {
 //   }
    catch (LexicalException &ex) {
     cout << ex.FormattedErrorMessage() << endl;
-  } catch (ParserException &ex) {
-    cout << ex.FormattedErrorMessage() << endl;
   }
+  // catch (ParserException &ex) {
+  //   cout << ex.FormattedErrorMessage() << endl;
+  // }
   // catch (TypeException &ex)
   //{
   //	cout << ex.FormattedErrorMessage() << endl;

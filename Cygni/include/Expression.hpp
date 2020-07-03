@@ -298,8 +298,10 @@ public:
 
 class TemplateClass {
 public:
-  ClassInfo classInfo;
-  std::vector<TypeParameter> parameters;
+  std::shared_ptr<ClassInfo> classInfo;
+  std::vector<std::shared_ptr<TypeParameter>> parameters;
+
+  TemplateClass(std::shared_ptr<ClassInfo> classInfo, std::vector<std::shared_ptr<TypeParameter>> parameters);
 };
 
 class Package {
