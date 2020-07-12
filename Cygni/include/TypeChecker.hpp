@@ -119,9 +119,14 @@ public:
   void ResolveFieldSignature(std::shared_ptr<FieldInfo> field,
                              std::shared_ptr<SourceDocument> program,
                              Scope<TypePtr> *scope);
-  void SpecializeGenericType(std::shared_ptr<GenericType> genericType,
+  void SpecializeGenericType(std::shared_ptr<Type> type,
+                             SourcePosition position,
                              std::shared_ptr<SourceDocument> program,
                              Scope<TypePtr> *scope);
+  void VisitTemplateClass(std::shared_ptr<TemplateClass> templateClass,
+                          std::vector<TypePtr> typeArguments,
+                          std::shared_ptr<SourceDocument> program,
+                          Scope<TypePtr> *outerScope);
 };
 } // namespace cygni
 #endif // CYGNI_TYPE_CHECKER

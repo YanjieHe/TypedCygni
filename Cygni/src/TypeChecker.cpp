@@ -292,6 +292,17 @@ TypePtr TypeChecker::CheckType(SourcePosition position, TypePtr type,
     auto arrayType = std::static_pointer_cast<ArrayType>(type);
     return std::make_shared<ArrayType>(
         CheckType(position, arrayType->elementType, program, scope));
+  } else if (type->typeCode == TypeCode::Generic) {
+    auto genericType = static_pointer_cast<GenericType>(type);
+    std::vector<TypePtr> parameters;
+    std::transform(genericType->parameters.begin(),
+                   genericType->parameters.end(),
+                   std::back_inserter(parameters),
+                   [this, position, &program, scope](TypePtr t) -> TypePtr {
+                     return CheckType(position, t, program, scope);
+                   });
+    return make_shared<GenericType>(
+        CheckType(position, genericType->type, program, scope), parameters);
   } else {
     return type;
   }
@@ -873,9 +884,62 @@ void TypeChecker::ResolveFieldSignature(std::shared_ptr<FieldInfo> field,
                                         Scope<TypePtr> *scope) {
   field->type = CheckType(field->position, field->type, program, scope);
 }
-void TypeChecker::SpecializeGenericType(
-    std::shared_ptr<GenericType> genericType,
-    std::shared_ptr<SourceDocument> program, Scope<TypePtr> *scope) {
-
+void TypeChecker::SpecializeGenericType(std::shared_ptr<Type> type,
+                                        SourcePosition position,
+                                        std::shared_ptr<SourceDocument> program,
+                                        Scope<TypePtr> *scope) {
+  if (type->typeCode == TypeCode::Generic) {
+    for (auto arg : type->parameters) {
+      if (arg->typeCode == TypeCode::Generic) {
+        SpecializeGenericType(arg, position, program, scope);
+      }
     }
+  } else if (arg->typeCode == TypeCode::Array) {
+    auto arrayType = static_pointer_cast<ArrayType>(arg);
+    SpecializeGenericType(arrayType->elementType, position, program, scope);
+  } else if (arg->typeCode == TypeCode::Function) {
+    auto functionType = static_pointer_cast<FunctionType>(arg);
+    for (auto parameterType : functionType->parameters) {
+      SpecializeGenericType(parameterType, position, program, scope);
+    }
+    SpecializeGenericType(functionType->returnType, position, program, scope);
+  }
+}
+
+void TypeChecker::VisitTemplateClass(
+    std::shared_ptr<TemplateClass> templateClass,
+    std::vector<TypePtr> typeArguments, std::shared_ptr<SourceDocument> program,
+    Scope<TypePtr> *outerScope) {
+  auto scope = scopeFactory->New(outerScope);
+  if (templateClass->parameters.size() == typeArguments.size()) {
+    auto name = templateClass->classInfo->name;
+    name += U"[";
+    bool first = true;
+    for (TypePtr arg : typeArguments) {
+      if (first) {
+        first = false;
+      } else {
+        name += U",";
+      }
+      name += arg->ToString();
+    }
+    name += U"]";
+
+    std::shared_ptr<ClassInfo> specializedClassInfo =
+        std::make_shared<ClassInfo>(templateClass->classInfo->position,
+                                    templateClass->classInfo->route, name);
+    project.AddClass(
+        std::make_shared<ClassType>(templateClass->classInfo->route, name));
+
+    for (size_t i = 0; i < templateClass->parameters.size(); i++) {
+      auto parameter = templateClass->parameters.at(i);
+      TypePtr arg = typeArguments.at(i);
+      scope->Put(parameter->name, arg);
+    }
+    VisitClassInfo(templateClass->classInfo, program, scope);
+  } else {
+    throw TypeException(templateClass->classInfo->position,
+    Format(U"number of type arguments do not match. expected {}", templateClass->parameters.size());
+  }
+}
 } // namespace cygni

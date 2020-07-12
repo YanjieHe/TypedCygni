@@ -347,6 +347,8 @@ public:
   GetInterface(std::shared_ptr<InterfaceType> interfaceType);
   std::optional<TypePtr>
   ResolveType(std::shared_ptr<UnresolvedType> unresolvedType);
+
+  void AddClass(std::shared_ptr<ClassType> classType, std::shared_ptr<ClassInfo> classInfo);
 };
 
 } // namespace cygni

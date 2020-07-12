@@ -250,6 +250,17 @@ Project::ResolveType(std::shared_ptr<UnresolvedType> unresolvedType) {
   }
 }
 
+void Project::AddClass(std::shared_ptr<ClassType> classType, std::shared_ptr<ClassInfo> classInfo) {
+  if (packages.count(classType->route) == 0) {
+    packages.insert(
+        {classType->route, std::make_shared<Package>(classType->route)});
+  }
+  auto pkg = packages.at(classType->route);
+  if (pkg->classes.count(classType->name) == 0) {
+    pkg->classes.insert({classType->name, classInfo});
+  }
+}
+
 InterfaceInfo::InterfaceInfo(SourcePosition position, PackageRoute route,
                              std::u32string name)
     : position{position}, route{route}, name{name} {}
@@ -259,7 +270,9 @@ ImportStatement::ImportStatement() : position{}, route{} {}
 ImportStatement::ImportStatement(SourcePosition position, PackageRoute route)
     : position{position}, route{route} {}
 
-TemplateClass::TemplateClass(std::shared_ptr<ClassInfo> classInfo,
-                             std::vector<std::shared_ptr<TypeParameter>> parameters)
+TemplateClass::TemplateClass(
+    std::shared_ptr<ClassInfo> classInfo,
+    std::vector<std::shared_ptr<TypeParameter>> parameters)
     : classInfo{classInfo}, parameters{parameters} {}
+
 } // namespace cygni
