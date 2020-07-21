@@ -59,6 +59,16 @@ namespace cygni
 				return std::optional<T>();
 			}
 		}
+
+		void Show() {
+			auto current = this;
+			while (current) {
+				for(const auto& [key, value] : current->table){
+					std::cout << "[" << key << ", " << value->ToString() << "]" << std::endl;
+				}
+				current = current->parent;
+			}
+		}
 	};
 
 	template <typename T>

@@ -8,7 +8,6 @@
 #include <unordered_map>
 #include <unordered_set>
 
-
 namespace cygni {
 class Type;
 using TypePtr = std::shared_ptr<Type>;
@@ -120,21 +119,23 @@ public:
   // ~AnyType() = default;
 };
 
-class TypeParameter: public Type {
+class TypeParameter : public Type {
 public:
   std::u32string name;
   std::vector<std::shared_ptr<InterfaceType>> interfaces;
-  TypeParameter(std::u32string name, std::vector<std::shared_ptr<InterfaceType>> interfaces);
+  TypeParameter(std::u32string name,
+                std::vector<std::shared_ptr<InterfaceType>> interfaces);
 
   std::u32string ToString() const override;
   bool Equals(TypePtr other) const override;
 };
 
-class GenericType: public Type {
+class GenericType : public Type {
 public:
-  TypePtr type;
+PackageRoute route;
+  std::u32string name;
   std::vector<TypePtr> parameters;
-  GenericType(TypePtr type, std::vector<TypePtr> parameters);
+  GenericType(PackageRoute route, std::u32string name, std::vector<TypePtr> parameters);
   std::u32string ToString() const override;
   bool Equals(TypePtr other) const override;
 };

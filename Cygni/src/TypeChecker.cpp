@@ -263,7 +263,7 @@ TypePtr TypeChecker::CheckType(SourcePosition position, TypePtr type,
   if (type->typeCode == TypeCode::Unresolved) {
     auto unresolvedType = std::static_pointer_cast<UnresolvedType>(type);
     if (auto resultType = project.ResolveType(unresolvedType)) {
-      return *resultType;
+      return resultType.value();
     } else if (program->packageRoute.route == unresolvedType->route) {
       if (auto resultType = scope->Get(unresolvedType->name)) {
         return resultType.value();
@@ -301,8 +301,20 @@ TypePtr TypeChecker::CheckType(SourcePosition position, TypePtr type,
                    [this, position, &program, scope](TypePtr t) -> TypePtr {
                      return CheckType(position, t, program, scope);
                    });
-    return make_shared<GenericType>(
-        CheckType(position, genericType->type, program, scope), parameters);
+    if (auto type = scope->Get(genericType->name)) {
+      if (type.value()->typeCode == TypeCode::Class) {
+        auto classType = static_pointer_cast<ClassType>(type.value());
+        return make_shared<GenericType>(classType->route, classType->name,
+                                        parameters);
+      } else {
+        cout << type.value()->ToString() << endl;
+        throw TypeException(position, U"generic type should be a class type");
+      }
+    } else {
+      scope->Show();
+      cout << "generic type name: " << genericType->name << endl;
+      throw TypeException(position, U"generic type should be a class type");
+    }
   } else {
     return type;
   }
@@ -616,8 +628,9 @@ TypePtr TypeChecker::VisitNewExpression(std::shared_ptr<NewExpression> node,
                                  newExpType->ToString()));
     }
   } else if (node->type->typeCode == TypeCode::Generic) {
-    // TO DO
+    throw NotImplementedException();
   } else {
+    cout << "unexpected type: " << node->type->ToString() << endl;
     throw TypeException(node->position,
                         Format(U"new expression expects a class type, not '{}'",
                                node->type->ToString()));
@@ -689,68 +702,8 @@ void TypeChecker::CheckPackage(std::shared_ptr<Package> package,
 void TypeChecker::CheckProgramFile(std::shared_ptr<SourceDocument> program,
                                    Scope<TypePtr> *globalScope) {
   auto scope = scopeFactory->New(globalScope);
-  unordered_set<FullQualifiedName> hideDefs;
-
-  for (auto renameStatement : program->typeAliases) {
-    auto name = FullQualifiedName(renameStatement.route)
-                    .Concat(renameStatement.typeName);
-    hideDefs.insert(name);
-  }
-
-  // fix import statements
-  for (auto importStatement : program->importedPackages) {
-    auto pkg = project.packages.at(importStatement.route);
-    for (auto [_, classInfo] : pkg->classes) {
-      if (auto name =
-              FullQualifiedName(classInfo->route).Concat(classInfo->name);
-          hideDefs.count(name) == 0) {
-        auto classType =
-            std::make_shared<ClassType>(classInfo->route, classInfo->name);
-        scope->Put(classInfo->name, classType);
-      }
-    }
-    for (auto [_, moduleInfo] : pkg->modules) {
-      if (auto name =
-              FullQualifiedName(moduleInfo->route).Concat(moduleInfo->name);
-          hideDefs.count(name) == 0) {
-        auto moduleType =
-            std::make_shared<ModuleType>(moduleInfo->route, moduleInfo->name);
-        scope->Put(moduleInfo->name, moduleType);
-      }
-    }
-    for (auto [_, interfaceInfo] : pkg->interfaces) {
-      if (auto name = FullQualifiedName(interfaceInfo->route)
-                          .Concat(interfaceInfo->name);
-          hideDefs.count(name) == 0) {
-        auto interfaceType = std::make_shared<InterfaceType>(
-            interfaceInfo->route, interfaceInfo->name);
-        scope->Put(interfaceInfo->name, interfaceType);
-      }
-    }
-  }
-  // fix rename statements
-  for (auto renameStatement : program->typeAliases) {
-    auto unresolvedType = std::make_shared<UnresolvedType>(
-        renameStatement.route, renameStatement.typeName);
-    if (auto resolvedType = project.ResolveType(unresolvedType)) {
-      scope->Put(renameStatement.alias, resolvedType.value());
-    } else {
-      throw TypeException(
-          renameStatement.position,
-          Format(U"missing type '{}' referred in the rename statement",
-                 unresolvedType->ToString()));
-    }
-  }
-  for (auto [_, classInfo] : program->classDefs) {
-    auto classType =
-        std::make_shared<ClassType>(classInfo->route, classInfo->name);
-    scope->Put(classInfo->name, classType);
-  }
-  for (auto [_, moduleInfo] : program->moduleDefs) {
-    auto moduleType =
-        std::make_shared<ModuleType>(moduleInfo->route, moduleInfo->name);
-    scope->Put(moduleInfo->name, moduleType);
-  }
+  ImportDefinitions(program, scope);
+  RegisterDefinitions(program, scope);
   for (auto [_, classInfo] : program->classDefs) {
     CheckClassInfo(classInfo, program, scope);
   }
@@ -798,55 +751,8 @@ void TypeChecker::InitializeTypeGraph(Scope<TypePtr> *scope) {
 void TypeChecker::ResolveSignatures(Scope<TypePtr> *globalScope) {
   for (auto &[_, program] : project.programs) {
     auto scope = scopeFactory->New(globalScope);
-    // fix import statements
-    for (auto importStatement : program->importedPackages) {
-      if (project.packages.count(importStatement.route)) {
-        auto pkg = project.packages.at(importStatement.route);
-        for (auto [_, classInfo] : pkg->classes) {
-          auto classType =
-              std::make_shared<ClassType>(classInfo->route, classInfo->name);
-          scope->Put(classInfo->name, classType);
-        }
-        for (auto [_, moduleInfo] : pkg->modules) {
-          auto moduleType =
-              std::make_shared<ModuleType>(moduleInfo->route, moduleInfo->name);
-          scope->Put(moduleInfo->name, moduleType);
-        }
-        for (auto [_, interfaceInfo] : pkg->interfaces) {
-          auto interfaceType = std::make_shared<InterfaceType>(
-              interfaceInfo->route, interfaceInfo->name);
-          scope->Put(interfaceInfo->name, interfaceType);
-        }
-      } else {
-        throw TypeException(importStatement.position,
-                            Format(U"cannot find package '{}'",
-                                   importStatement.route.ToString()));
-      }
-    }
-    // fix rename statements
-    for (auto renameStatement : program->typeAliases) {
-      auto unresolvedType = std::make_shared<UnresolvedType>(
-          renameStatement.route, renameStatement.typeName);
-      if (auto resolvedType = project.ResolveType(unresolvedType)) {
-        scope->Put(renameStatement.alias, resolvedType.value());
-        // TO DO: hide original name
-      } else {
-        throw TypeException(
-            renameStatement.position,
-            Format(U"missing type '{}' referred in the rename statement",
-                   unresolvedType->ToString()));
-      }
-    }
-    for (auto [_, classInfo] : program->classDefs) {
-      auto classType =
-          std::make_shared<ClassType>(classInfo->route, classInfo->name);
-      scope->Put(classInfo->name, classType);
-    }
-    for (auto [_, moduleInfo] : program->moduleDefs) {
-      auto moduleType =
-          std::make_shared<ModuleType>(moduleInfo->route, moduleInfo->name);
-      scope->Put(moduleInfo->name, moduleType);
-    }
+    ImportDefinitions(program, scope);
+    RegisterDefinitions(program, scope);
     for (auto [_, classInfo] : program->classDefs) {
       for (auto &field : classInfo->fieldDefs) {
         ResolveFieldSignature(field, program, scope);
@@ -889,16 +795,17 @@ void TypeChecker::SpecializeGenericType(std::shared_ptr<Type> type,
                                         std::shared_ptr<SourceDocument> program,
                                         Scope<TypePtr> *scope) {
   if (type->typeCode == TypeCode::Generic) {
-    for (auto arg : type->parameters) {
+    auto genericType = static_pointer_cast<GenericType>(type);
+    for (auto arg : genericType->parameters) {
       if (arg->typeCode == TypeCode::Generic) {
         SpecializeGenericType(arg, position, program, scope);
       }
     }
-  } else if (arg->typeCode == TypeCode::Array) {
-    auto arrayType = static_pointer_cast<ArrayType>(arg);
+  } else if (type->typeCode == TypeCode::Array) {
+    auto arrayType = static_pointer_cast<ArrayType>(type);
     SpecializeGenericType(arrayType->elementType, position, program, scope);
-  } else if (arg->typeCode == TypeCode::Function) {
-    auto functionType = static_pointer_cast<FunctionType>(arg);
+  } else if (type->typeCode == TypeCode::Function) {
+    auto functionType = static_pointer_cast<FunctionType>(type);
     for (auto parameterType : functionType->parameters) {
       SpecializeGenericType(parameterType, position, program, scope);
     }
@@ -925,21 +832,114 @@ void TypeChecker::VisitTemplateClass(
     }
     name += U"]";
 
+    cout << "template class: " << name << endl;
     std::shared_ptr<ClassInfo> specializedClassInfo =
         std::make_shared<ClassInfo>(templateClass->classInfo->position,
                                     templateClass->classInfo->route, name);
-    project.AddClass(
-        std::make_shared<ClassType>(templateClass->classInfo->route, name));
+    // project.AddClass(
+    //     std::make_shared<ClassType>(templateClass->classInfo->route, name));
 
     for (size_t i = 0; i < templateClass->parameters.size(); i++) {
       auto parameter = templateClass->parameters.at(i);
       TypePtr arg = typeArguments.at(i);
       scope->Put(parameter->name, arg);
     }
-    VisitClassInfo(templateClass->classInfo, program, scope);
+    CheckClassInfo(templateClass->classInfo, program, scope);
   } else {
-    throw TypeException(templateClass->classInfo->position,
-    Format(U"number of type arguments do not match. expected {}", templateClass->parameters.size());
+    throw TypeException(
+        templateClass->classInfo->position,
+        Format(U"number of type arguments do not match. expected {}",
+               static_cast<int>(templateClass->parameters.size())));
+  }
+}
+
+void TypeChecker::ImportDefinitions(std::shared_ptr<SourceDocument> program,
+                                    Scope<TypePtr> *scope) {
+  unordered_set<FullQualifiedName> hideDefs;
+
+  for (auto renameStatement : program->typeAliases) {
+    auto name = FullQualifiedName(renameStatement.route)
+                    .Concat(renameStatement.typeName);
+    hideDefs.insert(name);
+  }
+
+  // fix import statements
+  for (auto importStatement : program->importedPackages) {
+    auto pkg = project.packages.at(importStatement.route);
+    cout << "import " << pkg->route.ToString() << endl;
+    for (auto [_, classInfo] : pkg->classes) {
+      auto name = FullQualifiedName(classInfo->route).Concat(classInfo->name);
+      if (hideDefs.count(name) == 0) {
+        auto classType =
+            std::make_shared<ClassType>(classInfo->route, classInfo->name);
+        scope->Put(classInfo->name, classType);
+      }
+    }
+    for (auto [_, moduleInfo] : pkg->modules) {
+      auto name = FullQualifiedName(moduleInfo->route).Concat(moduleInfo->name);
+      if (hideDefs.count(name) == 0) {
+        auto moduleType =
+            std::make_shared<ModuleType>(moduleInfo->route, moduleInfo->name);
+        scope->Put(moduleInfo->name, moduleType);
+      }
+    }
+    for (auto [_, interfaceInfo] : pkg->interfaces) {
+      auto name =
+          FullQualifiedName(interfaceInfo->route).Concat(interfaceInfo->name);
+      if (hideDefs.count(name) == 0) {
+        auto interfaceType = std::make_shared<InterfaceType>(
+            interfaceInfo->route, interfaceInfo->name);
+        scope->Put(interfaceInfo->name, interfaceType);
+      }
+    }
+    for (auto [_, templateClassInfo] : pkg->templateClasses) {
+      auto classInfo = templateClassInfo->classInfo;
+      auto name = FullQualifiedName(classInfo->route).Concat(classInfo->name);
+      if (hideDefs.count(name) == 0) {
+        auto classType =
+            std::make_shared<ClassType>(classInfo->route, classInfo->name);
+        scope->Put(classInfo->name, classType);
+        cout << "import " << classInfo->name << endl;
+      }
+    }
+  }
+  // fix rename statements
+  for (auto renameStatement : program->typeAliases) {
+    auto unresolvedType = std::make_shared<UnresolvedType>(
+        renameStatement.route, renameStatement.typeName);
+    if (auto resolvedType = project.ResolveType(unresolvedType)) {
+      scope->Put(renameStatement.alias, resolvedType.value());
+    } else {
+      throw TypeException(
+          renameStatement.position,
+          Format(U"missing type '{}' referred in the rename statement",
+                 unresolvedType->ToString()));
+    }
+  }
+}
+
+void TypeChecker::RegisterDefinitions(std::shared_ptr<SourceDocument> program,
+                                      Scope<TypePtr> *scope) {
+  for (auto [_, classInfo] : program->classDefs) {
+    auto classType =
+        std::make_shared<ClassType>(classInfo->route, classInfo->name);
+    scope->Put(classInfo->name, classType);
+  }
+  for (auto [_, moduleInfo] : program->moduleDefs) {
+    auto moduleType =
+        std::make_shared<ModuleType>(moduleInfo->route, moduleInfo->name);
+    scope->Put(moduleInfo->name, moduleType);
+  }
+  for (auto [_, interfaceInfo] : program->interfaceDefs) {
+    auto interfaceType = std::make_shared<InterfaceType>(interfaceInfo->route,
+                                                         interfaceInfo->name);
+    scope->Put(interfaceInfo->name, interfaceType);
+  }
+  for (auto [_, templateClassInfo] : program->templateClassDefs) {
+    auto classType =
+        std::make_shared<ClassType>(templateClassInfo->classInfo->route,
+                                    templateClassInfo->classInfo->name);
+    scope->Put(templateClassInfo->classInfo->name, classType);
   }
 }
 } // namespace cygni

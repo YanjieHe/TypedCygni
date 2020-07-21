@@ -114,12 +114,14 @@ bool TypeParameter::Equals(TypePtr other) const {
   }
 }
 
-GenericType::GenericType(TypePtr type, std::vector<TypePtr> parameters)
-    : Type(TypeCode::Generic), type{type}, parameters{parameters} {}
+GenericType::GenericType(PackageRoute route, std::u32string name,
+                         std::vector<TypePtr> parameters)
+    : Type(TypeCode::Generic), route{route}, name{name}, parameters{
+                                                             parameters} {}
 
 std::u32string GenericType::ToString() const {
   std::u32string text;
-  text += (type->ToString());
+  text += name;
   text += U"[";
   if (parameters.size() == 0) {
     text += U"]";
@@ -137,7 +139,7 @@ std::u32string GenericType::ToString() const {
 bool GenericType::Equals(TypePtr other) const {
   if (other->typeCode == TypeCode::Generic) {
     auto genericType = std::static_pointer_cast<GenericType>(other);
-    if (type->Equals(genericType->type)) {
+    if (route == genericType->route && name == genericType->name) {
       if (parameters.size() == genericType->parameters.size()) {
         for (int i = 0; i < parameters.size(); i++) {
           if (!(parameters[i]->Equals(genericType->parameters[i]))) {

@@ -250,7 +250,8 @@ Project::ResolveType(std::shared_ptr<UnresolvedType> unresolvedType) {
   }
 }
 
-void Project::AddClass(std::shared_ptr<ClassType> classType, std::shared_ptr<ClassInfo> classInfo) {
+void Project::AddClass(std::shared_ptr<ClassType> classType,
+                       std::shared_ptr<ClassInfo> classInfo) {
   if (packages.count(classType->route) == 0) {
     packages.insert(
         {classType->route, std::make_shared<Package>(classType->route)});

@@ -422,10 +422,14 @@ std::shared_ptr<ParameterExpression> Parser::ParseParameter() {
 std::shared_ptr<Type> Parser::ParseType() {
   auto name = Match(Tag::Identifier).text;
   static std::unordered_map<std::u32string, std::shared_ptr<Type>> basicTypes =
-      {{U"Int", Type::Int32()},      {U"Long", Type::Int64()},
-       {U"Bool", Type::Boolean()},   {U"Float", Type::Float32()},
-       {U"Double", Type::Float64()}, {U"Char", Type::Char()},
-       {U"String", Type::String()},  {U"Any", Type::Any()},
+      {{U"Int", Type::Int32()},
+       {U"Long", Type::Int64()},
+       {U"Bool", Type::Boolean()},
+       {U"Float", Type::Float32()},
+       {U"Double", Type::Float64()},
+       {U"Char", Type::Char()},
+       //  {U"String", Type::String()},
+       {U"Any", Type::Any()},
        {U"Void", Type::Void()}};
   if (basicTypes.find(name) != basicTypes.end()) {
     return basicTypes[name];
@@ -440,8 +444,7 @@ std::shared_ptr<Type> Parser::ParseType() {
       arguments.push_back(ParseType());
     }
     Match(Tag::RightBracket);
-    return std::make_shared<GenericType>(
-        std::make_shared<UnresolvedType>(route, name), arguments);
+    return std::make_shared<GenericType>(route, name, arguments);
   } else {
     return std::make_shared<UnresolvedType>(route, name);
   }

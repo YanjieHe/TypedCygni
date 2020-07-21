@@ -127,6 +127,10 @@ public:
                           std::vector<TypePtr> typeArguments,
                           std::shared_ptr<SourceDocument> program,
                           Scope<TypePtr> *outerScope);
+  void ImportDefinitions(std::shared_ptr<SourceDocument> program,
+                         Scope<TypePtr> *scope);
+  void RegisterDefinitions(std::shared_ptr<SourceDocument> program,
+                           Scope<TypePtr> *scope);
 };
 } // namespace cygni
 #endif // CYGNI_TYPE_CHECKER
