@@ -119,8 +119,6 @@ public:
 
   Table<std::u32string, TypeAlias> ParseTypeAliases();
 
-  std::shared_ptr<TemplateClass> ParseDefTemplateClass(const Token &start,
-                                                       std::u32string name);
   std::shared_ptr<TypeParameter> ParseTypeParameter();
 };
 } // namespace cygni

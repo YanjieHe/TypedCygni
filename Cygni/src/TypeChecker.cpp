@@ -813,46 +813,6 @@ void TypeChecker::SpecializeGenericType(std::shared_ptr<Type> type,
   }
 }
 
-void TypeChecker::VisitTemplateClass(
-    std::shared_ptr<TemplateClass> templateClass,
-    std::vector<TypePtr> typeArguments, std::shared_ptr<SourceDocument> program,
-    Scope<TypePtr> *outerScope) {
-  auto scope = scopeFactory->New(outerScope);
-  if (templateClass->parameters.size() == typeArguments.size()) {
-    auto name = templateClass->classInfo->name;
-    name += U"[";
-    bool first = true;
-    for (TypePtr arg : typeArguments) {
-      if (first) {
-        first = false;
-      } else {
-        name += U",";
-      }
-      name += arg->ToString();
-    }
-    name += U"]";
-
-    cout << "template class: " << name << endl;
-    std::shared_ptr<ClassInfo> specializedClassInfo =
-        std::make_shared<ClassInfo>(templateClass->classInfo->position,
-                                    templateClass->classInfo->route, name);
-    // project.AddClass(
-    //     std::make_shared<ClassType>(templateClass->classInfo->route, name));
-
-    for (size_t i = 0; i < templateClass->parameters.size(); i++) {
-      auto parameter = templateClass->parameters.at(i);
-      TypePtr arg = typeArguments.at(i);
-      scope->Put(parameter->name, arg);
-    }
-    CheckClassInfo(templateClass->classInfo, program, scope);
-  } else {
-    throw TypeException(
-        templateClass->classInfo->position,
-        Format(U"number of type arguments do not match. expected {}",
-               static_cast<int>(templateClass->parameters.size())));
-  }
-}
-
 void TypeChecker::ImportDefinitions(std::shared_ptr<SourceDocument> program,
                                     Scope<TypePtr> *scope) {
   unordered_set<FullQualifiedName> hideDefs;
@@ -892,16 +852,6 @@ void TypeChecker::ImportDefinitions(std::shared_ptr<SourceDocument> program,
         scope->Put(interfaceInfo->name, interfaceType);
       }
     }
-    for (auto [_, templateClassInfo] : pkg->templateClasses) {
-      auto classInfo = templateClassInfo->classInfo;
-      auto name = FullQualifiedName(classInfo->route).Concat(classInfo->name);
-      if (hideDefs.count(name) == 0) {
-        auto classType =
-            std::make_shared<ClassType>(classInfo->route, classInfo->name);
-        scope->Put(classInfo->name, classType);
-        cout << "import " << classInfo->name << endl;
-      }
-    }
   }
   // fix rename statements
   for (auto renameStatement : program->typeAliases) {
@@ -934,12 +884,6 @@ void TypeChecker::RegisterDefinitions(std::shared_ptr<SourceDocument> program,
     auto interfaceType = std::make_shared<InterfaceType>(interfaceInfo->route,
                                                          interfaceInfo->name);
     scope->Put(interfaceInfo->name, interfaceType);
-  }
-  for (auto [_, templateClassInfo] : program->templateClassDefs) {
-    auto classType =
-        std::make_shared<ClassType>(templateClassInfo->classInfo->route,
-                                    templateClassInfo->classInfo->name);
-    scope->Put(templateClassInfo->classInfo->name, classType);
   }
 }
 } // namespace cygni

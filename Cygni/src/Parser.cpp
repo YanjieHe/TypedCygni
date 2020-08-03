@@ -19,14 +19,8 @@ std::shared_ptr<SourceDocument> Parser::ParseProgram() {
       const Token &start = Look();
       Match(Tag::Class);
       auto name = Match(Tag::Identifier).text;
-      if (Look().tag == Tag::LeftBracket) {
-        auto templateClass = ParseDefTemplateClass(start, name);
-        program->templateClassDefs.insert(
-            {templateClass->classInfo->name, templateClass});
-      } else {
-        auto classInfo = ParseDefClass(start, name);
-        program->classDefs.insert({classInfo->name, classInfo});
-      }
+      auto classInfo = ParseDefClass(start, name);
+      program->classDefs.insert({classInfo->name, classInfo});
     } else if (Look().tag == Tag::Module) {
       auto moduleInfo = ParseDefModule();
       program->moduleDefs.insert({moduleInfo->name, moduleInfo});
@@ -701,20 +695,6 @@ Table<std::u32string, TypeAlias> Parser::ParseTypeAliases() {
     typeAliases.Add(alias, TypeAlias(Pos(token), route, originalName, alias));
   }
   return typeAliases;
-}
-
-std::shared_ptr<TemplateClass>
-Parser::ParseDefTemplateClass(const Token &start, std::u32string name) {
-  Match(Tag::LeftBracket);
-  std::vector<std::shared_ptr<TypeParameter>> parameters;
-  parameters.push_back(ParseTypeParameter());
-  while (Look().tag != Tag::RightBracket) {
-    Match(Tag::Comma);
-    parameters.push_back(ParseTypeParameter());
-  }
-  Match(Tag::RightBracket);
-  auto classInfo = ParseDefClass(start, name);
-  return std::make_shared<TemplateClass>(classInfo, parameters);
 }
 
 std::shared_ptr<TypeParameter> Parser::ParseTypeParameter() {

@@ -271,9 +271,4 @@ ImportStatement::ImportStatement() : position{}, route{} {}
 ImportStatement::ImportStatement(SourcePosition position, PackageRoute route)
     : position{position}, route{route} {}
 
-TemplateClass::TemplateClass(
-    std::shared_ptr<ClassInfo> classInfo,
-    std::vector<std::shared_ptr<TypeParameter>> parameters)
-    : classInfo{classInfo}, parameters{parameters} {}
-
 } // namespace cygni

@@ -296,14 +296,6 @@ public:
   ImportStatement(SourcePosition position, PackageRoute route);
 };
 
-class TemplateClass {
-public:
-  std::shared_ptr<ClassInfo> classInfo;
-  std::vector<std::shared_ptr<TypeParameter>> parameters;
-
-  TemplateClass(std::shared_ptr<ClassInfo> classInfo, std::vector<std::shared_ptr<TypeParameter>> parameters);
-};
-
 class Package {
 public:
   PackageRoute route;
@@ -311,8 +303,6 @@ public:
   std::unordered_map<std::u32string, std::shared_ptr<ClassInfo>> classes;
   std::unordered_map<std::u32string, std::shared_ptr<ModuleInfo>> modules;
   std::unordered_map<std::u32string, std::shared_ptr<InterfaceInfo>> interfaces;
-
-  std::unordered_map<std::u32string, std::shared_ptr<TemplateClass>> templateClasses;
 
   explicit Package(PackageRoute route);
 };
@@ -327,8 +317,6 @@ public:
   std::unordered_map<std::u32string, std::shared_ptr<ModuleInfo>> moduleDefs;
   std::unordered_map<std::u32string, std::shared_ptr<InterfaceInfo>>
       interfaceDefs;
-
-  std::unordered_map<std::u32string, std::shared_ptr<TemplateClass>> templateClassDefs;
 
   explicit SourceDocument(std::shared_ptr<FileLocation> document);
 };
