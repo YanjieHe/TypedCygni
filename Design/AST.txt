@@ -1,0 +1,36 @@
+Expression:
+    BOOLEAN
+    INT
+    FLOAT
+    DOUBLE
+    LONG
+    CHAR
+    STRING
+    IDENTIFIER
+    ASSIGN
+    ADD
+    SUB
+    MUL
+    DIV
+    MOD
+    EQ
+    NE
+    GT
+    GE
+    LT
+    LE
+    LOGICAL_AND
+    LOGICAL_OR
+    PLUS
+    MINUS
+    FUNCTION_CALL
+    NULL
+    MethodCall
+
+Statement:
+    IfThen
+    IfElse
+    While
+    For
+    Break
+    Return
