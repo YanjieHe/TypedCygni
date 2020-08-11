@@ -38,6 +38,7 @@ enum class ExpressionType {
   NE,
   LOGICAL_AND,
   LOGICAL_OR,
+  CONVERT,
   /* unary operators */
   LOGICAL_NOT,
   PLUS,
@@ -48,10 +49,7 @@ enum class ExpressionType {
   /* other */
   IDENTIFIER,
   MEMBER,
-  NEW,
-  CONVERT,
-  UP_CAST,
-  DOWN_CAST,
+  NEW
 };
 
 enum class StatementType {
@@ -405,4 +403,108 @@ public:
   vector<shared_ptr<CodeFile>> codeFiles;
 };
 
+class Error {
+public:
+  Position pos;
+  string message;
+  Error(Position pos, string message) : pos{pos}, message{message} {}
+};
+
+template <typename ReturnType, typename... ArgTypes> class Visitor {
+public:
+  virtual ReturnType VisitExpression(ExpPtr node, ArgTypes... args) {
+    switch (node->NodeType()) {
+    case ExpressionType::INT:
+    case ExpressionType::LONG:
+    case ExpressionType::FLOAT:
+    case ExpressionType::DOUBLE:
+    case ExpressionType::BOOLEAN:
+    case ExpressionType::CHAR:
+    case ExpressionType::STRING:
+      return VisitConstant(static_pointer_cast<ConstantExpression>(node),
+                           args...);
+    case ExpressionType::ADD:
+    case ExpressionType::SUBTRACT:
+    case ExpressionType::MULTIPLY:
+    case ExpressionType::DIVIDE:
+    case ExpressionType::MODULO:
+    case ExpressionType::GT:
+    case ExpressionType::LT:
+    case ExpressionType::GE:
+    case ExpressionType::LE:
+    case ExpressionType::EQ:
+    case ExpressionType::NE:
+    case ExpressionType::LOGICAL_AND:
+    case ExpressionType::LOGICAL_OR:
+      return VisitBinaryExp(static_pointer_cast<BinaryExpression>(node),
+                            args...);
+    case ExpressionType::LOGICAL_NOT:
+    case ExpressionType::PLUS:
+    case ExpressionType::MINUS:
+    case ExpressionType::ARRAY_LENGTH:
+    case ExpressionType::CONVERT:
+      return VisitUnaryExp(static_pointer_cast<UnaryExpression>(node), args...);
+    case ExpressionType::INVOKE:
+      return VisitInvocation(static_pointer_cast<InvocationExpression>(node),
+                             args...);
+    case ExpressionType::IDENTIFIER:
+      return VisitIdentifier(static_pointer_cast<IdentifierExpression>(node),
+                             args...);
+    case ExpressionType::MEMBER:
+      return VisitMemberExp(static_pointer_cast<MemberExpression>(node),
+                            args...);
+    case ExpressionType::NEW:
+      return VisitNewExp(static_pointer_cast<NewExpression>(node), args...);
+    default:
+      throw Error(node->Pos(), "unsupported node type for visitor");
+    }
+  }
+  virtual VisitStatement(shared_ptr<Statement> statement, ArgTypes... args) {
+    switch (statement->GetStatementType()) {
+    case StatementType::EXPRESSION:
+      return VisitExpression(static_pointer_cast<Expression>(statement),
+                             args...);
+    case StatementType::IF_THEN:
+      return VisitIfThen(static_pointer_cast<IfThenStatement>(statement),
+                         args...);
+    case StatementType::IF_ELSE:
+      return VisitIfElse(static_pointer_cast<IfElseStatement>(statement),
+                         args...);
+    case StatementType::WHILE:
+      return VisitWhile(static_pointer_cast<WhileStatement>(statement),
+                        args...);
+    case StatementType::BLOCK:
+      return VisitBlock(static_pointer_cast<BlockStatement>(statement),
+                        args...);
+    case StatementType::RETURN:
+      return VisitReturn(static_pointer_cast<BlockStatement>(statement),
+                         args...);
+    case StatementType::ASSIGN:
+      return VisitAssign(static_pointer_cast<AssignStatement>(statement),
+                         args...);
+    case StatementType::VARIABLE_DECLARATION:
+      return VisitVarDecl(static_pointer_cast<VariableDeclaration>(statement),
+                          args...);
+    default:
+      throw Error(node->Pos(), "unsupported statement type for visitor");
+    }
+  }
+  virtual VisitConstant(shared_ptr<ConstantExpression> node,
+                        ArgTypes... args) = 0;
+  virtual VisitBinaryExp(shared_ptr<BinaryExpression> node,
+                         ArgTypes... args) = 0;
+  virtual VisitUnaryExp(shared_ptr<UnaryExpression> node, ArgTypes... args) = 0;
+  virtual VisitInvocation(shared_ptr<InvocationExpression> node,
+                          ArgTypes... args) = 0;
+  virtual VisitIdentifier(shared_ptr<IdentifierExpression> node,
+                          ArgTypes... args) = 0;
+  virtual VisitMemberExp(shared_ptr<MemberExpression> node,
+                         ArgTypes... args) = 0;
+  virtual VisitNewExp(shared_ptr<NewExpression> node, ArgTypes... args) = 0;
+
+  virtual VisitIfThen(shared_ptr<IfThenStatement> node, ArgTypes... args) = 0;
+  virtual VisitIfElse(shared_ptr<IfElseStatement> node, ArgTypes... args) = 0;
+  virtual VisitWhile(shared_ptr<WhileStatement> node, ArgTypes... args) = 0;
+  virtual VisitBlock(shared_ptr<BlockStatement> node, ArgTypes... args) = 0;
+};
 #endif // EXPRESSION_HPP
