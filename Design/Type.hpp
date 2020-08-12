@@ -13,6 +13,7 @@ using std::static_pointer_cast;
 using std::string;
 using std::unordered_map;
 using std::vector;
+using std::weak_ptr;
 
 enum class TypeCode {
   VOID,
@@ -24,7 +25,8 @@ enum class TypeCode {
   CHAR,
   STRING,
   CLASS,
-  MODULE,
+  FUNCTION,
+  ARRAY,
   NAME,
   APPLY
 };
@@ -66,6 +68,7 @@ public:
     return result;
   }
 };
+
 class Type {
 public:
   virtual TypeCode GetTypeCode() const = 0;
@@ -73,6 +76,69 @@ public:
 };
 
 using TypePtr = shared_ptr<Type>;
+
+class BasicType : public Type {
+public:
+  TypeCode typeCode;
+  explicit BasicType(TypeCode typeCode) : typeCode{typeCode} {}
+
+  TypeCode GetTypeCode() const override { return typeCode; }
+  bool Equals(TypePtr other) const override {
+    return typeCode == other->GetTypeCode();
+  }
+};
+
+class ArrayType : public Type {
+public:
+  TypePtr element;
+  explicit ArrayType(TypePtr element) : element{element} {}
+  TypeCode GetTypeCode() const override { return TypeCode::ARRAY; }
+  bool Equals(TypePtr other) const override {
+    if (other->GetTypeCode() == TypeCode::ARRAY) {
+      return element->Equals(static_pointer_cast<ArrayType>(other)->element);
+    } else {
+      return false;
+    }
+  }
+};
+
+class FunctionType : public Type {
+public:
+  vector<TypePtr> args;
+  TypePtr ret;
+  FunctionType(vector<TypePtr> args, TypePtr ret) : args{args}, ret{ret} {}
+
+  TypeCode GetTypeCode() const override { return TypeCode::FUNCTION; }
+  bool Equals(TypePtr other) const override {
+    if (other->GetTypeCode() == TypeCode::FUNCTION) {
+      auto ft = static_pointer_cast<FunctionType>(other);
+      if (Vec::SequenceEqual(args, ft->args, [](TypePtr x, TypePtr y) -> bool {
+            return x->Equals(y);
+          })) {
+        return ret->Equals(ft->ret);
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+};
+
+class ClassInfo;
+
+class ClassType : public Type {
+public:
+  weak_ptr<ClassInfo> classInfo;
+  TypeCode GetTypeCode() const override { return TypeCode::CLASS; }
+  bool Equals(TypePtr other) const override {
+    if (other->GetTypeCode() == TypeCode::CLASS) {
+      return classInfo.owner_before(static_pointer_cast<ClassType>(other)->classInfo);
+    } else {
+      return false;
+    }
+  }
+};
 
 class TypeName : public Type {
 public:

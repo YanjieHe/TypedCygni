@@ -148,14 +148,14 @@ public:
   TypePtr GetType() const override { return type; }
 };
 
-class InvokeExpression : public Expression {
+class InvocationExpression : public Expression {
 public:
   Position pos;
   ExpPtr function;
   vector<ExpPtr> args;
   TypePtr type;
 
-  InvokeExpression(Position pos, ExpPtr function, vector<ExpPtr> args)
+  InvocationExpression(Position pos, ExpPtr function, vector<ExpPtr> args)
       : pos{pos}, function{function}, args{args} {}
 
   Position Pos() const override { return pos; }
@@ -183,9 +183,10 @@ class IfThenStatement : public Statement {
 public:
   Position pos;
   ExpPtr condition;
-  ExpPtr ifTrue;
+  shared_ptr<BlockStatement> ifTrue;
 
-  IfThenStatement(Position pos, ExpPtr condition, ExpPtr ifTrue)
+  IfThenStatement(Position pos, ExpPtr condition,
+                  shared_ptr<BlockStatement> ifTrue)
       : pos{pos}, condition{condition}, ifTrue{ifTrue} {}
 
   Position Pos() const override { return pos; }
@@ -198,10 +199,12 @@ class IfElseStatement : public Statement {
 public:
   Position pos;
   ExpPtr condition;
-  ExpPtr ifTrue;
-  ExpPtr ifFalse;
+  shared_ptr<BlockStatement> ifTrue;
+  shared_ptr<BlockStatement> ifFalse;
 
-  IfElseStatement(Position pos, ExpPtr condition, ExpPtr ifTrue, ExpPtr ifFalse)
+  IfElseStatement(Position pos, ExpPtr condition,
+                  shared_ptr<BlockStatement> ifTrue,
+                  shared_ptr<BlockStatement> ifFalse)
       : pos{pos}, condition{condition}, ifTrue{ifTrue}, ifFalse{ifFalse} {}
 
   Position Pos() const override { return pos; }
@@ -214,9 +217,10 @@ class WhileStatement : public Statement {
 public:
   Position pos;
   ExpPtr condition;
-  ExpPtr body;
+  shared_ptr<BlockStatement> body;
 
-  WhileStatement(Position pos, ExpPtr condition, ExpPtr body)
+  WhileStatement(Position pos, ExpPtr condition,
+                 shared_ptr<BlockStatement> body)
       : pos{pos}, condition{condition}, body{body} {}
 
   Position Pos() const override { return pos; }
@@ -299,6 +303,7 @@ public:
   string name;
   ExpPtr initializer;
   int fieldIndex;
+  weak_ptr<ClassInfo> classInfo;
 
   Position Pos() const override { return pos; }
   MemberKind Kind() const override { return MemberKind::FIELD; }
@@ -314,6 +319,7 @@ public:
   bool isVirtual;
   bool isOverride;
   int methodIndex;
+  weak_ptr<ClassInfo> classInfo;
 
   Position Pos() const override { return pos; }
   MemberKind Kind() const override { return MemberKind::METHOD; }
@@ -324,8 +330,11 @@ class MemberExpression : public Expression {
 public:
   Position pos;
   ExpPtr object;
-  string memberName;
   shared_ptr<MemberDeclaration> declaration;
+
+  MemberExpression(Position pos, ExpPtr object,
+                   shared_ptr<MemberDeclaration> declaration)
+      : pos{pos}, object{object}, declaration{declaration} {}
 
   Position Pos() const override { return pos; }
   ExpressionType NodeType() const override { return ExpressionType::MEMBER; }
@@ -337,6 +346,10 @@ public:
   shared_ptr<MethodMember> constructor;
   vector<ExpPtr> args;
   TypePtr type;
+
+  NewExpression(Position pos, shared_ptr<MethodMember> constructor,
+                vector<ExpPtr> args)
+      : pos{pos}, constructor{constructor}, args{args} {}
 
   Position Pos() const override { return pos; }
   ExpressionType NodeType() const override { return ExpressionType::NEW; }
@@ -410,9 +423,11 @@ public:
   Error(Position pos, string message) : pos{pos}, message{message} {}
 };
 
-template <typename ReturnType, typename... ArgTypes> class Visitor {
+template <typename ExpReturnType, typename StatementReturnType,
+          typename... ArgTypes>
+class Visitor {
 public:
-  virtual ReturnType VisitExpression(ExpPtr node, ArgTypes... args) {
+  virtual ExpReturnType VisitExpression(ExpPtr node, ArgTypes... args) {
     switch (node->NodeType()) {
     case ExpressionType::INT:
     case ExpressionType::LONG:
@@ -459,7 +474,8 @@ public:
       throw Error(node->Pos(), "unsupported node type for visitor");
     }
   }
-  virtual VisitStatement(shared_ptr<Statement> statement, ArgTypes... args) {
+  virtual StatementReturnType VisitStatement(shared_ptr<Statement> statement,
+                                             ArgTypes... args) {
     switch (statement->GetStatementType()) {
     case StatementType::EXPRESSION:
       return VisitExpression(static_pointer_cast<Expression>(statement),
@@ -489,22 +505,162 @@ public:
       throw Error(node->Pos(), "unsupported statement type for visitor");
     }
   }
-  virtual VisitConstant(shared_ptr<ConstantExpression> node,
-                        ArgTypes... args) = 0;
-  virtual VisitBinaryExp(shared_ptr<BinaryExpression> node,
-                         ArgTypes... args) = 0;
-  virtual VisitUnaryExp(shared_ptr<UnaryExpression> node, ArgTypes... args) = 0;
-  virtual VisitInvocation(shared_ptr<InvocationExpression> node,
-                          ArgTypes... args) = 0;
-  virtual VisitIdentifier(shared_ptr<IdentifierExpression> node,
-                          ArgTypes... args) = 0;
-  virtual VisitMemberExp(shared_ptr<MemberExpression> node,
-                         ArgTypes... args) = 0;
-  virtual VisitNewExp(shared_ptr<NewExpression> node, ArgTypes... args) = 0;
+  virtual ExpReturnType VisitConstant(shared_ptr<ConstantExpression> node,
+                                      ArgTypes... args) = 0;
+  virtual ExpReturnType VisitBinaryExp(shared_ptr<BinaryExpression> node,
+                                       ArgTypes... args) = 0;
+  virtual ExpReturnType VisitUnaryExp(shared_ptr<UnaryExpression> node,
+                                      ArgTypes... args) = 0;
+  virtual ExpReturnType VisitInvocation(shared_ptr<InvocationExpression> node,
+                                        ArgTypes... args) = 0;
+  virtual ExpReturnType VisitIdentifier(shared_ptr<IdentifierExpression> node,
+                                        ArgTypes... args) = 0;
+  virtual ExpReturnType VisitMemberExp(shared_ptr<MemberExpression> node,
+                                       ArgTypes... args) = 0;
+  virtual ExpReturnType VisitNewExp(shared_ptr<NewExpression> node,
+                                    ArgTypes... args) = 0;
 
-  virtual VisitIfThen(shared_ptr<IfThenStatement> node, ArgTypes... args) = 0;
-  virtual VisitIfElse(shared_ptr<IfElseStatement> node, ArgTypes... args) = 0;
-  virtual VisitWhile(shared_ptr<WhileStatement> node, ArgTypes... args) = 0;
-  virtual VisitBlock(shared_ptr<BlockStatement> node, ArgTypes... args) = 0;
+  virtual StatementReturnType VisitIfThen(shared_ptr<IfThenStatement> node,
+                                          ArgTypes... args) = 0;
+  virtual StatementReturnType VisitIfElse(shared_ptr<IfElseStatement> node,
+                                          ArgTypes... args) = 0;
+  virtual StatementReturnType VisitWhile(shared_ptr<WhileStatement> node,
+                                         ArgTypes... args) = 0;
+  virtual StatementReturnType VisitBlock(shared_ptr<BlockStatement> node,
+                                         ArgTypes... args) = 0;
+  virtual StatementReturnType VisitReturn(shared_ptr<ReturnStatement> node,
+                                          ArgTypes... args) = 0;
+  virtual StatementReturnType VisitAssign(shared_ptr<AssignStatement> node,
+                                          ArgTypes... args) = 0;
+  virtual StatementReturnType VisitVarDecl(shared_ptr<VariableDeclaration> node,
+                                           ArgTypes... args) = 0;
+};
+
+template <typename T> class Scope {
+public:
+  unordered_map<string, T> table;
+  weak_ptr<Scope<T>> parent;
+
+  Scope() : parent() {}
+
+  Scope(shared_ptr<Scope<T>> parent) : parent(parent) {}
+
+  optional<T> Get(string key) {
+    if (table.count(key)) {
+      return table[key];
+    } else if (parent.expired()) {
+      return make_optional<T>();
+    } else {
+      return parent->Get(key);
+    }
+  }
+
+  /* true: success, false: failed */
+  bool Put(string key, const T &value) {
+    if (table.count(key)) {
+      return false;
+    } else {
+      table.insert({key, value});
+      return true;
+    }
+  }
+};
+
+template <typename T> using ScopePtr = shared_ptr<Scope<T>>;
+
+template <typename... ArgTypes>
+class NanoPass : public Visitor<ExpPtr, StatmentPtr, ArgTypes...> {
+  virtual ExpPtr VisitConstant(shared_ptr<ConstantExpression> node,
+                               ArgTypes... args) {
+    return node;
+  }
+  virtual ExpPtr VisitBinaryExp(shared_ptr<BinaryExpression> node,
+                                ArgTypes... args) {
+    auto left = VisitExpression(node->left, args...);
+    auto right = VisitExpression(node->right, args...);
+    return make_shared<BinaryExpression>(node->Pos(), node->NodeType(), left,
+                                         right);
+  }
+  virtual ExpPtr VisitUnaryExp(shared_ptr<UnaryExpression> node,
+                               ArgTypes... args) {
+    auto operand = VisitExpression(node->operand, args...);
+    return make_shared<UnaryExpression>(node->Pos(), node->NodeType(), operand);
+  }
+  virtual ExpPtr VisitInvocation(shared_ptr<InvocationExpression> node,
+                                 ArgTypes... args) {
+    auto function = VisitExpression(node->function, args...);
+    auto arguments = Vec::Map(node->args, [&](ExpPtr arg) -> ExpPtr {
+      return VisitExpression(arg, ... args);
+    });
+    return make_shared<InvocationExpression>(node->Pos(), function, arguments);
+  }
+  virtual ExpPtr VisitIdentifier(shared_ptr<IdentifierExpression> node,
+                                 ArgTypes... args) {
+    return node;
+  }
+  virtual ExpPtr VisitMemberExp(shared_ptr<MemberExpression> node,
+                                ArgTypes... args) {
+    auto object = VisitExpression(node->object, args...);
+    return make_shared<MemberExpression>(node->Pos(), object,
+                                         node->declaration);
+  }
+  virtual ExpPtr VisitNewExp(shared_ptr<NewExpression> node, ArgTypes... args) {
+    auto arguments = Vec::Map(node->args, [&](ExpPtr arg) -> ExpPtr {
+      return VisitExpression(arg, ... args);
+    });
+    return make_shared<NewExpression>(node->Pos(), node->constructor,
+                                      arguments);
+  }
+
+  virtual StatmentPtr VisitIfThen(shared_ptr<IfThenStatement> node,
+                                  ArgTypes... args) {
+    auto condition = VisitExpression(node->condition, args...);
+    auto ifTrue = VisitStatement(node->ifTrue, args...);
+    return make_shared<IfThenStatement>(node->Pos(), condition, ifTrue);
+  }
+  virtual StatmentPtr VisitIfElse(shared_ptr<IfElseStatement> node,
+                                  ArgTypes... args) {
+    auto condition = VisitExpression(node->condition, args...);
+    auto ifTrue = VisitStatement(node->ifTrue, args...);
+    auto ifFalse = VisitStatement(node->ifFalse, args...);
+    return make_shared<IfElseStatement>(node->Pos(), condition, ifTrue,
+                                        ifFalse);
+  }
+  virtual StatmentPtr VisitWhile(shared_ptr<WhileStatement> node,
+                                 ArgTypes... args) {
+    auto condition = VisitExpression(node->condition, args...);
+    auto body = VisitStatement(node->body, args...);
+    return make_shared<WhileStatement>(node->Pos(), condition, body);
+  }
+  virtual StatmentPtr VisitBlock(shared_ptr<BlockStatement> node,
+                                 ArgTypes... args) {
+    auto statements =
+        Vec::Map(node->statements, [&](StatementPtr x) -> StatementPtr {
+          return VisitStatement(x, args...);
+        });
+    return make_shared<BlockStatement>(node->Pos(), statements);
+  }
+  virtual StatmentPtr VisitReturn(shared_ptr<ReturnStatement> node,
+                                  ArgTypes... args) {
+    auto value = VisitExpression(node->value, args...);
+    return make_shared<ReturnStatement>(node->Pos(), value);
+  }
+  virtual StatmentPtr VisitAssign(shared_ptr<AssignStatement> node,
+                                  ArgTypes... args) {
+    auto left = VisitExpression(node->left, args...);
+    auto value = VisitExpression(node->value, args...);
+    return make_shared<AssignStatement>(node->Pos(), node->kind, left, value);
+  }
+  virtual StatmentPtr VisitVarDecl(shared_ptr<VariableDeclaration> node,
+                                   ArgTypes... args) {
+    if (node->value.has_value()) {
+      auto value = VisitExpression(node->value.value(), args...);
+      return make_shared<VariableDeclaration>(node->Pos(), node->identifier,
+                                              node->type, value);
+    } else {
+      return make_shared<VariableDeclaration>(
+          node->Pos(), node->identifier, node->type, make_shared<ExpPtr>());
+    }
+  }
 };
 #endif // EXPRESSION_HPP
