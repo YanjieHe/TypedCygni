@@ -1,5 +1,6 @@
 #ifndef TYPE_HPP
 #define TYPE_HPP
+#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
@@ -7,6 +8,7 @@
 #include <vector>
 
 using std::make_optional;
+using std::make_shared;
 using std::optional;
 using std::shared_ptr;
 using std::static_pointer_cast;
@@ -33,8 +35,8 @@ enum class TypeCode {
 
 class Vec {
 public:
-  template <typename T, typename R, typename Func>
-  static vector<R> Map(const vector<T> &items, Func f) {
+  template <typename T, typename R>
+  static vector<R> Map(const vector<T> &items, const std::function<R(T)> &f) {
     vector<R> result;
     result.reserve(items.size());
     for (auto item : items) {
@@ -57,8 +59,9 @@ public:
     }
   }
 
-  template <typename T, typename Func>
-  static bool Filter(const vector<T> &items, Func f) {
+  template <typename T>
+  static vector<T> Filter(const vector<T> &items,
+                          const std::function<bool(T)> &f) {
     vector<T> result;
     for (auto item : items) {
       if (f(item)) {
@@ -67,15 +70,36 @@ public:
     }
     return result;
   }
+
+  template <typename T>
+  static vector<T> Skip(const vector<T>& items, size_t n){
+    vector<T> result;
+    for (size_t i = n; i < items.size(); i++){
+      result.push_back(items[i]);
+    }
+    return result;
+  }
 };
+
+class Type;
+using TypePtr = shared_ptr<Type>;
+class ClassInfo;
 
 class Type {
 public:
   virtual TypeCode GetTypeCode() const = 0;
   virtual bool Equals(TypePtr other) const = 0;
-};
 
-using TypePtr = shared_ptr<Type>;
+  static TypePtr Void();
+  static TypePtr Boolean();
+  static TypePtr Int();
+  static TypePtr Long();
+  static TypePtr Float();
+  static TypePtr Double();
+  static TypePtr Char();
+  static TypePtr String();
+  static TypePtr Class(weak_ptr<ClassInfo> classInfo);
+};
 
 class BasicType : public Type {
 public:
@@ -87,6 +111,39 @@ public:
     return typeCode == other->GetTypeCode();
   }
 };
+
+TypePtr Type::Void() {
+  static auto type = make_shared<BasicType>(TypeCode::VOID);
+  return type;
+}
+TypePtr Type::Boolean() {
+  static auto type = make_shared<BasicType>(TypeCode::BOOLEAN);
+  return type;
+}
+TypePtr Type::Int() {
+  static auto type = make_shared<BasicType>(TypeCode::INT);
+  return type;
+}
+TypePtr Type::Long() {
+  static auto type = make_shared<BasicType>(TypeCode::LONG);
+  return type;
+}
+TypePtr Type::Float() {
+  static auto type = make_shared<BasicType>(TypeCode::FLOAT);
+  return type;
+}
+TypePtr Type::Double() {
+  static auto type = make_shared<BasicType>(TypeCode::DOUBLE);
+  return type;
+}
+TypePtr Type::Char() {
+  static auto type = make_shared<BasicType>(TypeCode::CHAR);
+  return type;
+}
+TypePtr Type::String() {
+  static auto type = make_shared<BasicType>(TypeCode::STRING);
+  return type;
+}
 
 class ArrayType : public Type {
 public:
@@ -125,20 +182,24 @@ public:
   }
 };
 
-class ClassInfo;
-
 class ClassType : public Type {
 public:
   weak_ptr<ClassInfo> classInfo;
+  explicit ClassType(weak_ptr<ClassInfo> classInfo) : classInfo{classInfo} {}
   TypeCode GetTypeCode() const override { return TypeCode::CLASS; }
   bool Equals(TypePtr other) const override {
     if (other->GetTypeCode() == TypeCode::CLASS) {
-      return classInfo.owner_before(static_pointer_cast<ClassType>(other)->classInfo);
+      return classInfo.owner_before(
+          static_pointer_cast<ClassType>(other)->classInfo);
     } else {
       return false;
     }
   }
 };
+
+TypePtr Type::Class(weak_ptr<ClassInfo> classInfo) {
+  return make_shared<ClassType>(classInfo);
+}
 
 class TypeName : public Type {
 public:

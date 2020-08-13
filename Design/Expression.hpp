@@ -7,6 +7,19 @@
 #include <unordered_map>
 #include <vector>
 
+#define BINARY_TYPE_MATCH(NODE_TYPE, LEFT_TYPE, RIGHT_TYPE, RETURN_TYPE)       \
+  if (node->NodeType() == ExpressionType::##NODE_TYPE &&                       \
+      left->Equals(Type::##LEFT_TYPE##()) &&                                   \
+      right->Equals(Type::##RIGHT_TYPE##())) {                                 \
+    return Type::##RETURN_TYPE##();                                            \
+  }
+
+#define UNARY_TYPE_MATCH(NODE_TYPE, OPERAND_TYPE, RETURN_TYPE)                 \
+  if (node->NodeType() == ExpressionType::##NODE_TYPE &&                       \
+      operand->Equals(Type::##OPERAND_TYPE##())) {                             \
+    return Type::##RETURN_TYPE##();                                            \
+  }
+
 using std::optional;
 using std::shared_ptr;
 using std::static_pointer_cast;
@@ -38,16 +51,15 @@ enum class ExpressionType {
   NE,
   LOGICAL_AND,
   LOGICAL_OR,
-  CONVERT,
   /* unary operators */
   LOGICAL_NOT,
   PLUS,
   MINUS,
-  ARRAY_LENGTH,
   /* invocations */
   INVOKE,
   /* other */
   IDENTIFIER,
+  CONVERT,
   MEMBER,
   NEW
 };
@@ -92,7 +104,6 @@ public:
 class Expression : public Statement {
 public:
   virtual ExpressionType NodeType() const = 0;
-  virtual TypePtr GetType() const = 0;
   StatementType GetStatementType() const override {
     return StatementType::EXPRESSION;
   }
@@ -107,7 +118,6 @@ public:
   ExpressionType nodeType;
   ExpPtr left;
   ExpPtr right;
-  TypePtr type;
 
   BinaryExpression(Position pos, ExpressionType nodeType, ExpPtr left,
                    ExpPtr right)
@@ -115,7 +125,6 @@ public:
 
   Position Pos() const override { return pos; }
   ExpressionType NodeType() const override { return nodeType; }
-  TypePtr GetType() const override { return type; }
 };
 
 class ConstantExpression : public Expression {
@@ -123,14 +132,12 @@ public:
   Position pos;
   ExpressionType nodeType;
   string value;
-  TypePtr type;
 
   ConstantExpression(Position pos, ExpressionType nodeType, string value)
       : pos{pos}, nodeType{nodeType}, value{value} {}
 
   Position Pos() const override { return pos; }
   ExpressionType NodeType() const override { return nodeType; }
-  TypePtr GetType() const override { return type; }
 };
 
 class UnaryExpression : public Expression {
@@ -138,14 +145,12 @@ public:
   Position pos;
   ExpressionType nodeType;
   ExpPtr operand;
-  TypePtr type;
 
   UnaryExpression(Position pos, ExpressionType nodeType, ExpPtr operand)
       : pos{pos}, nodeType{nodeType}, operand{operand} {}
 
   Position Pos() const override { return pos; }
   ExpressionType NodeType() const override { return nodeType; }
-  TypePtr GetType() const override { return type; }
 };
 
 class InvocationExpression : public Expression {
@@ -153,21 +158,18 @@ public:
   Position pos;
   ExpPtr function;
   vector<ExpPtr> args;
-  TypePtr type;
 
   InvocationExpression(Position pos, ExpPtr function, vector<ExpPtr> args)
       : pos{pos}, function{function}, args{args} {}
 
   Position Pos() const override { return pos; }
   ExpressionType NodeType() const override { return ExpressionType::INVOKE; }
-  TypePtr GetType() const override { return type; }
 };
 
 class IdentifierExpression : public Expression {
 public:
   Position pos;
   string identifier;
-  TypePtr type;
 
   IdentifierExpression(Position pos, string identifier)
       : pos{pos}, identifier{identifier} {}
@@ -176,7 +178,18 @@ public:
   ExpressionType NodeType() const override {
     return ExpressionType::IDENTIFIER;
   }
-  TypePtr GetType() const override { return type; }
+};
+
+class ConversionExpression : public Expression {
+public:
+  Position pos;
+  ExpPtr expression;
+  TypePtr type;
+
+  ConversionExpression(Position pos, ExpPtr expression, TypePtr type)
+      : pos{pos}, expression{expression}, type{type} {}
+  Position Pos() const override { return pos; }
+  ExpressionType NodeType() const override { return ExpressionType::CONVERT; }
 };
 
 class IfThenStatement : public Statement {
@@ -319,6 +332,7 @@ public:
   bool isVirtual;
   bool isOverride;
   int methodIndex;
+  FunctionType functionType; // 'this' is the first parameter
   weak_ptr<ClassInfo> classInfo;
 
   Position Pos() const override { return pos; }
@@ -345,7 +359,6 @@ public:
   Position pos;
   shared_ptr<MethodMember> constructor;
   vector<ExpPtr> args;
-  TypePtr type;
 
   NewExpression(Position pos, shared_ptr<MethodMember> constructor,
                 vector<ExpPtr> args)
@@ -353,7 +366,6 @@ public:
 
   Position Pos() const override { return pos; }
   ExpressionType NodeType() const override { return ExpressionType::NEW; }
-  TypePtr GetType() const override { return type; }
 };
 
 class ClassInfo {
@@ -456,14 +468,15 @@ public:
     case ExpressionType::LOGICAL_NOT:
     case ExpressionType::PLUS:
     case ExpressionType::MINUS:
-    case ExpressionType::ARRAY_LENGTH:
-    case ExpressionType::CONVERT:
       return VisitUnaryExp(static_pointer_cast<UnaryExpression>(node), args...);
     case ExpressionType::INVOKE:
       return VisitInvocation(static_pointer_cast<InvocationExpression>(node),
                              args...);
     case ExpressionType::IDENTIFIER:
       return VisitIdentifier(static_pointer_cast<IdentifierExpression>(node),
+                             args...);
+    case ExpressionType::CONVERT:
+      return VisitConversion(static_pointer_cast<ConversionExpression>(node),
                              args...);
     case ExpressionType::MEMBER:
       return VisitMemberExp(static_pointer_cast<MemberExpression>(node),
@@ -514,6 +527,8 @@ public:
   virtual ExpReturnType VisitInvocation(shared_ptr<InvocationExpression> node,
                                         ArgTypes... args) = 0;
   virtual ExpReturnType VisitIdentifier(shared_ptr<IdentifierExpression> node,
+                                        ArgTypes... args) = 0;
+  virtual ExpReturnType VisitConversion(shared_ptr<ConversionExpression> node,
                                         ArgTypes... args) = 0;
   virtual ExpReturnType VisitMemberExp(shared_ptr<MemberExpression> node,
                                        ArgTypes... args) = 0;
@@ -589,14 +604,21 @@ class NanoPass : public Visitor<ExpPtr, StatmentPtr, ArgTypes...> {
   virtual ExpPtr VisitInvocation(shared_ptr<InvocationExpression> node,
                                  ArgTypes... args) {
     auto function = VisitExpression(node->function, args...);
-    auto arguments = Vec::Map(node->args, [&](ExpPtr arg) -> ExpPtr {
-      return VisitExpression(arg, ... args);
-    });
+    auto arguments =
+        Vec::Map<ExpPtr, ExpPtr>(node->args, [&](ExpPtr arg) -> ExpPtr {
+          return VisitExpression(arg, ... args);
+        });
     return make_shared<InvocationExpression>(node->Pos(), function, arguments);
   }
   virtual ExpPtr VisitIdentifier(shared_ptr<IdentifierExpression> node,
                                  ArgTypes... args) {
     return node;
+  }
+  virtual ExpPtr VisitConversion(shared_ptr<ConversionExpression> node,
+                                 ArgTypes... args) {
+    auto expression = VisitExpression(node, args...);
+    return make_shared<ConversionExpression>(node->Pos(), expression,
+                                             node->type);
   }
   virtual ExpPtr VisitMemberExp(shared_ptr<MemberExpression> node,
                                 ArgTypes... args) {
@@ -605,9 +627,10 @@ class NanoPass : public Visitor<ExpPtr, StatmentPtr, ArgTypes...> {
                                          node->declaration);
   }
   virtual ExpPtr VisitNewExp(shared_ptr<NewExpression> node, ArgTypes... args) {
-    auto arguments = Vec::Map(node->args, [&](ExpPtr arg) -> ExpPtr {
-      return VisitExpression(arg, ... args);
-    });
+    auto arguments =
+        Vec::Map<ExpPtr, ExpPtr>(node->args, [&](ExpPtr arg) -> ExpPtr {
+          return VisitExpression(arg, ... args);
+        });
     return make_shared<NewExpression>(node->Pos(), node->constructor,
                                       arguments);
   }
@@ -634,8 +657,8 @@ class NanoPass : public Visitor<ExpPtr, StatmentPtr, ArgTypes...> {
   }
   virtual StatmentPtr VisitBlock(shared_ptr<BlockStatement> node,
                                  ArgTypes... args) {
-    auto statements =
-        Vec::Map(node->statements, [&](StatementPtr x) -> StatementPtr {
+    auto statements = Vec::Map<StatementPtr, StatementPtr>(
+        node->statements, [&](StatementPtr x) -> StatementPtr {
           return VisitStatement(x, args...);
         });
     return make_shared<BlockStatement>(node->Pos(), statements);
@@ -660,6 +683,159 @@ class NanoPass : public Visitor<ExpPtr, StatmentPtr, ArgTypes...> {
     } else {
       return make_shared<VariableDeclaration>(
           node->Pos(), node->identifier, node->type, make_shared<ExpPtr>());
+    }
+  }
+};
+
+class TypeChecker : public Visitor<TypePtr, void, ScopePtr<TypePtr>> {
+public:
+  TypePtr VisitConstant(shared_ptr<ConstantExpression> node,
+                        ScopePtr<TypePtr> scope) override {
+    switch (node->NodeType()) {
+    case ExpressionType::INT:
+      return Type::Int();
+    case ExpressionType::BOOLEAN:
+      return Type::Boolean();
+    case ExpressionType::LONG:
+      return Type::Long();
+    case ExpressionType::DOUBLE:
+      return Type::Double();
+    case ExpressionType::CHAR:
+      return Type::Char();
+    case ExpressionType::STRING:
+      return Type::String();
+    default:
+      throw Error(node->Pos(), "error constant node type");
+    }
+  }
+
+  TypePtr VisitBinaryExp(shared_ptr<BinaryExpression> node,
+                         ScopePtr<TypePtr> scope) override {
+    auto left = VisitExpression(node->left, scope);
+    auto right = VisitExpression(node->right, scope);
+
+    BINARY_TYPE_MATCH(ADD, Int, Int, Int);
+    BINARY_TYPE_MATCH(ADD, Long, Long, Long);
+    BINARY_TYPE_MATCH(ADD, Float, Float, Float);
+    BINARY_TYPE_MATCH(ADD, Double, Double, Double);
+
+    BINARY_TYPE_MATCH(SUBTRACT, Int, Int, Int);
+    BINARY_TYPE_MATCH(SUBTRACT, Long, Long, Long);
+    BINARY_TYPE_MATCH(SUBTRACT, Float, Float, Float);
+    BINARY_TYPE_MATCH(SUBTRACT, Double, Double, Double);
+
+    BINARY_TYPE_MATCH(MULTIPLY, Int, Int, Int);
+    BINARY_TYPE_MATCH(MULTIPLY, Long, Long, Long);
+    BINARY_TYPE_MATCH(MULTIPLY, Float, Float, Float);
+    BINARY_TYPE_MATCH(MULTIPLY, Double, Double, Double);
+
+    BINARY_TYPE_MATCH(DIVIDE, Int, Int, Int);
+    BINARY_TYPE_MATCH(DIVIDE, Long, Long, Long);
+    BINARY_TYPE_MATCH(DIVIDE, Float, Float, Float);
+    BINARY_TYPE_MATCH(DIVIDE, Double, Double, Double);
+
+    BINARY_TYPE_MATCH(MODULO, Int, Int, Int);
+    BINARY_TYPE_MATCH(MODULO, Long, Long, Long);
+
+    BINARY_TYPE_MATCH(GT, Int, Int, Boolean);
+    BINARY_TYPE_MATCH(GT, Long, Long, Boolean);
+    BINARY_TYPE_MATCH(GT, Float, Float, Boolean);
+    BINARY_TYPE_MATCH(GT, Double, Double, Boolean);
+    BINARY_TYPE_MATCH(GT, Char, Char, Boolean);
+
+    BINARY_TYPE_MATCH(LT, Int, Int, Boolean);
+    BINARY_TYPE_MATCH(LT, Long, Long, Boolean);
+    BINARY_TYPE_MATCH(LT, Float, Float, Boolean);
+    BINARY_TYPE_MATCH(LT, Double, Double, Boolean);
+    BINARY_TYPE_MATCH(LT, Char, Char, Boolean);
+
+    BINARY_TYPE_MATCH(GE, Int, Int, Boolean);
+    BINARY_TYPE_MATCH(GE, Long, Long, Boolean);
+    BINARY_TYPE_MATCH(GE, Float, Float, Boolean);
+    BINARY_TYPE_MATCH(GE, Double, Double, Boolean);
+    BINARY_TYPE_MATCH(GE, Char, Char, Boolean);
+
+    BINARY_TYPE_MATCH(LE, Int, Int, Boolean);
+    BINARY_TYPE_MATCH(LE, Long, Long, Boolean);
+    BINARY_TYPE_MATCH(LE, Float, Float, Boolean);
+    BINARY_TYPE_MATCH(LE, Double, Double, Boolean);
+    BINARY_TYPE_MATCH(LE, Char, Char, Boolean);
+
+    BINARY_TYPE_MATCH(EQ, Int, Int, Boolean);
+    BINARY_TYPE_MATCH(EQ, Long, Long, Boolean);
+    BINARY_TYPE_MATCH(EQ, Float, Float, Boolean);
+    BINARY_TYPE_MATCH(EQ, Double, Double, Boolean);
+    BINARY_TYPE_MATCH(EQ, Boolean, Boolean, Boolean);
+    BINARY_TYPE_MATCH(EQ, Char, Char, Boolean);
+
+    BINARY_TYPE_MATCH(NE, Int, Int, Boolean);
+    BINARY_TYPE_MATCH(NE, Long, Long, Boolean);
+    BINARY_TYPE_MATCH(NE, Float, Float, Boolean);
+    BINARY_TYPE_MATCH(NE, Double, Double, Boolean);
+    BINARY_TYPE_MATCH(NE, Boolean, Boolean, Boolean);
+    BINARY_TYPE_MATCH(NE, Char, Char, Boolean);
+
+    BINARY_TYPE_MATCH(LOGICAL_AND, Boolean, Boolean, Boolean);
+    BINARY_TYPE_MATCH(LOGICAL_OR, Boolean, Boolean, Boolean);
+
+    throw Error(node->Pos(), "binary operation type mismatch");
+  }
+  TypePtr VisitUnaryExp(shared_ptr<UnaryExpression> node,
+                        ScopePtr<TypePtr> scope) override {
+    auto operand = VisitExpression(node->operand, scope);
+
+    UNARY_TYPE_MATCH(PLUS, Int, Int);
+    UNARY_TYPE_MATCH(PLUS, Long, Long);
+    UNARY_TYPE_MATCH(PLUS, Float, Float);
+    UNARY_TYPE_MATCH(PLUS, Double, Double);
+
+    UNARY_TYPE_MATCH(MINUS, Int, Int);
+    UNARY_TYPE_MATCH(MINUS, Long, Long);
+    UNARY_TYPE_MATCH(MINUS, Float, Float);
+    UNARY_TYPE_MATCH(MINUS, Double, Double);
+
+    UNARY_TYPE_MATCH(LOGICAL_NOT, Boolean, Boolean);
+
+    throw Error(node->Pos(), "unary operation type mismtach");
+  }
+
+  TypePtr VisitInvocation(shared_ptr<InvocationExpression> node,
+                          ScopePtr<TypePtr> scope) override {
+    auto args = Vec::Map<ExpPtr, TypePtr>(node->args, [&](ExpPtr e) -> TypePtr {
+      return VisitExpression(e, scope);
+    });
+    if (node->NodeType() == ExpressionType::MEMBER) {
+      auto memberAccess = static_pointer_cast<MemberExpression>(node);
+      auto object = VisitExpression(memberAccess->object, scope);
+      if (memberAccess->declaration->Kind() == MemberKind::METHOD) {
+        // TO DO
+        auto method =
+            static_pointer_cast<MethodMember>(memberAccess->declaration);
+        if (method->functionType.args.front()->Equals(object) &&
+            Vec::SequenceEqual(
+                Vec::Skip(method->functionType->args, 1), args,
+                [](TypePtr x, TypePtr y) -> bool { return x->Equals(y); })) {
+          return method->functionType->ret;
+        } else {
+          throw Error(node->Pos(), "method arguments' type mismtach");
+        }
+      } else {
+        // TO DO
+      }
+    } else {
+      auto function = VisitExpression(node->function, scope);
+      if (function->GetTypeCode() == TypeCode::FUNCTION) {
+        auto ft = static_pointer_cast<FunctionType>(function);
+        if (Vec::SequenceEqual(
+                ft->args, args,
+                [](TypePtr x, TypePtr y) -> bool { return x->Equals(y); })) {
+          return ft->ret;
+        } else {
+          throw Error(node->Pos(), "function arguments' type mismtach");
+        }
+      } else {
+        throw Error(node->Pos(), "caller is not a function");
+      }
     }
   }
 };
