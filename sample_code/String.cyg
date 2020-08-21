@@ -1,0 +1,43 @@
+package Predef
+
+class String
+{
+    private var characters: Array[Char]
+
+    def At(index: Int): Char
+    {
+        return this.characters(index)
+    }
+
+    def Find(c: Char): Int
+    {
+        var i = 0
+        while (i < characters.Length)
+        {
+            if (characters(i) == c)
+            {
+                return i
+            }
+            else
+            {
+                i = i + 1
+            }
+        }
+        return (0 - 1)
+    }
+
+    def Size(): Int
+    {
+        return this.characters.Size
+    }
+}
+
+module String
+{
+    def New(characters: Array[Char]): String
+    {
+        return new String {
+            characters = characters
+        }
+    }
+}

@@ -1,0 +1,28 @@
+package Test.Recursion
+
+module EvenOddNumber
+{
+	def IsEven(n: Int): Bool
+	{
+		if (n == 0)
+		{
+			return true
+		}
+		else
+		{
+			return IsOdd(n - 1)
+		}
+	}
+	
+	def IsOdd(n: Int): Bool
+	{
+		if (n == 0)
+		{
+			return false
+		}
+		else
+		{
+			return IsEven(n - 1)
+		}
+	}
+}

@@ -1,0 +1,27 @@
+package App
+
+import Std
+import Geometry
+
+module Program
+{
+    def Main(): Void
+    {
+        var area: IArea = new Rectangle 
+        {
+            name = "Rectangle",
+            length = 10.0,
+            width = 20.0
+        }
+
+        area.ComputeArea()
+
+        area = new Circle
+        {
+            name = "Circle",
+            radius = 5.0
+        }
+
+        area.ComputeArea()
+    }
+}

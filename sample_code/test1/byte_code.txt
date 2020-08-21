@@ -1,0 +1,56 @@
+class: App.Program
+
+        method: App.Program.Main
+        args_size=0, locals=0
+        code:
+                0: PUSH_STRING 1
+                3: PUSH_FUNCTION 2
+                6: INVOKE
+                7: PUSH_FUNCTION 0
+                10: INVOKE
+
+
+class: Prelude.IO
+
+        method: Prelude.IO.PutInt
+        args_size=1
+        library name: StandardLibraryDLL.dll
+        function name: Prelude.IO.PutInt
+
+        method: Prelude.IO.PutStr
+        args_size=1
+        library name: StandardLibraryDLL.dll
+        function name: Prelude.IO.PutStr
+
+
+class: Predef.String
+        field: Predef.String.characters
+
+
+        method: Predef.String.At
+        args_size=2, locals=0
+        code:
+                0: PUSH_LOCAL_OBJECT 1
+                3: PUSH_FIELD_OBJECT 0
+                6: PUSH_LOCAL_I32 0
+                9: PUSH_ARRAY_I32
+                10: RETURN_I32
+
+        method: Predef.String.Size
+        args_size=1, locals=0
+        code:
+                0: PUSH_LOCAL_OBJECT 0
+                3: PUSH_FIELD_OBJECT 0
+                6: ARRAY_LENGTH
+                7: RETURN_I32
+
+
+        method: Predef.String.New
+        args_size=1, locals=0
+        code:
+                0: NEW 0
+                3: DUPLICATE
+                4: PUSH_LOCAL_OBJECT 0
+                7: POP_FIELD_OBJECT 0
+                10: RETURN_OBJECT
+

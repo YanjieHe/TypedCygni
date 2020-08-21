@@ -1,0 +1,157 @@
+package ConsoleApplication
+
+import App.Math
+import Test.Recursion
+import System.IO
+import Geometry
+
+rename Geometry.Point to MyPoint
+
+module App
+{
+	def PrintHeart(): Int
+	{
+		var i: Int = 0
+		var j: Int = 0
+		var k: Int = 0
+		var l: Int = 0
+		var m: Int = 0
+		var c: String = "*"
+
+		i = 1
+		while (i <= 5)
+		{
+			IO.PutStr("\n")
+			i = i + 1
+		}
+
+		i = 1
+		while (i <= 3)
+		{
+			j = 1
+			while (j <= 32 - 2 * i)
+			{
+				IO.PutStr(" ")
+				j = j + 1
+			}
+			k = 1
+			while (k < 4 * i + 1)
+			{
+				IO.PutStr(c)
+				k = k + 1
+			}
+			l = 1
+			while (l <= 13 - 4 * i)
+			{
+				IO.PutStr(" ")
+				l = l + 1
+			}
+
+			m = 1
+			while (m <= 4 * i + 1)
+			{
+				IO.PutStr(c)
+				m = m + 1
+			}
+			IO.PutStr("\n")
+			i = i + 1
+		}
+
+		i = 1
+		while (i <= 3)
+		{
+			j = 1
+			while (j <= 24 + 1)
+			{
+				IO.PutStr(" ")
+				j = j + 1
+			}
+			k = 1
+			while (k <= 29)
+			{
+				IO.PutStr(c)
+				k = k + 1
+			}
+			IO.PutStr("\n")
+			i = i + 1
+		}
+
+		i = 7
+		while (i >= 1)
+		{
+			j = 1
+			while (j <= 40 - 2 * i)
+			{
+				IO.PutStr(" ")
+				j = j + 1
+			}
+			
+			k = 1
+			while (k <= 4 * i - 1)
+			{
+				IO.PutStr(c)
+				k = k + 1
+			}
+
+			IO.PutStr("\n")
+			i = i - 1
+		}
+
+		i = 1
+		while (i <= 39)
+		{
+			IO.PutStr(" ")
+			i = i + 1
+		}
+
+		IO.PutStr(c)
+		IO.PutStr("\n")
+
+		i = 1
+		while (i <= 5)
+		{
+			IO.PutStr("\n")
+			i = i + 1
+		}
+		return 0
+	}
+
+    def Main(): Void
+    {
+
+		// IO.PutStr("Hello, World!\n")
+
+		// var point = new MyPoint {
+		// 	x = 10,
+		// 	y = 20
+		// }
+		// point.Show()
+
+		// PrintHeart()
+
+		var rect = new Rectangle {
+			name = "Rectangle",
+			area = 40.0,
+			perimeter = 24.0,
+			length = 4.0,
+			width = 10.0
+		}
+
+		IO.PutStr(rect.name)
+		IO.PutStr("\n")
+		// rect.ComputeArea()
+
+		var area: IArea = rect
+		area.ComputeArea()
+		
+        // IO.PutInt(Math.Factorial(10))
+		// if (EvenOddNumber.IsEven(11))
+		// {
+		// 	IO.PrintText("even number")
+		// }
+		// else
+		// {
+		// 	IO.PrintText("odd number")
+		// }
+    }
+}

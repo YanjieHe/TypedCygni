@@ -1,0 +1,15 @@
+package App
+
+import Prelude
+import Math
+
+module Program
+{
+    def Main(): Void
+    {
+        var fact10 = Math.Factorial(10)
+
+        IO.PutStr("Factorial(10) = ")
+        IO.PutIntLn(fact10)
+    }
+}

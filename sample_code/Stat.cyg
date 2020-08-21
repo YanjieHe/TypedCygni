@@ -1,0 +1,13 @@
+package App.Stat
+
+module Stat
+{
+    def Average(a: Double, b: Double, c: Double): Double
+    {
+        var x = a
+        var y = b
+        var z = c
+        var average = (x + y + z) / 3.0
+        return average
+    }
+}

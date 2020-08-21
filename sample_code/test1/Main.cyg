@@ -1,0 +1,11 @@
+package App
+
+import Prelude
+
+module Program
+{
+    def Main(): Void
+    {
+        IO.PutStr("Hello World!")
+    }
+}

@@ -1,0 +1,74 @@
+{
+    "Expressions": {
+        "Binary": [
+            "ADD",
+            "SUBTRACT",
+            "MULTIPLY",
+            "DIVIDE",
+            "MODULO",
+            "GT",
+            "LT",
+            "GE",
+            "LE",
+            "EQ",
+            "NE",
+            "LOGICAL_AND",
+            "LOGICAL_OR"
+        ],
+        "Constant": [
+            "INT",
+            "LONG",
+            "FLOAT",
+            "DOUBLE",
+            "BOOLEAN",
+            "CHAR",
+            "STRING"
+        ],
+        "Unary": [
+            "PLUS",
+            "MINUS",
+            "LOGICAL_NOT"
+        ],
+        "Invocation": [
+            "INVOKE"
+        ],
+        "Identifier": [
+            "IDENTIFIER"
+        ],
+        "Conversion": [
+            "CONVERT"
+        ],
+        "Member": [
+            "MEMBER"
+        ],
+        "New": [
+            "NEW"
+        ]
+    },
+    "Statements": {
+        "IfThen": [
+            "IF_THEN"
+        ],
+        "IfElse": [
+            "IF_ELSE"
+        ],
+        "While": [
+            "WHILE"
+        ],
+        "Block": [
+            "BLOCK"
+        ],
+        "Return": [
+            "RETURN"
+        ],
+        "Break": [
+            "BREAK"
+        ],
+        "Assign": [
+            "ASSIGN"
+        ],
+        "VarDecl": [
+            "VAR_DECL"
+        ]
+    }
+}

@@ -1,0 +1,26 @@
+package Predef
+
+class String
+{
+    private var characters: Array[Char]
+
+    def At(index: Int): Char
+    {
+        return this.characters(index)
+    }
+
+    def Size(): Int
+    {
+        return this.characters.Size
+    }
+}
+
+module String
+{
+    def New(characters: Array[Char]): String
+    {
+        return new String {
+            characters = characters
+        }
+    }
+}

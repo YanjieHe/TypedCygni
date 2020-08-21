@@ -1,0 +1,10 @@
+package System.IO
+
+module IO
+{
+    @LibraryImport(libraryName="StandardLibraryDLL.dll", functionName="put_int")
+    def PutInt(i: Int): Void
+
+    @LibraryImport(libraryName="StandardLibraryDLL.dll", functionName="put_str")
+    def PutStr(s: String): Void
+}

@@ -1,0 +1,29 @@
+package Geometry
+
+import Std
+
+class Point
+{
+    var x: Int
+    var y: Int
+
+    def Move(dx: Int, dy: Int): Point
+    {
+        return new Point
+        {
+            x = x + dx,
+            y = y + dy
+        }
+    }
+
+    def Display(): Void
+    {
+        Out.PutStr("Point(")
+        Out.PutInt(x)
+        Out.PutStr(", ")
+        Out.PutInt(y)
+        Out.PutStrLn(")")
+
+        return void
+    }
+}

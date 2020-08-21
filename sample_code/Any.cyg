@@ -1,0 +1,24 @@
+package Predef
+
+class Any
+{
+    virtual def ToString(): String
+    {
+
+    }
+
+    virtual def GetHashCode(): Int
+    {
+        return 0
+    }
+
+    virtual def GetType(): Type
+    {
+
+    }
+
+    virtual def Equals(other: Any): Bool
+    {
+        
+    }
+}

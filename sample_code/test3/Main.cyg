@@ -1,0 +1,22 @@
+package App
+
+import Std
+import Geometry
+
+module Program
+{
+    def Main(): Void
+    {
+        var p1 = new Point
+        {
+            x = 10,
+            y = 20
+        }
+
+        p1.Display()
+
+        var p2 = p1.Move(5, 4)
+
+        p2.Display()
+    }
+}

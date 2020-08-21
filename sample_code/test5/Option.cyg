@@ -1,0 +1,24 @@
+package Std
+
+class Option[T]
+{
+    def IsEmpty(): Bool
+    {
+        return false
+    }
+}
+
+class Some[T] <: Option[T]
+{
+    var value: T
+
+    def IsEmpty(): Bool
+    {
+        return true
+    }
+}
+
+class None[T] <: Option[T]
+{
+
+}

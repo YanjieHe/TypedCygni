@@ -1,0 +1,267 @@
+class: App.Program
+
+constant pool:
+        #0: Geometry.Rectangle
+        #1: Geometry.IArea
+        #2: Geometry.Circle
+        #3: Unknown
+        #6: Predef.String.New
+        #7: Geometry.IArea.ComputeArea
+        #8: 10.000000
+        #9: 20.000000
+        #10: 5.000000
+
+
+
+        method: App.Program.Main
+        args_size=0, locals=1
+        code:
+                0: NEW 0
+                3: DUPLICATE
+                4: PUSH_STRING 4
+                7: PUSH_FUNCTION 6
+                10: INVOKE
+                11: POP_FIELD_OBJECT 0
+                14: DUPLICATE
+                15: PUSH_F64 8
+                18: POP_FIELD_F64 1
+                21: DUPLICATE
+                22: PUSH_F64 9
+                25: POP_FIELD_F64 2
+                28: POP_LOCAL_OBJECT 0
+                31: PUSH_LOCAL_OBJECT 0
+                34: PUSH_METHOD 7 0
+                39: INVOKE
+                40: NEW 2
+                43: DUPLICATE
+                44: PUSH_STRING 5
+                47: PUSH_FUNCTION 6
+                50: INVOKE
+                51: POP_FIELD_OBJECT 0
+                54: DUPLICATE
+                55: PUSH_F64 10
+                58: POP_FIELD_F64 1
+                61: POP_LOCAL_OBJECT 0
+                64: PUSH_LOCAL_OBJECT 0
+                67: PUSH_METHOD 7 0
+                72: INVOKE
+
+
+class: Math.Math
+
+constant pool:
+        #0: 0
+        #1: 1
+        #2: Math.Math.Factorial
+
+        static variable: Math.Math.PI
+
+
+        method: Math.Math.Factorial
+        args_size=1, locals=0
+        code:
+                0: PUSH_LOCAL_I32 0
+                3: PUSH_I32 0
+                6: EQ_I32
+                7: JUMP_IF_FALSE 17
+                10: PUSH_I32 1
+                13: RETURN_I32
+                14: JUMP 33
+                17: PUSH_LOCAL_I32 0
+                20: PUSH_LOCAL_I32 0
+                23: PUSH_I32 1
+                26: SUB_I32
+                27: PUSH_FUNCTION 2
+                30: INVOKE
+                31: MUL_I32
+                32: RETURN_I32
+
+        method: Math.Math.Square
+        args_size=1, locals=0
+        code:
+                0: PUSH_LOCAL_I32 0
+                3: PUSH_LOCAL_I32 0
+                6: MUL_I32
+                7: RETURN_I32
+
+
+class: Prelude.IO
+
+constant pool:
+
+
+
+        method: Prelude.IO.PutInt
+        args_size=1
+        library name: StandardLibraryDLL.dll
+        function name: Prelude.IO.PutInt
+
+        method: Prelude.IO.PutStr
+        args_size=1
+        library name: StandardLibraryDLL.dll
+        function name: Prelude.IO.PutStr
+
+        method: Prelude.IO.PutDouble
+        args_size=1
+        library name: StandardLibraryDLL.dll
+        function name: Prelude.IO.PutDouble
+
+
+class: Geometry.Shape
+        field: Geometry.Shape.name
+
+constant pool:
+        #0: Prelude.IO.PutStr
+        #2: Predef.String.New
+
+
+        method: Geometry.Shape.Display
+        args_size=1, locals=0
+        code:
+                0: PUSH_STRING 1
+                3: PUSH_FUNCTION 2
+                6: INVOKE
+                7: PUSH_FUNCTION 0
+                10: INVOKE
+                11: PUSH_LOCAL_OBJECT 0
+                14: PUSH_FIELD_OBJECT 0
+                17: PUSH_FUNCTION 0
+                20: INVOKE
+                21: PUSH_I32_0
+                22: RETURN_I32
+
+
+
+        super class: Geometry.Shape
+                virtual method: Geometry.Shape.Display
+class: Geometry.Rectangle
+        field: Geometry.Rectangle.name
+        field: Geometry.Rectangle.length
+        field: Geometry.Rectangle.width
+
+constant pool:
+        #0: Geometry.Shape.Display
+        #1: Predef.String.New
+        #2: Prelude.IO.PutDouble
+        #3: Prelude.IO.PutStr
+
+
+        method: Geometry.Rectangle.ComputeArea
+        args_size=1, locals=2
+        code:
+                0: PUSH_LOCAL_OBJECT 0
+                3: PUSH_METHOD 0 0
+                8: INVOKE
+                9: PUSH_LOCAL_OBJECT 0
+                12: PUSH_FIELD_F64 1
+                15: PUSH_LOCAL_OBJECT 0
+                18: PUSH_FIELD_F64 2
+                21: MUL_F64
+                22: POP_LOCAL_F64 1
+                25: PUSH_LOCAL_F64 1
+                28: PUSH_FUNCTION 2
+                31: INVOKE
+                32: PUSH_STRING 4
+                35: PUSH_FUNCTION 1
+                38: INVOKE
+                39: PUSH_FUNCTION 3
+                42: INVOKE
+                43: PUSH_LOCAL_F64 1
+                46: RETURN_F64
+
+
+
+        super class: Geometry.Shape
+                virtual method: Geometry.Shape.Display
+        super class: Geometry.IArea
+                virtual method: Geometry.Rectangle.ComputeArea
+        super class: Geometry.Rectangle
+                virtual method: Geometry.Rectangle.ComputeArea
+class: Geometry.Circle
+        field: Geometry.Circle.name
+        field: Geometry.Circle.radius
+
+constant pool:
+        #0: Geometry.Shape.Display
+        #1: Predef.String.New
+        #2: Math.Math.PI
+        #3: Prelude.IO.PutDouble
+        #4: Prelude.IO.PutStr
+
+
+        method: Geometry.Circle.ComputeArea
+        args_size=1, locals=2
+        code:
+                0: PUSH_LOCAL_OBJECT 0
+                3: PUSH_METHOD 0 0
+                8: INVOKE
+                9: PUSH_STATIC_F64 2 0
+                14: PUSH_LOCAL_OBJECT 0
+                17: PUSH_FIELD_F64 1
+                20: MUL_F64
+                21: PUSH_LOCAL_OBJECT 0
+                24: PUSH_FIELD_F64 1
+                27: MUL_F64
+                28: POP_LOCAL_F64 1
+                31: PUSH_LOCAL_F64 1
+                34: PUSH_FUNCTION 3
+                37: INVOKE
+                38: PUSH_STRING 5
+                41: PUSH_FUNCTION 1
+                44: INVOKE
+                45: PUSH_FUNCTION 4
+                48: INVOKE
+                49: PUSH_LOCAL_F64 1
+                52: RETURN_F64
+
+
+
+        super class: Geometry.Shape
+                virtual method: Geometry.Shape.Display
+        super class: Geometry.IArea
+                virtual method: Geometry.Circle.ComputeArea
+        super class: Geometry.Circle
+                virtual method: Geometry.Circle.ComputeArea
+class: Predef.String
+        field: Predef.String.characters
+
+constant pool:
+        #0: Predef.String
+
+
+        method: Predef.String.At
+        args_size=2, locals=0
+        code:
+                0: PUSH_LOCAL_OBJECT 1
+                3: PUSH_FIELD_OBJECT 0
+                6: PUSH_LOCAL_I32 0
+                9: PUSH_ARRAY_I32
+                10: RETURN_I32
+
+        method: Predef.String.Size
+        args_size=1, locals=0
+        code:
+                0: PUSH_LOCAL_OBJECT 0
+                3: PUSH_FIELD_OBJECT 0
+                6: ARRAY_LENGTH
+                7: RETURN_I32
+
+
+        method: Predef.String.New
+        args_size=1, locals=0
+        code:
+                0: NEW 0
+                3: DUPLICATE
+                4: PUSH_LOCAL_OBJECT 0
+                7: POP_FIELD_OBJECT 0
+                10: RETURN_OBJECT
+
+
+class: Geometry.IArea
+
+constant pool:
+
+
+        method: Geometry.IArea.ComputeArea
+        args_size=1, locals=0
+        code:

@@ -1,0 +1,18 @@
+package App
+
+import Std
+
+module Program
+{
+    def Main(): Void
+    {
+        var a: Option[Int] = new Some[Int] {
+            value = 10
+        }
+
+        PutBoolLn(a.IsEmpty())
+        
+        a = new None[Int] { }
+        PutBoolLn(a.IsEmpty())
+    }
+}

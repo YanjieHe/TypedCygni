@@ -1,0 +1,82 @@
+package Geometry
+
+import System.IO
+import App.Math
+
+class Point
+{
+    var x: Int
+    var y: Int
+
+    def Move(dx: Int, dy: Int): Int
+    {
+        this.x = this.x + dx
+        this.y = this.y + dy
+        return 0
+    }
+
+    def Show(): Int
+    {
+        IO.PutStr("(")
+        IO.PutInt(this.x)
+        IO.PutStr(", ")
+        IO.PutInt(this.y)
+        IO.PutStr(")\n")
+        return 0
+    }
+}
+
+module Point
+{
+    def Create(x: Int, y: Int): Point
+    {
+        var point: Point = new Point {
+            x = x,
+            y = y
+        }
+        point.x = x
+        point.y = y
+        return point
+    }
+}
+
+interface IArea
+{
+    def ComputeArea(): Void
+}
+
+class Shape
+{
+    var name: String
+    var area: Double
+    var perimeter: Double
+
+    def Display(): Void
+    {
+        IO.PutStr("Name: ")
+        IO.PutStr(name)
+    }
+}
+
+class Rectangle <: Shape, IArea
+{
+    var length: Double
+    var width: Double
+
+    def ComputeArea(): Double
+    {
+        IO.PutStr(name)
+        return length * width
+    }
+}
+
+class Circle <: Shape
+{
+    var radius: Double
+
+    def ComputeArea(): Double
+    {
+        Display()
+        return Math.PI * radius * radius
+    }
+}

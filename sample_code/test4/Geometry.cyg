@@ -1,0 +1,48 @@
+package Geometry
+
+import Std
+import Math
+
+interface IArea
+{
+    def ComputeArea(): Void
+}
+
+class Shape
+{
+    var name: String
+
+    def Display(): Void
+    {
+        Out.PutStr("Name: ")
+        Out.PutStrLn(name)
+        return void
+    }
+}
+
+class Rectangle <: Shape, IArea
+{
+    var length: Double
+    var width: Double
+
+    def ComputeArea(): Double
+    {
+        Display()
+        var area = length * width
+        Out.PutDoubleLn(area)
+        return area
+    }
+}
+
+class Circle <: Shape, IArea
+{
+    var radius: Double
+
+    def ComputeArea(): Double
+    {
+        Display()
+        var area = Math.PI * radius * radius
+        Out.PutDoubleLn(area)
+        return area
+    }
+}

@@ -1,0 +1,34 @@
+package Std
+
+module Out
+{
+    @LibraryImport(libraryName="StandardLibraryDLL.dll", functionName="put_int")
+    def PutInt(i: Int): Void
+
+    @LibraryImport(libraryName="StandardLibraryDLL.dll", functionName="put_str")
+    def PutStr(s: String): Void
+
+    @LibraryImport(libraryName="StandardLibraryDLL.dll", functionName="put_double")
+    def PutDouble(d: Double): Void
+
+    def PutIntLn(i: Int): Void
+    {
+        PutInt(i)
+        PutStr("\n")
+        return void
+    }
+
+    def PutStrLn(s: String): Void
+    {
+        PutStr(s)
+        PutStr("\n")
+        return void
+    }
+
+    def PutDoubleLn(d: Double): Void
+    {
+        PutDouble(d)
+        PutStr("\n")
+        return void
+    }
+}

@@ -1,0 +1,23 @@
+package App.Math
+
+module Math
+{
+    def Factorial(n: Int): Int
+    {
+        if (n == 0)
+        {
+            return 1
+        }
+        else
+        {
+            return n * Factorial(n - 1)
+        }
+    }
+
+    def Square(x: Int): Int
+    {
+        return x * x
+    }
+
+    var PI: Double = 3.1415926535
+}

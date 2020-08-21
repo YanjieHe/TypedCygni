@@ -1,0 +1,76 @@
+{
+    "classes": [
+        {
+            "fields": [],
+            "methods": [
+                {
+                    "accessModifier": "Public",
+                    "body": {
+                        "expressions": [
+                            {
+                                "id": 5,
+                                "location": {
+                                    "endCol": 6,
+                                    "endLine": 5,
+                                    "startCol": 15,
+                                    "startLine": 4
+                                },
+                                "nodeType": "Return",
+                                "value": {
+                                    "id": 4,
+                                    "left": {
+                                        "id": 2,
+                                        "name": "x",
+                                        "nodeType": "Parameter"
+                                    },
+                                    "location": {
+                                        "endCol": 6,
+                                        "endLine": 5,
+                                        "startCol": 17,
+                                        "startLine": 4
+                                    },
+                                    "nodeType": "Add",
+                                    "right": {
+                                        "id": 3,
+                                        "name": "y",
+                                        "nodeType": "Parameter"
+                                    }
+                                }
+                            }
+                        ],
+                        "id": 6,
+                        "location": {
+                            "endCol": 2,
+                            "endLine": 6,
+                            "startCol": 6,
+                            "startLine": 3
+                        },
+                        "nodeType": "Block"
+                    },
+                    "isStatic": true,
+                    "location": {
+                        "endCol": 2,
+                        "endLine": 6,
+                        "startCol": 8,
+                        "startLine": 2
+                    },
+                    "name": "Add",
+                    "parameters": [
+                        {
+                            "id": 0,
+                            "name": "x",
+                            "nodeType": "Parameter"
+                        },
+                        {
+                            "id": 1,
+                            "name": "y",
+                            "nodeType": "Parameter"
+                        }
+                    ]
+                }
+            ],
+            "name": "App",
+            "nodeType": "module"
+        }
+    ]
+}

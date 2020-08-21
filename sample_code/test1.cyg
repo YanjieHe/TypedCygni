@@ -1,0 +1,42 @@
+module App
+{
+    def Add(x: Int, y: Int): Int
+    {
+        return x + y
+    }
+
+    @Extern("libtest", "print")
+    private def Print(text: String): Void
+}
+
+class Person
+{
+    private var name
+
+    property Name: String
+    {
+        get
+        {
+            return name
+        }
+        protected set (newName: String)
+        {
+            name = newName
+        }
+    }
+}
+
+class Person
+{
+    property Name: String
+    {
+        get
+        private set
+    }
+}
+
+def Do(): Void
+{
+    IO.PutStrLn("Do something")
+    return Void()
+}
