@@ -1,0 +1,11 @@
+{
+    "Expression Type": "ExpressionType::ADD",
+    "Left": {
+        "Expression Type": "ExpressionType::INT",
+        "Value": "1"
+    },
+    "Right": {
+        "Expression Type": "ExpressionType::INT",
+        "Value": "2"
+    }
+}

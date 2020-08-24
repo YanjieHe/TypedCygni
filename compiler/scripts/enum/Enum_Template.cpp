@@ -138,9 +138,10 @@ enum TypeCode {
   DOUBLE,
   CHAR,
   STRING,
-  CLASS,
   FUNCTION,
+  METHOD,
   ARRAY,
+  OBJECT
 };
 
 enum OpCode {

@@ -2,11 +2,13 @@
 #include <cstdint>
 #include <list>
 #include <memory>
+#include <nlohmann/json.hpp>
 #include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
+using nlohmann::json;
 using std::optional;
 using std::shared_ptr;
 using std::static_pointer_cast;
@@ -41,7 +43,7 @@ public:
   Position pos;
   AccessModifier accessModifier;
   string name;
-  ExpPtr initializer;
+  Expression *initializer;
   int fieldIndex;
   weak_ptr<ClassInfo> classInfo;
 
@@ -98,12 +100,6 @@ enum class ExpressionType {
   NEW = 27
 };
 
-class Statement;
-class Expression;
-
-using ExpPtr = shared_ptr<Expression>;
-using StatementPtr = shared_ptr<Statement>;
-
 class Statement {
 public:
   virtual Position Pos() const = 0;
@@ -122,8 +118,8 @@ class BinaryExpression : public Expression {
 public:
   Position pos;
   ExpressionType nodeType;
-  ExpPtr left;
-  ExpPtr right;
+  Expression *left;
+  Expression *right;
 };
 
 class ConstantExpression : public Expression {
@@ -137,14 +133,14 @@ class UnaryExpression : public Expression {
 public:
   Position pos;
   ExpressionType nodeType;
-  ExpPtr operand;
+  Expression *operand;
 };
 
 class InvocationExpression : public Expression {
 public:
   Position pos;
-  ExpPtr function;
-  vector<ExpPtr> args;
+  Expression *function;
+  vector<Expression *> args;
 };
 
 class IdentifierExpression : public Expression {
@@ -156,41 +152,42 @@ public:
 class ConversionExpression : public Expression {
 public:
   Position pos;
-  ExpPtr expression;
+  Expression *expression;
+  TypePtr type;
 };
 
 class IfThenStatement : public Statement {
 public:
   Position pos;
-  ExpPtr condition;
-  shared_ptr<BlockStatement> ifTrue;
+  Expression *condition;
+  BlockStatement *ifTrue;
 };
 
 class IfElseStatement : public Statement {
 public:
   Position pos;
-  ExpPtr condition;
-  shared_ptr<BlockStatement> ifTrue;
-  shared_ptr<BlockStatement> ifFalse;
+  Expression *condition;
+  BlockStatement *ifTrue;
+  BlockStatement *ifFalse;
 };
 
 class WhileStatement : public Statement {
 public:
   Position pos;
-  ExpPtr condition;
-  shared_ptr<BlockStatement> body;
+  Expression *condition;
+  BlockStatement *body;
 };
 
 class BlockStatement : public Statement {
 public:
   Position pos;
-  vector<StatementPtr> statements;
+  vector<Statement *> statements;
 };
 
 class ReturnStatement : public Statement {
 public:
   Position pos;
-  ExpPtr value;
+  Expression *value;
 };
 
 class BreakStatement : public Statement {
@@ -202,8 +199,8 @@ class AssignStatement : public Statement {
 public:
   Position pos;
   AssignmentKind kind;
-  ExpPtr left;
-  ExpPtr value;
+  Expression *left;
+  Expression *value;
 };
 
 class VarDeclStatement : public Statement {
@@ -211,27 +208,28 @@ public:
   Position pos;
   string identifier;
   optional<TypePtr> type;
-  optional<ExpPtr> value;
+  optional<Expression *> value;
 };
 
 class MemberExpression : public Expression {
 public:
   Position pos;
-  ExpPtr object;
-  shared_ptr<MemberDeclaration> declaration;
+  Expression *object;
+  string memberName;
 };
 
 class NewExpression : public Expression {
 public:
   Position pos;
-  shared_ptr<MethodMember> constructor;
-  vector<ExpPtr> args;
+  string className;
+  string constructorName;
+  vector<Expression *> args;
 };
 
-class NewArrayExpression : public Expression {
-public:
-  TypePtr type;
-};
+// class NewArrayExpression : public Expression {
+// public:
+//   TypePtr type;
+// };
 
 class ClassInfo {
 public:
@@ -261,7 +259,7 @@ public:
   string packageName;
   string name;
   vector<Parameter> parameters;
-  shared_ptr<BlockStatement> block;
+  BlockStatement *block;
   vector<shared_ptr<VarDeclStatement>> localVariables;
 };
 

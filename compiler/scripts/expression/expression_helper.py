@@ -71,14 +71,14 @@ def generic_visitor(json_obj):
           typename... ArgTypes>
     class Visitor {{
     public:
-    virtual ExpReturnType VisitExpression(ExpPtr node, ArgTypes... args) {{
+    virtual ExpReturnType VisitExpression(Expression* node, ArgTypes... args) {{
         switch (node->NodeType()) {{
             {0}
         default:
         throw Error(node->Pos(), "unsupported node type for visitor");
         }}
     }}
-    virtual StatementReturnType VisitStatement(shared_ptr<Statement> statement,
+    virtual StatementReturnType VisitStatement(Statement* statement,
                                                 ArgTypes... args) {{
         switch (statement->GetStatementType()) {{
             {1}
@@ -88,6 +88,8 @@ def generic_visitor(json_obj):
         }}
     }}
     {2}
+    virtual StatementReturnType VisitExpStatement(Expression *node,
+                                                ArgTypes... args) = 0;
     }};"""
     exp_lines = []
     stmt_lines = []
@@ -95,12 +97,12 @@ def generic_visitor(json_obj):
     for exp_name in json_obj["Expressions"]:
         for enum_name in json_obj["Expressions"][exp_name]:
             exp_lines.append(
-                "case ExpressionType::{0}: {{ return Visit{1}(static_pointer_cast<{2}>(node), args...); }}"
+                "case ExpressionType::{0}: {{ return Visit{1}(dynamic_cast<{2}*>(node), args...); }}"
                 .format(
                     enum_name, exp_name, exp_name + "Expression"
                 ))
         func_lines.append(
-            "virtual ExpReturnType Visit{0}(shared_ptr<{1}> node, ArgTypes... args) = 0;"
+            "virtual ExpReturnType Visit{0}({1}* node, ArgTypes... args) = 0;"
             .format(
                 exp_name, exp_name + "Expression"
             )
@@ -108,12 +110,12 @@ def generic_visitor(json_obj):
     for stmt_name in json_obj["Statements"]:
         for enum_name in json_obj["Statements"][stmt_name]:
             stmt_lines.append(
-                "case StatementType::{0}: {{ return Visit{1}(static_pointer_cast<{2}>(node), args...); }}"
+                "case StatementType::{0}: {{ return Visit{1}(dynamic_cast<{2}*>(node), args...); }}"
                 .format(
                     enum_name, stmt_name, stmt_name + "Statement"
                 ))
         func_lines.append(
-            "virtual StatementReturnType Visit{0}(shared_ptr<{1}> node, ArgTypes... args) = 0;"
+            "virtual StatementReturnType Visit{0}({1}* node, ArgTypes... args) = 0;"
             .format(
                 stmt_name, stmt_name + "Statement"
             )
@@ -124,6 +126,34 @@ def generic_visitor(json_obj):
         "\n".join(func_lines)
     )
 
+
+def generate_visitor(json_obj, visitor_name, exp_ret_type, stmt_ret_type, args_type, arg_names):
+    visitor_code = """
+    template <>
+    class {0}<{1}, {2}{3}> {{
+    public:
+    {4}
+    }};
+    """
+    func_lines = []
+    for exp_name in json_obj["Expressions"]:
+        func_lines.append(
+            "{0} Visit{1}({2}* node{3}) override {{}}"
+            .format(
+                exp_ret_type, exp_name, exp_name + "Expression", arg_names
+            )
+        )
+    for stmt_name in json_obj["Statements"]:
+        func_lines.append(
+            "{0} Visit{1}({2}* node{3}) override {{}}"
+            .format(
+                stmt_ret_type, stmt_name, stmt_name + "Statement", arg_names
+            )
+        )
+    return visitor_code.format(
+        visitor_name, exp_ret_type, stmt_ret_type, args_type,
+        "\n".join(func_lines)
+    )
 
 
 def main():
@@ -149,12 +179,6 @@ using std::string;
 using std::unordered_map;
 using std::vector;
 using std::weak_ptr;
-
-class Statement;
-class Expression;
-
-using ExpPtr = shared_ptr<Expression>;
-using StatementPtr = shared_ptr<Statement>;
 
 class Statement {
 public:
@@ -186,6 +210,8 @@ for key in json_obj["Statements"]:
                             "StatementType::" + json_obj["Statements"][key][0]))
 
 print(generic_visitor(json_obj))
+print(generate_visitor(json_obj, "TypeChecker", "TypePtr", "void", ", ScopePtr", ", ScopePtr scope"))
+print(generate_visitor(json_obj, "AstJsonSerializer", "json", "json", "", ""))
 print("\n#endif // EXPRESSION_HPP")
 
 main()

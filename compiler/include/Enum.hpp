@@ -1,150 +1,141 @@
 #ifndef ENUM_HPP
 #define ENUM_HPP
-
-#include <iostream>
 #include <string>
 
 enum class Tag {
-  Identifier,
-  Integer,
-  Float,
-  Character,
-  String,
-
-  Add,
-  Subtract,
-  Multiply,
-  Divide,
-  Modulo,
-
-  Equal,
-  NotEqual,
-  GreaterThan,
-  GreaterThanOrEqual,
-  LessThan,
-  LessThanOrEqual,
-
-  And,
-  Or,
-  Not,
-
-  Var,
-  Def,
-  Assign,
-
-  LeftBrace,
-  RightBrace,
-  LeftBracket,
-  RightBracket,
-  LeftParenthesis,
-  RightParenthesis,
-
-  Dot,
-  Comma,
-  Semicolon,
-  Colon,
-  RightArrow,
-  At,
-
-  True,
-  False,
-  Void,
-
-  If,
-  Else,
-  While,
-
-  For,
-  Break,
-  Return,
-
-  Import,
-  Uses,
-  Require,
-  Rename,
-  GoesTo,
-
-  LowerBound,
-  UpperBound,
-
-  Class,
-  New,
-  Private,
-  Protected,
-  Module,
-  Package,
-  Extends,
-  Interface,
-  To,
-  Eof
+  Identifier = 0,
+  Integer = 1,
+  Float = 2,
+  Character = 3,
+  String = 4,
+  Add = 5,
+  Subtract = 6,
+  Multiply = 7,
+  Divide = 8,
+  Modulo = 9,
+  Equal = 10,
+  NotEqual = 11,
+  GreaterThan = 12,
+  GreaterThanOrEqual = 13,
+  LessThan = 14,
+  LessThanOrEqual = 15,
+  And = 16,
+  Or = 17,
+  Not = 18,
+  Var = 19,
+  Def = 20,
+  Assign = 21,
+  LeftBrace = 22,
+  RightBrace = 23,
+  LeftBracket = 24,
+  RightBracket = 25,
+  LeftParenthesis = 26,
+  RightParenthesis = 27,
+  Dot = 28,
+  Comma = 29,
+  Semicolon = 30,
+  Colon = 31,
+  RightArrow = 32,
+  At = 33,
+  True = 34,
+  False = 35,
+  Void = 36,
+  If = 37,
+  Else = 38,
+  While = 39,
+  For = 40,
+  Break = 41,
+  Return = 42,
+  Import = 43,
+  Uses = 44,
+  Require = 45,
+  Rename = 46,
+  GoesTo = 47,
+  LowerBound = 48,
+  UpperBound = 49,
+  Class = 50,
+  New = 51,
+  Private = 52,
+  Protected = 53,
+  Module = 54,
+  Package = 55,
+  Extends = 56,
+  Interface = 57,
+  To = 58,
+  Eof = 59
 };
 
 enum class ExpressionType {
-  /* constants */
-  INT,
-  LONG,
-  FLOAT,
-  DOUBLE,
-  BOOLEAN,
-  CHAR,
-  STRING,
-  /* binary operators */
-  ADD,
-  SUBTRACT,
-  MULTIPLY,
-  DIVIDE,
-  MODULO,
-  GT,
-  LT,
-  GE,
-  LE,
-  EQ,
-  NE,
-  LOGICAL_AND,
-  LOGICAL_OR,
-  /* unary operators */
-  LOGICAL_NOT,
-  PLUS,
-  MINUS,
-  /* invocations */
-  INVOKE,
-  /* other */
-  IDENTIFIER,
-  CONVERT,
-  MEMBER,
-  NEW
+  INT = 0,
+  LONG = 1,
+  FLOAT = 2,
+  DOUBLE = 3,
+  BOOLEAN = 4,
+  CHAR = 5,
+  STRING = 6,
+  ADD = 7,
+  SUBTRACT = 8,
+  MULTIPLY = 9,
+  DIVIDE = 10,
+  MODULO = 11,
+  GT = 12,
+  LT = 13,
+  GE = 14,
+  LE = 15,
+  EQ = 16,
+  NE = 17,
+  LOGICAL_AND = 18,
+  LOGICAL_OR = 19,
+  LOGICAL_NOT = 20,
+  PLUS = 21,
+  MINUS = 22,
+  INVOKE = 23,
+  IDENTIFIER = 24,
+  CONVERT = 25,
+  MEMBER = 26,
+  NEW = 27
 };
 
 enum class StatementType {
-  EXPRESSION,
-  IF_THEN,
-  IF_ELSE,
-  WHILE,
-  BLOCK,
-  RETURN,
-  BREAK,
-  ASSIGN,
-  VARIABLE_DECLARATION
+  EXPRESSION = 0,
+  IF_THEN = 1,
+  IF_ELSE = 2,
+  WHILE = 3,
+  BLOCK = 4,
+  RETURN = 5,
+  BREAK = 6,
+  ASSIGN = 7,
+  VAR_DECL = 8
 };
 
-enum class AssignmentKind { IDENTIFIER_ASSIGN, CALL_ASSIGN, MEMBER_ASSIGN };
+enum class AssignmentKind {
+  IDENTIFIER_ASSIGN = 0,
+  CALL_ASSIGN = 1,
+  MEMBER_ASSIGN = 2
+};
 
-enum class MemberKind { FIELD, METHOD, STATIC_VAR, STATIC_FUNC };
+enum class MemberKind {
+  FIELD = 0,
+  METHOD = 1,
+  STATIC_VAR = 2,
+  STATIC_FUNC = 3
+};
 
-enum class AccessModifier { PUBLIC, PRIVATE, PROTECTED };
+enum class AccessModifier { PUBLIC = 0, PRIVATE = 1, PROTECTED = 2 };
 
 enum class TypeCode {
-  VOID,
-  BOOLEAN,
-  INT,
-  LONG,
-  FLOAT,
-  DOUBLE,
-  CHAR,
-  STRING,
-  CLASS,
-  FUNCTION,
-  ARRAY,
+  VOID = 0,
+  BOOLEAN = 1,
+  INT = 2,
+  LONG = 3,
+  FLOAT = 4,
+  DOUBLE = 5,
+  CHAR = 6,
+  STRING = 7,
+  FUNCTION = 8,
+  METHOD = 9,
+  ARRAY = 10,
+  OBJECT = 11
 };
 
 enum class OpCode {
@@ -303,764 +294,729 @@ enum class OpCode {
 };
 
 enum class TypeTag {
-  TYPE_I32,
-  TYPE_I64,
-  TYPE_F32,
-  TYPE_F64,
-  TYPE_STRING,
-  TYPE_OBJECT
+  TYPE_I32 = 0,
+  TYPE_I64 = 1,
+  TYPE_F32 = 2,
+  TYPE_F64 = 3,
+  TYPE_STRING = 4,
+  TYPE_OBJECT = 5
 };
 
 enum class ConstantKind {
-  CONSTANT_FLAG_I32,
-  CONSTANT_FLAG_I64,
-  CONSTANT_FLAG_F32,
-  CONSTANT_FLAG_F64,
-  CONSTANT_FLAG_BOOLEAN,
-  CONSTANT_FLAG_CHAR,
-  CONSTANT_FLAG_STRING,
-  CONSTANT_FLAG_METHOD,
-  CONSTANT_FLAG_CLASS,
-  CONSTANT_FLAG_STATIC_VAR,
-  CONSTANT_FLAG_STATIC_FUNCTION,
+  CONSTANT_FLAG_I32 = 0,
+  CONSTANT_FLAG_I64 = 1,
+  CONSTANT_FLAG_F32 = 2,
+  CONSTANT_FLAG_F64 = 3,
+  CONSTANT_FLAG_BOOLEAN = 4,
+  CONSTANT_FLAG_CHAR = 5,
+  CONSTANT_FLAG_STRING = 6,
+  CONSTANT_FLAG_METHOD = 7,
+  CONSTANT_FLAG_CLASS = 8,
+  CONSTANT_FLAG_STATIC_VAR = 9,
+  CONSTANT_FLAG_STATIC_FUNCTION = 10
 };
 
 enum class MethodFlag {
   NativeFunction = 0,
-  InstanceMethod,
-  ModuleFunction,
+  InstanceMethod = 1,
+  ModuleFunction = 2
 };
 
 template <typename TEnum> class Enum {
 public:
-  static std::u32string ToString(TEnum) {
-    std::cerr << __FUNCTION__ << std::endl;
-    exit(1);
+  static std::string ToString(TEnum) {
+    return "ENUMERATION VALUE OUT OF BOUND";
   }
 };
 
 template <> class Enum<Tag> {
 public:
-  static std::u32string ToString(Tag tag) {
-    switch (tag) {
+  static std::string ToString(Tag value) {
+    switch (value) {
     case Tag::Identifier:
-      return U"Identifier";
+      return "Tag::Identifier";
     case Tag::Integer:
-      return U"Integer";
+      return "Tag::Integer";
     case Tag::Float:
-      return U"Float";
+      return "Tag::Float";
     case Tag::Character:
-      return U"Character";
+      return "Tag::Character";
     case Tag::String:
-      return U"String";
+      return "Tag::String";
     case Tag::Add:
-      return U"Add";
+      return "Tag::Add";
     case Tag::Subtract:
-      return U"Subtract";
+      return "Tag::Subtract";
     case Tag::Multiply:
-      return U"Multiply";
+      return "Tag::Multiply";
     case Tag::Divide:
-      return U"Divide";
+      return "Tag::Divide";
     case Tag::Modulo:
-      return U"Modulo";
+      return "Tag::Modulo";
     case Tag::Equal:
-      return U"Equal";
+      return "Tag::Equal";
     case Tag::NotEqual:
-      return U"NotEqual";
+      return "Tag::NotEqual";
     case Tag::GreaterThan:
-      return U"GreaterThan";
+      return "Tag::GreaterThan";
     case Tag::GreaterThanOrEqual:
-      return U"GreaterThanOrEqual";
+      return "Tag::GreaterThanOrEqual";
     case Tag::LessThan:
-      return U"LessThan";
+      return "Tag::LessThan";
     case Tag::LessThanOrEqual:
-      return U"LessThanOrEqual";
+      return "Tag::LessThanOrEqual";
     case Tag::And:
-      return U"And";
+      return "Tag::And";
     case Tag::Or:
-      return U"Or";
+      return "Tag::Or";
     case Tag::Not:
-      return U"Not";
+      return "Tag::Not";
     case Tag::Var:
-      return U"Var";
+      return "Tag::Var";
     case Tag::Def:
-      return U"Def";
+      return "Tag::Def";
     case Tag::Assign:
-      return U"Assign";
+      return "Tag::Assign";
     case Tag::LeftBrace:
-      return U"LeftBrace";
+      return "Tag::LeftBrace";
     case Tag::RightBrace:
-      return U"RightBrace";
+      return "Tag::RightBrace";
     case Tag::LeftBracket:
-      return U"LeftBracket";
+      return "Tag::LeftBracket";
     case Tag::RightBracket:
-      return U"RightBracket";
+      return "Tag::RightBracket";
     case Tag::LeftParenthesis:
-      return U"LeftParenthesis";
+      return "Tag::LeftParenthesis";
     case Tag::RightParenthesis:
-      return U"RightParenthesis";
+      return "Tag::RightParenthesis";
     case Tag::Dot:
-      return U"Dot";
+      return "Tag::Dot";
     case Tag::Comma:
-      return U"Comma";
+      return "Tag::Comma";
     case Tag::Semicolon:
-      return U"Semicolon";
+      return "Tag::Semicolon";
     case Tag::Colon:
-      return U"Colon";
+      return "Tag::Colon";
     case Tag::RightArrow:
-      return U"RightArrow";
+      return "Tag::RightArrow";
     case Tag::At:
-      return U"At";
+      return "Tag::At";
     case Tag::True:
-      return U"True";
+      return "Tag::True";
     case Tag::False:
-      return U"False";
+      return "Tag::False";
     case Tag::Void:
-      return U"Void";
+      return "Tag::Void";
     case Tag::If:
-      return U"If";
+      return "Tag::If";
     case Tag::Else:
-      return U"Else";
+      return "Tag::Else";
     case Tag::While:
-      return U"While";
+      return "Tag::While";
     case Tag::For:
-      return U"For";
+      return "Tag::For";
     case Tag::Break:
-      return U"Break";
+      return "Tag::Break";
     case Tag::Return:
-      return U"Return";
+      return "Tag::Return";
     case Tag::Import:
-      return U"Import";
+      return "Tag::Import";
     case Tag::Uses:
-      return U"Uses";
+      return "Tag::Uses";
     case Tag::Require:
-      return U"Require";
+      return "Tag::Require";
     case Tag::Rename:
-      return U"Rename";
+      return "Tag::Rename";
     case Tag::GoesTo:
-      return U"GoesTo";
+      return "Tag::GoesTo";
     case Tag::LowerBound:
-      return U"LowerBound";
+      return "Tag::LowerBound";
     case Tag::UpperBound:
-      return U"UpperBound";
+      return "Tag::UpperBound";
     case Tag::Class:
-      return U"Class";
+      return "Tag::Class";
     case Tag::New:
-      return U"New";
+      return "Tag::New";
     case Tag::Private:
-      return U"Private";
+      return "Tag::Private";
     case Tag::Protected:
-      return U"Protected";
+      return "Tag::Protected";
     case Tag::Module:
-      return U"Module";
+      return "Tag::Module";
     case Tag::Package:
-      return U"Package";
+      return "Tag::Package";
     case Tag::Extends:
-      return U"Extends";
+      return "Tag::Extends";
     case Tag::Interface:
-      return U"Interface";
+      return "Tag::Interface";
     case Tag::To:
-      return U"To";
+      return "Tag::To";
     case Tag::Eof:
-      return U"Eof";
+      return "Tag::Eof";
     default:
-      std::cerr << __FUNCTION__ << std::endl;
-      exit(1);
+      return "ENUMERATION VALUE OUT OF BOUND";
     }
   }
 };
 
 template <> class Enum<ExpressionType> {
 public:
-  static std::u32string ToString(ExpressionType kind) {
-    switch (kind) {
-    case ExpressionType::Add:
-      return U"Add";
-    case ExpressionType::Subtract:
-      return U"Subtract";
-    case ExpressionType::Multiply:
-      return U"Multiply";
-    case ExpressionType::Divide:
-      return U"Divide";
-    case ExpressionType::Modulo:
-      return U"Modulo";
-    case ExpressionType::GreaterThan:
-      return U"GreaterThan";
-    case ExpressionType::LessThan:
-      return U"LessThan";
-    case ExpressionType::GreaterThanOrEqual:
-      return U"GreaterThanOrEqual";
-    case ExpressionType::LessThanOrEqual:
-      return U"LessThanOrEqual";
-    case ExpressionType::Equal:
-      return U"Equal";
-    case ExpressionType::NotEqual:
-      return U"NotEqual";
-    case ExpressionType::And:
-      return U"And";
-    case ExpressionType::Or:
-      return U"Or";
-    case ExpressionType::Not:
-      return U"Not";
-    case ExpressionType::UnaryPlus:
-      return U"UnaryPlus";
-    case ExpressionType::UnaryMinus:
-      return U"UnaryMinus";
-    case ExpressionType::Invoke:
-      return U"Invoke";
-    case ExpressionType::Conditional:
-      return U"Conditional";
-    case ExpressionType::Default:
-      return U"Default";
-    case ExpressionType::Constant:
-      return U"Constant";
-    case ExpressionType::Block:
-      return U"Block";
-    case ExpressionType::Name:
-      return U"Name";
-    case ExpressionType::Return:
-      return U"Return";
-    case ExpressionType::Var:
-      return U"Var";
-    case ExpressionType::Def:
-      return U"Def";
-    case ExpressionType::Assign:
-      return U"Assign";
-    case ExpressionType::MethodCall:
-      return U"MethodCall";
-    case ExpressionType::MemberAccess:
-      return U"MemberAccess";
-    case ExpressionType::New:
-      return U"New";
-    case ExpressionType::Parameter:
-      return U"Parameter";
-    case ExpressionType::Loop:
-      return U"Loop";
-    case ExpressionType::Goto:
-      return U"Goto";
-    case ExpressionType::VariableDefinition:
-      return U"VariableDefinition";
-    case ExpressionType::While:
-      return U"While";
-    case ExpressionType::Break:
-      return U"Break";
-    case ExpressionType::Convert:
-      return U"Convert";
-    case ExpressionType::ArrayLength:
-      return U"ArrayLength";
-    // case ExpressionType::UpCast:
-    // 	return U"UpCast";
-    case ExpressionType::DownCast:
-      return U"DownCast";
-
+  static std::string ToString(ExpressionType value) {
+    switch (value) {
+    case ExpressionType::INT:
+      return "ExpressionType::INT";
+    case ExpressionType::LONG:
+      return "ExpressionType::LONG";
+    case ExpressionType::FLOAT:
+      return "ExpressionType::FLOAT";
+    case ExpressionType::DOUBLE:
+      return "ExpressionType::DOUBLE";
+    case ExpressionType::BOOLEAN:
+      return "ExpressionType::BOOLEAN";
+    case ExpressionType::CHAR:
+      return "ExpressionType::CHAR";
+    case ExpressionType::STRING:
+      return "ExpressionType::STRING";
+    case ExpressionType::ADD:
+      return "ExpressionType::ADD";
+    case ExpressionType::SUBTRACT:
+      return "ExpressionType::SUBTRACT";
+    case ExpressionType::MULTIPLY:
+      return "ExpressionType::MULTIPLY";
+    case ExpressionType::DIVIDE:
+      return "ExpressionType::DIVIDE";
+    case ExpressionType::MODULO:
+      return "ExpressionType::MODULO";
+    case ExpressionType::GT:
+      return "ExpressionType::GT";
+    case ExpressionType::LT:
+      return "ExpressionType::LT";
+    case ExpressionType::GE:
+      return "ExpressionType::GE";
+    case ExpressionType::LE:
+      return "ExpressionType::LE";
+    case ExpressionType::EQ:
+      return "ExpressionType::EQ";
+    case ExpressionType::NE:
+      return "ExpressionType::NE";
+    case ExpressionType::LOGICAL_AND:
+      return "ExpressionType::LOGICAL_AND";
+    case ExpressionType::LOGICAL_OR:
+      return "ExpressionType::LOGICAL_OR";
+    case ExpressionType::LOGICAL_NOT:
+      return "ExpressionType::LOGICAL_NOT";
+    case ExpressionType::PLUS:
+      return "ExpressionType::PLUS";
+    case ExpressionType::MINUS:
+      return "ExpressionType::MINUS";
+    case ExpressionType::INVOKE:
+      return "ExpressionType::INVOKE";
+    case ExpressionType::IDENTIFIER:
+      return "ExpressionType::IDENTIFIER";
+    case ExpressionType::CONVERT:
+      return "ExpressionType::CONVERT";
+    case ExpressionType::MEMBER:
+      return "ExpressionType::MEMBER";
+    case ExpressionType::NEW:
+      return "ExpressionType::NEW";
     default:
-      std::cerr << __FUNCTION__ << std::endl;
-      exit(1);
+      return "ENUMERATION VALUE OUT OF BOUND";
     }
   }
 };
+
+template <> class Enum<StatementType> {
+public:
+  static std::string ToString(StatementType value) {
+    switch (value) {
+    case StatementType::EXPRESSION:
+      return "StatementType::EXPRESSION";
+    case StatementType::IF_THEN:
+      return "StatementType::IF_THEN";
+    case StatementType::IF_ELSE:
+      return "StatementType::IF_ELSE";
+    case StatementType::WHILE:
+      return "StatementType::WHILE";
+    case StatementType::BLOCK:
+      return "StatementType::BLOCK";
+    case StatementType::RETURN:
+      return "StatementType::RETURN";
+    case StatementType::BREAK:
+      return "StatementType::BREAK";
+    case StatementType::ASSIGN:
+      return "StatementType::ASSIGN";
+    case StatementType::VAR_DECL:
+      return "StatementType::VAR_DECL";
+    default:
+      return "ENUMERATION VALUE OUT OF BOUND";
+    }
+  }
+};
+
+template <> class Enum<AssignmentKind> {
+public:
+  static std::string ToString(AssignmentKind value) {
+    switch (value) {
+    case AssignmentKind::IDENTIFIER_ASSIGN:
+      return "AssignmentKind::IDENTIFIER_ASSIGN";
+    case AssignmentKind::CALL_ASSIGN:
+      return "AssignmentKind::CALL_ASSIGN";
+    case AssignmentKind::MEMBER_ASSIGN:
+      return "AssignmentKind::MEMBER_ASSIGN";
+    default:
+      return "ENUMERATION VALUE OUT OF BOUND";
+    }
+  }
+};
+
+template <> class Enum<MemberKind> {
+public:
+  static std::string ToString(MemberKind value) {
+    switch (value) {
+    case MemberKind::FIELD:
+      return "MemberKind::FIELD";
+    case MemberKind::METHOD:
+      return "MemberKind::METHOD";
+    case MemberKind::STATIC_VAR:
+      return "MemberKind::STATIC_VAR";
+    case MemberKind::STATIC_FUNC:
+      return "MemberKind::STATIC_FUNC";
+    default:
+      return "ENUMERATION VALUE OUT OF BOUND";
+    }
+  }
+};
+
 template <> class Enum<AccessModifier> {
 public:
-  static std::u32string ToString(AccessModifier modifier) {
-    switch (modifier) {
-    case AccessModifier::Public:
-      return U"Public";
-    case AccessModifier::Private:
-      return U"Private";
-    case AccessModifier::Protected:
-      return U"Protected";
+  static std::string ToString(AccessModifier value) {
+    switch (value) {
+    case AccessModifier::PUBLIC:
+      return "AccessModifier::PUBLIC";
+    case AccessModifier::PRIVATE:
+      return "AccessModifier::PRIVATE";
+    case AccessModifier::PROTECTED:
+      return "AccessModifier::PROTECTED";
     default:
-      std::cerr << __FUNCTION__ << std::endl;
-      exit(1);
+      return "ENUMERATION VALUE OUT OF BOUND";
     }
   }
 };
 
 template <> class Enum<TypeCode> {
 public:
-  static std::u32string ToString(TypeCode typeCode) {
-    switch (typeCode) {
-    case TypeCode::Unknown:
-      return U"Unknown";
-    case TypeCode::Void:
-      return U"Void";
-    case TypeCode::Any:
-      return U"Any";
-    case TypeCode::Boolean:
-      return U"Boolean";
-    case TypeCode::Byte:
-      return U"Byte";
-    case TypeCode::Char:
-      return U"Char";
-    case TypeCode::Float32:
-      return U"Float32";
-    case TypeCode::Empty:
-      return U"Empty";
-    case TypeCode::Int16:
-      return U"Int16";
-    case TypeCode::Int32:
-      return U"Int32";
-    case TypeCode::Int64:
-      return U"Int64";
-    case TypeCode::Object:
-      return U"Object";
-    case TypeCode::Class:
-      return U"Class";
-    case TypeCode::Module:
-      return U"Module";
-    case TypeCode::Float64:
-      return U"Float64";
-    case TypeCode::String:
-      return U"String";
-    case TypeCode::UInt16:
-      return U"UInt16";
-    case TypeCode::UInt32:
-      return U"UInt32";
-    case TypeCode::UInt64:
-      return U"UInt64";
-    case TypeCode::Array:
-      return U"Array";
-    case TypeCode::Union:
-      return U"Union";
-    case TypeCode::Function:
-      return U"Function";
-    case TypeCode::Interface:
-      return U"Interface";
-    case TypeCode::Unresolved:
-      return U"Unresolved";
-    case TypeCode::Generic:
-      return U"Generic";
-    case TypeCode::Parameter:
-      return U"Parameter";
-
+  static std::string ToString(TypeCode value) {
+    switch (value) {
+    case TypeCode::VOID:
+      return "TypeCode::VOID";
+    case TypeCode::BOOLEAN:
+      return "TypeCode::BOOLEAN";
+    case TypeCode::INT:
+      return "TypeCode::INT";
+    case TypeCode::LONG:
+      return "TypeCode::LONG";
+    case TypeCode::FLOAT:
+      return "TypeCode::FLOAT";
+    case TypeCode::DOUBLE:
+      return "TypeCode::DOUBLE";
+    case TypeCode::CHAR:
+      return "TypeCode::CHAR";
+    case TypeCode::STRING:
+      return "TypeCode::STRING";
+    case TypeCode::FUNCTION:
+      return "TypeCode::FUNCTION";
+    case TypeCode::METHOD:
+      return "TypeCode::METHOD";
+    case TypeCode::ARRAY:
+      return "TypeCode::ARRAY";
+    case TypeCode::OBJECT:
+      return "TypeCode::OBJECT";
     default:
-      std::cerr << __FUNCTION__ << std::endl;
-      exit(1);
-    }
-  }
-};
-
-template <> class Enum<LocationType> {
-public:
-  static std::u32string ToString(LocationType type) {
-    switch (type) {
-    case LocationType::Unknown:
-      return U"Unknown";
-    case LocationType::ModuleName:
-      return U"ModuleName";
-    case LocationType::ModuleField:
-      return U"ModuleField";
-    case LocationType::ModuleMethod:
-      return U"ModuleMethod";
-    case LocationType::ClassName:
-      return U"ClassName";
-    case LocationType::ClassField:
-      return U"ClassField";
-    case LocationType::ClassMethod:
-      return U"ClassMethod";
-    case LocationType::InterfaceField:
-      return U"InterfaceField";
-    case LocationType::InterfaceMethod:
-      return U"InterfaceMethod";
-    case LocationType::InterfaceName:
-      return U"InterfaceName";
-    case LocationType::LocalVariable:
-      return U"LocalVariable";
-    default:
-      std::cerr << __FUNCTION__ << std::endl;
-      exit(1);
+      return "ENUMERATION VALUE OUT OF BOUND";
     }
   }
 };
 
 template <> class Enum<OpCode> {
 public:
-  static std::u32string ToString(OpCode code) {
-    switch (code) {
+  static std::string ToString(OpCode value) {
+    switch (value) {
     case OpCode::PUSH_I32_0:
-      return U"PUSH_I32_0";
+      return "OpCode::PUSH_I32_0";
     case OpCode::PUSH_I32_1:
-      return U"PUSH_I32_1";
+      return "OpCode::PUSH_I32_1";
     case OpCode::PUSH_I32_1BYTE:
-      return U"PUSH_I32_1BYTE";
+      return "OpCode::PUSH_I32_1BYTE";
     case OpCode::PUSH_I32_2BYTE:
-      return U"PUSH_I32_2BYTE";
+      return "OpCode::PUSH_I32_2BYTE";
     case OpCode::PUSH_I64_0:
-      return U"PUSH_I64_0";
+      return "OpCode::PUSH_I64_0";
     case OpCode::PUSH_I64_1:
-      return U"PUSH_I64_1";
+      return "OpCode::PUSH_I64_1";
     case OpCode::PUSH_F64_0:
-      return U"PUSH_F64_0";
+      return "OpCode::PUSH_F64_0";
     case OpCode::PUSH_F64_1:
-      return U"PUSH_F64_1";
+      return "OpCode::PUSH_F64_1";
     case OpCode::PUSH_I32:
-      return U"PUSH_I32";
+      return "OpCode::PUSH_I32";
     case OpCode::PUSH_I64:
-      return U"PUSH_I64";
+      return "OpCode::PUSH_I64";
     case OpCode::PUSH_F32:
-      return U"PUSH_F32";
+      return "OpCode::PUSH_F32";
     case OpCode::PUSH_F64:
-      return U"PUSH_F64";
+      return "OpCode::PUSH_F64";
     case OpCode::PUSH_STRING:
-      return U"PUSH_STRING";
+      return "OpCode::PUSH_STRING";
     case OpCode::PUSH_NULL:
-      return U"PUSH_NULL";
+      return "OpCode::PUSH_NULL";
     case OpCode::PUSH_LOCAL_I32:
-      return U"PUSH_LOCAL_I32";
+      return "OpCode::PUSH_LOCAL_I32";
     case OpCode::PUSH_LOCAL_I64:
-      return U"PUSH_LOCAL_I64";
+      return "OpCode::PUSH_LOCAL_I64";
     case OpCode::PUSH_LOCAL_F32:
-      return U"PUSH_LOCAL_F32";
+      return "OpCode::PUSH_LOCAL_F32";
     case OpCode::PUSH_LOCAL_F64:
-      return U"PUSH_LOCAL_F64";
+      return "OpCode::PUSH_LOCAL_F64";
     case OpCode::PUSH_LOCAL_OBJECT:
-      return U"PUSH_LOCAL_OBJECT";
+      return "OpCode::PUSH_LOCAL_OBJECT";
     case OpCode::POP_LOCAL_I32:
-      return U"POP_LOCAL_I32";
+      return "OpCode::POP_LOCAL_I32";
     case OpCode::POP_LOCAL_I64:
-      return U"POP_LOCAL_I64";
+      return "OpCode::POP_LOCAL_I64";
     case OpCode::POP_LOCAL_F32:
-      return U"POP_LOCAL_F32";
+      return "OpCode::POP_LOCAL_F32";
     case OpCode::POP_LOCAL_F64:
-      return U"POP_LOCAL_F64";
+      return "OpCode::POP_LOCAL_F64";
     case OpCode::POP_LOCAL_OBJECT:
-      return U"POP_LOCAL_OBJECT";
+      return "OpCode::POP_LOCAL_OBJECT";
     case OpCode::PUSH_STATIC_I32:
-      return U"PUSH_STATIC_I32";
+      return "OpCode::PUSH_STATIC_I32";
     case OpCode::PUSH_STATIC_I64:
-      return U"PUSH_STATIC_I64";
+      return "OpCode::PUSH_STATIC_I64";
     case OpCode::PUSH_STATIC_F32:
-      return U"PUSH_STATIC_F32";
+      return "OpCode::PUSH_STATIC_F32";
     case OpCode::PUSH_STATIC_F64:
-      return U"PUSH_STATIC_F64";
+      return "OpCode::PUSH_STATIC_F64";
     case OpCode::PUSH_STATIC_OBJECT:
-      return U"PUSH_STATIC_OBJECT";
+      return "OpCode::PUSH_STATIC_OBJECT";
     case OpCode::POP_STATIC_I32:
-      return U"POP_STATIC_I32";
+      return "OpCode::POP_STATIC_I32";
     case OpCode::POP_STATIC_I64:
-      return U"POP_STATIC_I64";
+      return "OpCode::POP_STATIC_I64";
     case OpCode::POP_STATIC_F32:
-      return U"POP_STATIC_F32";
+      return "OpCode::POP_STATIC_F32";
     case OpCode::POP_STATIC_F64:
-      return U"POP_STATIC_F64";
+      return "OpCode::POP_STATIC_F64";
     case OpCode::POP_STATIC_OBJECT:
-      return U"POP_STATIC_OBJECT";
+      return "OpCode::POP_STATIC_OBJECT";
     case OpCode::PUSH_ARRAY_I32:
-      return U"PUSH_ARRAY_I32";
+      return "OpCode::PUSH_ARRAY_I32";
     case OpCode::PUSH_ARRAY_I64:
-      return U"PUSH_ARRAY_I64";
+      return "OpCode::PUSH_ARRAY_I64";
     case OpCode::PUSH_ARRAY_F32:
-      return U"PUSH_ARRAY_F32";
+      return "OpCode::PUSH_ARRAY_F32";
     case OpCode::PUSH_ARRAY_F64:
-      return U"PUSH_ARRAY_F64";
+      return "OpCode::PUSH_ARRAY_F64";
     case OpCode::PUSH_ARRAY_OBJECT:
-      return U"PUSH_ARRAY_OBJECT";
+      return "OpCode::PUSH_ARRAY_OBJECT";
     case OpCode::POP_ARRAY_I32:
-      return U"POP_ARRAY_I32";
+      return "OpCode::POP_ARRAY_I32";
     case OpCode::POP_ARRAY_I64:
-      return U"POP_ARRAY_I64";
+      return "OpCode::POP_ARRAY_I64";
     case OpCode::POP_ARRAY_F32:
-      return U"POP_ARRAY_F32";
+      return "OpCode::POP_ARRAY_F32";
     case OpCode::POP_ARRAY_F64:
-      return U"POP_ARRAY_F64";
+      return "OpCode::POP_ARRAY_F64";
     case OpCode::POP_ARRAY_OBJECT:
-      return U"POP_ARRAY_OBJECT";
+      return "OpCode::POP_ARRAY_OBJECT";
     case OpCode::PUSH_FIELD_I32:
-      return U"PUSH_FIELD_I32";
+      return "OpCode::PUSH_FIELD_I32";
     case OpCode::PUSH_FIELD_I64:
-      return U"PUSH_FIELD_I64";
+      return "OpCode::PUSH_FIELD_I64";
     case OpCode::PUSH_FIELD_F32:
-      return U"PUSH_FIELD_F32";
+      return "OpCode::PUSH_FIELD_F32";
     case OpCode::PUSH_FIELD_F64:
-      return U"PUSH_FIELD_F64";
+      return "OpCode::PUSH_FIELD_F64";
     case OpCode::PUSH_FIELD_OBJECT:
-      return U"PUSH_FIELD_OBJECT";
+      return "OpCode::PUSH_FIELD_OBJECT";
     case OpCode::POP_FIELD_I32:
-      return U"POP_FIELD_I32";
+      return "OpCode::POP_FIELD_I32";
     case OpCode::POP_FIELD_I64:
-      return U"POP_FIELD_I64";
+      return "OpCode::POP_FIELD_I64";
     case OpCode::POP_FIELD_F32:
-      return U"POP_FIELD_F32";
+      return "OpCode::POP_FIELD_F32";
     case OpCode::POP_FIELD_F64:
-      return U"POP_FIELD_F64";
+      return "OpCode::POP_FIELD_F64";
     case OpCode::POP_FIELD_OBJECT:
-      return U"POP_FIELD_OBJECT";
+      return "OpCode::POP_FIELD_OBJECT";
     case OpCode::ADD_I32:
-      return U"ADD_I32";
+      return "OpCode::ADD_I32";
     case OpCode::ADD_I64:
-      return U"ADD_I64";
+      return "OpCode::ADD_I64";
     case OpCode::ADD_F32:
-      return U"ADD_F32";
+      return "OpCode::ADD_F32";
     case OpCode::ADD_F64:
-      return U"ADD_F64";
+      return "OpCode::ADD_F64";
     case OpCode::SUB_I32:
-      return U"SUB_I32";
+      return "OpCode::SUB_I32";
     case OpCode::SUB_I64:
-      return U"SUB_I64";
+      return "OpCode::SUB_I64";
     case OpCode::SUB_F32:
-      return U"SUB_F32";
+      return "OpCode::SUB_F32";
     case OpCode::SUB_F64:
-      return U"SUB_F64";
+      return "OpCode::SUB_F64";
     case OpCode::MUL_I32:
-      return U"MUL_I32";
+      return "OpCode::MUL_I32";
     case OpCode::MUL_I64:
-      return U"MUL_I64";
+      return "OpCode::MUL_I64";
     case OpCode::MUL_F32:
-      return U"MUL_F32";
+      return "OpCode::MUL_F32";
     case OpCode::MUL_F64:
-      return U"MUL_F64";
+      return "OpCode::MUL_F64";
     case OpCode::DIV_I32:
-      return U"DIV_I32";
+      return "OpCode::DIV_I32";
     case OpCode::DIV_I64:
-      return U"DIV_I64";
+      return "OpCode::DIV_I64";
     case OpCode::DIV_F32:
-      return U"DIV_F32";
+      return "OpCode::DIV_F32";
     case OpCode::DIV_F64:
-      return U"DIV_F64";
+      return "OpCode::DIV_F64";
     case OpCode::MOD_I32:
-      return U"MOD_I32";
+      return "OpCode::MOD_I32";
     case OpCode::MOD_I64:
-      return U"MOD_I64";
+      return "OpCode::MOD_I64";
     case OpCode::MOD_F32:
-      return U"MOD_F32";
+      return "OpCode::MOD_F32";
     case OpCode::MOD_F64:
-      return U"MOD_F64";
+      return "OpCode::MOD_F64";
     case OpCode::BIT_AND_I32:
-      return U"BIT_AND_I32";
+      return "OpCode::BIT_AND_I32";
     case OpCode::BIT_AND_I64:
-      return U"BIT_AND_I64";
+      return "OpCode::BIT_AND_I64";
     case OpCode::BIT_OR_I32:
-      return U"BIT_OR_I32";
+      return "OpCode::BIT_OR_I32";
     case OpCode::BIT_OR_I64:
-      return U"BIT_OR_I64";
+      return "OpCode::BIT_OR_I64";
     case OpCode::BIT_XOR_I32:
-      return U"BIT_XOR_I32";
+      return "OpCode::BIT_XOR_I32";
     case OpCode::BIT_XOR_I64:
-      return U"BIT_XOR_I64";
+      return "OpCode::BIT_XOR_I64";
     case OpCode::MINUS_I32:
-      return U"MINUS_I32";
+      return "OpCode::MINUS_I32";
     case OpCode::MINUS_I64:
-      return U"MINUS_I64";
+      return "OpCode::MINUS_I64";
     case OpCode::MINUS_F32:
-      return U"MINUS_F32";
+      return "OpCode::MINUS_F32";
     case OpCode::MINUS_F64:
-      return U"MINUS_F64";
+      return "OpCode::MINUS_F64";
     case OpCode::BIT_NOT_I32:
-      return U"BIT_NOT_I32";
+      return "OpCode::BIT_NOT_I32";
     case OpCode::BIT_NOT_I64:
-      return U"BIT_NOT_I64";
+      return "OpCode::BIT_NOT_I64";
     case OpCode::CAST_I32_TO_I64:
-      return U"CAST_I32_TO_I64";
+      return "OpCode::CAST_I32_TO_I64";
     case OpCode::CAST_I32_TO_F32:
-      return U"CAST_I32_TO_F32";
+      return "OpCode::CAST_I32_TO_F32";
     case OpCode::CAST_I32_TO_F64:
-      return U"CAST_I32_TO_F64";
+      return "OpCode::CAST_I32_TO_F64";
     case OpCode::CAST_I64_TO_I32:
-      return U"CAST_I64_TO_I32";
+      return "OpCode::CAST_I64_TO_I32";
     case OpCode::CAST_I64_TO_F32:
-      return U"CAST_I64_TO_F32";
+      return "OpCode::CAST_I64_TO_F32";
     case OpCode::CAST_I64_TO_F64:
-      return U"CAST_I64_TO_F64";
+      return "OpCode::CAST_I64_TO_F64";
     case OpCode::CAST_F32_TO_I32:
-      return U"CAST_F32_TO_I32";
+      return "OpCode::CAST_F32_TO_I32";
     case OpCode::CAST_F32_TO_I64:
-      return U"CAST_F32_TO_I64";
+      return "OpCode::CAST_F32_TO_I64";
     case OpCode::CAST_F32_TO_F64:
-      return U"CAST_F32_TO_F64";
+      return "OpCode::CAST_F32_TO_F64";
     case OpCode::CAST_F64_TO_I32:
-      return U"CAST_F64_TO_I32";
+      return "OpCode::CAST_F64_TO_I32";
     case OpCode::CAST_F64_TO_I64:
-      return U"CAST_F64_TO_I64";
+      return "OpCode::CAST_F64_TO_I64";
     case OpCode::CAST_F64_TO_F32:
-      return U"CAST_F64_TO_F32";
+      return "OpCode::CAST_F64_TO_F32";
     case OpCode::UP_CAST:
-      return U"UP_CAST";
+      return "OpCode::UP_CAST";
     case OpCode::DOWN_CAST:
-      return U"DOWN_CAST";
+      return "OpCode::DOWN_CAST";
     case OpCode::EQ_I32:
-      return U"EQ_I32";
+      return "OpCode::EQ_I32";
     case OpCode::EQ_I64:
-      return U"EQ_I64";
+      return "OpCode::EQ_I64";
     case OpCode::EQ_F32:
-      return U"EQ_F32";
+      return "OpCode::EQ_F32";
     case OpCode::EQ_F64:
-      return U"EQ_F64";
+      return "OpCode::EQ_F64";
     case OpCode::NE_I32:
-      return U"NE_I32";
+      return "OpCode::NE_I32";
     case OpCode::NE_I64:
-      return U"NE_I64";
+      return "OpCode::NE_I64";
     case OpCode::NE_F32:
-      return U"NE_F32";
+      return "OpCode::NE_F32";
     case OpCode::NE_F64:
-      return U"NE_F64";
+      return "OpCode::NE_F64";
     case OpCode::GT_I32:
-      return U"GT_I32";
+      return "OpCode::GT_I32";
     case OpCode::GT_I64:
-      return U"GT_I64";
+      return "OpCode::GT_I64";
     case OpCode::GT_F32:
-      return U"GT_F32";
+      return "OpCode::GT_F32";
     case OpCode::GT_F64:
-      return U"GT_F64";
+      return "OpCode::GT_F64";
     case OpCode::LT_I32:
-      return U"LT_I32";
+      return "OpCode::LT_I32";
     case OpCode::LT_I64:
-      return U"LT_I64";
+      return "OpCode::LT_I64";
     case OpCode::LT_F32:
-      return U"LT_F32";
+      return "OpCode::LT_F32";
     case OpCode::LT_F64:
-      return U"LT_F64";
+      return "OpCode::LT_F64";
     case OpCode::GE_I32:
-      return U"GE_I32";
+      return "OpCode::GE_I32";
     case OpCode::GE_I64:
-      return U"GE_I64";
+      return "OpCode::GE_I64";
     case OpCode::GE_F32:
-      return U"GE_F32";
+      return "OpCode::GE_F32";
     case OpCode::GE_F64:
-      return U"GE_F64";
+      return "OpCode::GE_F64";
     case OpCode::LE_I32:
-      return U"LE_I32";
+      return "OpCode::LE_I32";
     case OpCode::LE_I64:
-      return U"LE_I64";
+      return "OpCode::LE_I64";
     case OpCode::LE_F32:
-      return U"LE_F32";
+      return "OpCode::LE_F32";
     case OpCode::LE_F64:
-      return U"LE_F64";
+      return "OpCode::LE_F64";
     case OpCode::POP:
-      return U"POP";
+      return "OpCode::POP";
     case OpCode::DUPLICATE:
-      return U"DUPLICATE";
+      return "OpCode::DUPLICATE";
     case OpCode::DUPLICATE_OFFSET:
-      return U"DUPLICATE_OFFSET";
+      return "OpCode::DUPLICATE_OFFSET";
     case OpCode::JUMP:
-      return U"JUMP";
+      return "OpCode::JUMP";
     case OpCode::JUMP_IF_TRUE:
-      return U"JUMP_IF_TRUE";
+      return "OpCode::JUMP_IF_TRUE";
     case OpCode::JUMP_IF_FALSE:
-      return U"JUMP_IF_FALSE";
+      return "OpCode::JUMP_IF_FALSE";
     case OpCode::PUSH_FUNCTION:
-      return U"PUSH_FUNCTION";
+      return "OpCode::PUSH_FUNCTION";
     case OpCode::PUSH_METHOD:
-      return U"PUSH_METHOD";
+      return "OpCode::PUSH_METHOD";
     case OpCode::INVOKE:
-      return U"INVOKE";
+      return "OpCode::INVOKE";
     case OpCode::RETURN_I32:
-      return U"RETURN_I32";
+      return "OpCode::RETURN_I32";
     case OpCode::RETURN_I64:
-      return U"RETURN_I64";
+      return "OpCode::RETURN_I64";
     case OpCode::RETURN_F32:
-      return U"RETURN_F32";
+      return "OpCode::RETURN_F32";
     case OpCode::RETURN_F64:
-      return U"RETURN_F64";
+      return "OpCode::RETURN_F64";
     case OpCode::RETURN_OBJECT:
-      return U"RETURN_OBJECT";
+      return "OpCode::RETURN_OBJECT";
     case OpCode::NEW:
-      return U"NEW";
+      return "OpCode::NEW";
     case OpCode::NEW_ARRAY:
-      return U"NEW_ARRAY";
+      return "OpCode::NEW_ARRAY";
     case OpCode::NEW_ARRAY_LITERAL_I32:
-      return U"NEW_ARRAY_LITERAL_I32";
+      return "OpCode::NEW_ARRAY_LITERAL_I32";
     case OpCode::NEW_ARRAY_LITERAL_I64:
-      return U"NEW_ARRAY_LITERAL_I64";
+      return "OpCode::NEW_ARRAY_LITERAL_I64";
     case OpCode::NEW_ARRAY_LITERAL_F32:
-      return U"NEW_ARRAY_LITERAL_F32";
+      return "OpCode::NEW_ARRAY_LITERAL_F32";
     case OpCode::NEW_ARRAY_LITERAL_F64:
-      return U"NEW_ARRAY_LITERAL_F64";
+      return "OpCode::NEW_ARRAY_LITERAL_F64";
     case OpCode::NEW_ARRAY_LITERAL_OBJECT:
-      return U"NEW_ARRAY_LITERAL_OBJECT";
+      return "OpCode::NEW_ARRAY_LITERAL_OBJECT";
     case OpCode::ARRAY_LENGTH:
-      return U"ARRAY_LENGTH";
+      return "OpCode::ARRAY_LENGTH";
     case OpCode::SUPER:
-      return U"SUPER";
+      return "OpCode::SUPER";
     case OpCode::INSTANCE_OF:
-      return U"INSTANCE_OF";
+      return "OpCode::INSTANCE_OF";
     case OpCode::THROW:
-      return U"THROW";
+      return "OpCode::THROW";
     case OpCode::RETHROW:
-      return U"RETHROW";
+      return "OpCode::RETHROW";
     case OpCode::GO_FINALLY:
-      return U"GO_FINALLY";
+      return "OpCode::GO_FINALLY";
     case OpCode::FINALLY_END:
-      return U"FINALLY_END";
-    default: {
-      std::cout << __FUNCTION__ << std::endl;
-      exit(1);
-    }
+      return "OpCode::FINALLY_END";
+    default:
+      return "ENUMERATION VALUE OUT OF BOUND";
     }
   }
 };
 
 template <> class Enum<TypeTag> {
 public:
-  static std::u32string ToString(TypeTag tag) {
-    switch (tag) {
+  static std::string ToString(TypeTag value) {
+    switch (value) {
     case TypeTag::TYPE_I32:
-      return U"TYPE_I32";
+      return "TypeTag::TYPE_I32";
     case TypeTag::TYPE_I64:
-      return U"TYPE_I64";
+      return "TypeTag::TYPE_I64";
     case TypeTag::TYPE_F32:
-      return U"TYPE_F32";
+      return "TypeTag::TYPE_F32";
     case TypeTag::TYPE_F64:
-      return U"TYPE_F64";
+      return "TypeTag::TYPE_F64";
     case TypeTag::TYPE_STRING:
-      return U"TYPE_STRING";
+      return "TypeTag::TYPE_STRING";
     case TypeTag::TYPE_OBJECT:
-      return U"TYPE_OBJECT";
+      return "TypeTag::TYPE_OBJECT";
     default:
-      std::cerr << __FUNCTION__ << std::endl;
-      exit(1);
+      return "ENUMERATION VALUE OUT OF BOUND";
     }
   }
 };
 
 template <> class Enum<ConstantKind> {
 public:
-  static std::u32string ToString(ConstantKind kind) {
-    switch (kind) {
+  static std::string ToString(ConstantKind value) {
+    switch (value) {
     case ConstantKind::CONSTANT_FLAG_I32:
-      return U"Int32";
+      return "ConstantKind::CONSTANT_FLAG_I32";
     case ConstantKind::CONSTANT_FLAG_I64:
-      return U"CONSTANT_FLAG_I64";
+      return "ConstantKind::CONSTANT_FLAG_I64";
     case ConstantKind::CONSTANT_FLAG_F32:
-      return U"CONSTANT_FLAG_F32";
+      return "ConstantKind::CONSTANT_FLAG_F32";
     case ConstantKind::CONSTANT_FLAG_F64:
-      return U"CONSTANT_FLAG_F64";
-    case ConstantKind::CONSTANT_FLAG_CHAR:
-      return U"CONSTANT_FLAG_CHAR";
+      return "ConstantKind::CONSTANT_FLAG_F64";
     case ConstantKind::CONSTANT_FLAG_BOOLEAN:
-      return U"CONSTANT_FLAG_BOOLEAN";
+      return "ConstantKind::CONSTANT_FLAG_BOOLEAN";
+    case ConstantKind::CONSTANT_FLAG_CHAR:
+      return "ConstantKind::CONSTANT_FLAG_CHAR";
     case ConstantKind::CONSTANT_FLAG_STRING:
-      return U"CONSTANT_FLAG_STRING";
+      return "ConstantKind::CONSTANT_FLAG_STRING";
     case ConstantKind::CONSTANT_FLAG_METHOD:
-      return U"CONSTANT_FLAG_METHOD";
+      return "ConstantKind::CONSTANT_FLAG_METHOD";
     case ConstantKind::CONSTANT_FLAG_CLASS:
-      return U"CONSTANT_FLAG_CLASS";
+      return "ConstantKind::CONSTANT_FLAG_CLASS";
     case ConstantKind::CONSTANT_FLAG_STATIC_VAR:
-      return U"CONSTANT_FLAG_STATIC_VAR";
+      return "ConstantKind::CONSTANT_FLAG_STATIC_VAR";
     case ConstantKind::CONSTANT_FLAG_STATIC_FUNCTION:
-      return U"CONSTANT_FLAG_STATIC_FUNCTION";
+      return "ConstantKind::CONSTANT_FLAG_STATIC_FUNCTION";
     default:
-      std::cerr << __FUNCTION__ << std::endl;
-      exit(1);
+      return "ENUMERATION VALUE OUT OF BOUND";
     }
   }
 };
 
 template <> class Enum<MethodFlag> {
 public:
-  static std::u32string ToString(MethodFlag flag) {
-    switch (flag) {
-    case MethodFlag::NativeFunction: {
-      return U"NativeFunction";
-    }
-    case MethodFlag::InstanceMethod: {
-      return U"InstanceMethod";
-    }
-    case MethodFlag::ModuleFunction: {
-      return U"ModuleFunction";
-    }
+  static std::string ToString(MethodFlag value) {
+    switch (value) {
+    case MethodFlag::NativeFunction:
+      return "MethodFlag::NativeFunction";
+    case MethodFlag::InstanceMethod:
+      return "MethodFlag::InstanceMethod";
+    case MethodFlag::ModuleFunction:
+      return "MethodFlag::ModuleFunction";
     default:
-      std::cerr << __FUNCTION__ << std::endl;
-      exit(1);
+      return "ENUMERATION VALUE OUT OF BOUND";
     }
   }
 };
