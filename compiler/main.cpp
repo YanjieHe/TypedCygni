@@ -1,10 +1,13 @@
 #include "Parser.hpp"
 #include <fstream>
-#include <iostream>
 #include <iomanip>
+#include <iostream>
+
 
 extern FILE *yyin;
-extern Expression* parsedTree;
+extern Expression *parsedTree;
+extern vector<SyntaxError> syntaxErrorList;
+extern string currentInputSourcePath;
 // extern FILE *yyout;
 // extern int yyparse(void);
 // #include "ConsoleApp.hpp"
@@ -16,13 +19,18 @@ using namespace std;
 
 int main(int argc, char **argv) {
   cout << "Hello Cygni!" << endl;
-  yyin = fopen("programs/simple_expression.cyg", "r+");
+  const char* path = "programs/simple_expression.cyg";
+  currentInputSourcePath = path;
+  yyin = fopen(path, "r+");
   if (yyin == NULL) {
     printf("code file missing\n");
   } else {
     cout << "start parsing" << endl;
     yyparse();
     fclose(yyin);
+    for (auto syntaxError : syntaxErrorList) {
+      cout << syntaxError.ToString() << endl;
+    }
     AstJsonSerializer serializer;
     json jsonObj = serializer.VisitExpression(parsedTree);
     std::ofstream output("programs/output/simple_expression.json");

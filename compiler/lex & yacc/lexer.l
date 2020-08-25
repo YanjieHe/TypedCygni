@@ -1,5 +1,6 @@
 %{
 #include "Parser.hpp"
+#include <iostream>
 extern int yylineno;
 int yycolno = 0;
 void count();
@@ -23,24 +24,22 @@ UANYN   {ASCN}|{U2}{U}|{U3}{U}{U}|{U4}{U}{U}{U}
 UONLY   {U2}{U}|{U3}{U}{U}|{U4}{U}{U}{U}
 
 %%
-[ \t\v\n\f] { count(); /* skip whitespaces */ }
-
-{SIGN}?{DIGIT}+(\.{DIGIT}+)([eE]{SIGN}?{DIGIT}+) {
+{DIGIT}+(\.{DIGIT}+)([eE]{SIGN}?{DIGIT}+) {
 	count();
 	yylval.expr = new ConstantExpression(Pos(), ExpressionType::DOUBLE, yytext);
 	return TOKEN_FLOAT;
 }
-{SIGN}?{DIGIT}+([eE]{SIGN}?{DIGIT}+) {
+{DIGIT}+([eE]{SIGN}?{DIGIT}+) {
 	count();
 	yylval.expr = new ConstantExpression(Pos(), ExpressionType::DOUBLE, yytext);
 	return TOKEN_FLOAT;
 }
-{SIGN}?{DIGIT}+(\.{DIGIT}+) {
+{DIGIT}+(\.{DIGIT}+) {
 	count();
 	yylval.expr = new ConstantExpression(Pos(), ExpressionType::DOUBLE, yytext);
 	return TOKEN_FLOAT;
 }
-{SIGN}?{DIGIT}+ {
+{DIGIT}+ {
 	count();
 	yylval.expr = new ConstantExpression(Pos(), ExpressionType::INT, yytext);
 	return TOKEN_INTEGER;
@@ -83,7 +82,7 @@ UONLY   {U2}{U}|{U3}{U}{U}|{U4}{U}{U}{U}
 	return TOKEN_STRING;
 }
 "//"{UANYN}* { count(); /* skip comments */ }
-
+(" "|"\t"|"\v"|"\n"|"\f")+ { count(); /* skip whitespaces */ }
 . { return TOKEN_UNEXPECTED; }
 %%
 

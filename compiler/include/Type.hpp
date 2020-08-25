@@ -63,6 +63,17 @@ public:
     }
     return result;
   }
+
+  template <typename TList, typename T>
+  static vector<T> SinglyLinkedListToVector(TList head) {
+    TList cur = head;
+    vector<T> result;
+    while (cur != nullptr) {
+      result.push_back(cur->value);
+      cur = cur->next;
+    }
+    return result;
+  }
 };
 
 class Type;

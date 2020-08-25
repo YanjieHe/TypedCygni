@@ -41,7 +41,7 @@ extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
 /* Line 2058 of yacc.c  */
-#line 17 "parser.y"
+#line 19 "parser.y"
 
 #include "Expression.hpp"
 
@@ -87,7 +87,7 @@ extern int yydebug;
 typedef union YYSTYPE
 {
 /* Line 2058 of yacc.c  */
-#line 13 "parser.y"
+#line 15 "parser.y"
 
     Expression* expr;
 

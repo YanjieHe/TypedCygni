@@ -74,9 +74,11 @@ Position Pos();
 extern int yylineno;
 extern int yycolno;
 Expression* parsedTree;
+string currentInputSourcePath;
+vector<SyntaxError> syntaxErrorList;
 
 /* Line 371 of yacc.c  */
-#line 80 "parser.tab.c"
+#line 82 "parser.tab.c"
 
 # ifndef YY_NULL
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -107,13 +109,13 @@ extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
 /* Line 387 of yacc.c  */
-#line 17 "parser.y"
+#line 19 "parser.y"
 
 #include "Expression.hpp"
 
 
 /* Line 387 of yacc.c  */
-#line 117 "parser.tab.c"
+#line 119 "parser.tab.c"
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -153,13 +155,13 @@ extern int yydebug;
 typedef union YYSTYPE
 {
 /* Line 387 of yacc.c  */
-#line 13 "parser.y"
+#line 15 "parser.y"
 
     Expression* expr;
 
 
 /* Line 387 of yacc.c  */
-#line 163 "parser.tab.c"
+#line 165 "parser.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -187,7 +189,7 @@ int yyparse ();
 /* Copy the second part of user declarations.  */
 
 /* Line 390 of yacc.c  */
-#line 191 "parser.tab.c"
+#line 193 "parser.tab.c"
 
 #ifdef short
 # undef short
@@ -414,7 +416,7 @@ union yyalloc
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  5
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  12
+#define YYNRULES  14
 /* YYNRULES -- Number of states.  */
 #define YYNSTATES  21
 
@@ -464,24 +466,24 @@ static const yytype_uint8 yytranslate[] =
    YYRHS.  */
 static const yytype_uint8 yyprhs[] =
 {
-       0,     0,     3,     5,     9,    13,    17,    21,    25,    27,
-      29,    31,    33
+       0,     0,     3,     5,     7,    11,    15,    17,    21,    25,
+      29,    31,    33,    35,    37
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
 static const yytype_int8 yyrhs[] =
 {
-      33,     0,    -1,    34,    -1,    35,    27,    35,    -1,    35,
-      28,    35,    -1,    36,    29,    36,    -1,    36,    30,    36,
-      -1,    36,    31,    36,    -1,     4,    -1,     5,    -1,    15,
-      -1,    16,    -1,    25,    -1
+      33,     0,    -1,    34,    -1,    35,    -1,    34,    27,    35,
+      -1,    34,    28,    35,    -1,    36,    -1,    35,    29,    36,
+      -1,    35,    30,    36,    -1,    35,    31,    36,    -1,     4,
+      -1,     5,    -1,    15,    -1,    16,    -1,    25,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    54,    54,    58,    61,    67,    70,    73,    78,    79,
-      80,    81,    82
+       0,    56,    56,    60,    61,    64,    70,    71,    74,    77,
+      83,    84,    85,    86,    87
 };
 #endif
 
@@ -515,15 +517,15 @@ static const yytype_uint16 yytoknum[] =
 /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    32,    33,    34,    34,    35,    35,    35,    36,    36,
-      36,    36,    36
+       0,    32,    33,    34,    34,    34,    35,    35,    35,    35,
+      36,    36,    36,    36,    36
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     1,     3,     3,     3,     3,     3,     1,     1,
-       1,     1,     1
+       0,     2,     1,     1,     3,     3,     1,     3,     3,     3,
+       1,     1,     1,     1,     1
 };
 
 /* YYDEFACT[STATE-NAME] -- Default reduction number in state STATE-NUM.
@@ -531,9 +533,9 @@ static const yytype_uint8 yyr2[] =
    means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,     8,     9,    10,    11,    12,     0,     2,     0,     0,
-       1,     0,     0,     0,     0,     0,     3,     4,     5,     6,
-       7
+       0,    10,    11,    12,    13,    14,     0,     2,     3,     6,
+       1,     0,     0,     0,     0,     0,     4,     5,     7,     8,
+       9
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
@@ -547,8 +549,8 @@ static const yytype_int8 yydefgoto[] =
 #define YYPACT_NINF -28
 static const yytype_int8 yypact[] =
 {
-      -4,   -28,   -28,   -28,   -28,   -28,    10,   -28,   -19,   -27,
-     -28,    -4,    -4,    -4,    -4,    -4,   -28,   -28,   -28,   -28,
+      -4,   -28,   -28,   -28,   -28,   -28,    10,   -19,   -27,   -28,
+     -28,    -4,    -4,    -4,    -4,    -4,   -27,   -27,   -28,   -28,
      -28
 };
 
@@ -1390,83 +1392,83 @@ yyreduce:
     {
         case 2:
 /* Line 1792 of yacc.c  */
-#line 54 "parser.y"
+#line 56 "parser.y"
     { parsedTree = (yyvsp[(1) - (1)].expr); }
-    break;
-
-  case 3:
-/* Line 1792 of yacc.c  */
-#line 58 "parser.y"
-    {
-        (yyval.expr) = new BinaryExpression(Pos(), ExpressionType::ADD, (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr));
-    }
     break;
 
   case 4:
 /* Line 1792 of yacc.c  */
 #line 61 "parser.y"
     {
-        (yyval.expr) = new BinaryExpression(Pos(), ExpressionType::SUBTRACT, (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr));
+        (yyval.expr) = new BinaryExpression(Pos(), ExpressionType::ADD, (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr));
     }
     break;
 
   case 5:
 /* Line 1792 of yacc.c  */
-#line 67 "parser.y"
+#line 64 "parser.y"
     {
-        (yyval.expr) = new BinaryExpression(Pos(), ExpressionType::MULTIPLY, (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr));
-    }
-    break;
-
-  case 6:
-/* Line 1792 of yacc.c  */
-#line 70 "parser.y"
-    {
-        (yyval.expr) = new BinaryExpression(Pos(), ExpressionType::DIVIDE, (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr));
+        (yyval.expr) = new BinaryExpression(Pos(), ExpressionType::SUBTRACT, (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr));
     }
     break;
 
   case 7:
 /* Line 1792 of yacc.c  */
-#line 73 "parser.y"
+#line 71 "parser.y"
     {
-        (yyval.expr) = new BinaryExpression(Pos(), ExpressionType::MODULO, (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr));
+        (yyval.expr) = new BinaryExpression(Pos(), ExpressionType::MULTIPLY, (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr));
     }
     break;
 
   case 8:
 /* Line 1792 of yacc.c  */
-#line 78 "parser.y"
-    { (yyval.expr) = (yyvsp[(1) - (1)].expr); }
+#line 74 "parser.y"
+    {
+        (yyval.expr) = new BinaryExpression(Pos(), ExpressionType::DIVIDE, (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr));
+    }
     break;
 
   case 9:
 /* Line 1792 of yacc.c  */
-#line 79 "parser.y"
-    { (yyval.expr) = (yyvsp[(1) - (1)].expr); }
+#line 77 "parser.y"
+    {
+        (yyval.expr) = new BinaryExpression(Pos(), ExpressionType::MODULO, (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr));
+    }
     break;
 
   case 10:
 /* Line 1792 of yacc.c  */
-#line 80 "parser.y"
+#line 83 "parser.y"
     { (yyval.expr) = (yyvsp[(1) - (1)].expr); }
     break;
 
   case 11:
 /* Line 1792 of yacc.c  */
-#line 81 "parser.y"
+#line 84 "parser.y"
     { (yyval.expr) = (yyvsp[(1) - (1)].expr); }
     break;
 
   case 12:
 /* Line 1792 of yacc.c  */
-#line 82 "parser.y"
+#line 85 "parser.y"
+    { (yyval.expr) = (yyvsp[(1) - (1)].expr); }
+    break;
+
+  case 13:
+/* Line 1792 of yacc.c  */
+#line 86 "parser.y"
+    { (yyval.expr) = (yyvsp[(1) - (1)].expr); }
+    break;
+
+  case 14:
+/* Line 1792 of yacc.c  */
+#line 87 "parser.y"
     { (yyval.expr) = (yyvsp[(1) - (1)].expr); }
     break;
 
 
 /* Line 1792 of yacc.c  */
-#line 1470 "parser.tab.c"
+#line 1472 "parser.tab.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1698,14 +1700,17 @@ yyreturn:
 
 
 /* Line 2055 of yacc.c  */
-#line 84 "parser.y"
+#line 89 "parser.y"
 
 
 void yyerror(const char* s) {
 	fflush(stdout);
+    syntaxErrorList.push_back(
+        SyntaxError(currentInputSourcePath, Pos(), s)
+    );
 	printf("\n%*s\n%*s\n", yycolno, "^", yycolno, s);
 }
 
 Position Pos() {
-    return Position(yylineno, yycolno);
+    return Position(yylineno - 1, yycolno);
 }

@@ -58,6 +58,14 @@ public:
   }
 };
 
+class StatementList {
+public:
+  Statement *value;
+  StatementList *next;
+  StatementList(Statement *value, StatementList *next)
+      : value{value}, next{next} {}
+};
+
 class BinaryExpression : public Expression {
 public:
   Position pos;
@@ -257,6 +265,22 @@ public:
   }
 };
 
+class Parameter {
+public:
+  Position pos;
+  string name;
+  TypePtr type;
+};
+
+class MethodDeclStatement {
+public:
+  Position pos;
+  string identifier;
+  vector<Parameter *> parameters;
+  BlockStatement *body;
+  vector<VarDeclStatement *> localVariables;
+};
+
 class MemberDeclaration {
 public:
   virtual Position Pos() const = 0;
@@ -290,8 +314,8 @@ public:
   bool isOverride;
   int methodIndex;
   FunctionType functionType; // 'this' is the first parameter
-  weak_ptr<ClassInfo> classInfo;
-  shared_ptr<FunctionInfo> functionInfo;
+  ClassInfo *classInfo;
+  FunctionInfo *functionInfo;
 
   Position Pos() const override { return pos; }
   MemberKind Kind() const override { return MemberKind::METHOD; }
@@ -304,20 +328,13 @@ public:
   bool isInterface;
   string packageName;
   string name;
-  vector<weak_ptr<ClassInfo>> extendList;
-  weak_ptr<ClassInfo> superClass;
-  vector<weak_ptr<ClassInfo>> interfaceList;
-  vector<shared_ptr<FieldMember>> fields;
-  vector<shared_ptr<MethodMember>> methods;
-  vector<shared_ptr<FieldMember>> staticVariables;
-  vector<shared_ptr<MethodMember>> staticFunctions;
-};
-
-class Parameter {
-public:
-  Position pos;
-  string name;
-  TypePtr type;
+  vector<ClassInfo *> extendList;
+  ClassInfo *superClass;
+  vector<ClassInfo *> interfaceList;
+  vector<FieldMember *> fields;
+  vector<MethodMember *> methods;
+  vector<FieldMember *> staticVariables;
+  vector<MethodMember *> staticFunctions;
 };
 
 class FunctionInfo {
@@ -934,9 +951,26 @@ public:
         {{"Expression Type", Enum<ExpressionType>::ToString(node->NodeType())},
          {"Value", node->value}});
   }
-  json VisitUnary(UnaryExpression *node) override {}
-  json VisitInvocation(InvocationExpression *node) override {}
-  json VisitIdentifier(IdentifierExpression *node) override {}
+  json VisitUnary(UnaryExpression *node) override {
+    return unordered_map<string, json>(
+        {{"Expression Type", Enum<ExpressionType>::ToString(node->NodeType())},
+         {"Operand", VisitExpression(node->operand)}});
+  }
+  json VisitInvocation(InvocationExpression *node) override {
+    vector<json> args;
+    for (auto arg : node->args) {
+      args.push_back(VisitExpression(arg));
+    }
+    return unordered_map<string, json>(
+        {{"Expression Type", Enum<ExpressionType>::ToString(node->NodeType())},
+         {"Function", VisitExpression(node->function)},
+         {"Arguments", args}});
+  }
+  json VisitIdentifier(IdentifierExpression *node) override {
+    return unordered_map<string, json>(
+        {{"Expression Type", Enum<ExpressionType>::ToString(node->NodeType())},
+         {"Identifier", node->identifier}});
+  }
   json VisitConversion(ConversionExpression *node) override {}
   json VisitMember(MemberExpression *node) override {}
   json VisitNew(NewExpression *node) override {}
@@ -948,7 +982,20 @@ public:
   json VisitBreak(BreakStatement *node) override {}
   json VisitAssign(AssignStatement *node) override {}
   json VisitVarDecl(VarDeclStatement *node) override {}
-  json VisitExpStatement(Expression* node) override {}
+  json VisitExpStatement(Expression *node) override {}
 };
 
+class SyntaxError {
+public:
+  string path;
+  Position pos;
+  string message;
+  SyntaxError() : path(), pos(), message() {}
+  SyntaxError(string path, Position pos, string message)
+      : path{path}, pos{pos}, message{message} {}
+  string ToString() const {
+    return path + ":" + std::to_string(pos.line + 1) + ":" +
+           std::to_string(pos.col + 1) + ": " + message;
+  }
+};
 #endif // EXPRESSION_HPP

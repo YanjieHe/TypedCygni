@@ -8,10 +8,15 @@ Position Pos();
 extern int yylineno;
 extern int yycolno;
 Expression* parsedTree;
+string currentInputSourcePath;
+vector<SyntaxError> syntaxErrorList;
 %}
 
 %union {
     Expression* expr;
+    Statement* stmt;
+    Statement* stmtList;
+    BlockStatement* block;
 }
 
 %code requires {
@@ -44,8 +49,11 @@ Expression* parsedTree;
 %token TOKEN_UNEXPECTED
 
 %type <expr> Expr
-%type<expr> Term
+%type <expr> Term
 %type <expr> Factor
+
+%type <stmtList> StatementList
+%type <block> Block
 
 %start Program
 
@@ -54,23 +62,55 @@ Program
     : Expr { parsedTree = $1; }
     ;
 
+MethodDecl
+    : TOKEN_DEF TOKEN_ID '(' ')' ':' TOKEN_ID Block
+    ;
+
+Block
+    : '{' '}' { $$ = new BlockStatement(Pos(), vector<Statement *>{}); }
+    | '{' StatementList '}' {
+        $$ = new BlockStatement(Pos(), Vec::SinglyLinkedListToVector<StatementList *, Statement*>(
+            $1
+        ));
+    }
+    ;
+
+StatementList
+    : Statement {
+        $$ = new StatementList($1, NULL);
+    }
+    | StatementList Statement {
+        $$ = new StatementList($2, $1);
+    }
+    ;
+
+Statement
+    : ExpressionStatement
+    ;
+
+ExpressionStatement
+    : Expr
+    ;
+
 Expr
-    : Term '+' Term {
+    : Term
+    | Expr '+' Term {
         $$ = new BinaryExpression(Pos(), ExpressionType::ADD, $1, $3);
     }
-    | Term '-' Term {
+    | Expr '-' Term {
         $$ = new BinaryExpression(Pos(), ExpressionType::SUBTRACT, $1, $3);
     }
     ;
 
 Term
-    : Factor '*' Factor {
+    : Factor
+    | Term '*' Factor {
         $$ = new BinaryExpression(Pos(), ExpressionType::MULTIPLY, $1, $3);
     }
-    | Factor '/' Factor {
+    | Term '/' Factor {
         $$ = new BinaryExpression(Pos(), ExpressionType::DIVIDE, $1, $3);
     }
-    | Factor '%' Factor {
+    | Term '%' Factor {
         $$ = new BinaryExpression(Pos(), ExpressionType::MODULO, $1, $3);
     }
     ;
@@ -86,9 +126,12 @@ Factor
 
 void yyerror(const char* s) {
 	fflush(stdout);
+    syntaxErrorList.push_back(
+        SyntaxError(currentInputSourcePath, Pos(), s)
+    );
 	printf("\n%*s\n%*s\n", yycolno, "^", yycolno, s);
 }
 
 Position Pos() {
-    return Position(yylineno, yycolno);
+    return Position(yylineno - 1, yycolno);
 }

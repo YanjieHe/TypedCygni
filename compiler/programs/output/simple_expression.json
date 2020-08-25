@@ -5,7 +5,14 @@
         "Value": "1"
     },
     "Right": {
-        "Expression Type": "ExpressionType::INT",
-        "Value": "2"
+        "Expression Type": "ExpressionType::MULTIPLY",
+        "Left": {
+            "Expression Type": "ExpressionType::INT",
+            "Value": "2"
+        },
+        "Right": {
+            "Expression Type": "ExpressionType::INT",
+            "Value": "3"
+        }
     }
 }
