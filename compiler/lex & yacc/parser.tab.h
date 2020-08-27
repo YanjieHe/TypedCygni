@@ -41,7 +41,7 @@ extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
 /* Line 2058 of yacc.c  */
-#line 19 "parser.y"
+#line 29 "parser.y"
 
 #include "Expression.hpp"
 
@@ -87,13 +87,18 @@ extern int yydebug;
 typedef union YYSTYPE
 {
 /* Line 2058 of yacc.c  */
-#line 15 "parser.y"
+#line 20 "parser.y"
 
     Expression* expr;
+    Statement* stmt;
+    SLinkedList<Statement *> *stmtList;
+    BlockStatement* block;
+    MethodDeclStatement *methodDecl;
+    Token *token;
 
 
 /* Line 2058 of yacc.c  */
-#line 97 "parser.tab.h"
+#line 102 "parser.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

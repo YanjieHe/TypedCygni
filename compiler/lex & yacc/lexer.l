@@ -5,6 +5,7 @@ extern int yylineno;
 int yycolno = 0;
 void count();
 extern Position Pos();
+extern shared_ptr<TokenCreator> tokenCreator;
 %}
 
 DIGIT [0-9]
@@ -75,7 +76,11 @@ UONLY   {U2}{U}|{U3}{U}{U}|{U4}{U}{U}{U}
 "module" { count(); return TOKEN_MODULE; }
 "import" { count(); return TOKEN_IMPORT; }
 "new" { count(); return TOKEN_NEW; }
-("_"|{ALPHA})("_"|{ALNUM})* { count(); return TOKEN_ID; }
+("_"|{ALPHA})("_"|{ALNUM})* {
+	count();
+	yylval.token = tokenCreator->Create(yylineno - 1, yycolno, yytext);
+	return TOKEN_ID;
+}
 \"({UANYN}|[^\\"])*\" {
 	count();
 	yylval.expr = new ConstantExpression(Pos(), ExpressionType::STRING, yytext);

@@ -105,7 +105,8 @@ enum class StatementType {
   RETURN = 5,
   BREAK = 6,
   ASSIGN = 7,
-  VAR_DECL = 8
+  VAR_DECL = 8,
+  METHOD_DECL = 9
 };
 
 enum class AssignmentKind {
@@ -547,6 +548,8 @@ public:
       return "StatementType::ASSIGN";
     case StatementType::VAR_DECL:
       return "StatementType::VAR_DECL";
+    case StatementType::METHOD_DECL:
+      return "StatementType::METHOD_DECL";
     default:
       return "ENUMERATION VALUE OUT OF BOUND";
     }

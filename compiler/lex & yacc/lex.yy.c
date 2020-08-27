@@ -586,8 +586,9 @@ extern int yylineno;
 int yycolno = 0;
 void count();
 extern Position Pos();
-#line 589 "lex.yy.c"
+extern shared_ptr<TokenCreator> tokenCreator;
 #line 590 "lex.yy.c"
+#line 591 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -804,9 +805,9 @@ YY_DECL
 		}
 
 	{
-#line 26 "lexer.l"
+#line 27 "lexer.l"
 
-#line 809 "lex.yy.c"
+#line 810 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -865,7 +866,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 27 "lexer.l"
+#line 28 "lexer.l"
 {
 	count();
 	yylval.expr = new ConstantExpression(Pos(), ExpressionType::DOUBLE, yytext);
@@ -874,7 +875,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 32 "lexer.l"
+#line 33 "lexer.l"
 {
 	count();
 	yylval.expr = new ConstantExpression(Pos(), ExpressionType::DOUBLE, yytext);
@@ -883,7 +884,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 37 "lexer.l"
+#line 38 "lexer.l"
 {
 	count();
 	yylval.expr = new ConstantExpression(Pos(), ExpressionType::DOUBLE, yytext);
@@ -892,7 +893,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 42 "lexer.l"
+#line 43 "lexer.l"
 {
 	count();
 	yylval.expr = new ConstantExpression(Pos(), ExpressionType::INT, yytext);
@@ -901,67 +902,67 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 48 "lexer.l"
+#line 49 "lexer.l"
 { count(); return yytext[0]; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 49 "lexer.l"
+#line 50 "lexer.l"
 { count(); return TOKEN_GE; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 50 "lexer.l"
+#line 51 "lexer.l"
 { count(); return TOKEN_LE; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 51 "lexer.l"
+#line 52 "lexer.l"
 { count(); return TOKEN_EQ; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 52 "lexer.l"
+#line 53 "lexer.l"
 { count(); return TOKEN_NE; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 53 "lexer.l"
+#line 54 "lexer.l"
 { count(); return yytext[0]; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 54 "lexer.l"
+#line 55 "lexer.l"
 { count(); return yytext[0]; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 55 "lexer.l"
+#line 56 "lexer.l"
 { count(); return TOKEN_AND; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 56 "lexer.l"
+#line 57 "lexer.l"
 { count(); return TOKEN_OR; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 57 "lexer.l"
+#line 58 "lexer.l"
 { count(); return TOKEN_NOT; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 58 "lexer.l"
+#line 59 "lexer.l"
 { count(); return TOKEN_VAR; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 59 "lexer.l"
+#line 60 "lexer.l"
 { count(); return TOKEN_DEF; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 60 "lexer.l"
+#line 61 "lexer.l"
 {
 	count();
 	yylval.expr = new ConstantExpression(Pos(), ExpressionType::BOOLEAN, yytext);
@@ -970,7 +971,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 65 "lexer.l"
+#line 66 "lexer.l"
 {
 	count();
 	yylval.expr = new ConstantExpression(Pos(), ExpressionType::BOOLEAN, yytext);
@@ -979,53 +980,57 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 70 "lexer.l"
+#line 71 "lexer.l"
 { count(); return TOKEN_IF; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 71 "lexer.l"
+#line 72 "lexer.l"
 { count(); return TOKEN_ELSE; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 72 "lexer.l"
+#line 73 "lexer.l"
 { count(); return TOKEN_WHILE; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 73 "lexer.l"
+#line 74 "lexer.l"
 { count(); return TOKEN_RETURN; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 74 "lexer.l"
+#line 75 "lexer.l"
 { count(); return TOKEN_CLASS; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 75 "lexer.l"
+#line 76 "lexer.l"
 { count(); return TOKEN_MODULE; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 76 "lexer.l"
+#line 77 "lexer.l"
 { count(); return TOKEN_IMPORT; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 77 "lexer.l"
+#line 78 "lexer.l"
 { count(); return TOKEN_NEW; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 78 "lexer.l"
-{ count(); return TOKEN_ID; }
+#line 79 "lexer.l"
+{
+	count();
+	yylval.token = tokenCreator->Create(yylineno - 1, yycolno, yytext);
+	return TOKEN_ID;
+}
 	YY_BREAK
 case 28:
 /* rule 28 can match eol */
 YY_RULE_SETUP
-#line 79 "lexer.l"
+#line 84 "lexer.l"
 {
 	count();
 	yylval.expr = new ConstantExpression(Pos(), ExpressionType::STRING, yytext);
@@ -1034,26 +1039,26 @@ YY_RULE_SETUP
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 84 "lexer.l"
+#line 89 "lexer.l"
 { count(); /* skip comments */ }
 	YY_BREAK
 case 30:
 /* rule 30 can match eol */
 YY_RULE_SETUP
-#line 85 "lexer.l"
+#line 90 "lexer.l"
 { count(); /* skip whitespaces */ }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 86 "lexer.l"
+#line 91 "lexer.l"
 { return TOKEN_UNEXPECTED; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 87 "lexer.l"
+#line 92 "lexer.l"
 ECHO;
 	YY_BREAK
-#line 1056 "lex.yy.c"
+#line 1061 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2058,7 +2063,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 87 "lexer.l"
+#line 92 "lexer.l"
 
 
 int yywrap() {

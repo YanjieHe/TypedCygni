@@ -121,6 +121,7 @@ enum StatementType {
   BREAK,
   ASSIGN,
   VAR_DECL,
+  METHOD_DECL
 };
 
 enum AssignmentKind { IDENTIFIER_ASSIGN, CALL_ASSIGN, MEMBER_ASSIGN };

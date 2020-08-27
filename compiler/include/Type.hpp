@@ -17,6 +17,14 @@ using std::unordered_map;
 using std::vector;
 using std::weak_ptr;
 
+/* singly linked list */
+template <typename T> class SLinkedList {
+public:
+  T *value;
+  SLinkedList<T> *next;
+  SLinkedList(T *value, SLinkedList<T> *next) : value{value}, next{next} {}
+};
+
 class Vec {
 public:
   template <typename T, typename R>
@@ -64,9 +72,9 @@ public:
     return result;
   }
 
-  template <typename TList, typename T>
-  static vector<T> SinglyLinkedListToVector(TList head) {
-    TList cur = head;
+  template <typename T>
+  static vector<T> SLinkedListToVec(SLinkedList<T> *head) {
+    auto cur = head;
     vector<T> result;
     while (cur != nullptr) {
       result.push_back(cur->value);

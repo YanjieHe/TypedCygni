@@ -2,28 +2,35 @@
 #include "Expression.hpp"
 #include <iostream>
 #include <stdio.h>
+
 void yyerror(const char *s);
 int yylex();
 Position Pos();
+
 extern int yylineno;
 extern int yycolno;
-Expression* parsedTree;
+
+Statement* parsedTree;
 string currentInputSourcePath;
 vector<SyntaxError> syntaxErrorList;
+shared_ptr<ExpressionManager> Expression;
+shared_ptr<TokenCreator> tokenCreator;
 %}
 
 %union {
     Expression* expr;
     Statement* stmt;
-    Statement* stmtList;
+    SLinkedList<Statement *> *stmtList;
     BlockStatement* block;
+    MethodDeclStatement *methodDecl;
+    Token *token;
 }
 
 %code requires {
 #include "Expression.hpp"
 }
 
-%token TOKEN_ID
+%token <token> TOKEN_ID
 %token <expr> TOKEN_INTEGER
 %token <expr> TOKEN_FLOAT
 %token TOKEN_GE
@@ -54,48 +61,56 @@ vector<SyntaxError> syntaxErrorList;
 
 %type <stmtList> StatementList
 %type <block> Block
+%type <methodDecl> MethodDecl
+%type <stmt> Statement
+%type <expr> ExpressionStatement
 
 %start Program
 
 %%
 Program
-    : Expr { parsedTree = $1; }
+    : MethodDecl { parsedTree = $1; }
     ;
 
 MethodDecl
-    : TOKEN_DEF TOKEN_ID '(' ')' ':' TOKEN_ID Block
+    : TOKEN_DEF TOKEN_ID '(' ')' ':' TOKEN_ID Block {
+        $$ = new MethodDeclStatement(
+            Pos(), $2->text, vector<Parameter *>(), $7
+        );
+    }
     ;
 
 Block
     : '{' '}' { $$ = new BlockStatement(Pos(), vector<Statement *>{}); }
     | '{' StatementList '}' {
-        $$ = new BlockStatement(Pos(), Vec::SinglyLinkedListToVector<StatementList *, Statement*>(
-            $1
+        $$ = new BlockStatement(Pos(), Vec::SLinkedListToVec<Statement *>(
+            $2
         ));
     }
     ;
 
 StatementList
     : Statement {
-        $$ = new StatementList($1, NULL);
+        $$ = new SLinkedList<Statement *>($1, nullptr);
     }
     | StatementList Statement {
-        $$ = new StatementList($2, $1);
+        $$ = new SLinkedList<Statement *>($2, $1);
     }
     ;
 
 Statement
-    : ExpressionStatement
+    : ExpressionStatement { $$ = $1; }
     ;
 
 ExpressionStatement
-    : Expr
+    : Expr { $$ = $1; }
     ;
 
 Expr
     : Term
     | Expr '+' Term {
-        $$ = new BinaryExpression(Pos(), ExpressionType::ADD, $1, $3);
+        $$ = Expression.New<BinaryExpression>(Pos(), ExpressionType::ADD, $1, $3);
+        // $$ = new BinaryExpression(Pos(), ExpressionType::ADD, $1, $3);
     }
     | Expr '-' Term {
         $$ = new BinaryExpression(Pos(), ExpressionType::SUBTRACT, $1, $3);
@@ -125,11 +140,9 @@ Factor
 %%
 
 void yyerror(const char* s) {
-	fflush(stdout);
     syntaxErrorList.push_back(
         SyntaxError(currentInputSourcePath, Pos(), s)
     );
-	printf("\n%*s\n%*s\n", yycolno, "^", yycolno, s);
 }
 
 Position Pos() {

@@ -272,13 +272,21 @@ public:
   TypePtr type;
 };
 
-class MethodDeclStatement {
+class MethodDeclStatement : public Statement {
 public:
   Position pos;
   string identifier;
   vector<Parameter *> parameters;
   BlockStatement *body;
   vector<VarDeclStatement *> localVariables;
+
+  MethodDeclStatement(Position pos, string identifier,
+                      vector<Parameter *> parameters, BlockStatement *body)
+      : pos{pos}, identifier{identifier}, parameters{parameters}, body{body} {}
+  Position Pos() const override { return pos; }
+  StatementType GetStatementType() const override {
+    return StatementType::METHOD_DECL;
+  }
 };
 
 class MemberDeclaration {
@@ -378,6 +386,22 @@ public:
 class ExpressionManager {
 public:
   std::list<Expression *> list;
+
+  template <typename T, typename... ArgTypes> T *New(ArgTypes... args) {
+    auto node = new T(args...);
+    list.push_back(node);
+    return node;
+  }
+
+  static shared_ptr<ExpressionManager> Create() {
+    return make_shared<ExpressionManager>();
+  }
+
+  ~ExpressionManager() {
+    for (auto node : list) {
+      delete node;
+    }
+  }
 };
 
 class Error {
@@ -455,6 +479,9 @@ public:
       return VisitAssign(dynamic_cast<AssignStatement *>(statement), args...);
     case StatementType::VAR_DECL:
       return VisitVarDecl(dynamic_cast<VarDeclStatement *>(statement), args...);
+    case StatementType::METHOD_DECL:
+      return VisitMethodDecl(dynamic_cast<MethodDeclStatement *>(statement),
+                             args...);
     default:
       throw Error(statement->Pos(), "unsupported statement type for visitor");
     }
@@ -489,6 +516,8 @@ public:
                                           ArgTypes... args) = 0;
   virtual StatementReturnType VisitVarDecl(VarDeclStatement *node,
                                            ArgTypes... args) = 0;
+  virtual StatementReturnType VisitMethodDecl(MethodDeclStatement *node,
+                                              ArgTypes... args) = 0;
   virtual StatementReturnType VisitExpStatement(Expression *node,
                                                 ArgTypes... args) = 0;
 };
@@ -932,6 +961,10 @@ public:
                          ScopePtr<TypePtr> scope) override {
     return monostate();
   }
+  monostate VisitMethodDecl(MethodDeclStatement *node,
+                            ScopePtr<TypePtr> scope) override {
+    return monostate();
+  }
   monostate VisitExpStatement(Expression *node, ScopePtr<TypePtr> scope) {
     VisitExpression(node, scope);
     return monostate();
@@ -982,6 +1015,7 @@ public:
   json VisitBreak(BreakStatement *node) override {}
   json VisitAssign(AssignStatement *node) override {}
   json VisitVarDecl(VarDeclStatement *node) override {}
+  json VisitMethodDecl(MethodDeclStatement *node) override {}
   json VisitExpStatement(Expression *node) override {}
 };
 
@@ -996,6 +1030,30 @@ public:
   string ToString() const {
     return path + ":" + std::to_string(pos.line + 1) + ":" +
            std::to_string(pos.col + 1) + ": " + message;
+  }
+};
+
+class Token {
+public:
+  int line;
+  int col;
+  string text;
+  Token(int line, int col, string text) : line{line}, col{col}, text{text} {}
+};
+
+class TokenCreator {
+public:
+  std::list<Token *> tokens;
+  Token *Create(int line, int col, string text) {
+    return new Token(line, col, text);
+  }
+  static shared_ptr<TokenCreator> NewCreator() {
+    return make_shared<TokenCreator>();
+  }
+  ~TokenCreator() {
+    for (auto token : tokens) {
+      delete token;
+    }
   }
 };
 #endif // EXPRESSION_HPP

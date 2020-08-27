@@ -5,7 +5,7 @@
 
 
 extern FILE *yyin;
-extern Expression *parsedTree;
+extern Statement *parsedTree;
 extern vector<SyntaxError> syntaxErrorList;
 extern string currentInputSourcePath;
 // extern FILE *yyout;
@@ -25,14 +25,14 @@ int main(int argc, char **argv) {
   if (yyin == NULL) {
     printf("code file missing\n");
   } else {
-    cout << "start parsing" << endl;
+    // cout << "start parsing" << endl;
     yyparse();
     fclose(yyin);
     for (auto syntaxError : syntaxErrorList) {
       cout << syntaxError.ToString() << endl;
     }
     AstJsonSerializer serializer;
-    json jsonObj = serializer.VisitExpression(parsedTree);
+    json jsonObj = serializer.VisitStatement(parsedTree);
     std::ofstream output("programs/output/simple_expression.json");
     output << std::setw(4) << jsonObj << std::endl;
   }
