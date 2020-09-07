@@ -91,7 +91,7 @@ typedef union YYSTYPE
 
     Expression* expr;
     Statement* stmt;
-    SLinkedList<Statement *> *stmtList;
+    SLinkedList<Statement> *stmtList;
     BlockStatement* block;
     MethodDeclStatement *methodDecl;
     Token *token;

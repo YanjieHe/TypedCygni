@@ -164,7 +164,7 @@ typedef union YYSTYPE
 
     Expression* expr;
     Statement* stmt;
-    SLinkedList<Statement *> *stmtList;
+    SLinkedList<Statement> *stmtList;
     BlockStatement* block;
     MethodDeclStatement *methodDecl;
     Token *token;
@@ -1440,7 +1440,7 @@ yyreduce:
 /* Line 1792 of yacc.c  */
 #line 85 "parser.y"
     {
-        (yyval.block) = new BlockStatement(Pos(), Vec::SLinkedListToVec<Statement *>(
+        (yyval.block) = new BlockStatement(Pos(), Vec::SLinkedListToVec<Statement>(
             (yyvsp[(2) - (3)].stmtList)
         ));
     }

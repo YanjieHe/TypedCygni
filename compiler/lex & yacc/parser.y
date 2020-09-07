@@ -20,7 +20,7 @@ shared_ptr<TokenCreator> tokenCreator;
 %union {
     Expression* expr;
     Statement* stmt;
-    SLinkedList<Statement *> *stmtList;
+    SLinkedList<Statement> *stmtList;
     BlockStatement* block;
     MethodDeclStatement *methodDecl;
     Token *token;
@@ -83,7 +83,7 @@ MethodDecl
 Block
     : '{' '}' { $$ = new BlockStatement(Pos(), vector<Statement *>{}); }
     | '{' StatementList '}' {
-        $$ = new BlockStatement(Pos(), Vec::SLinkedListToVec<Statement *>(
+        $$ = new BlockStatement(Pos(), Vec::SLinkedListToVec<Statement>(
             $2
         ));
     }

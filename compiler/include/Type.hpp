@@ -73,9 +73,9 @@ public:
   }
 
   template <typename T>
-  static vector<T> SLinkedListToVec(SLinkedList<T> *head) {
+  static vector<T *> SLinkedListToVec(SLinkedList<T> *head) {
     auto cur = head;
-    vector<T> result;
+    vector<T *> result;
     while (cur != nullptr) {
       result.push_back(cur->value);
       cur = cur->next;
