@@ -1,18 +1,30 @@
 {
-    "Expression Type": "ExpressionType::ADD",
-    "Left": {
-        "Expression Type": "ExpressionType::INT",
-        "Value": "1"
+    "Body": {
+        "Statement Type": "StatementType::BLOCK",
+        "Statements": [
+            {
+                "Identifier": "a",
+                "Statement Type": "StatementType::VAR_DECL"
+            },
+            {
+                "Expression Type": "ExpressionType::ADD",
+                "Left": {
+                    "Expression Type": "ExpressionType::INT",
+                    "Value": "1"
+                },
+                "Right": {
+                    "Expression Type": "ExpressionType::MULTIPLY",
+                    "Left": {
+                        "Expression Type": "ExpressionType::INT",
+                        "Value": "2"
+                    },
+                    "Right": {
+                        "Expression Type": "ExpressionType::INT",
+                        "Value": "3"
+                    }
+                }
+            }
+        ]
     },
-    "Right": {
-        "Expression Type": "ExpressionType::MULTIPLY",
-        "Left": {
-            "Expression Type": "ExpressionType::INT",
-            "Value": "2"
-        },
-        "Right": {
-            "Expression Type": "ExpressionType::INT",
-            "Value": "3"
-        }
-    }
+    "Identifier": "main"
 }

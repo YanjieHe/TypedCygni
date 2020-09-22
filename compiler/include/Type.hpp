@@ -20,9 +20,9 @@ using std::weak_ptr;
 /* singly linked list */
 template <typename T> class SLinkedList {
 public:
-  T *value;
+  T value;
   SLinkedList<T> *next;
-  SLinkedList(T *value, SLinkedList<T> *next) : value{value}, next{next} {}
+  SLinkedList(T value, SLinkedList<T> *next) : value{value}, next{next} {}
 };
 
 class Vec {
@@ -73,13 +73,14 @@ public:
   }
 
   template <typename T>
-  static vector<T *> SLinkedListToVec(SLinkedList<T> *head) {
+  static vector<T> SLinkedListToVec(SLinkedList<T> *head) {
     auto cur = head;
-    vector<T *> result;
+    vector<T> result;
     while (cur != nullptr) {
       result.push_back(cur->value);
       cur = cur->next;
     }
+    std::reverse(result.begin(), result.end());
     return result;
   }
 };

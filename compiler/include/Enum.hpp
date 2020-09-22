@@ -2,70 +2,74 @@
 #define ENUM_HPP
 #include <string>
 
-enum class Tag {
-  Identifier = 0,
-  Integer = 1,
-  Float = 2,
-  Character = 3,
-  String = 4,
-  Add = 5,
-  Subtract = 6,
-  Multiply = 7,
-  Divide = 8,
-  Modulo = 9,
-  Equal = 10,
-  NotEqual = 11,
-  GreaterThan = 12,
-  GreaterThanOrEqual = 13,
-  LessThan = 14,
-  LessThanOrEqual = 15,
-  And = 16,
-  Or = 17,
-  Not = 18,
-  Var = 19,
-  Def = 20,
-  Assign = 21,
-  LeftBrace = 22,
-  RightBrace = 23,
-  LeftBracket = 24,
-  RightBracket = 25,
-  LeftParenthesis = 26,
-  RightParenthesis = 27,
-  Dot = 28,
-  Comma = 29,
-  Semicolon = 30,
-  Colon = 31,
-  RightArrow = 32,
-  At = 33,
-  True = 34,
-  False = 35,
-  Void = 36,
-  If = 37,
-  Else = 38,
-  While = 39,
-  For = 40,
-  Break = 41,
-  Return = 42,
-  Import = 43,
-  Uses = 44,
-  Require = 45,
-  Rename = 46,
-  GoesTo = 47,
-  LowerBound = 48,
-  UpperBound = 49,
-  Class = 50,
-  New = 51,
-  Private = 52,
-  Protected = 53,
-  Module = 54,
-  Package = 55,
-  Extends = 56,
-  Interface = 57,
-  To = 58,
-  Eof = 59
+enum class Tag
+{
+  ID = 0,
+  INTEGER = 1,
+  FLOAT = 2,
+  LONG = 3,
+  DOUBLE = 4,
+  CHAR = 5,
+  STRING = 6,
+  BOOLEAN_T = 7,
+  BOOLEAN_F = 8,
+  Add = 9,
+  Subtract = 10,
+  Multiply = 11,
+  Divide = 12,
+  Modulo = 13,
+  Equal = 14,
+  NotEqual = 15,
+  GreaterThan = 16,
+  GreaterThanOrEqual = 17,
+  LessThan = 18,
+  LessThanOrEqual = 19,
+  And = 20,
+  Or = 21,
+  Not = 22,
+  Var = 23,
+  Def = 24,
+  Assign = 25,
+  LeftBrace = 26,
+  RightBrace = 27,
+  LeftBracket = 28,
+  RightBracket = 29,
+  LeftParenthesis = 30,
+  RightParenthesis = 31,
+  Dot = 32,
+  Comma = 33,
+  Semicolon = 34,
+  Colon = 35,
+  RightArrow = 36,
+  At = 37,
+  Void = 38,
+  If = 39,
+  Else = 40,
+  While = 41,
+  For = 42,
+  Break = 43,
+  Return = 44,
+  Import = 45,
+  Uses = 46,
+  Require = 47,
+  Rename = 48,
+  GoesTo = 49,
+  LowerBound = 50,
+  UpperBound = 51,
+  Class = 52,
+  New = 53,
+  Private = 54,
+  Protected = 55,
+  Module = 56,
+  Package = 57,
+  Extends = 58,
+  Interface = 59,
+  To = 60,
+  Eof = 61
 };
 
-enum class ExpressionType {
+enum class ExpressionType
+{
   INT = 0,
   LONG = 1,
   FLOAT = 2,
@@ -96,7 +100,8 @@ enum class ExpressionType {
   NEW = 27
 };
 
-enum class StatementType {
+enum class StatementType
+{
   EXPRESSION = 0,
   IF_THEN = 1,
   IF_ELSE = 2,
@@ -106,25 +111,34 @@ enum class StatementType {
   BREAK = 6,
   ASSIGN = 7,
   VAR_DECL = 8,
-  METHOD_DECL = 9
+  METHOD_DECL = 9,
+  CLASS_DECL = 10
 };
 
-enum class AssignmentKind {
+enum class AssignmentKind
+{
   IDENTIFIER_ASSIGN = 0,
   CALL_ASSIGN = 1,
   MEMBER_ASSIGN = 2
 };
 
-enum class MemberKind {
+enum class MemberKind
+{
   FIELD = 0,
   METHOD = 1,
   STATIC_VAR = 2,
   STATIC_FUNC = 3
 };
 
-enum class AccessModifier { PUBLIC = 0, PRIVATE = 1, PROTECTED = 2 };
+enum class AccessModifier
+{
+  PUBLIC = 0,
+  PRIVATE = 1,
+  PROTECTED = 2
+};
 
-enum class TypeCode {
+enum class TypeCode
+{
   VOID = 0,
   BOOLEAN = 1,
   INT = 2,
@@ -139,7 +153,8 @@ enum class TypeCode {
   OBJECT = 11
 };
 
-enum class OpCode {
+enum class OpCode
+{
   PUSH_I32_0 = 0,
   PUSH_I32_1 = 1,
   PUSH_I32_1BYTE = 2,
@@ -294,7 +309,8 @@ enum class OpCode {
   FINALLY_END = 151
 };
 
-enum class TypeTag {
+enum class TypeTag
+{
   TYPE_I32 = 0,
   TYPE_I64 = 1,
   TYPE_F32 = 2,
@@ -303,7 +319,8 @@ enum class TypeTag {
   TYPE_OBJECT = 5
 };
 
-enum class ConstantKind {
+enum class ConstantKind
+{
   CONSTANT_FLAG_I32 = 0,
   CONSTANT_FLAG_I64 = 1,
   CONSTANT_FLAG_F32 = 2,
@@ -317,33 +334,49 @@ enum class ConstantKind {
   CONSTANT_FLAG_STATIC_FUNCTION = 10
 };
 
-enum class MethodFlag {
+enum class MethodFlag
+{
   NativeFunction = 0,
   InstanceMethod = 1,
   ModuleFunction = 2
 };
 
-template <typename TEnum> class Enum {
+template <typename TEnum>
+class Enum
+{
 public:
-  static std::string ToString(TEnum) {
+  static std::string ToString(TEnum)
+  {
     return "ENUMERATION VALUE OUT OF BOUND";
   }
 };
 
-template <> class Enum<Tag> {
+template <>
+class Enum<Tag>
+{
 public:
-  static std::string ToString(Tag value) {
-    switch (value) {
-    case Tag::Identifier:
-      return "Tag::Identifier";
-    case Tag::Integer:
-      return "Tag::Integer";
-    case Tag::Float:
-      return "Tag::Float";
-    case Tag::Character:
-      return "Tag::Character";
-    case Tag::String:
-      return "Tag::String";
+  static std::string ToString(Tag value)
+  {
+    switch (value)
+    {
+    case Tag::ID:
+      return "Tag::ID";
+    case Tag::INTEGER:
+      return "Tag::INTEGER";
+    case Tag::FLOAT:
+      return "Tag::FLOAT";
+    case Tag::LONG:
+      return "Tag::LONG";
+    case Tag::DOUBLE:
+      return "Tag::DOUBLE";
+    case Tag::CHAR:
+      return "Tag::CHAR";
+    case Tag::STRING:
+      return "Tag::STRING";
+    case Tag::BOOLEAN_T:
+      return "Tag::BOOLEAN_T";
+    case Tag::BOOLEAN_F:
+      return "Tag::BOOLEAN_F";
     case Tag::Add:
       return "Tag::Add";
     case Tag::Subtract:
@@ -402,10 +435,6 @@ public:
       return "Tag::RightArrow";
     case Tag::At:
       return "Tag::At";
-    case Tag::True:
-      return "Tag::True";
-    case Tag::False:
-      return "Tag::False";
     case Tag::Void:
       return "Tag::Void";
     case Tag::If:
@@ -460,10 +489,14 @@ public:
   }
 };
 
-template <> class Enum<ExpressionType> {
+template <>
+class Enum<ExpressionType>
+{
 public:
-  static std::string ToString(ExpressionType value) {
-    switch (value) {
+  static std::string ToString(ExpressionType value)
+  {
+    switch (value)
+    {
     case ExpressionType::INT:
       return "ExpressionType::INT";
     case ExpressionType::LONG:
@@ -526,10 +559,14 @@ public:
   }
 };
 
-template <> class Enum<StatementType> {
+template <>
+class Enum<StatementType>
+{
 public:
-  static std::string ToString(StatementType value) {
-    switch (value) {
+  static std::string ToString(StatementType value)
+  {
+    switch (value)
+    {
     case StatementType::EXPRESSION:
       return "StatementType::EXPRESSION";
     case StatementType::IF_THEN:
@@ -550,16 +587,22 @@ public:
       return "StatementType::VAR_DECL";
     case StatementType::METHOD_DECL:
       return "StatementType::METHOD_DECL";
+    case StatementType::CLASS_DECL:
+      return "StatementType::CLASS_DECL";
     default:
       return "ENUMERATION VALUE OUT OF BOUND";
     }
   }
 };
 
-template <> class Enum<AssignmentKind> {
+template <>
+class Enum<AssignmentKind>
+{
 public:
-  static std::string ToString(AssignmentKind value) {
-    switch (value) {
+  static std::string ToString(AssignmentKind value)
+  {
+    switch (value)
+    {
     case AssignmentKind::IDENTIFIER_ASSIGN:
       return "AssignmentKind::IDENTIFIER_ASSIGN";
     case AssignmentKind::CALL_ASSIGN:
@@ -572,10 +615,14 @@ public:
   }
 };
 
-template <> class Enum<MemberKind> {
+template <>
+class Enum<MemberKind>
+{
 public:
-  static std::string ToString(MemberKind value) {
-    switch (value) {
+  static std::string ToString(MemberKind value)
+  {
+    switch (value)
+    {
     case MemberKind::FIELD:
       return "MemberKind::FIELD";
     case MemberKind::METHOD:
@@ -590,10 +637,14 @@ public:
   }
 };
 
-template <> class Enum<AccessModifier> {
+template <>
+class Enum<AccessModifier>
+{
 public:
-  static std::string ToString(AccessModifier value) {
-    switch (value) {
+  static std::string ToString(AccessModifier value)
+  {
+    switch (value)
+    {
     case AccessModifier::PUBLIC:
       return "AccessModifier::PUBLIC";
     case AccessModifier::PRIVATE:
@@ -606,10 +657,14 @@ public:
   }
 };
 
-template <> class Enum<TypeCode> {
+template <>
+class Enum<TypeCode>
+{
 public:
-  static std::string ToString(TypeCode value) {
-    switch (value) {
+  static std::string ToString(TypeCode value)
+  {
+    switch (value)
+    {
     case TypeCode::VOID:
       return "TypeCode::VOID";
     case TypeCode::BOOLEAN:
@@ -640,10 +695,14 @@ public:
   }
 };
 
-template <> class Enum<OpCode> {
+template <>
+class Enum<OpCode>
+{
 public:
-  static std::string ToString(OpCode value) {
-    switch (value) {
+  static std::string ToString(OpCode value)
+  {
+    switch (value)
+    {
     case OpCode::PUSH_I32_0:
       return "OpCode::PUSH_I32_0";
     case OpCode::PUSH_I32_1:
@@ -954,10 +1013,14 @@ public:
   }
 };
 
-template <> class Enum<TypeTag> {
+template <>
+class Enum<TypeTag>
+{
 public:
-  static std::string ToString(TypeTag value) {
-    switch (value) {
+  static std::string ToString(TypeTag value)
+  {
+    switch (value)
+    {
     case TypeTag::TYPE_I32:
       return "TypeTag::TYPE_I32";
     case TypeTag::TYPE_I64:
@@ -976,10 +1039,14 @@ public:
   }
 };
 
-template <> class Enum<ConstantKind> {
+template <>
+class Enum<ConstantKind>
+{
 public:
-  static std::string ToString(ConstantKind value) {
-    switch (value) {
+  static std::string ToString(ConstantKind value)
+  {
+    switch (value)
+    {
     case ConstantKind::CONSTANT_FLAG_I32:
       return "ConstantKind::CONSTANT_FLAG_I32";
     case ConstantKind::CONSTANT_FLAG_I64:
@@ -1008,10 +1075,14 @@ public:
   }
 };
 
-template <> class Enum<MethodFlag> {
+template <>
+class Enum<MethodFlag>
+{
 public:
-  static std::string ToString(MethodFlag value) {
-    switch (value) {
+  static std::string ToString(MethodFlag value)
+  {
+    switch (value)
+    {
     case MethodFlag::NativeFunction:
       return "MethodFlag::NativeFunction";
     case MethodFlag::InstanceMethod:

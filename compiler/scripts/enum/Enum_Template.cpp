@@ -1,11 +1,15 @@
 #include <string>
 
 enum Tag {
-  Identifier,
-  Integer,
-  Float,
-  Character,
-  String,
+  ID,
+  INTEGER,
+  FLOAT,
+  LONG,
+  DOUBLE,
+  CHAR,
+  STRING,
+  BOOLEAN_T,
+  BOOLEAN_F,
 
   Add,
   Subtract,
@@ -42,8 +46,6 @@ enum Tag {
   RightArrow,
   At,
 
-  True,
-  False,
   Void,
 
   If,
@@ -121,7 +123,8 @@ enum StatementType {
   BREAK,
   ASSIGN,
   VAR_DECL,
-  METHOD_DECL
+  METHOD_DECL,
+  CLASS_DECL
 };
 
 enum AssignmentKind { IDENTIFIER_ASSIGN, CALL_ASSIGN, MEMBER_ASSIGN };

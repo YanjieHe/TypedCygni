@@ -1,6 +1,8 @@
 %{
 #include "Parser.hpp"
 #include <iostream>
+using std::cout;
+using std::endl;
 extern int yylineno;
 int yycolno = 0;
 void count();
@@ -27,22 +29,22 @@ UONLY   {U2}{U}|{U3}{U}{U}|{U4}{U}{U}{U}
 %%
 {DIGIT}+(\.{DIGIT}+)([eE]{SIGN}?{DIGIT}+) {
 	count();
-	yylval.expr = new ConstantExpression(Pos(), ExpressionType::DOUBLE, yytext);
+	yylval.token = new Token(yylineno - 1, yycolno, Tag::DOUBLE, yytext);
 	return TOKEN_FLOAT;
 }
 {DIGIT}+([eE]{SIGN}?{DIGIT}+) {
 	count();
-	yylval.expr = new ConstantExpression(Pos(), ExpressionType::DOUBLE, yytext);
+	yylval.token = new Token(yylineno - 1, yycolno, Tag::DOUBLE, yytext);
 	return TOKEN_FLOAT;
 }
 {DIGIT}+(\.{DIGIT}+) {
 	count();
-	yylval.expr = new ConstantExpression(Pos(), ExpressionType::DOUBLE, yytext);
+	yylval.token = new Token(yylineno - 1, yycolno, Tag::DOUBLE, yytext);
 	return TOKEN_FLOAT;
 }
 {DIGIT}+ {
 	count();
-	yylval.expr = new ConstantExpression(Pos(), ExpressionType::INT, yytext);
+	yylval.token = new Token(yylineno - 1, yycolno, Tag::INTEGER, yytext);
 	return TOKEN_INTEGER;
 }
 
@@ -50,8 +52,8 @@ UONLY   {U2}{U}|{U3}{U}{U}|{U4}{U}{U}{U}
 ">=" { count(); return TOKEN_GE; }
 "<=" { count(); return TOKEN_LE; }
 "==" { count(); return TOKEN_EQ; }
-"LE" { count(); return TOKEN_NE; }
-">"|"<"|"="|"."|"," { count(); return yytext[0]; }
+"!=" { count(); return TOKEN_NE; }
+">"|"<"|"="|"."|","|":" { count(); return yytext[0]; }
 "("|")"|"["|"]"|"{"|"}" { count(); return yytext[0]; }
 "and" { count(); return TOKEN_AND; }
 "or" { count(); return TOKEN_OR; }
@@ -60,12 +62,12 @@ UONLY   {U2}{U}|{U3}{U}{U}|{U4}{U}{U}{U}
 "def" { count(); return TOKEN_DEF; }
 "true" {
 	count();
-	yylval.expr = new ConstantExpression(Pos(), ExpressionType::BOOLEAN, yytext);
+	yylval.token = new Token(yylineno - 1, yycolno, Tag::BOOLEAN_T, yytext);
 	return TOKEN_TRUE;
 }
 "false" {
 	count();
-	yylval.expr = new ConstantExpression(Pos(), ExpressionType::BOOLEAN, yytext);
+	yylval.token = new Token(yylineno - 1, yycolno, Tag::BOOLEAN_F, yytext);
 	return TOKEN_FALSE;
 }
 "if" { count(); return TOKEN_IF; }
@@ -78,16 +80,16 @@ UONLY   {U2}{U}|{U3}{U}{U}|{U4}{U}{U}{U}
 "new" { count(); return TOKEN_NEW; }
 ("_"|{ALPHA})("_"|{ALNUM})* {
 	count();
-	yylval.token = tokenCreator->Create(yylineno - 1, yycolno, yytext);
+	yylval.token = new Token(yylineno - 1, yycolno, Tag::ID, yytext);
 	return TOKEN_ID;
 }
 \"({UANYN}|[^\\"])*\" {
 	count();
-	yylval.expr = new ConstantExpression(Pos(), ExpressionType::STRING, yytext);
+	yylval.token = new Token(yylineno - 1, yycolno, Tag::STRING, yytext);
 	return TOKEN_STRING;
 }
 "//"{UANYN}* { count(); /* skip comments */ }
-(" "|"\t"|"\v"|"\n"|"\f")+ { count(); /* skip whitespaces */ }
+(" "|"\t"|"\v"|"\r"|"\n"|"\f")+ { count(); /* skip whitespaces */ }
 . { return TOKEN_UNEXPECTED; }
 %%
 
@@ -106,4 +108,3 @@ void count() {
         }
     }
 }
-

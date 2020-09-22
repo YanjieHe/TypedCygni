@@ -1,0 +1,20 @@
+- `BinaryExpression`
+    - left
+    - right
+- `ConstantExpression`
+    - value
+- `UnaryExpression`
+    - operand
+- `InvocationExpression`
+    - function
+    - arguments
+- `IdentifierExpression`
+    - identifier
+- `ConversionExpression`
+    - type
+- `MemberExpression`
+    - object
+    - memberName
+- `NewExpression`
+    - className
+    - initializers

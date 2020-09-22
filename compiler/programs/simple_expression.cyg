@@ -1,4 +1,8 @@
-def main()
+module App
 {
-    1 + 2 * 3
+    def main(): Void
+    {
+        var a: Int
+        1 + 2 * 3
+    }
 }
