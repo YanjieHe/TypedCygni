@@ -1,20 +1,80 @@
-- `BinaryExpression`
+## Expressions
+- `BinaryExpression`: `+-*/%`, `and`, `or`, `>`, `<`, `>=`, `<=`, `==`, `!=`
     - left
     - right
-- `ConstantExpression`
+- `ConstantExpression`: integer32, float32, integer64, float64, boolean, character, string
     - value
-- `UnaryExpression`
+- `UnaryExpression`: `+`, `-`, `not`
     - operand
 - `InvocationExpression`
     - function
     - arguments
 - `IdentifierExpression`
     - identifier
-- `ConversionExpression`
-    - type
 - `MemberExpression`
     - object
     - memberName
 - `NewExpression`
     - className
     - initializers
+- `IsExpression`
+    - object
+    - type
+- `AsExpression`
+    - object
+    - type
+
+## Statements
+- `BlockStatement`
+    - statements
+- `IfThenStatement`
+    - condition
+    - ifTrue
+- `IfElseStatement`
+    - condition
+    - ifTrue
+    - ifFalse
+- `WhileStatement`
+    - condition
+    - body
+- `AssignStatement`
+    - left
+    - value
+- `TryStatement`
+    - body
+    - handlers
+    - finally
+- `ReturnStatement`
+    - value
+- `BreakStatement`
+
+
+```
+class Point
+{
+    private x: Double
+    private y: Double
+
+    def GetX(): Double
+    {
+        return this.x
+    }
+
+    def GetY(): Double
+    {
+        return this.x
+    }
+}
+
+module Point
+{
+    def New(_x: Double, _y: Double): Point
+    {
+        return new Point
+        {
+            x = _x,
+            y = _y
+        }
+    }
+}
+```

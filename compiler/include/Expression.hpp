@@ -64,6 +64,7 @@ public:
   }
 };
 
+/* Expressions */
 class BinaryExpression : public Expression
 {
 public:
@@ -129,18 +130,6 @@ public:
   }
 };
 
-class ConversionExpression : public Expression
-{
-public:
-  Position pos;
-  Expression *expression;
-  TypePtr type;
-  ConversionExpression(Position pos, Expression *expression, TypePtr type)
-      : pos{pos}, expression{expression}, type{type} {}
-  Position Pos() const override { return pos; }
-  ExpressionType NodeType() const override { return ExpressionType::CONVERT; }
-};
-
 class MemberExpression : public Expression
 {
 public:
@@ -167,6 +156,31 @@ public:
   ExpressionType NodeType() const override { return ExpressionType::NEW; }
 };
 
+class AsExpression : public Expression
+{
+public:
+  Position pos;
+  Expression *expression;
+  Type *type;
+  AsExpression(Position pos, Expression *expression, Type *type)
+      : pos{pos}, expression{expression}, type{type} {}
+  Position Pos() const override { return pos; }
+  ExpressionType NodeType() const override { return ExpressionType::AS; }
+};
+
+class IsExpression : public Expression
+{
+public:
+  Position pos;
+  Expression *expression;
+  Type *type;
+  IsExpression(Position pos, Expression *expression, Type *type)
+      : pos{pos}, expression{expression}, type{type} {}
+  Position Pos() const override { return pos; }
+  ExpressionType NodeType() const override { return ExpressionType::IS; }
+};
+
+/* Statements */
 class BlockStatement : public Statement
 {
 public:
@@ -270,6 +284,30 @@ public:
   }
 };
 
+class CatchBlock
+{
+public:
+  string variable;
+  Type *test;
+  BlockStatement *body;
+
+  CatchBlock(string variable, Type *test, BlockStatement *body) : variable{variable}, test{test}, body{body} {}
+};
+
+class TryStatement : public Statement
+{
+public:
+  Position pos;
+  BlockStatement *body;
+  vector<CatchBlock *> handlers;
+  BlockStatement *finally;
+
+  TryStatement(Position pos, BlockStatement *body, vector<CatchBlock *> handlers, BlockStatement *finally)
+      : pos{pos}, body{body}, handlers{handlers}, finally{finally} {}
+  Position Pos() const override { return pos; }
+  StatementType GetStatementType() const override { return StatementType::TRY; }
+};
+
 class VarDeclStatement : public Statement
 {
 public:
@@ -277,6 +315,7 @@ public:
   string identifier;
   optional<TypePtr> type;
   optional<Expression *> value;
+
   VarDeclStatement(Position pos, string identifier, optional<TypePtr> type,
                    optional<Expression *> value)
       : pos{pos}, identifier{identifier}, type{type}, value{value} {}

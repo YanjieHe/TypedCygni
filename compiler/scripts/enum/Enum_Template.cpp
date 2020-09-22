@@ -104,13 +104,13 @@ enum ExpressionType {
   LOGICAL_NOT,
   PLUS,
   MINUS,
-  /* invocations */
-  INVOKE,
   /* other */
+  INVOKE,
   IDENTIFIER,
-  CONVERT,
   MEMBER,
-  NEW
+  NEW,
+  AS,
+  IS
 };
 
 enum StatementType {
@@ -122,6 +122,7 @@ enum StatementType {
   RETURN,
   BREAK,
   ASSIGN,
+  TRY,
   VAR_DECL,
   METHOD_DECL,
   CLASS_DECL
