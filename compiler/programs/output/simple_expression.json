@@ -1,30 +1,50 @@
 {
-    "Body": {
-        "Statement Type": "StatementType::BLOCK",
-        "Statements": [
-            {
-                "Identifier": "a",
-                "Statement Type": "StatementType::VAR_DECL"
-            },
-            {
-                "Expression Type": "ExpressionType::ADD",
-                "Left": {
-                    "Expression Type": "ExpressionType::INT",
-                    "Value": "1"
-                },
-                "Right": {
-                    "Expression Type": "ExpressionType::MULTIPLY",
-                    "Left": {
-                        "Expression Type": "ExpressionType::INT",
-                        "Value": "2"
+    "Statement Type": "StatementType::CLASS_DECL",
+    "Static Functions": [
+        {
+            "Body": {
+                "Statement Type": "StatementType::BLOCK",
+                "Statements": [
+                    {
+                        "Identifier": "a",
+                        "Statement Type": "StatementType::VAR_DECL"
                     },
-                    "Right": {
-                        "Expression Type": "ExpressionType::INT",
-                        "Value": "3"
+                    {
+                        "Expression Type": "ExpressionType::ADD",
+                        "Left": {
+                            "Expression Type": "ExpressionType::INT",
+                            "Value": "1"
+                        },
+                        "Right": {
+                            "Expression Type": "ExpressionType::MULTIPLY",
+                            "Left": {
+                                "Expression Type": "ExpressionType::INT",
+                                "Value": "2"
+                            },
+                            "Right": {
+                                "Expression Type": "ExpressionType::INT",
+                                "Value": "3"
+                            }
+                        }
                     }
-                }
-            }
-        ]
-    },
-    "Identifier": "main"
+                ]
+            },
+            "Identifier": "Main"
+        },
+        {
+            "Body": {
+                "Statement Type": "StatementType::BLOCK",
+                "Statements": [
+                    {
+                        "Statement Type": "StatementType::RETURN",
+                        "Value": {
+                            "Expression Type": "ExpressionType::INT",
+                            "Value": "1"
+                        }
+                    }
+                ]
+            },
+            "Identifier": "GetOne"
+        }
+    ]
 }

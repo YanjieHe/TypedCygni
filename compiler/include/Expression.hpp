@@ -313,10 +313,10 @@ class VarDeclStatement : public Statement
 public:
   Position pos;
   string identifier;
-  optional<TypePtr> type;
+  optional<Type *> type;
   optional<Expression *> value;
 
-  VarDeclStatement(Position pos, string identifier, optional<TypePtr> type,
+  VarDeclStatement(Position pos, string identifier, optional<Type *> type,
                    optional<Expression *> value)
       : pos{pos}, identifier{identifier}, type{type}, value{value} {}
   Position Pos() const override { return pos; }
@@ -326,12 +326,14 @@ public:
   }
 };
 
-class Parameter
+class ParameterDecl
 {
 public:
   Position pos;
-  string name;
-  TypePtr type;
+  string identifier;
+  Type *type;
+
+  ParameterDecl(Position pos, string identifier, Type *type) : pos{pos}, identifier{identifier}, type{type} {}
 };
 
 class MethodDeclStatement : public Statement
@@ -339,13 +341,14 @@ class MethodDeclStatement : public Statement
 public:
   Position pos;
   string identifier;
-  vector<Parameter *> parameters;
+  vector<ParameterDecl *> parameters;
+  Type *returnType;
   BlockStatement *body;
   vector<VarDeclStatement *> localVariables;
 
   MethodDeclStatement(Position pos, string identifier,
-                      vector<Parameter *> parameters, BlockStatement *body)
-      : pos{pos}, identifier{identifier}, parameters{parameters}, body{body} {}
+                      vector<ParameterDecl *> parameters, Type *returnType, BlockStatement *body)
+      : pos{pos}, identifier{identifier}, parameters{parameters}, returnType{returnType}, body{body} {}
   Position Pos() const override { return pos; }
   StatementType GetStatementType() const override
   {
@@ -359,6 +362,7 @@ public:
   Position pos;
   string identifier;
   bool isAbstract;
+  bool isModule;
   bool isInterface;
   vector<string> extendList;
   vector<VarDeclStatement *> fields;
@@ -366,12 +370,17 @@ public:
   vector<VarDeclStatement *> staticVariables;
   vector<MethodDeclStatement *> staticFunctions;
 
-  ClassDeclStatement(Position pos, string identifier, bool isAbstract, bool isInterface,
+  ClassDeclStatement(Position pos, string identifier, bool isAbstract, bool isModule, bool isInterface,
                      vector<string> extendList, vector<VarDeclStatement *> fields,
                      vector<MethodDeclStatement *> methods, vector<VarDeclStatement *> staticVariables,
                      vector<MethodDeclStatement *> staticFunctions) : pos{pos}, identifier{identifier},
-                                                                      isAbstract{isAbstract}, isInterface{isInterface}, extendList{extendList}, fields{fields},
+                                                                      isAbstract{isAbstract}, isModule{isModule}, isInterface{isInterface}, extendList{extendList}, fields{fields},
                                                                       methods{methods}, staticVariables{staticVariables}, staticFunctions{staticFunctions} {}
+  Position Pos() const override { return pos; }
+  StatementType GetStatementType() const override
+  {
+    return StatementType::CLASS_DECL;
+  }
 };
 
 // class MemberDeclaration
@@ -437,7 +446,7 @@ public:
 // class FunctionInfo
 // {
 // public:
-//   TypePtr type;
+//   Type* type;
 //   string packageName;
 //   string name;
 //   vector<Parameter> parameters;
@@ -553,9 +562,12 @@ public:
     case ExpressionType::IDENTIFIER:
       return VisitIdentifier(dynamic_cast<IdentifierExpression *>(node),
                              args...);
-    case ExpressionType::CONVERT:
-      return VisitConversion(dynamic_cast<ConversionExpression *>(node),
-                             args...);
+    case ExpressionType::AS:
+      return VisitAs(dynamic_cast<AsExpression *>(node),
+                     args...);
+    case ExpressionType::IS:
+      return VisitIs(dynamic_cast<IsExpression *>(node),
+                     args...);
     case ExpressionType::MEMBER:
       return VisitMember(dynamic_cast<MemberExpression *>(node), args...);
     case ExpressionType::NEW:
@@ -603,8 +615,8 @@ public:
                                         ArgTypes... args) = 0;
   virtual ExpReturnType VisitIdentifier(IdentifierExpression *node,
                                         ArgTypes... args) = 0;
-  virtual ExpReturnType VisitConversion(ConversionExpression *node,
-                                        ArgTypes... args) = 0;
+  virtual ExpReturnType VisitAs(AsExpression *node, ArgTypes... args) = 0;
+  virtual ExpReturnType VisitIs(IsExpression *node, ArgTypes... args) = 0;
   virtual ExpReturnType VisitMember(MemberExpression *node,
                                     ArgTypes... args) = 0;
   virtual ExpReturnType VisitNew(NewExpression *node, ArgTypes... args) = 0;
@@ -852,14 +864,14 @@ public:
   void Add(OpCode op) { bytes.push_back(static_cast<Byte>(op)); }
 };
 
-class TypeChecker : public Visitor<TypePtr, monostate, ScopePtr<TypePtr>>
+class TypeChecker : public Visitor<Type *, monostate, ScopePtr<Type *>>
 {
 public:
   ByteCode bytes;
   ConstantMap constantMap;
 
-  TypePtr VisitConstant(ConstantExpression *node,
-                        ScopePtr<TypePtr> scope) override
+  Type *VisitConstant(ConstantExpression *node,
+                      ScopePtr<Type *> scope) override
   {
     constantMap.Get(node->NodeType(), node->value);
     switch (node->NodeType())
@@ -899,8 +911,8 @@ public:
     }
   }
 
-  TypePtr VisitBinary(BinaryExpression *node,
-                      ScopePtr<TypePtr> scope) override
+  Type *VisitBinary(BinaryExpression *node,
+                    ScopePtr<Type *> scope) override
   {
     auto left = VisitExpression(node->left, scope);
     auto right = VisitExpression(node->right, scope);
@@ -970,7 +982,7 @@ public:
     BINARY_TYPE_MATCH(LOGICAL_OR, Boolean, Boolean, Boolean);
     throw Error(node->Pos(), "binary operation type mismatch");
   }
-  TypePtr VisitUnary(UnaryExpression *node, ScopePtr<TypePtr> scope) override
+  Type *VisitUnary(UnaryExpression *node, ScopePtr<Type *> scope) override
   {
     auto operand = VisitExpression(node->operand, scope);
 
@@ -989,31 +1001,31 @@ public:
     throw Error(node->Pos(), "unary operation type mismtach");
   }
 
-  TypePtr VisitInvocation(InvocationExpression *node,
-                          ScopePtr<TypePtr> scope) override
+  Type *VisitInvocation(InvocationExpression *node,
+                        ScopePtr<Type *> scope) override
   {
     auto funcType = VisitExpression(node->function, scope);
     if (funcType->GetTypeCode() == TypeCode::METHOD)
     {
-      return VisitMethodCall(node, static_pointer_cast<MethodType>(funcType),
+      return VisitMethodCall(node, dynamic_cast<MethodType *>(funcType),
                              scope);
     }
     else
     {
       return VisitFunctionCall(
-          node, static_pointer_cast<FunctionType>(funcType), scope);
+          node, dynamic_cast<FunctionType *>(funcType), scope);
     }
   }
-  TypePtr VisitMethodCall(InvocationExpression *node,
-                          shared_ptr<MethodType> methodType,
-                          ScopePtr<TypePtr> scope)
+  Type *VisitMethodCall(InvocationExpression *node,
+                        MethodType *methodType,
+                        ScopePtr<Type *> scope)
   {
-    auto args = Vec::Map<Expression *, TypePtr>(
+    auto args = Vec::Map<Expression *, Type *>(
         node->args,
-        [&](Expression *e) -> TypePtr { return VisitExpression(e, scope); });
+        [&](Expression *e) -> Type * { return VisitExpression(e, scope); });
     if (Vec::SequenceEqual(
             methodType->func->args, args,
-            [](TypePtr x, TypePtr y) -> bool { return x->Equals(y); }))
+            [](Type *x, Type *y) -> bool { return x->Equals(y); }))
     {
       return methodType->func->ret;
     }
@@ -1022,17 +1034,17 @@ public:
       throw Error(node->Pos(), "method arguments' type mismtach");
     }
   }
-  TypePtr VisitFunctionCall(InvocationExpression *node,
-                            shared_ptr<FunctionType> function,
-                            ScopePtr<TypePtr> scope)
+  Type *VisitFunctionCall(InvocationExpression *node,
+                          FunctionType *function,
+                          ScopePtr<Type *> scope)
   {
-    auto args = Vec::Map<Expression *, TypePtr>(
+    auto args = Vec::Map<Expression *, Type *>(
         node->args,
-        [&](Expression *e) -> TypePtr { return VisitExpression(e, scope); });
+        [&](Expression *e) -> Type * { return VisitExpression(e, scope); });
     if (function->GetTypeCode() == TypeCode::FUNCTION)
     {
-      auto ft = static_pointer_cast<FunctionType>(function);
-      if (Vec::SequenceEqual(ft->args, args, [](TypePtr x, TypePtr y) -> bool {
+      auto ft = dynamic_cast<FunctionType *>(function);
+      if (Vec::SequenceEqual(ft->args, args, [](Type *x, Type *y) -> bool {
             return x->Equals(y);
           }))
       {
@@ -1048,8 +1060,8 @@ public:
       throw Error(node->Pos(), "caller is not a function");
     }
   }
-  TypePtr VisitIdentifier(IdentifierExpression *node,
-                          ScopePtr<TypePtr> scope) override
+  Type *VisitIdentifier(IdentifierExpression *node,
+                        ScopePtr<Type *> scope) override
   {
     if (auto value = scope->Get(node->identifier))
     {
@@ -1060,19 +1072,25 @@ public:
       throw Error(node->Pos(), "identifier not defined");
     }
   }
-  TypePtr VisitConversion(ConversionExpression *node, ScopePtr<TypePtr> scope)
+  Type *VisitAs(AsExpression *node, ScopePtr<Type *> scope)
   {
-    auto expression = VisitExpression(node, scope);
     // TO DO
-    return node->type;
+    auto expression = VisitExpression(node->expression, scope);
+    return nullptr;
   }
-  TypePtr VisitMember(MemberExpression *node,
-                      ScopePtr<TypePtr> scope) override
+  Type *VisitIs(IsExpression *node, ScopePtr<Type *> scope)
+  {
+    // TO DO
+    auto expression = VisitExpression(node->expression, scope);
+    return nullptr;
+  }
+  Type *VisitMember(MemberExpression *node,
+                    ScopePtr<Type *> scope) override
   {
     auto object = VisitExpression(node->object, scope);
     if (object->GetTypeCode() == TypeCode::OBJECT)
     {
-      auto objType = static_pointer_cast<ObjectType>(object);
+      auto objType = dynamic_cast<ObjectType *>(object);
       if (objType->fields.count(node->memberName))
       {
         return objType->fields[node->memberName];
@@ -1087,14 +1105,14 @@ public:
       throw Error(node->Pos(), "member exp: not object type");
     }
   }
-  TypePtr VisitNew(NewExpression *node, ScopePtr<TypePtr> scope) override { return TypePtr(); }
+  Type *VisitNew(NewExpression *node, ScopePtr<Type *> scope) override { return nullptr; }
   monostate VisitIfThen(IfThenStatement *node,
-                        ScopePtr<TypePtr> scope) override
+                        ScopePtr<Type *> scope) override
   {
     auto condition = VisitExpression(node->condition, scope);
     if (condition->Equals(Type::Boolean()))
     {
-      auto subScope = make_shared<Scope<TypePtr>>(scope);
+      auto subScope = make_shared<Scope<Type *>>(scope);
       VisitBlock(node->ifTrue, subScope);
     }
     else
@@ -1103,14 +1121,14 @@ public:
     }
   }
   monostate VisitIfElse(IfElseStatement *node,
-                        ScopePtr<TypePtr> scope) override
+                        ScopePtr<Type *> scope) override
   {
     auto condition = VisitExpression(node->condition, scope);
     if (condition->Equals(Type::Boolean()))
     {
-      auto subScope = make_shared<Scope<TypePtr>>(scope);
+      auto subScope = make_shared<Scope<Type *>>(scope);
       VisitBlock(node->ifTrue, subScope);
-      subScope = make_shared<Scope<TypePtr>>(scope);
+      subScope = make_shared<Scope<Type *>>(scope);
       VisitBlock(node->ifFalse, subScope);
     }
     else
@@ -1118,12 +1136,12 @@ public:
       throw Error(node->pos, "if then: condition type must be boolean");
     }
   }
-  monostate VisitWhile(WhileStatement *node, ScopePtr<TypePtr> scope) override
+  monostate VisitWhile(WhileStatement *node, ScopePtr<Type *> scope) override
   {
     auto condition = VisitExpression(node->condition, scope);
     if (condition->Equals(Type::Boolean()))
     {
-      auto subScope = make_shared<Scope<TypePtr>>(scope);
+      auto subScope = make_shared<Scope<Type *>>(scope);
       VisitBlock(node->body, subScope);
     }
     else
@@ -1131,7 +1149,7 @@ public:
       throw Error(node->pos, "if then: condition type must be boolean");
     }
   }
-  monostate VisitBlock(BlockStatement *node, ScopePtr<TypePtr> scope) override
+  monostate VisitBlock(BlockStatement *node, ScopePtr<Type *> scope) override
   {
     for (auto statement : node->statements)
     {
@@ -1140,27 +1158,27 @@ public:
     return monostate();
   }
   monostate VisitReturn(ReturnStatement *node,
-                        ScopePtr<TypePtr> scope) override
+                        ScopePtr<Type *> scope) override
   {
     VisitExpression(node->value, scope);
     return monostate();
   }
   monostate VisitAssign(AssignStatement *node,
-                        ScopePtr<TypePtr> scope) override
+                        ScopePtr<Type *> scope) override
   {
     return monostate();
   }
   monostate VisitVarDecl(VarDeclStatement *node,
-                         ScopePtr<TypePtr> scope) override
+                         ScopePtr<Type *> scope) override
   {
     return monostate();
   }
   monostate VisitMethodDecl(MethodDeclStatement *node,
-                            ScopePtr<TypePtr> scope) override
+                            ScopePtr<Type *> scope) override
   {
     return monostate();
   }
-  monostate VisitExpStatement(Expression *node, ScopePtr<TypePtr> scope)
+  monostate VisitExpStatement(Expression *node, ScopePtr<Type *> scope)
   {
     VisitExpression(node, scope);
     return monostate();
@@ -1209,7 +1227,13 @@ public:
         {{"Expression Type", Enum<ExpressionType>::ToString(node->NodeType())},
          {"Identifier", node->identifier}});
   }
-  json VisitConversion(ConversionExpression *node) override
+  json VisitAs(AsExpression *node) override
+  {
+    return JsonMap({
+        {"Expression Type", Enum<ExpressionType>::ToString(node->NodeType())},
+    });
+  }
+  json VisitIs(IsExpression *node) override
   {
     return JsonMap({{"Expression Type", Enum<ExpressionType>::ToString(node->NodeType())}});
   }
@@ -1233,7 +1257,11 @@ public:
     return JsonMap({{"Statement Type", Enum<StatementType>::ToString(node->GetStatementType())},
                     {"Statements", statements}});
   }
-  json VisitReturn(ReturnStatement *node) override { return json(); }
+  json VisitReturn(ReturnStatement *node) override
+  {
+    return JsonMap({{"Statement Type", Enum<StatementType>::ToString(node->GetStatementType())},
+                    {"Value", VisitExpression(node->value)}});
+  }
   json VisitBreak(BreakStatement *node) override { return json(); }
   json VisitAssign(AssignStatement *node) override { return json(); }
   json VisitVarDecl(VarDeclStatement *node) override
@@ -1250,7 +1278,16 @@ public:
   {
     return VisitExpression(node);
   }
-  json VisitClassDecl(ClassDeclStatement *node) override { return json(); }
+  json VisitClassDecl(ClassDeclStatement *node) override
+  {
+    vector<json> staticFunctions;
+    for (auto function : node->staticFunctions)
+    {
+      staticFunctions.push_back(VisitMethodDecl(function));
+    }
+    return JsonMap({{"Statement Type", Enum<StatementType>::ToString(node->GetStatementType())},
+                    {"Static Functions", staticFunctions}});
+  }
 };
 
 class SyntaxError

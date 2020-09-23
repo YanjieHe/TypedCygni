@@ -25,9 +25,13 @@ shared_ptr<TokenCreator> tokenCreator;
     Expression* expr;
     Statement* stmt;
     SLinkedList<Statement *> *stmtList;
+    SLinkedList<MethodDeclStatement *> *methodList;
+    SLinkedList<ParameterDecl *> *parameterList;
+    ParameterDecl* parameter;
     BlockStatement* block;
     MethodDeclStatement *methodDecl;
     Token *token;
+    Type* type;
 }
 
 %code requires {
@@ -71,26 +75,64 @@ shared_ptr<TokenCreator> tokenCreator;
 %type <block> Block
 %type <methodDecl> MethodDecl
 %type <stmt> Statement
-%type <expr> ExpressionStatement
+%type <stmt> ExpressionStatement
+%type <stmt> ReturnStatement
 %type <stmt> VarDeclStatement
+%type <methodList> MethodDeclList
+%type <parameterList> ParameterList
+%type <parameter> ParameterDecl
+%type <stmt> ModuleDecl
+%type <type> TypeSpecifier
 
 %start Program
 
 %%
 Program
-    : MethodDecl { cout << "program" << endl; parsedTree = $1; }
+    : ModuleDecl { parsedTree = $1; }
     ;
 
-Modules
-    : ModuleDecl { cout << "Program" << endl; }
+ModuleDecl
+    : TOKEN_MODULE TOKEN_ID '{' MethodDeclList '}' {
+        $$ = new ClassDeclStatement(Pos(),
+            $2->text, false, true, false,
+            vector<string>(),
+            vector<VarDeclStatement *>(),
+            vector<MethodDeclStatement *>(),
+            vector<VarDeclStatement *>(),
+            Vec::SLinkedListToVec<MethodDeclStatement *>($4));
+    }
+    ;
+
+MethodDeclList
+    : MethodDecl {
+        $$ = new SLinkedList<MethodDeclStatement *>($1, nullptr);
+    }
+    | MethodDeclList MethodDecl {
+        $$ = new SLinkedList<MethodDeclStatement *>($2, $1);
+    }
     ;
 
 MethodDecl
-    : TOKEN_DEF TOKEN_ID '(' ')' ':' TOKEN_ID Block {
-        cout << "METHOD DECL" << endl;
+    : TOKEN_DEF TOKEN_ID '(' ParameterList ')' ':' TypeSpecifier Block {
         $$ = new MethodDeclStatement(
-            Pos(), $2->text, vector<Parameter *>(), $7
+            Pos(), $2->text, Vec::SLinkedListToVec<ParameterDecl *>($4), $7, $8
         );
+    }
+    ;
+
+ParameterList
+    : /* empty */ { $$ = nullptr; }
+    | ParameterDecl {
+        $$ = new SLinkedList<ParameterDecl *>($1, nullptr);
+    }
+    | ParameterList ',' ParameterDecl {
+        $$ = new SLinkedList<ParameterDecl *>($3, $1);
+    }
+    ;
+
+ParameterDecl
+    : TOKEN_ID ':' TypeSpecifier {
+        $$ = new ParameterDecl(Pos(), $1->text, $3);
     }
     ;
 
@@ -115,17 +157,24 @@ StatementList
 Statement
     : ExpressionStatement { $$ = $1; }
     | VarDeclStatement { $$ = $1; }
+    | ReturnStatement { $$ = $1; }
     ;
 
 VarDeclStatement
     : TOKEN_VAR TOKEN_ID ':' TOKEN_ID {
         $$ = new VarDeclStatement(Pos(), $2->text,
-            optional<TypePtr>(), optional<Expression *>());
+            optional<Type *>(), optional<Expression *>());
     }
     ;
 
 ExpressionStatement
     : Expr { $$ = $1; }
+    ;
+
+ReturnStatement
+    : TOKEN_RETURN Expr {
+        $$ = new ReturnStatement(Pos(), $2);
+    }
     ;
 
 Expr
@@ -157,6 +206,10 @@ Factor
     | TOKEN_TRUE { $$ = new ConstantExpression(Pos(), ExpressionType::BOOLEAN, $1->text); }
     | TOKEN_FALSE { $$ = new ConstantExpression(Pos(), ExpressionType::BOOLEAN, $1->text); }
     | TOKEN_STRING { $$ = new ConstantExpression(Pos(), ExpressionType::STRING, $1->text); }
+    ;
+
+TypeSpecifier
+    : TOKEN_ID { $$ = new ObjectType($1->text); }
     ;
 %%
 

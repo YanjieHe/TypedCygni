@@ -44,7 +44,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 33 "parser.y"
+#line 37 "parser.y"
 
 #include "Expression.hpp"
 
@@ -91,11 +91,15 @@ union YYSTYPE
     Expression* expr;
     Statement* stmt;
     SLinkedList<Statement *> *stmtList;
+    SLinkedList<MethodDeclStatement *> *methodList;
+    SLinkedList<ParameterDecl *> *parameterList;
+    ParameterDecl* parameter;
     BlockStatement* block;
     MethodDeclStatement *methodDecl;
     Token *token;
+    Type* type;
 
-#line 99 "parser.tab.h"
+#line 103 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

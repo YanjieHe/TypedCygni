@@ -63,7 +63,7 @@
 #define YYPULL 1
 
 /* "%code top" blocks.  */
-#line 37 "parser.y"
+#line 41 "parser.y"
 
 #include "Expression.hpp"
 
@@ -138,7 +138,7 @@ shared_ptr<TokenCreator> tokenCreator;
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 33 "parser.y"
+#line 37 "parser.y"
 
 #include "Expression.hpp"
 
@@ -185,11 +185,15 @@ union YYSTYPE
     Expression* expr;
     Statement* stmt;
     SLinkedList<Statement *> *stmtList;
+    SLinkedList<MethodDeclStatement *> *methodList;
+    SLinkedList<ParameterDecl *> *parameterList;
+    ParameterDecl* parameter;
     BlockStatement* block;
     MethodDeclStatement *methodDecl;
     Token *token;
+    Type* type;
 
-#line 193 "parser.tab.c"
+#line 197 "parser.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -508,16 +512,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  5
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   40
+#define YYLAST   55
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  37
+#define YYNTOKENS  38
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  11
+#define YYNNTS  17
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  23
+#define YYNRULES  33
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  41
+#define YYNSTATES  59
 
 #define YYUNDEFTOK  2
 #define YYMAXUTOK   281
@@ -535,16 +539,16 @@ static const yytype_int8 yytranslate[] =
        0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,    36,     2,     2,
-      27,    28,    34,    32,     2,    33,     2,    35,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,    29,     2,
+       2,     2,     2,     2,     2,     2,     2,    37,     2,     2,
+      29,    30,    35,    33,    32,    34,     2,    36,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,    31,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,    30,     2,    31,     2,     2,     2,     2,
+       2,     2,     2,    27,     2,    28,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -567,9 +571,10 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    81,    81,    85,    94,    95,   103,   106,   112,   113,
-     117,   124,   128,   129,   132,   138,   139,   142,   145,   151,
-     152,   153,   154,   155
+       0,    91,    91,    95,   107,   110,   116,   124,   125,   128,
+     134,   140,   141,   149,   152,   158,   159,   160,   164,   171,
+     175,   181,   182,   185,   191,   192,   195,   198,   204,   205,
+     206,   207,   208,   212
 };
 #endif
 
@@ -583,10 +588,12 @@ static const char *const yytname[] =
   "TOKEN_AND", "TOKEN_OR", "TOKEN_NOT", "TOKEN_VAR", "TOKEN_DEF",
   "TOKEN_TRUE", "TOKEN_FALSE", "TOKEN_IF", "TOKEN_ELSE", "TOKEN_WHILE",
   "TOKEN_RETURN", "TOKEN_CLASS", "TOKEN_MODULE", "TOKEN_IMPORT",
-  "TOKEN_NEW", "TOKEN_STRING", "TOKEN_UNEXPECTED", "'('", "')'", "':'",
-  "'{'", "'}'", "'+'", "'-'", "'*'", "'/'", "'%'", "$accept", "Program",
-  "MethodDecl", "Block", "StatementList", "Statement", "VarDeclStatement",
-  "ExpressionStatement", "Expr", "Term", "Factor", YY_NULLPTR
+  "TOKEN_NEW", "TOKEN_STRING", "TOKEN_UNEXPECTED", "'{'", "'}'", "'('",
+  "')'", "':'", "','", "'+'", "'-'", "'*'", "'/'", "'%'", "$accept",
+  "Program", "ModuleDecl", "MethodDeclList", "MethodDecl", "ParameterList",
+  "ParameterDecl", "Block", "StatementList", "Statement",
+  "VarDeclStatement", "ExpressionStatement", "ReturnStatement", "Expr",
+  "Term", "Factor", "TypeSpecifier", YY_NULLPTR
 };
 #endif
 
@@ -597,12 +604,12 @@ static const yytype_int16 yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
-     275,   276,   277,   278,   279,   280,   281,    40,    41,    58,
-     123,   125,    43,    45,    42,    47,    37
+     275,   276,   277,   278,   279,   280,   281,   123,   125,    40,
+      41,    58,    44,    43,    45,    42,    47,    37
 };
 # endif
 
-#define YYPACT_NINF (-31)
+#define YYPACT_NINF (-23)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -616,11 +623,12 @@ static const yytype_int16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      -8,     7,    14,   -31,   -10,   -31,    -2,    -9,    26,     8,
-      -4,   -31,   -31,   -31,    27,   -31,   -31,   -31,   -31,     0,
-     -31,   -31,   -31,   -30,   -12,   -31,    10,   -31,   -31,     3,
-       3,     3,     3,     3,    34,   -12,   -12,   -31,   -31,   -31,
-     -31
+     -18,    17,    31,   -23,    11,   -23,    25,    37,    -9,   -23,
+      12,   -23,   -23,    39,    13,   -22,   -23,    40,    14,    39,
+     -23,   -23,    40,   -23,    19,    -4,   -23,   -23,   -23,    44,
+     -23,   -23,    -2,   -23,   -23,     2,   -23,   -23,   -23,   -23,
+      -8,    -3,   -23,    18,    -8,   -23,   -23,    -2,    -2,    -2,
+      -2,    -2,    45,    -3,    -3,   -23,   -23,   -23,   -23
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -628,25 +636,26 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       0,     0,     0,     2,     0,     1,     0,     0,     0,     0,
-       0,     3,    19,    20,     0,    21,    22,    23,     4,     0,
-       6,     9,     8,    11,    12,    15,     0,     5,     7,     0,
-       0,     0,     0,     0,     0,    13,    14,    16,    17,    18,
-      10
+       0,     0,     0,     2,     0,     1,     0,     0,     0,     4,
+       0,     3,     5,     7,     0,     0,     8,     0,     0,     0,
+      33,    10,     0,     9,     0,     0,     6,    28,    29,     0,
+      30,    31,     0,    32,    11,     0,    13,    16,    15,    17,
+      19,    21,    24,     0,    20,    12,    14,     0,     0,     0,
+       0,     0,     0,    22,    23,    25,    26,    27,    18
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -31,   -31,   -31,   -31,   -31,    21,   -31,   -31,   -31,     6,
-       1
+     -23,   -23,   -23,   -23,    42,   -23,    32,   -23,   -23,    20,
+     -23,   -23,   -23,    21,   -19,   -14,    30
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     2,     3,    11,    19,    20,    21,    22,    23,    24,
-      25
+      -1,     2,     3,     8,     9,    15,    16,    26,    35,    36,
+      37,    38,    39,    40,    41,    42,    21
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -654,46 +663,51 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-      12,    13,    29,    30,    12,    13,     1,    12,    13,    14,
-       4,    15,    16,    14,     5,    15,    16,     6,    15,    16,
-       8,    17,    31,    32,    33,    17,     7,    18,    17,     9,
-      26,    27,    37,    38,    39,    35,    36,    40,    10,    34,
-      28
+      27,    28,    27,    28,     1,     7,    27,    28,    18,    29,
+      19,    30,    31,    30,    31,    29,    32,    30,    31,    11,
+       4,    33,    32,    33,    34,    47,    48,    33,    53,    54,
+      45,     5,    49,    50,    51,    55,    56,    57,     6,     7,
+      10,    13,    14,    20,    17,    22,    25,    43,    58,    52,
+      12,    23,    24,    44,     0,    46
 };
 
 static const yytype_int8 yycheck[] =
 {
-       4,     5,    32,    33,     4,     5,    14,     4,     5,    13,
-       3,    15,    16,    13,     0,    15,    16,    27,    15,    16,
-      29,    25,    34,    35,    36,    25,    28,    31,    25,     3,
-       3,    31,    31,    32,    33,    29,    30,     3,    30,    29,
-      19
+       4,     5,     4,     5,    22,    14,     4,     5,    30,    13,
+      32,    15,    16,    15,    16,    13,    20,    15,    16,    28,
+       3,    25,    20,    25,    28,    33,    34,    25,    47,    48,
+      28,     0,    35,    36,    37,    49,    50,    51,    27,    14,
+       3,    29,     3,     3,    31,    31,    27,     3,     3,    31,
+       8,    19,    22,    32,    -1,    35
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,    14,    38,    39,     3,     0,    27,    28,    29,     3,
-      30,    40,     4,     5,    13,    15,    16,    25,    31,    41,
-      42,    43,    44,    45,    46,    47,     3,    31,    42,    32,
-      33,    34,    35,    36,    29,    46,    46,    47,    47,    47,
-       3
+       0,    22,    39,    40,     3,     0,    27,    14,    41,    42,
+       3,    28,    42,    29,     3,    43,    44,    31,    30,    32,
+       3,    54,    31,    44,    54,    27,    45,     4,     5,    13,
+      15,    16,    20,    25,    28,    46,    47,    48,    49,    50,
+      51,    52,    53,     3,    51,    28,    47,    33,    34,    35,
+      36,    37,    31,    52,    52,    53,    53,    53,     3
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    37,    38,    39,    40,    40,    41,    41,    42,    42,
-      43,    44,    45,    45,    45,    46,    46,    46,    46,    47,
-      47,    47,    47,    47
+       0,    38,    39,    40,    41,    41,    42,    43,    43,    43,
+      44,    45,    45,    46,    46,    47,    47,    47,    48,    49,
+      50,    51,    51,    51,    52,    52,    52,    52,    53,    53,
+      53,    53,    53,    54
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     1,     7,     2,     3,     1,     2,     1,     1,
-       4,     1,     1,     3,     3,     1,     3,     3,     3,     1,
+       0,     2,     1,     5,     1,     2,     8,     0,     1,     3,
+       3,     2,     3,     1,     2,     1,     1,     1,     4,     1,
+       2,     1,     3,     3,     1,     3,     3,     3,     1,     1,
        1,     1,     1,     1
 };
 
@@ -1390,153 +1404,232 @@ yyreduce:
   switch (yyn)
     {
   case 2:
-#line 81 "parser.y"
-                 { cout << "program" << endl; parsedTree = (yyvsp[0].methodDecl); }
-#line 1396 "parser.tab.c"
+#line 91 "parser.y"
+                 { parsedTree = (yyvsp[0].stmt); }
+#line 1410 "parser.tab.c"
     break;
 
   case 3:
-#line 85 "parser.y"
-                                                    {
-        cout << "METHOD DECL" << endl;
-        (yyval.methodDecl) = new MethodDeclStatement(
-            Pos(), (yyvsp[-5].token)->text, vector<Parameter *>(), (yyvsp[0].block)
-        );
+#line 95 "parser.y"
+                                                   {
+        (yyval.stmt) = new ClassDeclStatement(Pos(),
+            (yyvsp[-3].token)->text, false, true, false,
+            vector<string>(),
+            vector<VarDeclStatement *>(),
+            vector<MethodDeclStatement *>(),
+            vector<VarDeclStatement *>(),
+            Vec::SLinkedListToVec<MethodDeclStatement *>((yyvsp[-1].methodList)));
     }
-#line 1407 "parser.tab.c"
+#line 1424 "parser.tab.c"
     break;
 
   case 4:
-#line 94 "parser.y"
-              { (yyval.block) = new BlockStatement(Pos(), vector<Statement *>{}); }
-#line 1413 "parser.tab.c"
+#line 107 "parser.y"
+                 {
+        (yyval.methodList) = new SLinkedList<MethodDeclStatement *>((yyvsp[0].methodDecl), nullptr);
+    }
+#line 1432 "parser.tab.c"
     break;
 
   case 5:
-#line 95 "parser.y"
+#line 110 "parser.y"
+                                {
+        (yyval.methodList) = new SLinkedList<MethodDeclStatement *>((yyvsp[0].methodDecl), (yyvsp[-1].methodList));
+    }
+#line 1440 "parser.tab.c"
+    break;
+
+  case 6:
+#line 116 "parser.y"
+                                                                       {
+        (yyval.methodDecl) = new MethodDeclStatement(
+            Pos(), (yyvsp[-6].token)->text, Vec::SLinkedListToVec<ParameterDecl *>((yyvsp[-4].parameterList)), (yyvsp[-1].type), (yyvsp[0].block)
+        );
+    }
+#line 1450 "parser.tab.c"
+    break;
+
+  case 7:
+#line 124 "parser.y"
+                  { (yyval.parameterList) = nullptr; }
+#line 1456 "parser.tab.c"
+    break;
+
+  case 8:
+#line 125 "parser.y"
+                    {
+        (yyval.parameterList) = new SLinkedList<ParameterDecl *>((yyvsp[0].parameter), nullptr);
+    }
+#line 1464 "parser.tab.c"
+    break;
+
+  case 9:
+#line 128 "parser.y"
+                                      {
+        (yyval.parameterList) = new SLinkedList<ParameterDecl *>((yyvsp[0].parameter), (yyvsp[-2].parameterList));
+    }
+#line 1472 "parser.tab.c"
+    break;
+
+  case 10:
+#line 134 "parser.y"
+                                 {
+        (yyval.parameter) = new ParameterDecl(Pos(), (yyvsp[-2].token)->text, (yyvsp[0].type));
+    }
+#line 1480 "parser.tab.c"
+    break;
+
+  case 11:
+#line 140 "parser.y"
+              { (yyval.block) = new BlockStatement(Pos(), vector<Statement *>{}); }
+#line 1486 "parser.tab.c"
+    break;
+
+  case 12:
+#line 141 "parser.y"
                             {
         (yyval.block) = new BlockStatement(Pos(), Vec::SLinkedListToVec<Statement *>(
             (yyvsp[-1].stmtList)
         ));
     }
-#line 1423 "parser.tab.c"
-    break;
-
-  case 6:
-#line 103 "parser.y"
-                {
-        (yyval.stmtList) = new SLinkedList<Statement *>((yyvsp[0].stmt), nullptr);
-    }
-#line 1431 "parser.tab.c"
-    break;
-
-  case 7:
-#line 106 "parser.y"
-                              {
-        (yyval.stmtList) = new SLinkedList<Statement *>((yyvsp[0].stmt), (yyvsp[-1].stmtList));
-    }
-#line 1439 "parser.tab.c"
-    break;
-
-  case 8:
-#line 112 "parser.y"
-                          { (yyval.stmt) = (yyvsp[0].expr); }
-#line 1445 "parser.tab.c"
-    break;
-
-  case 9:
-#line 113 "parser.y"
-                       { (yyval.stmt) = (yyvsp[0].stmt); }
-#line 1451 "parser.tab.c"
-    break;
-
-  case 10:
-#line 117 "parser.y"
-                                      {
-        (yyval.stmt) = new VarDeclStatement(Pos(), (yyvsp[-2].token)->text,
-            optional<TypePtr>(), optional<Expression *>());
-    }
-#line 1460 "parser.tab.c"
-    break;
-
-  case 11:
-#line 124 "parser.y"
-           { (yyval.expr) = (yyvsp[0].expr); }
-#line 1466 "parser.tab.c"
+#line 1496 "parser.tab.c"
     break;
 
   case 13:
-#line 129 "parser.y"
-                    {
-        (yyval.expr) = new BinaryExpression(Pos(), ExpressionType::ADD, (yyvsp[-2].expr), (yyvsp[0].expr));
+#line 149 "parser.y"
+                {
+        (yyval.stmtList) = new SLinkedList<Statement *>((yyvsp[0].stmt), nullptr);
     }
-#line 1474 "parser.tab.c"
+#line 1504 "parser.tab.c"
     break;
 
   case 14:
-#line 132 "parser.y"
-                    {
-        (yyval.expr) = new BinaryExpression(Pos(), ExpressionType::SUBTRACT, (yyvsp[-2].expr), (yyvsp[0].expr));
+#line 152 "parser.y"
+                              {
+        (yyval.stmtList) = new SLinkedList<Statement *>((yyvsp[0].stmt), (yyvsp[-1].stmtList));
     }
-#line 1482 "parser.tab.c"
-    break;
-
-  case 16:
-#line 139 "parser.y"
-                      {
-        (yyval.expr) = new BinaryExpression(Pos(), ExpressionType::MULTIPLY, (yyvsp[-2].expr), (yyvsp[0].expr));
-    }
-#line 1490 "parser.tab.c"
-    break;
-
-  case 17:
-#line 142 "parser.y"
-                      {
-        (yyval.expr) = new BinaryExpression(Pos(), ExpressionType::DIVIDE, (yyvsp[-2].expr), (yyvsp[0].expr));
-    }
-#line 1498 "parser.tab.c"
-    break;
-
-  case 18:
-#line 145 "parser.y"
-                      {
-        (yyval.expr) = new BinaryExpression(Pos(), ExpressionType::MODULO, (yyvsp[-2].expr), (yyvsp[0].expr));
-    }
-#line 1506 "parser.tab.c"
-    break;
-
-  case 19:
-#line 151 "parser.y"
-                    { (yyval.expr) = new ConstantExpression(Pos(), ExpressionType::INT, (yyvsp[0].token)->text); }
 #line 1512 "parser.tab.c"
     break;
 
-  case 20:
-#line 152 "parser.y"
-                  { (yyval.expr) = new ConstantExpression(Pos(), ExpressionType::FLOAT, (yyvsp[0].token)->text); }
+  case 15:
+#line 158 "parser.y"
+                          { (yyval.stmt) = (yyvsp[0].stmt); }
 #line 1518 "parser.tab.c"
     break;
 
-  case 21:
-#line 153 "parser.y"
-                 { (yyval.expr) = new ConstantExpression(Pos(), ExpressionType::BOOLEAN, (yyvsp[0].token)->text); }
+  case 16:
+#line 159 "parser.y"
+                       { (yyval.stmt) = (yyvsp[0].stmt); }
 #line 1524 "parser.tab.c"
     break;
 
-  case 22:
-#line 154 "parser.y"
-                  { (yyval.expr) = new ConstantExpression(Pos(), ExpressionType::BOOLEAN, (yyvsp[0].token)->text); }
+  case 17:
+#line 160 "parser.y"
+                      { (yyval.stmt) = (yyvsp[0].stmt); }
 #line 1530 "parser.tab.c"
     break;
 
+  case 18:
+#line 164 "parser.y"
+                                      {
+        (yyval.stmt) = new VarDeclStatement(Pos(), (yyvsp[-2].token)->text,
+            optional<Type *>(), optional<Expression *>());
+    }
+#line 1539 "parser.tab.c"
+    break;
+
+  case 19:
+#line 171 "parser.y"
+           { (yyval.stmt) = (yyvsp[0].expr); }
+#line 1545 "parser.tab.c"
+    break;
+
+  case 20:
+#line 175 "parser.y"
+                        {
+        (yyval.stmt) = new ReturnStatement(Pos(), (yyvsp[0].expr));
+    }
+#line 1553 "parser.tab.c"
+    break;
+
+  case 22:
+#line 182 "parser.y"
+                    {
+        (yyval.expr) = new BinaryExpression(Pos(), ExpressionType::ADD, (yyvsp[-2].expr), (yyvsp[0].expr));
+    }
+#line 1561 "parser.tab.c"
+    break;
+
   case 23:
-#line 155 "parser.y"
+#line 185 "parser.y"
+                    {
+        (yyval.expr) = new BinaryExpression(Pos(), ExpressionType::SUBTRACT, (yyvsp[-2].expr), (yyvsp[0].expr));
+    }
+#line 1569 "parser.tab.c"
+    break;
+
+  case 25:
+#line 192 "parser.y"
+                      {
+        (yyval.expr) = new BinaryExpression(Pos(), ExpressionType::MULTIPLY, (yyvsp[-2].expr), (yyvsp[0].expr));
+    }
+#line 1577 "parser.tab.c"
+    break;
+
+  case 26:
+#line 195 "parser.y"
+                      {
+        (yyval.expr) = new BinaryExpression(Pos(), ExpressionType::DIVIDE, (yyvsp[-2].expr), (yyvsp[0].expr));
+    }
+#line 1585 "parser.tab.c"
+    break;
+
+  case 27:
+#line 198 "parser.y"
+                      {
+        (yyval.expr) = new BinaryExpression(Pos(), ExpressionType::MODULO, (yyvsp[-2].expr), (yyvsp[0].expr));
+    }
+#line 1593 "parser.tab.c"
+    break;
+
+  case 28:
+#line 204 "parser.y"
+                    { (yyval.expr) = new ConstantExpression(Pos(), ExpressionType::INT, (yyvsp[0].token)->text); }
+#line 1599 "parser.tab.c"
+    break;
+
+  case 29:
+#line 205 "parser.y"
+                  { (yyval.expr) = new ConstantExpression(Pos(), ExpressionType::FLOAT, (yyvsp[0].token)->text); }
+#line 1605 "parser.tab.c"
+    break;
+
+  case 30:
+#line 206 "parser.y"
+                 { (yyval.expr) = new ConstantExpression(Pos(), ExpressionType::BOOLEAN, (yyvsp[0].token)->text); }
+#line 1611 "parser.tab.c"
+    break;
+
+  case 31:
+#line 207 "parser.y"
+                  { (yyval.expr) = new ConstantExpression(Pos(), ExpressionType::BOOLEAN, (yyvsp[0].token)->text); }
+#line 1617 "parser.tab.c"
+    break;
+
+  case 32:
+#line 208 "parser.y"
                    { (yyval.expr) = new ConstantExpression(Pos(), ExpressionType::STRING, (yyvsp[0].token)->text); }
-#line 1536 "parser.tab.c"
+#line 1623 "parser.tab.c"
+    break;
+
+  case 33:
+#line 212 "parser.y"
+               { (yyval.type) = new ObjectType((yyvsp[0].token)->text); }
+#line 1629 "parser.tab.c"
     break;
 
 
-#line 1540 "parser.tab.c"
+#line 1633 "parser.tab.c"
 
       default: break;
     }
@@ -1768,7 +1861,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 157 "parser.y"
+#line 214 "parser.y"
 
 
 void yyerror(const char* s) {

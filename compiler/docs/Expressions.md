@@ -18,10 +18,10 @@
     - className
     - initializers
 - `IsExpression`
-    - object
+    - expression
     - type
 - `AsExpression`
-    - object
+    - expression
     - type
 
 ## Statements
