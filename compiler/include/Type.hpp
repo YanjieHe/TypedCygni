@@ -6,6 +6,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include "Enum.hpp"
 
 using std::make_optional;
 using std::make_shared;
