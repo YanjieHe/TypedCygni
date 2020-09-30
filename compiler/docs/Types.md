@@ -33,7 +33,10 @@ Is[Int](3.2) -> false
 ```
 class Base
 {
+    virtual def F(): Void
+    {
 
+    }
 }
 
 interface I1
@@ -53,6 +56,9 @@ interface I3
 
 class Inherited <: Base, I1, I2, I3
 {
+    override def F(): Void
+    {
 
+    }
 }
 ```
