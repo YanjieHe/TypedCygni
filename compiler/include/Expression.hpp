@@ -486,33 +486,6 @@ public:
   vector<CodeFile *> codeFiles;
 };
 
-class ExpressionManager
-{
-public:
-  std::list<Expression *> list;
-
-  template <typename T, typename... ArgTypes>
-  T *New(ArgTypes... args)
-  {
-    auto node = new T(args...);
-    list.push_back(node);
-    return node;
-  }
-
-  static shared_ptr<ExpressionManager> Create()
-  {
-    return make_shared<ExpressionManager>();
-  }
-
-  ~ExpressionManager()
-  {
-    for (auto node : list)
-    {
-      delete node;
-    }
-  }
-};
-
 class Error
 {
 public:
@@ -1314,26 +1287,5 @@ public:
   Tag tag;
   string text;
   Token(int line, int col, Tag tag, string text) : line{line}, col{col}, tag{tag}, text{text} {}
-};
-
-class TokenCreator
-{
-public:
-  std::list<Token *> tokens;
-  Token *Create(int line, int col, Tag tag, string text)
-  {
-    return new Token(line, col, tag, text);
-  }
-  static shared_ptr<TokenCreator> NewCreator()
-  {
-    return make_shared<TokenCreator>();
-  }
-  ~TokenCreator()
-  {
-    for (auto token : tokens)
-    {
-      delete token;
-    }
-  }
 };
 #endif // EXPRESSION_HPP
