@@ -62,3 +62,31 @@ class Inherited <: Base, I1, I2, I3
     }
 }
 ```
+
+## Types & Values
+
+### Type
+
+- `BasicType`
+    - tag
+- `FunctionType`
+    - parameters
+    - returnType
+- `IdentifierType`
+    - identifier
+- `ArrayType`
+    - elementType
+
+
+### Value
+
+- `BasicValue`
+    - tag
+- `ObjectValue`
+    - unordered_map<string, Value*> fields
+- `ArrayValue`
+    - Value* elementValue
+- `FunctionValue`
+    - vector<Value*> parameters
+    - Value* returnType
+    - ObjectValue* self
