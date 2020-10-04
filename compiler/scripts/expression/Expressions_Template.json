@@ -282,33 +282,6 @@
                     "value"
                 ]
             ]
-        },
-        "FuncDecl": {
-            "Statement Type": [
-                "FUNC_DECL"
-            ],
-            "Fields": [
-                [
-                    "string",
-                    "functionName"
-                ],
-                [
-                    "vector<Parameter>",
-                    "parameters"
-                ],
-                [
-                    "TypePtr",
-                    "returnType"
-                ],
-                [
-                    "vector<LocalVariable>",
-                    "localVariables"
-                ],
-                [
-                    "BlockPtr",
-                    "body"
-                ]
-            ]
         }
     }
 }
