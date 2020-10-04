@@ -164,32 +164,151 @@
                 ]
             ]
         },
-        "IfThen": [
-            "IF_THEN"
-        ],
-        "IfElse": [
-            "IF_ELSE"
-        ],
-        "While": [
-            "WHILE"
-        ],
-        "Assign": [
-            "ASSIGN"
-        ],
-        "Try": [
-            "TRY"
-        ],
-        "Return": [
-            "RETURN"
-        ],
-        "Break": [
-            "BREAK"
-        ],
-        "VarDecl": [
-            "VAR_DECL"
-        ],
-        "FuncDecl": [
-            "FUNC_DECL"
-        ]
+        "IfThen": {
+            "Statement Type": [
+                "IF_THEN"
+            ],
+            "Fields": [
+                [
+                    "ExpPtr",
+                    "condition"
+                ],
+                [
+                    "BlockPtr",
+                    "ifTrue"
+                ]
+            ]
+        },
+        "IfElse": {
+            "Statement Type": [
+                "IF_ELSE"
+            ],
+            "Fields": [
+                [
+                    "ExpPtr",
+                    "condition"
+                ],
+                [
+                    "BlockPtr",
+                    "ifTrue"
+                ],
+                [
+                    "BlockPtr",
+                    "ifFalse"
+                ]
+            ]
+        },
+        "While": {
+            "Statement Type": [
+                "WHILE"
+            ],
+            "Fields": [
+                [
+                    "ExpPtr",
+                    "condition"
+                ],
+                [
+                    "BlockPtr",
+                    "body"
+                ]
+            ]
+        },
+        "Assign": {
+            "Statement Type": [
+                "ASSIGN"
+            ],
+            "Fields": [
+                [
+                    "ExpPtr",
+                    "left"
+                ],
+                [
+                    "ExpPtr",
+                    "value"
+                ]
+            ]
+        },
+        "Try": {
+            "Statement Type": [
+                "TRY"
+            ],
+            "Fields": [
+                [
+                    "BlockPtr",
+                    "body"
+                ],
+                [
+                    "vector<CatchBlockPtr>",
+                    "handlers"
+                ],
+                [
+                    "BlockPtr",
+                    "finally"
+                ]
+            ]
+        },
+        "Return": {
+            "Statement Type": [
+                "RETURN"
+            ],
+            "Fields": [
+                [
+                    "ExpPtr",
+                    "value"
+                ]
+            ]
+        },
+        "Break": {
+            "Statement Type": [
+                "BREAK"
+            ],
+            "Fields": []
+        },
+        "VarDecl": {
+            "Statement Type": [
+                "VAR_DECL"
+            ],
+            "Fields": [
+                [
+                    "string",
+                    "variableName"
+                ],
+                [
+                    "optional<TypePtr>",
+                    "type"
+                ],
+                [
+                    "optional<ExpPtr>",
+                    "value"
+                ]
+            ]
+        },
+        "FuncDecl": {
+            "Statement Type": [
+                "FUNC_DECL"
+            ],
+            "Fields": [
+                [
+                    "string",
+                    "functionName"
+                ],
+                [
+                    "vector<Parameter>",
+                    "parameters"
+                ],
+                [
+                    "TypePtr",
+                    "returnType"
+                ],
+                [
+                    "vector<LocalVariable>",
+                    "localVariables"
+                ],
+                [
+                    "BlockPtr",
+                    "body"
+                ]
+            ]
+        }
     }
 }
