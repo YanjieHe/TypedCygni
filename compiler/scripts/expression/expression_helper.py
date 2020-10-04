@@ -2,6 +2,7 @@ import os
 import CppHeaderParser
 import sys
 import json
+from string import Template
 
 
 def get_cpp_header_info(input_file_path):
@@ -15,12 +16,12 @@ def get_cpp_header_info(input_file_path):
 
 def expression_def(class_name, cppHeader, node_type):
     class_template = """
-    class {0}: public Expression {{
+    class $class_name: public Expression {
     public:
-        {1}
-        {0}({2}): {3} {{}}
-        Position Pos() const override {{ return pos; }}
-        ExpressionType NodeType() const override {{ return {4}; }}
+        $fields
+        $class_name($parameters): $initializers { }
+        Position Pos() const override { return pos; }
+        ExpressionType NodeType() const override { return $node_type; }
     }};
     """
     field_defs = []
@@ -156,62 +157,149 @@ def generate_visitor(json_obj, visitor_name, exp_ret_type, stmt_ret_type, args_t
     )
 
 
-def main():
+def expressions_definition(json_data):
+    class_def_template = """
+    class $class_name: public Expression {
+    public:
+        $fields
+
+        $class_name($parameters): $initializers { }
+        Position Pos() const override { return pos; }
+        ExpressionType NodeType() const override { return $node_type; }
+    };
+    """
+    class_defs = []
+    for exp_name in json_data["Expressions"]:
+        exp_info = json_data["Expressions"][exp_name]
+        if len(exp_info["Node Type"]) > 1:
+            node_type = "nodeType"
+        elif len(exp_info["Node Type"]) == 1:
+            node_type = "ExpressionType::" + exp_info["Node Type"][0]
+        else:
+            raise Exception("missing node type")
+        class_name = exp_name + "Expression"
+        fields = []
+        parameters = []
+        initializers = []
+        for field_type, field_name in exp_info["Fields"]:
+            fields.append(field_type + " " + field_name + ";")
+            parameters.append(field_type + " " + field_name)
+            initializers.append(field_name + "{" + field_name + "}")
+        class_defs.append(Template(class_def_template).substitute(
+            {"class_name": class_name,
+             "fields": "\n".join(fields),
+             "parameters": ", ".join(parameters),
+             "initializers": ", ".join(initializers),
+             "node_type": node_type}
+        ))
+    return "\n".join(class_defs)
+
+
+def statements_definition(json_data):
+    class_def_template = """
+    class $class_name: public Statement {
+    public:
+        $fields
+
+        $class_name($parameters): $initializers { }
+        Position Pos() const override { return pos; }
+        StatementType GetStatementType() const override { return $statement_type; }
+    };
+    """
+    class_defs = []
+    for statement_name in json_data["Statements"]:
+        statement_info = json_data["Statements"][statement_name]
+        if len(statement_info["Statement Type"]) > 1:
+            node_type = "nodeType"
+        elif len(statement_info["Statement Type"]) == 1:
+            node_type = "StatementType::" + statement_info["Statement Type"][0]
+        else:
+            raise Exception("missing node type")
+        class_name = statement_name + "Statement"
+        fields = []
+        parameters = []
+        initializers = []
+        for field_type, field_name in statement_info["Fields"]:
+            fields.append(field_type + " " + field_name + ";")
+            parameters.append(field_type + " " + field_name)
+            initializers.append(field_name + "{" + field_name + "}")
+        class_defs.append(Template(class_def_template).substitute(
+            {"class_name": class_name,
+             "fields": "\n".join(fields),
+             "parameters": ", ".join(parameters),
+             "initializers": ", ".join(initializers),
+             "statement_type": node_type}
+        ))
+    return "\n".join(class_defs)
+
+
+def expressions_implementations():
     pass
 
 
-input_file_path = "Expressions_Template.cpp"
-cppHeader = get_cpp_header_info(input_file_path)
-with open("Expressions_Template.json", "r") as f:
-    json_obj = json.load(f)
+def main():
+    with open("Expressions_Template.json", "r") as f:
+        json_obj = json.load(f)
+    for line in json_obj["Code"]["Top"]:
+        print(line)
+    print(expressions_definition(json_obj))
+    print(statements_definition(json_obj))
+    for line in json_obj["Code"]["Bottom"]:
+        print(line)
 
 
-print("#ifndef EXPRESSION_HPP")
-print("#define EXPRESSION_HPP")
-for header in cppHeader.includes:
-    print("#include {0}".format(header))
-print()
-print("""
-using std::optional;
-using std::shared_ptr;
-using std::static_pointer_cast;
-using std::string;
-using std::unordered_map;
-using std::vector;
-using std::weak_ptr;
-
-class Statement {
-public:
-  virtual Position Pos() const = 0;
-  virtual StatementType GetStatementType() const = 0;
-};
-
-class Expression : public Statement {
-public:
-  virtual ExpressionType NodeType() const = 0;
-  StatementType GetStatementType() const override {
-    return StatementType::EXPRESSION;
-  }
-};
-""")
-for key in json_obj["Expressions"]:
-    if len(json_obj["Expressions"][key]) > 1:
-        print(expression_def(key + "Expression", cppHeader, "nodeType"))
-    else:
-        print(expression_def(key + "Expression", cppHeader,
-                             "ExpressionType::" + json_obj["Expressions"][key][0]))
+# input_file_path = "Expressions_Template.cpp"
+# cppHeader = get_cpp_header_info(input_file_path)
+# with open("Expressions_Template.json", "r") as f:
+#     json_obj = json.load(f)
 
 
-for key in json_obj["Statements"]:
-    if len(json_obj["Statements"][key]) > 1:
-        print(statement_def(key + "Statement", cppHeader, "statementType"))
-    else:
-        print(statement_def(key + "Statement", cppHeader,
-                            "StatementType::" + json_obj["Statements"][key][0]))
+# print("#ifndef EXPRESSION_HPP")
+# print("#define EXPRESSION_HPP")
+# for header in cppHeader.includes:
+#     print("#include {0}".format(header))
+# print()
+# print("""
+# using std::optional;
+# using std::shared_ptr;
+# using std::static_pointer_cast;
+# using std::string;
+# using std::unordered_map;
+# using std::vector;
+# using std::weak_ptr;
 
-print(generic_visitor(json_obj))
-print(generate_visitor(json_obj, "TypeChecker", "TypePtr", "void", ", ScopePtr", ", ScopePtr scope"))
-print(generate_visitor(json_obj, "AstJsonSerializer", "json", "json", "", ""))
-print("\n#endif // EXPRESSION_HPP")
+# class Statement {
+# public:
+#   virtual Position Pos() const = 0;
+#   virtual StatementType GetStatementType() const = 0;
+# };
+
+# class Expression : public Statement {
+# public:
+#   virtual ExpressionType NodeType() const = 0;
+#   StatementType GetStatementType() const override {
+#     return StatementType::EXPRESSION;
+#   }
+# };
+# """)
+# for key in json_obj["Expressions"]:
+#     if len(json_obj["Expressions"][key]) > 1:
+#         print(expression_def(key + "Expression", cppHeader, "nodeType"))
+#     else:
+#         print(expression_def(key + "Expression", cppHeader,
+#                              "ExpressionType::" + json_obj["Expressions"][key][0]))
+
+
+# for key in json_obj["Statements"]:
+#     if len(json_obj["Statements"][key]) > 1:
+#         print(statement_def(key + "Statement", cppHeader, "statementType"))
+#     else:
+#         print(statement_def(key + "Statement", cppHeader,
+#                             "StatementType::" + json_obj["Statements"][key][0]))
+
+# print(generic_visitor(json_obj))
+# print(generate_visitor(json_obj, "TypeChecker", "TypePtr", "void", ", ScopePtr", ", ScopePtr scope"))
+# print(generate_visitor(json_obj, "AstJsonSerializer", "json", "json", "", ""))
+# print("\n#endif // EXPRESSION_HPP")
 
 main()

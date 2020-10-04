@@ -18,6 +18,10 @@
             ],
             "Fields": [
                 [
+                    "Position",
+                    "pos"
+                ],
+                [
                     "ExpressionType",
                     "nodeType"
                 ],
@@ -43,6 +47,10 @@
             ],
             "Fields": [
                 [
+                    "Position",
+                    "pos"
+                ],
+                [
                     "ExpressionType",
                     "nodeType"
                 ],
@@ -60,6 +68,10 @@
             ],
             "Fields": [
                 [
+                    "Position",
+                    "pos"
+                ],
+                [
                     "ExpressionType",
                     "nodeType"
                 ],
@@ -74,6 +86,10 @@
                 "INVOKE"
             ],
             "Fields": [
+                [
+                    "Position",
+                    "pos"
+                ],
                 [
                     "ExpPtr",
                     "function"
@@ -90,6 +106,10 @@
             ],
             "Fields": [
                 [
+                    "Position",
+                    "pos"
+                ],
+                [
                     "string",
                     "identifier"
                 ]
@@ -100,6 +120,10 @@
                 "MEMBER"
             ],
             "Fields": [
+                [
+                    "Position",
+                    "pos"
+                ],
                 [
                     "ExpPtr",
                     "object"
@@ -116,6 +140,10 @@
             ],
             "Fields": [
                 [
+                    "Position",
+                    "pos"
+                ],
+                [
                     "string",
                     "className"
                 ]
@@ -126,6 +154,10 @@
                 "IS"
             ],
             "Fields": [
+                [
+                    "Position",
+                    "pos"
+                ],
                 [
                     "ExpPtr",
                     "object"
@@ -141,6 +173,10 @@
                 "AS"
             ],
             "Fields": [
+                [
+                    "Position",
+                    "pos"
+                ],
                 [
                     "ExpPtr",
                     "object"
@@ -159,6 +195,10 @@
             ],
             "Fields": [
                 [
+                    "Position",
+                    "pos"
+                ],
+                [
                     "vector<StatementPtr>",
                     "statements"
                 ]
@@ -169,6 +209,10 @@
                 "IF_THEN"
             ],
             "Fields": [
+                [
+                    "Position",
+                    "pos"
+                ],
                 [
                     "ExpPtr",
                     "condition"
@@ -184,6 +228,10 @@
                 "IF_ELSE"
             ],
             "Fields": [
+                [
+                    "Position",
+                    "pos"
+                ],
                 [
                     "ExpPtr",
                     "condition"
@@ -204,6 +252,10 @@
             ],
             "Fields": [
                 [
+                    "Position",
+                    "pos"
+                ],
+                [
                     "ExpPtr",
                     "condition"
                 ],
@@ -219,6 +271,10 @@
             ],
             "Fields": [
                 [
+                    "Position",
+                    "pos"
+                ],
+                [
                     "ExpPtr",
                     "left"
                 ],
@@ -233,6 +289,10 @@
                 "TRY"
             ],
             "Fields": [
+                [
+                    "Position",
+                    "pos"
+                ],
                 [
                     "BlockPtr",
                     "body"
@@ -253,6 +313,10 @@
             ],
             "Fields": [
                 [
+                    "Position",
+                    "pos"
+                ],
+                [
                     "ExpPtr",
                     "value"
                 ]
@@ -262,13 +326,22 @@
             "Statement Type": [
                 "BREAK"
             ],
-            "Fields": []
+            "Fields": [
+                [
+                    "Position",
+                    "pos"
+                ]
+            ]
         },
         "VarDecl": {
             "Statement Type": [
                 "VAR_DECL"
             ],
             "Fields": [
+                [
+                    "Position",
+                    "pos"
+                ],
                 [
                     "string",
                     "variableName"
@@ -283,5 +356,64 @@
                 ]
             ]
         }
+    },
+    "Code": {
+        "Top": [
+            "#ifndef EXPRESSION_HPP",
+            "#define EXPRESSION_HPP",
+            "",
+            "#include <vector>",
+            "#include <string>",
+            "#include <memory>",
+            "#include <optional>",
+            "#include <unordered_map>",
+            "#include \"Enum.hpp\"",
+            "#include \"Position.hpp\"",
+            "",
+            "using std::vector;",
+            "using std::string;",
+            "using std::unordered_map;",
+            "using std::shared_ptr;",
+            "using std::optional;",
+            "using std::static_pointer_cast;",
+            "",
+            "class Statement;",
+            "class Expression;",
+            "class BlockStatement;",
+            "class CatchBlock;",
+            "using ExpPtr = shared_ptr<Expression>;",
+            "using StatementPtr = shared_ptr<Statement>;",
+            "using BlockPtr = shared_ptr<BlockStatement>;",
+            "using CatchBlockPtr = shared_ptr<CatchBlock>;",
+            "",
+            "class Statement {",
+            "public:",
+            "  virtual Position Pos() const = 0;",
+            "  virtual StatementType GetStatementType() const = 0;",
+            "};",
+            "",
+            "class Expression : public Statement {",
+            "public:",
+            "  virtual ExpressionType NodeType() const = 0;",
+            "  StatementType GetStatementType() const override {",
+            "    return StatementType::EXPRESSION;",
+            "  }",
+            "};",
+            "",
+            "class CatchBlock",
+            "{",
+            "public:",
+            "  string variable;",
+            "  TypePtr test;",
+            "  BlockPtr body;",
+            "",
+            "  CatchBlock(string variable, TypePtr test, BlockPtr body) : variable{variable}, test{test}, body{body} {}",
+            "};",
+            ""
+        ],
+        "Bottom": [
+            "",
+            "#endif // EXPRESSION_HPP"
+        ]
     }
 }
