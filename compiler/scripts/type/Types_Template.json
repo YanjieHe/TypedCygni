@@ -1,0 +1,28 @@
+{
+    "Basic": {
+        "Type Code": [
+            "INT",
+            "FLOAT",
+            "LONG",
+            "DOUBLE",
+            "BOOLEAN",
+            "CHAR",
+            "STRING"
+        ]
+    },
+    "Array": {
+        "Type Code": [
+            "ARRAY"
+        ]
+    },
+    "Function": {
+        "Type Code": [
+            "FUNCTION"
+        ]
+    },
+    "Object": {
+        "Type Code": [
+            "OBJECT"
+        ]
+    }
+}
