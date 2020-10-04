@@ -1,23 +1,27 @@
 import os
 import CppHeaderParser
 import sys
+from CppHeaderParser import CppHeader
+from typing import List, Dict
+from string import Template
 
 
-def get_cpp_header_info(input_file_path):
-    try:
-        cppHeader = CppHeaderParser.CppHeader(input_file_path)
-        return cppHeader
-    except CppHeaderParser.CppParseError as e:
-        print(e)
-        sys.exit(1)
+def get_cpp_header_info(input_file_path: str) -> CppHeader:
+    return CppHeaderParser.CppHeader(input_file_path)
 
 
-def enum_definitions(cppHeader, is_enum_class):
-    def enum_name(name):
+def fill(text: str, key_value_pairs: Dict[str, str]) -> str:
+    return Template(text).substitute(key_value_pairs)
+
+
+def enum_definitions(cppHeader: CppHeader, is_enum_class: bool) -> List[str]:
+    def enum_name(name: str) -> str:
         if is_enum_class:
-            return "enum class " + name + "{"
+            return fill("enum class $name {",
+                        {"name": name})
         else:
-            return "enum " + name + "{"
+            return fill("enum $name {",
+                        {"name": name})
     lines = []
     for enum in cppHeader.enums:
         lines.append(enum_name(enum["name"]))
@@ -33,14 +37,13 @@ def enum_definitions(cppHeader, is_enum_class):
 
 def enum_to_string(cppHeader, is_enum_class):
     func_def = """
-    template <> class Enum<{0}> {{
+    template <> class Enum<$enum_type> {
         public:
-        static std::string ToString({0} value) {{
-            switch (value) {{"""
+        static std::string ToString($enum_type value) {
+            switch (value) {"""
     lines = []
     for enum in cppHeader.enums:
-        lines.append(func_def.format(enum["name"]))
-        n = len(enum["values"])
+        lines.append(fill(func_def, {"enum_type": enum["name"]}))
         for value in enum["values"]:
             if is_enum_class:
                 lines.append("case {0}::{1}: return \"{0}::{1}\";".format(
@@ -48,7 +51,8 @@ def enum_to_string(cppHeader, is_enum_class):
                 ))
             else:
                 lines.append("case {0}: return \"{0}\";".format(value["name"]))
-        lines.append("default: return \"ENUMERATION VALUE OUT OF BOUND\"; }}};")
+        lines.append(
+            "default: return \"ENUMERATION VALUE OUT OF BOUND\"; }}};")
     return lines
 
 
@@ -60,6 +64,7 @@ public:
     return "ENUMERATION VALUE OUT OF BOUND";
   }
 };"""
+
 
 def main():
     is_enum_class = True
@@ -77,5 +82,7 @@ def main():
     print("\n".join(lines))
     print("\n#endif // ENUM_HPP")
 
+
 # python enum_helper.py | clang-format.exe > Enum.hpp
+# python .\enum_helper.py | clang-format.exe | Out-File -Encoding utf8NoBOM "Enum.hpp"
 main()

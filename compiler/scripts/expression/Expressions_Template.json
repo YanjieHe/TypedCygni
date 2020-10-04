@@ -1,51 +1,169 @@
 {
     "Expressions": {
-        "Binary": [
-            "ADD",
-            "SUBTRACT",
-            "MULTIPLY",
-            "DIVIDE",
-            "MODULO",
-            "GT",
-            "LT",
-            "GE",
-            "LE",
-            "EQ",
-            "NE",
-            "LOGICAL_AND",
-            "LOGICAL_OR"
-        ],
-        "Constant": [
-            "INT",
-            "LONG",
-            "FLOAT",
-            "DOUBLE",
-            "BOOLEAN",
-            "CHAR",
-            "STRING"
-        ],
-        "Unary": [
-            "PLUS",
-            "MINUS",
-            "LOGICAL_NOT"
-        ],
-        "Invocation": [
-            "INVOKE"
-        ],
-        "Identifier": [
-            "IDENTIFIER"
-        ],
-        "Conversion": [
-            "CONVERT"
-        ],
-        "Member": [
-            "MEMBER"
-        ],
-        "New": [
-            "NEW"
-        ]
+        "Binary": {
+            "Node Type": [
+                "ADD",
+                "SUBTRACT",
+                "MULTIPLY",
+                "DIVIDE",
+                "MODULO",
+                "GT",
+                "LT",
+                "GE",
+                "LE",
+                "EQ",
+                "NE",
+                "LOGICAL_AND",
+                "LOGICAL_OR"
+            ],
+            "Fields": [
+                [
+                    "ExpressionType",
+                    "nodeType"
+                ],
+                [
+                    "ExpPtr",
+                    "left"
+                ],
+                [
+                    "ExpPtr",
+                    "right"
+                ]
+            ]
+        },
+        "Constant": {
+            "Node Type": [
+                "INT",
+                "LONG",
+                "FLOAT",
+                "DOUBLE",
+                "BOOLEAN",
+                "CHAR",
+                "STRING"
+            ],
+            "Fields": [
+                [
+                    "ExpressionType",
+                    "nodeType"
+                ],
+                [
+                    "string",
+                    "value"
+                ]
+            ]
+        },
+        "Unary": {
+            "Node Type": [
+                "PLUS",
+                "MINUS",
+                "LOGICAL_NOT"
+            ],
+            "Fields": [
+                [
+                    "ExpressionType",
+                    "nodeType"
+                ],
+                [
+                    "ExpPtr",
+                    "operand"
+                ]
+            ]
+        },
+        "Invocation": {
+            "Node Type": [
+                "INVOKE"
+            ],
+            "Fields": [
+                [
+                    "ExpPtr",
+                    "function"
+                ],
+                [
+                    "vector<ExpPtr>",
+                    "arguments"
+                ]
+            ]
+        },
+        "Identifier": {
+            "Node Type": [
+                "IDENTIFIER"
+            ],
+            "Fields": [
+                [
+                    "string",
+                    "identifier"
+                ]
+            ]
+        },
+        "Member": {
+            "Node Type": [
+                "MEMBER"
+            ],
+            "Fields": [
+                [
+                    "ExpPtr",
+                    "object"
+                ],
+                [
+                    "string",
+                    "memberName"
+                ]
+            ]
+        },
+        "New": {
+            "Node Type": [
+                "NEW"
+            ],
+            "Fields": [
+                [
+                    "string",
+                    "className"
+                ]
+            ]
+        },
+        "Is": {
+            "Node Type": [
+                "IS"
+            ],
+            "Fields": [
+                [
+                    "ExpPtr",
+                    "object"
+                ],
+                [
+                    "TypePtr",
+                    "type"
+                ]
+            ]
+        },
+        "As": {
+            "Node Type": [
+                "AS"
+            ],
+            "Fields": [
+                [
+                    "ExpPtr",
+                    "object"
+                ],
+                [
+                    "TypePtr",
+                    "type"
+                ]
+            ]
+        }
     },
     "Statements": {
+        "Block": {
+            "Statement Type": [
+                "BLOCK"
+            ],
+            "Fields": [
+                [
+                    "vector<StatementPtr>",
+                    "statements"
+                ]
+            ]
+        },
         "IfThen": [
             "IF_THEN"
         ],
@@ -55,8 +173,11 @@
         "While": [
             "WHILE"
         ],
-        "Block": [
-            "BLOCK"
+        "Assign": [
+            "ASSIGN"
+        ],
+        "Try": [
+            "TRY"
         ],
         "Return": [
             "RETURN"
@@ -64,11 +185,11 @@
         "Break": [
             "BREAK"
         ],
-        "Assign": [
-            "ASSIGN"
-        ],
         "VarDecl": [
             "VAR_DECL"
+        ],
+        "FuncDecl": [
+            "FUNC_DECL"
         ]
     }
 }

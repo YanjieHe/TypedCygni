@@ -47,6 +47,8 @@
 - `ReturnStatement`
     - value
 - `BreakStatement`
+- `VarDeclStatement`
+- `FuncDeclStatement`
 
 ## Sample Code
 
