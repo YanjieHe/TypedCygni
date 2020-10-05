@@ -1,0 +1,5 @@
+#include "Expression.hpp"
+
+${statement_static_methods_impls}
+
+${expression_static_methods_impls}

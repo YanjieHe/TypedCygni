@@ -1,0 +1,138 @@
+{
+    "Types": {
+        "Basic": {
+            "Type Code": [
+                "INT",
+                "FLOAT",
+                "LONG",
+                "DOUBLE",
+                "BOOLEAN",
+                "CHAR",
+                "STRING"
+            ],
+            "Fields": [
+                [
+                    "TypeCode",
+                    "typeCode"
+                ]
+            ]
+        },
+        "Unknown": {
+            "Type Code": [
+                "UNKNOWN"
+            ],
+            "Fields": [
+                [
+                    "string",
+                    "identifier"
+                ]
+            ]
+        },
+        "Array": {
+            "Type Code": [
+                "ARRAY"
+            ],
+            "Fields": [
+                [
+                    "TypePtr",
+                    "elementType"
+                ]
+            ]
+        }
+    },
+    "Values": {
+        "Basic": {
+            "Type Code": [
+                "INT",
+                "FLOAT",
+                "LONG",
+                "DOUBLE",
+                "BOOLEAN",
+                "CHAR",
+                "STRING"
+            ],
+            "Fields": [
+                [
+                    "TypeCode",
+                    "typeCode"
+                ]
+            ]
+        },
+        "Array": {
+            "Type Code": [
+                "ARRAY"
+            ],
+            "Fields": [
+                [
+                    "ValuePtr",
+                    "elementType"
+                ]
+            ]
+        },
+        "Function": {
+            "Type Code": [
+                "FUNCTION"
+            ],
+            "Fields": [
+                [
+                    "vector<ValuePtr>",
+                    "parameters"
+                ],
+                [
+                    "ValuePtr",
+                    "returnType"
+                ]
+            ]
+        },
+        "Record": {
+            "Type Code": [
+                "RECORD"
+            ],
+            "Fields": [
+                [
+                    "string",
+                    "name"
+                ],
+                [
+                    "unordered_map<string, ValuePtr>",
+                    "fields"
+                ]
+            ]
+        }
+    },
+    "Code": {
+        "Top": [
+            "#ifndef TYPE_HPP",
+            "#define TYPE_HPP",
+            "",
+            "#include <vector>",
+            "#include <unordered_map>",
+            "#include <string>",
+            "#include <memory>",
+            "#include \"Enum.hpp\"",
+            "",
+            "class Type;",
+            "class Value;",
+            "using std::vector;",
+            "using std::unordered_map;",
+            "using std::string;",
+            "using std::shared_ptr;",
+            "using TypePtr = shared_ptr<Type>;",
+            "using ValuePtr = shared_ptr<Value>;",
+            "",
+            "class Type {",
+            "public:",
+            "virtual TypeCode GetTypeCode() const;",
+            "};",
+            "",
+            "class Value {",
+            "public:",
+            "virtual TypeCode GetTypeCode() const;",
+            "};"
+        ],
+        "Bottom": [
+            "",
+            "#endif // TYPE_HPP"
+        ]
+    }
+}

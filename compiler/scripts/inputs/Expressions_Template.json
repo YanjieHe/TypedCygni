@@ -1,0 +1,420 @@
+{
+    "Expressions": {
+        "Binary": {
+            "Node Type": [
+                "ADD",
+                "SUBTRACT",
+                "MULTIPLY",
+                "DIVIDE",
+                "MODULO",
+                "GT",
+                "LT",
+                "GE",
+                "LE",
+                "EQ",
+                "NE",
+                "LOGICAL_AND",
+                "LOGICAL_OR"
+            ],
+            "Fields": [
+                [
+                    "Position",
+                    "pos"
+                ],
+                [
+                    "ExpressionType",
+                    "nodeType"
+                ],
+                [
+                    "ExpPtr",
+                    "left"
+                ],
+                [
+                    "ExpPtr",
+                    "right"
+                ]
+            ]
+        },
+        "Constant": {
+            "Node Type": [
+                "INT",
+                "LONG",
+                "FLOAT",
+                "DOUBLE",
+                "BOOLEAN",
+                "CHAR",
+                "STRING"
+            ],
+            "Fields": [
+                [
+                    "Position",
+                    "pos"
+                ],
+                [
+                    "ExpressionType",
+                    "nodeType"
+                ],
+                [
+                    "string",
+                    "value"
+                ]
+            ]
+        },
+        "Unary": {
+            "Node Type": [
+                "PLUS",
+                "MINUS",
+                "LOGICAL_NOT"
+            ],
+            "Fields": [
+                [
+                    "Position",
+                    "pos"
+                ],
+                [
+                    "ExpressionType",
+                    "nodeType"
+                ],
+                [
+                    "ExpPtr",
+                    "operand"
+                ]
+            ]
+        },
+        "Invocation": {
+            "Node Type": [
+                "INVOKE"
+            ],
+            "Fields": [
+                [
+                    "Position",
+                    "pos"
+                ],
+                [
+                    "ExpPtr",
+                    "function"
+                ],
+                [
+                    "vector<ExpPtr>",
+                    "arguments"
+                ]
+            ]
+        },
+        "Identifier": {
+            "Node Type": [
+                "IDENTIFIER"
+            ],
+            "Fields": [
+                [
+                    "Position",
+                    "pos"
+                ],
+                [
+                    "string",
+                    "identifier"
+                ]
+            ]
+        },
+        "Member": {
+            "Node Type": [
+                "MEMBER"
+            ],
+            "Fields": [
+                [
+                    "Position",
+                    "pos"
+                ],
+                [
+                    "ExpPtr",
+                    "object"
+                ],
+                [
+                    "string",
+                    "memberName"
+                ]
+            ]
+        },
+        "New": {
+            "Node Type": [
+                "NEW"
+            ],
+            "Fields": [
+                [
+                    "Position",
+                    "pos"
+                ],
+                [
+                    "string",
+                    "className"
+                ]
+            ]
+        },
+        "Is": {
+            "Node Type": [
+                "IS"
+            ],
+            "Fields": [
+                [
+                    "Position",
+                    "pos"
+                ],
+                [
+                    "ExpPtr",
+                    "object"
+                ],
+                [
+                    "TypePtr",
+                    "type"
+                ]
+            ]
+        },
+        "As": {
+            "Node Type": [
+                "AS"
+            ],
+            "Fields": [
+                [
+                    "Position",
+                    "pos"
+                ],
+                [
+                    "ExpPtr",
+                    "object"
+                ],
+                [
+                    "TypePtr",
+                    "type"
+                ]
+            ]
+        }
+    },
+    "Statements": {
+        "Block": {
+            "Statement Type": [
+                "BLOCK"
+            ],
+            "Fields": [
+                [
+                    "Position",
+                    "pos"
+                ],
+                [
+                    "vector<StatementPtr>",
+                    "statements"
+                ]
+            ]
+        },
+        "IfThen": {
+            "Statement Type": [
+                "IF_THEN"
+            ],
+            "Fields": [
+                [
+                    "Position",
+                    "pos"
+                ],
+                [
+                    "ExpPtr",
+                    "condition"
+                ],
+                [
+                    "BlockPtr",
+                    "ifTrue"
+                ]
+            ]
+        },
+        "IfElse": {
+            "Statement Type": [
+                "IF_ELSE"
+            ],
+            "Fields": [
+                [
+                    "Position",
+                    "pos"
+                ],
+                [
+                    "ExpPtr",
+                    "condition"
+                ],
+                [
+                    "BlockPtr",
+                    "ifTrue"
+                ],
+                [
+                    "BlockPtr",
+                    "ifFalse"
+                ]
+            ]
+        },
+        "While": {
+            "Statement Type": [
+                "WHILE"
+            ],
+            "Fields": [
+                [
+                    "Position",
+                    "pos"
+                ],
+                [
+                    "ExpPtr",
+                    "condition"
+                ],
+                [
+                    "BlockPtr",
+                    "body"
+                ]
+            ]
+        },
+        "Assign": {
+            "Statement Type": [
+                "ASSIGN"
+            ],
+            "Fields": [
+                [
+                    "Position",
+                    "pos"
+                ],
+                [
+                    "ExpPtr",
+                    "left"
+                ],
+                [
+                    "ExpPtr",
+                    "value"
+                ]
+            ]
+        },
+        "Try": {
+            "Statement Type": [
+                "TRY"
+            ],
+            "Fields": [
+                [
+                    "Position",
+                    "pos"
+                ],
+                [
+                    "BlockPtr",
+                    "body"
+                ],
+                [
+                    "vector<CatchBlockPtr>",
+                    "handlers"
+                ],
+                [
+                    "BlockPtr",
+                    "finally"
+                ]
+            ]
+        },
+        "Return": {
+            "Statement Type": [
+                "RETURN"
+            ],
+            "Fields": [
+                [
+                    "Position",
+                    "pos"
+                ],
+                [
+                    "ExpPtr",
+                    "value"
+                ]
+            ]
+        },
+        "Break": {
+            "Statement Type": [
+                "BREAK"
+            ],
+            "Fields": [
+                [
+                    "Position",
+                    "pos"
+                ]
+            ]
+        },
+        "VarDecl": {
+            "Statement Type": [
+                "VAR_DECL"
+            ],
+            "Fields": [
+                [
+                    "Position",
+                    "pos"
+                ],
+                [
+                    "string",
+                    "variableName"
+                ],
+                [
+                    "optional<TypePtr>",
+                    "type"
+                ],
+                [
+                    "optional<ExpPtr>",
+                    "value"
+                ]
+            ]
+        }
+    },
+    "Code": {
+        "Top": [
+            "#ifndef EXPRESSION_HPP",
+            "#define EXPRESSION_HPP",
+            "",
+            "#include <vector>",
+            "#include <string>",
+            "#include <memory>",
+            "#include <optional>",
+            "#include <unordered_map>",
+            "#include \"Enum.hpp\"",
+            "#include \"Position.hpp\"",
+            "#include \"Type.hpp\"",
+            "",
+            "using std::vector;",
+            "using std::string;",
+            "using std::unordered_map;",
+            "using std::shared_ptr;",
+            "using std::optional;",
+            "using std::static_pointer_cast;",
+            "",
+            "class Statement;",
+            "class Expression;",
+            "class BlockStatement;",
+            "class CatchBlock;",
+            "using ExpPtr = shared_ptr<Expression>;",
+            "using StatementPtr = shared_ptr<Statement>;",
+            "using BlockPtr = shared_ptr<BlockStatement>;",
+            "using CatchBlockPtr = shared_ptr<CatchBlock>;",
+            "",
+            "class Statement {",
+            "public:",
+            "  virtual Position Pos() const = 0;",
+            "  virtual StatementType GetStatementType() const = 0;",
+            "};",
+            "",
+            "class Expression : public Statement {",
+            "public:",
+            "  virtual ExpressionType NodeType() const = 0;",
+            "  StatementType GetStatementType() const override {",
+            "    return StatementType::EXPRESSION;",
+            "  }",
+            "};",
+            "",
+            "class CatchBlock",
+            "{",
+            "public:",
+            "  string variable;",
+            "  TypePtr test;",
+            "  BlockPtr body;",
+            "",
+            "  CatchBlock(string variable, TypePtr test, BlockPtr body) : variable{variable}, test{test}, body{body} {}",
+            "};",
+            ""
+        ],
+        "Bottom": [
+            "",
+            "#endif // EXPRESSION_HPP"
+        ]
+    }
+}

@@ -16,6 +16,7 @@ using std::unordered_map;
 using std::shared_ptr;
 using std::optional;
 using std::static_pointer_cast;
+using std::make_shared;
 
 class Statement;
 class Expression;
@@ -30,6 +31,32 @@ class Statement {
 public:
   virtual Position Pos() const = 0;
   virtual StatementType GetStatementType() const = 0;
+  static shared_ptr<BlockStatement> Block(Position pos,
+                                          vector<StatementPtr> statements);
+
+  static shared_ptr<IfThenStatement> IfThen(Position pos, ExpPtr condition,
+                                            BlockPtr ifTrue);
+
+  static shared_ptr<IfElseStatement> IfElse(Position pos, ExpPtr condition,
+                                            BlockPtr ifTrue, BlockPtr ifFalse);
+
+  static shared_ptr<WhileStatement> While(Position pos, ExpPtr condition,
+                                          BlockPtr body);
+
+  static shared_ptr<AssignStatement> Assign(Position pos, ExpPtr left,
+                                            ExpPtr value);
+
+  static shared_ptr<TryStatement> Try(Position pos, BlockPtr body,
+                                      vector<CatchBlockPtr> handlers,
+                                      BlockPtr finally);
+
+  static shared_ptr<ReturnStatement> Return(Position pos, ExpPtr value);
+
+  static shared_ptr<BreakStatement> Break(Position pos);
+
+  static shared_ptr<VarDeclStatement> VarDecl(Position pos, string variableName,
+                                              optional<TypePtr> type,
+                                              optional<ExpPtr> value);
 };
 
 class Expression : public Statement {
@@ -38,6 +65,29 @@ public:
   StatementType GetStatementType() const override {
     return StatementType::EXPRESSION;
   }
+  static shared_ptr<BinaryExpression>
+  Binary(Position pos, ExpressionType nodeType, ExpPtr left, ExpPtr right);
+
+  static shared_ptr<ConstantExpression>
+  Constant(Position pos, ExpressionType nodeType, string value);
+
+  static shared_ptr<UnaryExpression>
+  Unary(Position pos, ExpressionType nodeType, ExpPtr operand);
+
+  static shared_ptr<InvocationExpression>
+  Invocation(Position pos, ExpPtr function, vector<ExpPtr> arguments);
+
+  static shared_ptr<IdentifierExpression> Identifier(Position pos,
+                                                     string identifier);
+
+  static shared_ptr<MemberExpression> Member(Position pos, ExpPtr object,
+                                             string memberName);
+
+  static shared_ptr<NewExpression> New(Position pos, string className);
+
+  static shared_ptr<IsExpression> Is(Position pos, ExpPtr object, TypePtr type);
+
+  static shared_ptr<AsExpression> As(Position pos, ExpPtr object, TypePtr type);
 };
 
 class CatchBlock {
