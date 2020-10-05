@@ -146,7 +146,9 @@ enum TypeCode {
   FUNCTION,
   METHOD,
   ARRAY,
-  OBJECT
+  OBJECT,
+  UNKNOWN,
+  RECORD
 };
 
 enum OpCode {

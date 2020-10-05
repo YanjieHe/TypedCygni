@@ -1,8 +1,10 @@
-import os
-import CppHeaderParser
-import sys
+import argparse
 import json
+import os
+import sys
 from string import Template
+
+import CppHeaderParser
 
 
 def get_cpp_header_info(input_file_path):
@@ -210,7 +212,7 @@ def statements_definition(json_data):
     for statement_name in json_data["Statements"]:
         statement_info = json_data["Statements"][statement_name]
         if len(statement_info["Statement Type"]) > 1:
-            node_type = "nodeType"
+            node_type = "statementType"
         elif len(statement_info["Statement Type"]) == 1:
             node_type = "StatementType::" + statement_info["Statement Type"][0]
         else:
@@ -233,73 +235,104 @@ def statements_definition(json_data):
     return "\n".join(class_defs)
 
 
-def expressions_implementations():
-    pass
+def expression_static_methods(json_data):
+    def upper_case_to_camel(name):
+        items = name.split('_')
+        result = []
+        for item in items:
+            result.append(item[0] + item[1:].lower())
+        return "".join(result)
+
+    func_def = """static $return_type $func_name($parameters);"""
+    func_list = []
+    for exp_name in json_data["Expressions"]:
+        exp_info = json_data["Expressions"][exp_name]
+        class_name = exp_name + "Expression"
+        parameters = []
+        for field_type, field_name in exp_info["Fields"]:
+            parameters.append(field_type + " " + field_name)
+        func_list.append(Template(func_def).substitute(
+            {
+                "return_type": "shared_ptr<" + class_name + ">",
+                "func_name": exp_name,
+                "parameters": ", ".join(parameters)
+            }
+        ))
+    return "\n".join(func_list)
+
+
+def statements_static_methods(json_data):
+    func_def = """static shared_ptr<$class_name> $func_name($parameters);"""
+    func_list = []
+    for exp_name in json_data["Statements"]:
+        exp_info = json_data["Statements"][exp_name]
+        class_name = exp_name + "Statement"
+        parameters = []
+        for field_type, field_name in exp_info["Fields"]:
+            parameters.append(field_type + " " + field_name)
+        func_list.append(Template(func_def).substitute(
+            {
+                "class_name": class_name,
+                "func_name": exp_name,
+                "parameters": ", ".join(parameters)
+            }
+        ))
+    return "\n".join(func_list)
+
+
+def expressions_implementations(json_data):
+    func_def = """
+    static shared_ptr<$class_name> $func_name($parameters) {
+        return make_shared<$class_name>($arguments);
+    }"""
+    func_list = []
+    for exp_name in json_data["Expressions"]:
+        exp_info = json_data["Expressions"][exp_name]
+        class_name = exp_name + "Expression"
+        parameters = []
+        arguments = []
+        for field_type, field_name in exp_info["Fields"]:
+            parameters.append(field_type + " " + field_name)
+            arguments.append(field_name)
+        func_list.append(Template(func_def).substitute(
+            {
+                "class_name": class_name,
+                "func_name": exp_name,
+                "parameters": ", ".join(parameters),
+                "arguments": ", ".join(arguments)
+            }
+        ))
+    return "\n".join(func_list)
 
 
 def main():
-    with open("Expressions_Template.json", "r") as f:
+    # parse command line arguments
+    my_parser = argparse.ArgumentParser()
+    my_parser.add_argument(
+        "--path", type=str, help="the input json formatted template for expressions.")
+    my_parser.add_argument(
+        "--header", type=bool, help="if adding this flag, then print header file. Otherwise, print implementation.")
+    args = my_parser.parse_args()
+
+    with open(args.path, "r") as f:
         json_obj = json.load(f)
-    for line in json_obj["Code"]["Top"]:
-        print(line)
-    print(expressions_definition(json_obj))
-    print(statements_definition(json_obj))
-    for line in json_obj["Code"]["Bottom"]:
-        print(line)
+
+    if args.header:
+        # print top code
+        for line in json_obj["Code"]["Top"]:
+            print(line)
+
+        print(expressions_definition(json_obj))
+        print(statements_definition(json_obj))
+
+        # print bottom code
+        for line in json_obj["Code"]["Bottom"]:
+            print(line)
+    else:
+        print(expression_static_methods(json_obj))
+        print(statements_static_methods(json_obj))
+        print(expressions_implementations(json_obj))
 
 
-# input_file_path = "Expressions_Template.cpp"
-# cppHeader = get_cpp_header_info(input_file_path)
-# with open("Expressions_Template.json", "r") as f:
-#     json_obj = json.load(f)
-
-
-# print("#ifndef EXPRESSION_HPP")
-# print("#define EXPRESSION_HPP")
-# for header in cppHeader.includes:
-#     print("#include {0}".format(header))
-# print()
-# print("""
-# using std::optional;
-# using std::shared_ptr;
-# using std::static_pointer_cast;
-# using std::string;
-# using std::unordered_map;
-# using std::vector;
-# using std::weak_ptr;
-
-# class Statement {
-# public:
-#   virtual Position Pos() const = 0;
-#   virtual StatementType GetStatementType() const = 0;
-# };
-
-# class Expression : public Statement {
-# public:
-#   virtual ExpressionType NodeType() const = 0;
-#   StatementType GetStatementType() const override {
-#     return StatementType::EXPRESSION;
-#   }
-# };
-# """)
-# for key in json_obj["Expressions"]:
-#     if len(json_obj["Expressions"][key]) > 1:
-#         print(expression_def(key + "Expression", cppHeader, "nodeType"))
-#     else:
-#         print(expression_def(key + "Expression", cppHeader,
-#                              "ExpressionType::" + json_obj["Expressions"][key][0]))
-
-
-# for key in json_obj["Statements"]:
-#     if len(json_obj["Statements"][key]) > 1:
-#         print(statement_def(key + "Statement", cppHeader, "statementType"))
-#     else:
-#         print(statement_def(key + "Statement", cppHeader,
-#                             "StatementType::" + json_obj["Statements"][key][0]))
-
-# print(generic_visitor(json_obj))
-# print(generate_visitor(json_obj, "TypeChecker", "TypePtr", "void", ", ScopePtr", ", ScopePtr scope"))
-# print(generate_visitor(json_obj, "AstJsonSerializer", "json", "json", "", ""))
-# print("\n#endif // EXPRESSION_HPP")
-
-main()
+if __name__ == "__main__":
+    main()

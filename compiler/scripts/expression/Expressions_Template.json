@@ -369,6 +369,7 @@
             "#include <unordered_map>",
             "#include \"Enum.hpp\"",
             "#include \"Position.hpp\"",
+            "#include \"Type.hpp\"",
             "",
             "using std::vector;",
             "using std::string;",
