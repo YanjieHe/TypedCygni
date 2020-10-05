@@ -69,7 +69,7 @@ from cpp_generator_utils import *
 #     )
 
 
-# def generic_visitor(json_obj):
+# def generic_visitor(json_data):
 #     visitor_code = """
 #     template <typename ExpReturnType, typename StatementReturnType,
 #           typename... ArgTypes>
@@ -98,8 +98,8 @@ from cpp_generator_utils import *
 #     exp_lines = []
 #     stmt_lines = []
 #     func_lines = []
-#     for exp_name in json_obj["Expressions"]:
-#         for enum_name in json_obj["Expressions"][exp_name]:
+#     for exp_name in json_data["Expressions"]:
+#         for enum_name in json_data["Expressions"][exp_name]:
 #             exp_lines.append(
 #                 "case ExpressionType::{0}: {{ return Visit{1}(dynamic_cast<{2}*>(node), args...); }}"
 #                 .format(
@@ -111,8 +111,8 @@ from cpp_generator_utils import *
 #                 exp_name, exp_name + "Expression"
 #             )
 #         )
-#     for stmt_name in json_obj["Statements"]:
-#         for enum_name in json_obj["Statements"][stmt_name]:
+#     for stmt_name in json_data["Statements"]:
+#         for enum_name in json_data["Statements"][stmt_name]:
 #             stmt_lines.append(
 #                 "case StatementType::{0}: {{ return Visit{1}(dynamic_cast<{2}*>(node), args...); }}"
 #                 .format(
@@ -131,7 +131,7 @@ from cpp_generator_utils import *
 #     )
 
 
-# def generate_visitor(json_obj, visitor_name, exp_ret_type, stmt_ret_type, args_type, arg_names):
+# def generate_visitor(json_data, visitor_name, exp_ret_type, stmt_ret_type, args_type, arg_names):
 #     visitor_code = """
 #     template <>
 #     class {0}<{1}, {2}{3}> {{
@@ -140,14 +140,14 @@ from cpp_generator_utils import *
 #     }};
 #     """
 #     func_lines = []
-#     for exp_name in json_obj["Expressions"]:
+#     for exp_name in json_data["Expressions"]:
 #         func_lines.append(
 #             "{0} Visit{1}({2}* node{3}) override {{}}"
 #             .format(
 #                 exp_ret_type, exp_name, exp_name + "Expression", arg_names
 #             )
 #         )
-#     for stmt_name in json_obj["Statements"]:
+#     for stmt_name in json_data["Statements"]:
 #         func_lines.append(
 #             "{0} Visit{1}({2}* node{3}) override {{}}"
 #             .format(
@@ -275,7 +275,7 @@ def statements_static_methods(json_data):
 
 def expressions_implementations(json_data):
     func_def = """
-    static shared_ptr<$class_name> $func_name($parameters) {
+    shared_ptr<$class_name> Expression::$func_name($parameters) {
         return make_shared<$class_name>($arguments);
     }"""
     func_list = []
@@ -300,7 +300,7 @@ def expressions_implementations(json_data):
 
 def statements_implementations(json_data):
     func_def = """
-    static shared_ptr<$class_name> $func_name($parameters) {
+    shared_ptr<$class_name> Statement::$func_name($parameters) {
         return make_shared<$class_name>($arguments);
     }"""
     func_list = []
@@ -329,21 +329,21 @@ def main():
     my_parser.add_argument(
         "--path", type=str, help="the input json formatted template for expressions.")
     my_parser.add_argument(
-        "--header", type=bool, help="if adding this flag, then print header file. Otherwise, print implementation.")
+        "--header", action="store_true", help="if adding this flag, then print header file. Otherwise, print implementation.")
     args = my_parser.parse_args()
 
     with open(args.path, "r") as f:
-        json_obj = json.load(f)
+        json_data = json.load(f)
 
     if args.header:
         with open(os.path.join("templates", "Expression_hpp.txt"), "r") as f:
             expression_header = f.read()
         print(Template(expression_header).substitute(
             {
-                "statement_static_methods": statements_static_methods(json_obj),
-                "expression_static_methods": expression_static_methods(json_obj),
-                "expression_definitions": expressions_definition(json_obj),
-                "statement_definitions": statements_definition(json_obj)
+                "statement_static_methods": statements_static_methods(json_data),
+                "expression_static_methods": expression_static_methods(json_data),
+                "expression_definitions": expressions_definition(json_data),
+                "statement_definitions": statements_definition(json_data)
             }
         ))
     else:
@@ -351,8 +351,8 @@ def main():
             expression_source = f.read()
         print(Template(expression_source).substitute(
             {
-                "expression_static_methods_impls": expressions_implementations(json_obj),
-                "statement_static_methods_impls": statements_implementations(json_obj)
+                "expression_static_methods_impls": expressions_implementations(json_data),
+                "statement_static_methods_impls": statements_implementations(json_data)
             }
         ))
 

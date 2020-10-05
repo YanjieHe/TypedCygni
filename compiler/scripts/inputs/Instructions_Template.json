@@ -1,0 +1,356 @@
+{
+    "OpCode": [
+        {
+            "Operation": "PUSH_I32_0",
+            "Type": []
+        },
+        {
+            "Operation": "PUSH_I32_1",
+            "Type": []
+        },
+        {
+            "Operation": "PUSH_I32_1BYTE",
+            "Type": []
+        },
+        {
+            "Operation": "PUSH_I32_2BYTE",
+            "Type": []
+        },
+        {
+            "Operation": "PUSH_I64_0",
+            "Type": []
+        },
+        {
+            "Operation": "PUSH_I64_1",
+            "Type": []
+        },
+        {
+            "Operation": "PUSH_F32_0",
+            "Type": []
+        },
+        {
+            "Operation": "PUSH_F32_1",
+            "Type": []
+        },
+        {
+            "Operation": "PUSH_F64_0",
+            "Type": []
+        },
+        {
+            "Operation": "PUSH_F64_1",
+            "Type": []
+        },
+        {
+            "Operation": "PUSH",
+            "Type": [
+                "I32",
+                "I64",
+                "F32",
+                "F64",
+                "STRING"
+            ]
+        },
+        {
+            "Operation": "PUSH_LOCAL",
+            "Type": [
+                "I32",
+                "I64",
+                "F32",
+                "F64",
+                "OBJECT"
+            ]
+        },
+        {
+            "Operation": "POP_LOCAL",
+            "Type": [
+                "I32",
+                "I64",
+                "F32",
+                "F64",
+                "OBJECT"
+            ]
+        },
+        {
+            "Operation": "PUSH_STATIC",
+            "Type": [
+                "I32",
+                "I64",
+                "F32",
+                "F64",
+                "OBJECT"
+            ]
+        },
+        {
+            "Operation": "POP_STATIC",
+            "Type": [
+                "I32",
+                "I64",
+                "F32",
+                "F64",
+                "OBJECT"
+            ]
+        },
+        {
+            "Operation": "PUSH_ARRAY",
+            "Type": [
+                "I32",
+                "I64",
+                "F32",
+                "F64",
+                "OBJECT"
+            ]
+        },
+        {
+            "Operation": "POP_ARRAY",
+            "Type": [
+                "I32",
+                "I64",
+                "F32",
+                "F64",
+                "OBJECT"
+            ]
+        },
+        {
+            "Operation": "PUSH_FIELD",
+            "Type": [
+                "I32",
+                "I64",
+                "F32",
+                "F64",
+                "OBJECT"
+            ]
+        },
+        {
+            "Operation": "POP_FIELD",
+            "Type": [
+                "I32",
+                "I64",
+                "F32",
+                "F64",
+                "OBJECT"
+            ]
+        },
+        {
+            "Operation": "ADD",
+            "Type": [
+                "I32",
+                "I64",
+                "F32",
+                "F64"
+            ]
+        },
+        {
+            "Operation": "SUB",
+            "Type": [
+                "I32",
+                "I64",
+                "F32",
+                "F64"
+            ]
+        },
+        {
+            "Operation": "MUL",
+            "Type": [
+                "I32",
+                "I64",
+                "F32",
+                "F64"
+            ]
+        },
+        {
+            "Operation": "DIV",
+            "Type": [
+                "I32",
+                "I64",
+                "F32",
+                "F64"
+            ]
+        },
+        {
+            "Operation": "MOD",
+            "Type": [
+                "I32",
+                "I64",
+                "F32",
+                "F64"
+            ]
+        },
+        {
+            "Operation": "BIT_AND",
+            "Type": [
+                "I32",
+                "I64"
+            ]
+        },
+        {
+            "Operation": "BIT_OR",
+            "Type": [
+                "I32",
+                "I64"
+            ]
+        },
+        {
+            "Operation": "BIT_XOR",
+            "Type": [
+                "I32",
+                "I64"
+            ]
+        },
+        {
+            "Operation": "BIT_NOT",
+            "Type": [
+                "I32",
+                "I64"
+            ]
+        },
+        {
+            "Operation": "MINUS",
+            "Type": [
+                "I32",
+                "I64",
+                "F32",
+                "F64"
+            ]
+        },
+        {
+            "Operation": "EQ",
+            "Type": [
+                "I32",
+                "I64",
+                "F32",
+                "F64"
+            ]
+        },
+        {
+            "Operation": "NE",
+            "Type": [
+                "I32",
+                "I64",
+                "F32",
+                "F64"
+            ]
+        },
+        {
+            "Operation": "GT",
+            "Type": [
+                "I32",
+                "I64",
+                "F32",
+                "F64"
+            ]
+        },
+        {
+            "Operation": "LT",
+            "Type": [
+                "I32",
+                "I64",
+                "F32",
+                "F64"
+            ]
+        },
+        {
+            "Operation": "GE",
+            "Type": [
+                "I32",
+                "I64",
+                "F32",
+                "F64"
+            ]
+        },
+        {
+            "Operation": "LE",
+            "Type": [
+                "I32",
+                "I64",
+                "F32",
+                "F64"
+            ]
+        },
+        {
+            "Operation": "UP_CAST",
+            "Type": []
+        },
+        {
+            "Operation": "DOWN_CAST",
+            "Type": []
+        },
+        {
+            "Operation": "POP",
+            "Type": []
+        },
+        {
+            "Operation": "DUPLICATE",
+            "Type": []
+        },
+        {
+            "Operation": "DUPLICATE_OFFSET",
+            "Type": []
+        },
+        {
+            "Operation": "JUMP",
+            "Type": []
+        },
+        {
+            "Operation": "JUMP_IF_TRUE",
+            "Type": []
+        },
+        {
+            "Operation": "JUMP_IF_FALSE",
+            "Type": []
+        },
+        {
+            "Operation": "INVOKE_FUNCTION",
+            "Type": []
+        },
+        {
+            "Operation": "INVOKE_METHOD",
+            "Type": []
+        },
+        {
+            "Operation": "RETURN",
+            "Type": [
+                "I32",
+                "I64",
+                "F32",
+                "F64",
+                "OBJECT"
+            ]
+        },
+        {
+            "Operation": "NEW",
+            "TYPE": []
+        },
+        {
+            "Operation": "NEW_ARRAY",
+            "TYPE": []
+        },
+        {
+            "Operation": "ARRAY_LENGTH",
+            "TYPE": []
+        },
+        {
+            "Operation": "SUPER",
+            "TYPE": []
+        },
+        {
+            "Operation": "INSTANCE_OF",
+            "TYPE": []
+        },
+        {
+            "Operation": "THROW",
+            "TYPE": []
+        },
+        {
+            "Operation": "RETHROW",
+            "TYPE": []
+        },
+        {
+            "Operation": "GO_FINALLY",
+            "TYPE": []
+        },
+        {
+            "Operation": "FINALLY_END",
+            "TYPE": []
+        }
+    ]
+}
