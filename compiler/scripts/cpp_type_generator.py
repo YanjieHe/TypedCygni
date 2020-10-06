@@ -1,3 +1,5 @@
+import os
+import argparse
 import json
 from string import Template
 from cpp_generator_utils import *
@@ -98,14 +100,25 @@ def values_definition(json_data):
 
 
 def main():
-    with open("Types_Template.json", "r") as f:
-        json_obj = json.load(f)
-    for line in json_obj["Code"]["Top"]:
-        print(line)
-    print(types_definition(json_obj))
-    print(values_definition(json_obj))
-    for line in json_obj["Code"]["Bottom"]:
-        print(line)
+
+    # parse command line arguments
+    my_parser = argparse.ArgumentParser()
+    my_parser.add_argument(
+        "--path", type=str, help="the input json formatted template for expressions.")
+    my_parser.add_argument(
+        "--header", action="store_true", help="if adding this flag, then print header file. Otherwise, print implementation.")
+    args = my_parser.parse_args()
+
+    with open(args.path, "r") as f:
+        json_data = json.load(f)
+    with open(os.path.join("templates", "Type_hpp.txt"), "r") as f:
+        type_header = f.read()
+        print(Template(type_header).substitute(
+            {
+                "types_definitions": types_definition(json_data),
+                "values_definitions": values_definition(json_data)
+            }
+        ))
 
 
 # python .\type_helper.py | clang-format.exe | Out-File -Encoding utf8NoBOM Type.hpp

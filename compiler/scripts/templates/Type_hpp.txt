@@ -1,0 +1,33 @@
+#ifndef TYPE_HPP
+#define TYPE_HPP
+
+#include <vector>
+#include <unordered_map>
+#include <string>
+#include <memory>
+#include "Enum.hpp"
+
+class Type;
+class Value;
+using std::vector;
+using std::unordered_map;
+using std::string;
+using std::shared_ptr;
+using TypePtr = shared_ptr<Type>;
+using ValuePtr = shared_ptr<Value>;
+
+class Type {
+public:
+virtual TypeCode GetTypeCode() const;
+};
+
+class Value {
+public:
+virtual TypeCode GetTypeCode() const;
+};
+
+${types_definitions}
+
+${values_definitions}
+
+#endif // TYPE_HPP
