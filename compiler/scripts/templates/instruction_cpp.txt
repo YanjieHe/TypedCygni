@@ -1,0 +1,17 @@
+#include "Instruction.hpp"
+
+int ConstantPool::RegisterConstant(ConstantKind kind, string value) {
+    if (constantMap.count(kind)) {
+        if (constantMap[kind].count(value)) {
+            return constantMap[kind][value];
+        } else {
+            constantMap[kind][value] = static_cast<int>(constantList.size());
+            constantList.push_back(ConstantValue(kind, value));
+            return constantMap[kind][value];
+        }
+    } else {
+        constantMap[kind][value] = static_cast<int>(constantList.size());
+        constantList.push_back(ConstantValue(kind, value));
+        return constantMap[kind][value];
+    }
+}

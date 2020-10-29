@@ -1,0 +1,15 @@
+#ifndef JSON_SERIALIZER_HPP
+#define JSON_SERIALIZER_HPP
+#include <nlohmann/json.hpp>
+#include "Expression.hpp"
+
+using json = nlohmann::json;
+
+class JsonSerializer {
+public:
+static json ToJson(int i);
+static json ToJson(string s);
+${json_serializer_static_methods_definitions}
+};
+
+#endif // JSON_SERIALIZER_HPP

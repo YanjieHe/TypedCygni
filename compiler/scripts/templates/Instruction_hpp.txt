@@ -1,0 +1,57 @@
+#ifndef INSTRUCTION_HPP
+#define INSTRUCTION_HPP
+
+#include <cstdint>
+#include <vector>
+#include <unordered_map>
+#include <memory>
+#include <string>
+#include "Enum.hpp"
+
+using Byte = uint8_t;
+using std::vector;
+using std::unordered_map;
+using std::shared_ptr;
+using std::string;
+
+class Instruction {
+public:
+    virtual OpCode Operation() const;
+    virtual int Length() const;
+};
+
+${instructions_definitions}
+
+class ConstantValue {
+public:
+    ConstantKind kind;
+    string value;
+
+    ConstantValue() { }
+    ConstantValue(ConstantKind kind, string value): kind{kind}, value{value} {
+
+    }
+};
+
+class ConstantPool {
+public:
+    vector<ConstantValue> constantList;
+    unordered_map<ConstantKind, unordered_map<string, int>> constantMap;
+
+    int RegisterConstant(ConstantKind kind, string value);
+};
+
+class ILGenerator {
+public:
+    shared_ptr<ConstantPool> constantPool;
+    vector<shared_ptr<Instruction>> instructions;
+    int offset;
+
+    ILGenerator(shared_ptr<ConstantPool> constantPool): constantPool{constantPool}, offset{0} { }
+
+    virtual int ILOffset() const { return offset; }
+    ${emit_methods}
+};
+
+
+#endif // INSTRUCTION_HPP

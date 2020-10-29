@@ -227,22 +227,13 @@ def statements_definition(json_data):
 
 
 def expression_static_methods(json_data):
-    def upper_case_to_camel(name):
-        items = name.split('_')
-        result = []
-        for item in items:
-            result.append(item[0] + item[1:].lower())
-        return "".join(result)
-
     func_def = """static $return_type $func_name($parameters);
     """
     func_list = []
     for exp_name in json_data["Expressions"]:
         exp_info = json_data["Expressions"][exp_name]
         class_name = exp_name + "Expression"
-        parameters = []
-        for field_type, field_name in exp_info["Fields"]:
-            parameters.append(field_type + " " + field_name)
+        parameters = generate_parameters(exp_info["Fields"])
         func_list.append(Template(func_def).substitute(
             {
                 "return_type": "shared_ptr<" + class_name + ">",
@@ -260,9 +251,7 @@ def statements_static_methods(json_data):
     for exp_name in json_data["Statements"]:
         exp_info = json_data["Statements"][exp_name]
         class_name = exp_name + "Statement"
-        parameters = []
-        for field_type, field_name in exp_info["Fields"]:
-            parameters.append(field_type + " " + field_name)
+        parameters = generate_parameters(exp_info["Fields"])
         func_list.append(Template(func_def).substitute(
             {
                 "class_name": class_name,

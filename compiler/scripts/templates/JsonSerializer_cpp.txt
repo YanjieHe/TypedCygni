@@ -1,0 +1,11 @@
+#include "JsonSerializer.hpp"
+
+json JsonSerializer::ToJson(int i) {
+    return json(i);
+}
+
+json JsonSerializer::ToJson(string s) {
+    return json(s);
+}
+
+${json_serializer_static_methods_implementations}

@@ -68,7 +68,7 @@ public:
 
 def main():
     is_enum_class = True
-    input_file_path = "Enum_Template.cpp"
+    input_file_path = "enum/Enum_Template.cpp"
     cppHeader = get_cpp_header_info(input_file_path)
     print("#ifndef ENUM_HPP")
     print("#define ENUM_HPP")

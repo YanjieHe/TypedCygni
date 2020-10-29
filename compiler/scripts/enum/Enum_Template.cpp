@@ -8,73 +8,61 @@ enum Tag {
   DOUBLE,
   CHAR,
   STRING,
-  BOOLEAN_T,
-  BOOLEAN_F,
+  BOOLEAN,
 
-  Add,
-  Subtract,
-  Multiply,
-  Divide,
-  Modulo,
+  ADD,
+  SUB,
+  MUL,
+  DIV,
+  MOD,
 
-  Equal,
-  NotEqual,
-  GreaterThan,
-  GreaterThanOrEqual,
-  LessThan,
-  LessThanOrEqual,
+  EQ,
+  NE,
+  GT,
+  GE,
+  LT,
+  LE,
 
-  And,
-  Or,
-  Not,
+  AND,
+  OR,
+  NOT,
 
-  Var,
-  Def,
-  Assign,
+  VAR,
+  VAL,
+  DEF,
+  LAMBDA,
+  ASSIGN,
 
-  LeftBrace,
-  RightBrace,
-  LeftBracket,
-  RightBracket,
-  LeftParenthesis,
-  RightParenthesis,
+  LEFT_BRACE,
+  RIGHT_BRACE,
+  LEFT_BRACKET,
+  RIGHT_BRACKET,
+  LEFT_PARENTHESIS,
+  RIGHT_PARENTHESIS,
 
-  Dot,
-  Comma,
-  Semicolon,
-  Colon,
-  RightArrow,
-  At,
+  DOT,
+  COMMA,
+  SEMICOLON,
+  COLON,
 
-  Void,
+  IF,
+  ELSE,
+  WHILE,
 
-  If,
-  Else,
-  While,
+  FOR,
 
-  For,
-  Break,
-  Return,
+  IMPORT,
+  RENAME,
 
-  Import,
-  Uses,
-  Require,
-  Rename,
-  GoesTo,
+  CLASS,
+  NEW,
+  PRIVATE,
+  PROTECTED,
+  MODULE,
+  PACKAGE,
+  INTERFACE,
 
-  LowerBound,
-  UpperBound,
-
-  Class,
-  New,
-  Private,
-  Protected,
-  Module,
-  Package,
-  Extends,
-  Interface,
-  To,
-  Eof
+  END_OF_FILE
 };
 
 enum ExpressionType {
@@ -110,7 +98,15 @@ enum ExpressionType {
   MEMBER,
   NEW,
   AS,
-  IS
+  IS,
+  VAR,
+  ASSIGN,
+  CONDITIONAL,
+  BLOCK,
+  TRY,
+  RESET,
+  SHIFT,
+  LAMBDA
 };
 
 enum StatementType {
@@ -147,8 +143,8 @@ enum TypeCode {
   METHOD,
   ARRAY,
   OBJECT,
-  UNKNOWN,
-  RECORD
+  ANY,
+  UNKNOWN
 };
 
 enum OpCode {

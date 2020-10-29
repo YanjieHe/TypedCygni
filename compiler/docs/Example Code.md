@@ -7,7 +7,7 @@ class Point
 
 module Program
 {
-    def Test(): Void
+    def NewObject(): Void
     {
         var p = new Point
         {

@@ -9,4 +9,4 @@ include_directories(src/ include/)
 
 file(GLOB SOURCES "src/*.cpp")
 
-add_executable(Cygni main.cpp ${SOURCES})
+add_executable(Cygni ${SOURCES})
