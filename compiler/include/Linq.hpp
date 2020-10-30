@@ -1,6 +1,7 @@
 #ifndef LINQ_HPP
 #define LINQ_HPP
 #include <iterator>
+#include <vector>
 
 // template <typename T>
 // class IEnumerator : public std::enable_shared_from_this<IEnumerator<T>> {
@@ -82,6 +83,10 @@ namespace linq {
 template <typename TIterator> class linq_enumerable;
 template <typename TIterator, typename TSelector> class select_iterator;
 template <typename TIterator, typename TPredicate> class where_iterator;
+template <typename TIterator> class take_iterator;
+
+template <typename TIterator>
+using iterator_type = decltype(**((TIterator *) nullptr));
 
 template <typename TIterator> class linq_enumerable {
 public:
@@ -103,6 +108,16 @@ public:
   template <typename TPredicate>
   auto where(const TPredicate &predicate) const
       -> linq_enumerable<where_iterator<TIterator, TPredicate>>;
+
+  auto take(int count) const -> linq_enumerable<take_iterator<TIterator>>;
+
+  std::vector<iterator_type<TIterator>> to_vector() const {
+    std::vector<iterator_type<TIterator>> items;
+    for (auto item : *this) {
+      items.push_back(item);
+    }
+    return items;
+  }
 };
 
 template <typename TContainer>
@@ -166,11 +181,43 @@ public:
     }
   }
 
-  auto operator*() const -> decltype(*iterator) { return *iterator; }
+  iterator_type<TIterator> operator*() const { return *iterator; }
 
   bool operator==(const TSelf &it) const { return it.iterator == iterator; }
 
   bool operator!=(const TSelf &it) const { return it.iterator != iterator; }
+};
+
+template <typename TIterator> class take_iterator {
+private:
+  typedef take_iterator<TIterator> TSelf;
+
+  TIterator iterator;
+  TIterator last;
+  int count;
+  int current;
+
+public:
+  take_iterator(const TIterator &_iterator, const TIterator &_last, int count,
+                int current)
+      : iterator{_iterator}, last{_last}, count{count}, current{current} {
+  }
+
+  iterator_type<TIterator> operator*() const { return *iterator; }
+
+  TSelf &operator++() {
+    current++;
+    if (current == count) {
+      return *this;
+    } else {
+      ++iterator;
+      return *this;
+    }
+  }
+
+  bool operator==(const TSelf &it) const { return it.current == current; }
+
+  bool operator!=(const TSelf &it) const { return it.current != current; }
 };
 
 template <typename TIterator>
@@ -190,5 +237,14 @@ auto linq_enumerable<TIterator>::where(const TPredicate &predicate) const
       where_iterator<TIterator, TPredicate>(first, last, predicate),
       where_iterator<TIterator, TPredicate>(last, last, predicate));
 }
+
+template <typename TIterator>
+auto linq_enumerable<TIterator>::take(int count) const
+    -> linq_enumerable<take_iterator<TIterator>> {
+  return linq_enumerable<take_iterator<TIterator>>(
+      take_iterator<TIterator>(first, last, count, 0),
+      take_iterator<TIterator>(last, last, count, count));
+}
+
 } // namespace linq
 #endif // LINQ_HPP

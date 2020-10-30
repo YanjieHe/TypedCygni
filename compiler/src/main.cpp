@@ -12,7 +12,8 @@ int main(int argc, char **argv) {
   vector<int> ints = {9, 8, 7, 6, 5};
   auto res = from(ints)
                  .select([](int x) -> int { return x * 3; })
-                 .where([](int x) -> bool { return x % 2 == 1; });
+                 .where([](int x) -> bool { return x % 2 == 1; })
+                 .take(2);
   for (int i : res) {
     cout << i << endl;
   }
