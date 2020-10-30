@@ -10,7 +10,6 @@
 #include <optional>
 #include <string>
 #include <unordered_map>
-#include <variant>
 #include <vector>
 #include "Position.hpp"
 
@@ -36,7 +35,7 @@ using std::weak_ptr;
 using Byte = uint8_t;
 using nlohmann::json;
 
-class Expression: public IJsonSerializable {
+class Expression : public IJsonSerializable {
 public:
   typedef shared_ptr<Expression> Ptr;
 
@@ -119,6 +118,7 @@ public:
   IdentifierExpression(Position pos, string identifier)
       : pos{pos}, identifier{identifier} {}
   Position Pos() const override { return pos; }
+  Json ToJson() const override;
 };
 
 class MemberExpression : public Expression {
@@ -133,6 +133,7 @@ public:
       : pos{pos}, object{object}, memberName{memberName} {}
   Position Pos() const override { return pos; }
   ExpressionType NodeType() const override { return ExpressionType::MEMBER; }
+  Json ToJson() const override;
 };
 
 class NewExpression : public Expression {
@@ -147,6 +148,7 @@ public:
       : pos{pos}, className{className}, args{args} {}
   Position Pos() const override { return pos; }
   ExpressionType NodeType() const override { return ExpressionType::NEW; }
+  Json ToJson() const override;
 };
 
 class AsExpression : public Expression {
@@ -161,6 +163,7 @@ public:
       : pos{pos}, expression{expression}, type{type} {}
   Position Pos() const override { return pos; }
   ExpressionType NodeType() const override { return ExpressionType::AS; }
+  Json ToJson() const override;
 };
 
 class IsExpression : public Expression {
@@ -175,6 +178,7 @@ public:
       : pos{pos}, expression{expression}, type{type} {}
   Position Pos() const override { return pos; }
   ExpressionType NodeType() const override { return ExpressionType::IS; }
+  Json ToJson() const override;
 };
 
 class BlockExpression : public Expression {
@@ -182,12 +186,13 @@ public:
   typedef shared_ptr<BlockExpression> Ptr;
 
   Position pos;
-  vector<Expression::Ptr> statements;
+  vector<Expression::Ptr> expressions;
 
-  BlockExpression(Position pos, vector<Expression::Ptr> statements)
-      : pos{pos}, statements{statements} {}
+  BlockExpression(Position pos, vector<Expression::Ptr> expressions)
+      : pos{pos}, expressions{expressions} {}
   Position Pos() const override { return pos; }
   ExpressionType NodeType() const override { return ExpressionType::BLOCK; }
+  Json ToJson() const override;
 };
 
 class ConditionalExpression : public Expression {
@@ -207,6 +212,7 @@ public:
   ExpressionType NodeType() const override {
     return ExpressionType::CONDITIONAL;
   }
+  Json ToJson() const override;
 };
 
 class AssignExpression : public Expression {
@@ -223,6 +229,7 @@ public:
       : pos{pos}, kind{kind}, left{left}, value{value} {}
   Position Pos() const override { return pos; }
   ExpressionType NodeType() const override { return ExpressionType::ASSIGN; }
+  Json ToJson() const override;
 };
 
 class ResetExpression : public Expression {
@@ -236,9 +243,10 @@ public:
       : pos{pos}, body{body} {}
   Position Pos() const override { return pos; }
   ExpressionType NodeType() const override { return ExpressionType::RESET; }
+  Json ToJson() const override;
 };
 
-class Parameter {
+class Parameter : public IJsonSerializable {
 public:
   typedef shared_ptr<Parameter> Ptr;
 
@@ -249,6 +257,7 @@ public:
   Parameter() {}
   Parameter(Position pos, string name, Type::Ptr type)
       : pos{pos}, name{name}, type{type} {}
+  Json ToJson() const override;
 };
 
 class ShiftExpression : public Expression {
@@ -264,6 +273,7 @@ public:
       : pos{pos}, parameter{parameter}, body{body} {}
   Position Pos() const override { return pos; }
   ExpressionType NodeType() const override { return ExpressionType::SHIFT; }
+  Json ToJson() const override;
 };
 
 class LambdaExpression : public Expression {

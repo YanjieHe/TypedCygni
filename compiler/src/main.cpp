@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "Linq.hpp"
+#include "Expression.hpp"
 
 using std::cout;
 using std::endl;
@@ -14,9 +15,9 @@ int main(int argc, char **argv) {
                  .select([](int x) -> int { return x * 3; })
                  .where([](int x) -> bool { return x % 2 == 1; })
                  .take(2);
-  for (int i : res) {
-    cout << i << endl;
-  }
+  auto node = std::make_shared<ConstantExpression>(Position(),
+                                                   ExpressionType::INT, "123");
+  cout << node->ToJson() << endl;
   cout << "finished" << endl;
   return 0;
 }
