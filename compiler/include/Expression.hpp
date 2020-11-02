@@ -504,7 +504,7 @@ public:
   Json ToJson() const override;
 };
 
-class Rename {
+class Rename: public IJsonSerializable {
 public:
   typedef shared_ptr<Rename> Ptr;
 
@@ -517,6 +517,8 @@ public:
          string newName)
       : pos{pos}, packageName{packageName}, originalName{originalName},
         newName{newName} {}
+
+  Json ToJson() const override;
 };
 
 class CodeFile {

@@ -192,3 +192,10 @@ Json Import::ToJson() const {
   return unordered_map<string, Json>(
       {{"Position", pos.ToJson()}, {"Package Path", packageName.ToString()}});
 }
+
+Json Rename::ToJson() const {
+  return unordered_map<string, Json>({{"Position", pos.ToJson()},
+                                      {"Package Path", packageName.ToString()},
+                                      {"Original Name", originalName},
+                                      {"New Name", newName}});
+}
