@@ -62,19 +62,19 @@ Json NewExpression::ToJson() const {
 }
 
 Json AsExpression::ToJson() const {
-  // TO DO: type to json
   return unordered_map<string, Json>(
       {{"Position", pos.ToJson()},
        {"Node Type", Enum<ExpressionType>::ToString(NodeType())},
-       {"Expression", expression->ToJson()}});
+       {"Expression", expression->ToJson()},
+       {"Type", type->ToJson()}});
 }
 
 Json IsExpression::ToJson() const {
-  // TO DO: type to json
   return unordered_map<string, Json>(
       {{"Position", pos.ToJson()},
        {"Node Type", Enum<ExpressionType>::ToString(NodeType())},
-       {"Expression", expression->ToJson()}});
+       {"Expression", expression->ToJson()},
+       {"Type", type->ToJson()}});
 }
 
 Json BlockExpression::ToJson() const {
@@ -113,9 +113,8 @@ Json ResetExpression::ToJson() const {
 }
 
 Json Parameter::ToJson() const {
-  // TO DO: type to json
   return unordered_map<string, Json>(
-      {{"Position", pos.ToJson()}, {"Name", name}});
+      {{"Position", pos.ToJson()}, {"Name", name}, {"Type", type->ToJson()}});
 }
 
 Json ShiftExpression::ToJson() const {
@@ -139,9 +138,9 @@ Json LambdaExpression::ToJson() const {
 }
 
 json CatchBlock::ToJson() const {
-  // TO DO: type test to json
   return unordered_map<string, Json>({{"Position", pos.ToJson()},
                                       {"Variable", variable},
+                                      {"Test", test->ToJson()},
                                       {"Body", body->ToJson()}});
 }
 
@@ -157,12 +156,22 @@ json TryExpression::ToJson() const {
                         .to_vector()},
        {"Finally", finally->ToJson()}});
 }
+
 Json VarExpression::ToJson() const {
-  // TO DO: type to json
-  return unordered_map<string, Json>(
-      {{"Position", pos.ToJson()},
-       {"Node Type", Enum<ExpressionType>::ToString(NodeType())},
-       {"Is Mutable", isMutable},
-       {"Identifier", identifier},
-       {"Value", value->ToJson()}});
+  if (optType) {
+    return unordered_map<string, Json>(
+        {{"Position", pos.ToJson()},
+         {"Node Type", Enum<ExpressionType>::ToString(NodeType())},
+         {"Is Mutable", isMutable},
+         {"Identifier", identifier},
+         {"Type", optType.value()->ToJson()},
+         {"Value", value->ToJson()}});
+  } else {
+    return unordered_map<string, Json>(
+        {{"Position", pos.ToJson()},
+         {"Node Type", Enum<ExpressionType>::ToString(NodeType())},
+         {"Is Mutable", isMutable},
+         {"Identifier", identifier},
+         {"Value", value->ToJson()}});
+  }
 }

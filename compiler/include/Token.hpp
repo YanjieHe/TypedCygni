@@ -2,20 +2,20 @@
 #define TOKEN_HPP
 #include "Enum.hpp"
 #include <string>
-#include <memory>
+#include "IJsonSerializable.hpp"
+#include "Position.hpp"
 
 using std::string;
 
-class Token {
+class Token : public IJsonSerializable {
 public:
-  int line;
-  int col;
+  Position pos;
   Tag tag;
   string text;
 
-  Token() : line{-1}, col{-1}, tag{}, text{} {}
+  Token() : pos{}, tag{}, text{} {}
 
-  Token(int line, int col, Tag tag, string text)
-      : line{line}, col{col}, tag{tag}, text{text} {}
+  Token(Position pos, Tag tag, string text) : pos{pos}, tag{tag}, text{text} {}
+  Json ToJson() const override;
 };
 #endif // TOKEN_HPP
