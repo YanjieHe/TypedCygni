@@ -481,15 +481,27 @@ public:
 //   vector<shared_ptr<VarDeclStatement>> localVariables;
 // };
 
-class Import {
+class PackagePath {
+public:
+  vector<string> path;
+
+  PackagePath() : path{} {}
+  PackagePath(vector<string> path);
+
+  string ToString() const;
+};
+
+class Import : public IJsonSerializable {
 public:
   typedef shared_ptr<Import> Ptr;
 
   Position pos;
-  string packageName;
+  PackagePath packageName;
 
-  Import(Position pos, string packageName)
+  Import(Position pos, PackagePath packageName)
       : pos{pos}, packageName{packageName} {}
+
+  Json ToJson() const override;
 };
 
 class Rename {
@@ -497,11 +509,12 @@ public:
   typedef shared_ptr<Rename> Ptr;
 
   Position pos;
-  string packageName;
+  PackagePath packageName;
   string originalName;
   string newName;
 
-  Rename(Position pos, string packageName, string originalName, string newName)
+  Rename(Position pos, PackagePath packageName, string originalName,
+         string newName)
       : pos{pos}, packageName{packageName}, originalName{originalName},
         newName{newName} {}
 };

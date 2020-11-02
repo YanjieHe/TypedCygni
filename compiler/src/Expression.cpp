@@ -175,3 +175,20 @@ Json VarExpression::ToJson() const {
          {"Value", value->ToJson()}});
   }
 }
+
+string PackagePath::ToString() const {
+  if (path.empty()) {
+    return "";
+  } else {
+    string result(path.front());
+    for (size_t i = 1; i < result.size(); i++) {
+      result = result + "." + path.at(i);
+    }
+    return result;
+  }
+}
+
+Json Import::ToJson() const {
+  return unordered_map<string, Json>(
+      {{"Position", pos.ToJson()}, {"Package Path", packageName.ToString()}});
+}
