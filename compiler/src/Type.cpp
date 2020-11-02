@@ -1,4 +1,5 @@
 #include "Type.hpp"
+#include "Linq.hpp"
 
 using std::make_shared;
 using std::static_pointer_cast;
@@ -52,6 +53,11 @@ bool BasicType::Equals(Type::Ptr other) const {
   return typeCode == other->GetTypeCode();
 }
 
+Json BasicType::ToJson() const {
+  return unordered_map<string, Json>(
+      {{"Type Code", Enum<TypeCode>::ToString(GetTypeCode())}});
+}
+
 bool ArrayType::Equals(Type::Ptr other) const {
   if (other->GetTypeCode() == TypeCode::ARRAY) {
     return element->Equals(static_pointer_cast<ArrayType>(other)->element);
@@ -60,12 +66,23 @@ bool ArrayType::Equals(Type::Ptr other) const {
   }
 }
 
+Json ArrayType::ToJson() const {
+  return unordered_map<string, Json>(
+      {{"Type Code", Enum<TypeCode>::ToString(GetTypeCode())},
+       {"Element", element->ToJson()}});
+}
+
 bool FunctionType::Equals(Type::Ptr other) const {
   if (other->GetTypeCode() == TypeCode::FUNCTION) {
     auto ft = static_pointer_cast<FunctionType>(other);
-    if (Vec::SequenceEqual(
-            args, ft->args,
-            [](Type::Ptr x, Type::Ptr y) -> bool { return x->Equals(y); })) {
+    int nX = this->args.size();
+    int nY = ft->args.size();
+    if (nX == nY) {
+      for (int i = 0; i < nX; i++) {
+        if (!args[i]->Equals(ft->args[i])) {
+          return false;
+        }
+      }
       return ret->Equals(ft->ret);
     } else {
       return false;
@@ -73,6 +90,16 @@ bool FunctionType::Equals(Type::Ptr other) const {
   } else {
     return false;
   }
+}
+
+Json FunctionType::ToJson() const {
+  return unordered_map<string, Json>(
+      {{"Type Code", Enum<TypeCode>::ToString(GetTypeCode())},
+       {"Arguments",
+        linq::from(args)
+            .select([](Type::Ptr arg) -> Json { return arg->ToJson(); })
+            .to_vector()},
+       {"Return Type", ret->ToJson()}});
 }
 
 bool ObjectType::Equals(Type::Ptr other) const {
@@ -83,6 +110,17 @@ bool ObjectType::Equals(Type::Ptr other) const {
   }
 }
 
+Json ObjectType::ToJson() const {
+  unordered_map<string, Json> membersJson;
+  for (auto[memberName, memberType] : members) {
+    membersJson.insert({memberName, memberType->ToJson()});
+  }
+  return unordered_map<string, Json>(
+      {{"Type Code", Enum<TypeCode>::ToString(GetTypeCode())},
+       {"Name", name},
+       {"Members", membersJson}});
+}
+
 bool MethodType::Equals(Type::Ptr other) const {
   if (other->GetTypeCode() == TypeCode::METHOD) {
     auto otherType = static_pointer_cast<MethodType>(other);
@@ -90,4 +128,11 @@ bool MethodType::Equals(Type::Ptr other) const {
   } else {
     return false;
   }
+}
+
+Json MethodType::ToJson() const {
+  return unordered_map<string, Json>(
+      {{"Type Code", Enum<TypeCode>::ToString(GetTypeCode())},
+       {"Object", obj->ToJson()},
+       {"Function Type", func->ToJson()}});
 }

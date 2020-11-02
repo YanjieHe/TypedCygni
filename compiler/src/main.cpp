@@ -2,6 +2,7 @@
 #include <vector>
 #include "Linq.hpp"
 #include "Expression.hpp"
+#include <iomanip>
 
 using std::cout;
 using std::endl;
@@ -17,7 +18,7 @@ int main(int argc, char **argv) {
                  .take(2);
   auto node = std::make_shared<ConstantExpression>(Position(),
                                                    ExpressionType::INT, "123");
-  cout << node->ToJson() << endl;
+  cout << std::setw(4) << node->ToJson() << endl;
   cout << "finished" << endl;
   return 0;
 }

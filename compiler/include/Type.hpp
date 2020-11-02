@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <vector>
 #include "Enum.hpp"
+#include "IJsonSerializable.hpp"
 
 using std::make_optional;
 using std::make_shared;
@@ -18,55 +19,7 @@ using std::unordered_map;
 using std::vector;
 using std::weak_ptr;
 
-class Vec {
-public:
-  template <typename T, typename R>
-  static vector<R> Map(const vector<T> &items, const std::function<R(T)> &f) {
-    vector<R> result;
-    result.reserve(items.size());
-    for (auto item : items) {
-      result.push_back(f(item));
-    }
-    return result;
-  }
-
-  template <typename T, typename Func>
-  static bool SequenceEqual(const vector<T> &xs, const vector<T> &ys, Func f) {
-    if (xs.size() == ys.size()) {
-      for (size_t i = 0; i < xs.size(); i++) {
-        if (!f(xs[i], ys[i])) {
-          return false;
-        }
-      }
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  template <typename T>
-  static vector<T> Filter(const vector<T> &items,
-                          const std::function<bool(T)> &f) {
-    vector<T> result;
-    for (auto item : items) {
-      if (f(item)) {
-        result.push_back(item);
-      }
-    }
-    return result;
-  }
-
-  template <typename T>
-  static vector<T> Skip(const vector<T> &items, size_t n) {
-    vector<T> result;
-    for (size_t i = n; i < items.size(); i++) {
-      result.push_back(items[i]);
-    }
-    return result;
-  }
-};
-
-class Type {
+class Type : public IJsonSerializable {
 public:
   typedef shared_ptr<Type> Ptr;
 
@@ -93,6 +46,7 @@ public:
 
   TypeCode GetTypeCode() const override { return typeCode; }
   bool Equals(Type::Ptr other) const override;
+  Json ToJson() const override;
 };
 
 class ArrayType : public Type {
@@ -104,6 +58,7 @@ public:
   explicit ArrayType(Type *element) : element{element} {}
   TypeCode GetTypeCode() const override { return TypeCode::ARRAY; }
   bool Equals(Type::Ptr other) const override;
+  Json ToJson() const override;
 };
 
 class FunctionType : public Type {
@@ -116,6 +71,7 @@ public:
 
   TypeCode GetTypeCode() const override { return TypeCode::FUNCTION; }
   bool Equals(Type::Ptr other) const override;
+  Json ToJson() const override;
 };
 
 class ObjectType : public Type {
@@ -123,13 +79,14 @@ public:
   typedef shared_ptr<ObjectType> Ptr;
 
   string name;
-  unordered_map<string, Type::Ptr> fields;
+  unordered_map<string, Type::Ptr> members;
 
-  ObjectType(string name, unordered_map<string, Type::Ptr> fields)
-      : name{name}, fields{fields} {}
+  ObjectType(string name, unordered_map<string, Type::Ptr> members)
+      : name{name}, members{members} {}
   ObjectType(string name) : name{name} {}
   TypeCode GetTypeCode() const override { return TypeCode::OBJECT; }
   bool Equals(Type::Ptr other) const override;
+  Json ToJson() const override;
 };
 
 class MethodType : public Type {
@@ -143,5 +100,6 @@ public:
       : obj{obj}, func{func} {}
   TypeCode GetTypeCode() const override { return TypeCode::METHOD; }
   bool Equals(Type::Ptr other) const override;
+  Json ToJson() const override;
 };
 #endif // TYPE_HPP
