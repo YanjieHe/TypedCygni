@@ -289,18 +289,22 @@ public:
       : parameters{parameters}, body{body} {}
   Position Pos() const override { return pos; }
   ExpressionType NodeType() const override { return ExpressionType::LAMBDA; }
+  Json ToJson() const override;
 };
 
-class CatchBlock {
+class CatchBlock : public IJsonSerializable {
 public:
   typedef shared_ptr<CatchBlock> Ptr;
 
+  Position pos;
   string variable;
   Type::Ptr test;
   BlockExpression::Ptr body;
 
-  CatchBlock(string variable, Type::Ptr test, BlockExpression::Ptr body)
-      : variable{variable}, test{test}, body{body} {}
+  CatchBlock(Position pos, string variable, Type::Ptr test,
+             BlockExpression::Ptr body)
+      : pos{pos}, variable{variable}, test{test}, body{body} {}
+  Json ToJson() const override;
 };
 
 class TryExpression : public Expression {
@@ -317,6 +321,7 @@ public:
       : pos{pos}, body{body}, handlers{handlers}, finally{finally} {}
   Position Pos() const override { return pos; }
   ExpressionType NodeType() const override { return ExpressionType::TRY; }
+  Json ToJson() const override;
 };
 
 class VarExpression : public Expression {
@@ -334,6 +339,7 @@ public:
       : pos{pos}, identifier{identifier}, optType{optType}, value{value} {}
   Position Pos() const override { return pos; }
   ExpressionType NodeType() const override { return ExpressionType::VAR; }
+  Json ToJson() const override;
 };
 
 class MethodDecl {
