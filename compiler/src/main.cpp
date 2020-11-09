@@ -25,6 +25,19 @@ int main(int argc, char **argv) {
 
   cout << std::setw(4) << node->ToJson() << endl;
   cout << std::setw(4) << type->ToJson() << endl;
+  vector<int> list1 = {9, 8, 7, 6, 5};
+  vector<int> list2 = {9, 8, 7, 6, 5};
+  vector<int> list3 = {9, 4, 7, 6, 5};
+  vector<int> list4 = {9, 4, 7, 6};
+  cout << std::boolalpha
+       << from(list1).sequence_equal(list2, [](int x, int y) { return x == y; })
+       << endl;
+  cout << std::boolalpha
+       << from(list1).sequence_equal(list3, [](int x, int y) { return x == y; })
+       << endl;
+  cout << std::boolalpha
+       << from(list1).sequence_equal(list4, [](int x, int y) { return x == y; })
+       << endl;
   cout << "finished" << endl;
   return 0;
 }

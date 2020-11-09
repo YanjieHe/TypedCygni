@@ -3,6 +3,7 @@
 #include <iterator>
 #include <vector>
 #include <string>
+#include <iostream>
 
 namespace linq {
 template <typename TIterator> class linq_iterator;
@@ -41,6 +42,10 @@ public:
       -> linq_iterator<where_iterator<TIterator, TPredicate>>;
 
   auto take(int count) const -> linq_iterator<take_iterator<TIterator>>;
+
+  template <typename TContainer, typename TComparer>
+  bool sequence_equal(const TContainer &container,
+                      const TComparer &comparer) const;
 
   std::vector<iterator_type<TIterator>> to_vector() const {
     std::vector<iterator_type<TIterator>> items;
@@ -190,6 +195,25 @@ auto linq_iterator<TIterator>::take(int count) const
   return linq_iterator<take_iterator<TIterator>>(
       take_iterator<TIterator>(_first, _last, count, 0),
       take_iterator<TIterator>(_last, _last, count, count));
+}
+
+template <typename TIterator>
+template <typename TContainer, typename TComparer>
+bool linq_iterator<TIterator>::sequence_equal(const TContainer &container,
+                                              const TComparer &comparer) const {
+  auto first1 = _first;
+  auto last1 = _last;
+  auto first2 = std::begin(container);
+  auto last2 = std::end(container);
+  while (first1 != last1 && first2 != last2) {
+    if (!comparer(*first1, *first2)) {
+      return false;
+    } else {
+      first1++;
+      first2++;
+    }
+  }
+  return first1 == last1 && first2 == last2;
 }
 
 } // namespace linq
