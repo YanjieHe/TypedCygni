@@ -4,12 +4,15 @@
 #include <variant>
 #include <stdexcept>
 
+namespace encoding {
+
 using std::string;
 using std::u32string;
 using std::variant;
 using std::invalid_argument;
 
-
 variant<u32string, invalid_argument> UTF8ToUTF32(const string &utf8);
-string UTF32ToUTF8(const u32string &utf32) ;
+string UTF32ToUTF8(const u32string &utf32);
+
+} // namespace encoding
 #endif // ENCODING_HPP

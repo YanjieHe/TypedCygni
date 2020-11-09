@@ -75,8 +75,8 @@ Json ArrayType::ToJson() const {
 bool FunctionType::Equals(Type::Ptr other) const {
   if (other->GetTypeCode() == TypeCode::FUNCTION) {
     auto ft = static_pointer_cast<FunctionType>(other);
-    int nX = this->args.size();
-    int nY = ft->args.size();
+    int nX = static_cast<int>(this->args.size());
+    int nY = static_cast<int>(ft->args.size());
     if (nX == nY) {
       for (int i = 0; i < nX; i++) {
         if (!args[i]->Equals(ft->args[i])) {

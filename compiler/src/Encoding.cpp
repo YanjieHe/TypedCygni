@@ -1,5 +1,7 @@
 #include "Encoding.hpp"
 
+namespace encoding {
+
 variant<u32string, invalid_argument> UTF8ToUTF32(const string &utf8) {
   u32string res;
   int i = 0;
@@ -39,7 +41,7 @@ variant<u32string, invalid_argument> UTF8ToUTF32(const string &utf8) {
 }
 
 string UTF32ToUTF8(const u32string &utf32) {
-  std::string res;
+  string res;
   for (char32_t cp : utf32) {
     if (cp < 0x80) {
       res.push_back(cp & 0x7F);
@@ -59,3 +61,5 @@ string UTF32ToUTF8(const u32string &utf32) {
   }
   return res;
 }
+
+} // namespace encoding

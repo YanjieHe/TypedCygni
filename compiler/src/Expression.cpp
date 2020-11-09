@@ -1,5 +1,5 @@
 #include "Expression.hpp"
-#include "Linq.hpp"
+#include <linq/Linq.hpp>
 
 Json BinaryExpression::ToJson() const {
   return unordered_map<string, Json>({
