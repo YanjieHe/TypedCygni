@@ -504,7 +504,7 @@ public:
   Json ToJson() const override;
 };
 
-class Rename: public IJsonSerializable {
+class Rename : public IJsonSerializable {
 public:
   typedef shared_ptr<Rename> Ptr;
 
@@ -526,12 +526,12 @@ public:
   typedef shared_ptr<CodeFile> Ptr;
 
   string path;
-  string packageName;
+  PackagePath packageName;
   vector<Import::Ptr> importList;
   vector<Rename::Ptr> renameList;
   vector<ClassDecl::Ptr> classList;
 
-  CodeFile(string path, string packageName, vector<Import::Ptr> importList,
+  CodeFile(string path, PackagePath packageName, vector<Import::Ptr> importList,
            vector<Rename::Ptr> renameList, vector<ClassDecl::Ptr> classList)
       : path{path}, packageName{packageName}, importList{importList},
         renameList{renameList}, classList{classList} {}

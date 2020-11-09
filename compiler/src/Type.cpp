@@ -1,5 +1,5 @@
 #include "Type.hpp"
-#include "Linq.hpp"
+#include <linq/Linq.hpp>
 
 using std::make_shared;
 using std::static_pointer_cast;
