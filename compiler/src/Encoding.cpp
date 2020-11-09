@@ -2,10 +2,10 @@
 
 namespace encoding {
 
-variant<u32string, invalid_argument> UTF8ToUTF32(const string &utf8) {
+variant<u32string, invalid_argument> utf8_to_ut32(const string &utf8) {
   u32string res;
-  int i = 0;
-  int n = static_cast<int>(utf8.size());
+  size_t i = 0;
+  size_t n = utf8.size();
   while (i < n) {
     if ((utf8[i] & 0x80) == 0) {
       res.push_back(utf8[i]);
@@ -40,7 +40,7 @@ variant<u32string, invalid_argument> UTF8ToUTF32(const string &utf8) {
   return res;
 }
 
-string UTF32ToUTF8(const u32string &utf32) {
+string utf32_to_utf8(const u32string &utf32) {
   string res;
   for (char32_t cp : utf32) {
     if (cp < 0x80) {
