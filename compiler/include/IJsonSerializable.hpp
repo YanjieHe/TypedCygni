@@ -3,6 +3,8 @@
 #include <nlohmann/json.hpp>
 
 using Json = nlohmann::json;
+using JsonMap = std::unordered_map<std::string, Json>;
+using JsonArray = std::vector<Json>;
 
 class IJsonSerializable {
 public:

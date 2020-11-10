@@ -5,9 +5,12 @@
 using std::string;
 using std::unordered_map;
 
+Json Source::ToJson() const { return JsonMap{{"Path", path}}; }
+
 Json Position::ToJson() const {
-  return unordered_map<string, Json>{{"Start Line", startLine},
-                                     {"Start Column", startCol},
-                                     {"End Line", endLine},
-                                     {"End Column", endCol}};
+  return JsonMap{{"Source", source->ToJson()},
+                 {"Start Line", startLine},
+                 {"Start Column", startCol},
+                 {"End Line", endLine},
+                 {"End Column", endCol}};
 }

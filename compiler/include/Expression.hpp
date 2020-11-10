@@ -12,6 +12,7 @@
 #include <unordered_map>
 #include <vector>
 #include "Position.hpp"
+#include "Exception.hpp"
 
 #define BINARY_TYPE_MATCH(NODE_TYPE, LEFT_TYPE, RIGHT_TYPE, RETURN_TYPE)       \
   if (node->NodeType() == ExpressionType::NODE_TYPE &&                         \
@@ -544,13 +545,6 @@ public:
   vector<CodeFile::Ptr> codeFiles;
 
   explicit Program(vector<CodeFile::Ptr> codeFiles) : codeFiles{codeFiles} {}
-};
-
-class Error {
-public:
-  Position pos;
-  string message;
-  Error(Position pos, string message) : pos{pos}, message{message} {}
 };
 
 template <typename ReturnType, typename... ArgTypes> class Visitor {
@@ -1150,18 +1144,5 @@ public:
 //   }
 // };
 
-class SyntaxError {
-public:
-  string path;
-  Position pos;
-  string message;
-  SyntaxError() : path(), pos(), message() {}
-  SyntaxError(string path, Position pos, string message)
-      : path{path}, pos{pos}, message{message} {}
-  string ToString() const {
-    return path + ":" + std::to_string(pos.startLine + 1) + ":" +
-           std::to_string(pos.startCol + 1) + ": " + message;
-  }
-};
 
 #endif // EXPRESSION_HPP
